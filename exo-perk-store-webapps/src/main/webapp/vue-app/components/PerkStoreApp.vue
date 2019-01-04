@@ -84,6 +84,8 @@ export default {
         price: 10,
         symbol: '$',
         canEdit: true,
+        marchandType: 'user',
+        marchandId: 'root',
         maxOrdersPerUser: 2,
         orderPeriodicity: 'WEEK',
         orderPeriodicityLabel: 'Week',

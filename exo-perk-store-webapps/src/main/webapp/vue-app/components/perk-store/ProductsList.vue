@@ -4,7 +4,10 @@
       class="border-box-sizing"
       fluid
       grid-list-md>
-      <v-layout row wrap>
+      <v-layout
+        row
+        wrap
+        class="productsListParent">
         <product-detail
           v-for="product in products"
           :key="product.id"
