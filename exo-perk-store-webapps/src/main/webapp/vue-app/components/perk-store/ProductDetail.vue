@@ -39,21 +39,37 @@
           style="position: relative;">
           <v-btn
             v-if="product.canEdit"
+            title="Commands list"
+            absolute
+            color="secondary"
+            class="white--text detailsButton"
+            fab
+            right
+            top
+            @click="$emit('commands-list', product)">
+            <v-icon>fa-list-ul</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="product.canEdit"
+            title="Edit product"
             absolute
             color="secondary"
             class="white--text editButton"
             fab
             right
-            top>
+            top
+            @click="$emit('edit', product)">
             <v-icon>fa-pen</v-icon>
           </v-btn>
           <v-btn
+            title="Buy"
             absolute
             class="white--text primary"
             :disabled="disabledBuy"
             fab
             right
-            top>
+            top
+            @click="$emit('buy', product)">
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
           <h3 class="mb-2 primary--text text-xs-center">{{ product.title }}</h3>
@@ -88,7 +104,7 @@ export default {
   },
   computed: {
     disabledBuy() {
-      return (this.isQuantityStockType && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return !this.product.enabled || (this.isQuantityStockType && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
     boughtPercentage() {
       return this.isQuantityStockType ? ((this.product.bought * 100) /this.product.totalSupply) : 0;

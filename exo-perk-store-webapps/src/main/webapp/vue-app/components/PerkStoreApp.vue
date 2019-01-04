@@ -53,7 +53,11 @@
               </v-icon>
             </v-btn>
           </v-toolbar>
-          <products-list :products="filteredProducts" />
+          <products-list
+            :products="filteredProducts"
+            @commands-list="displayCommandsList"
+            @edit="editProduct"
+            @buy="buyProduct" />
         </v-flex>
       </v-layout>
     </main>
@@ -83,9 +87,10 @@ export default {
         totalSupply: 100,
         price: 10,
         symbol: '$',
+        marchands: ['userroot'], // Notification receivers too
+        receiverMarchand: 'userroot', // Receiver wallet
+        enabled: true,
         canEdit: true,
-        marchandType: 'user',
-        marchandId: 'root',
         maxOrdersPerUser: 2,
         orderPeriodicity: 'WEEK',
         orderPeriodicityLabel: 'Week',
@@ -94,6 +99,22 @@ export default {
           totalOrders: 3,
           notDeliveredOrders: 2,
         },
+        ordersList: [
+          {
+            transactionHash: null,
+            transactionLink: null,
+            quantity: null, // quantity ordered
+            amount: null, // amount sent
+            sender: null, // type + id
+            receiver: null, // type + id
+            orderStatus: null, // 'ordered', 'pending', 'payed', 'delivered', 'canceled', 'refunded'
+            canceledQuantity: null, // canceled quantity to refund
+            refundedAmount: null, // amount to refund
+            createdDate: null,
+            deliveredDate: null,
+            refundDate: null,
+          }
+        ]
       },
       {
         id: 2,
@@ -103,7 +124,8 @@ export default {
         stockType: 'ILLIMITED',
         price: 20,
         symbol: '$',
-        canEdit: false,
+        enabled: true,
+        canEdit: true,
       },
       {
         id: 3,
@@ -115,6 +137,7 @@ export default {
         totalSupply: 100,
         price: 5,
         symbol: '$',
+        enabled: false,
         canEdit: true,
       }
     ]
@@ -128,6 +151,17 @@ export default {
         return this.products.slice();
       }
     }
+  },
+  methods: {
+    displayCommandsList(product) {
+      // Retrieve product.ordersList and display them
+    },
+    editProduct(product) {
+      // Display edit product form
+    },
+    buyProduct(product) {
+      // Display buy product form
+    },
   }
 };
 </script>

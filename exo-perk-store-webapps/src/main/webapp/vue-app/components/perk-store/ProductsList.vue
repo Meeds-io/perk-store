@@ -12,7 +12,10 @@
           v-for="product in products"
           :key="product.id"
           :product="product"
-          class="border-box-sizing" />
+          class="border-box-sizing"
+          @commands-list="$emit('commands-list', $event)"
+          @edit="$emit('edit', $event)"
+          @buy="$emit('buy', $event)" />
       </v-layout>
     </v-container>
   </v-card>

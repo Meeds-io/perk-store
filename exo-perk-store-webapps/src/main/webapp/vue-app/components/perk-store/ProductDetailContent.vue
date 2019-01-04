@@ -1,5 +1,8 @@
 <template>
   <v-list dense transparent>
+    <v-list-tile v-if="!product.enabled">
+      <v-list-tile-content><strong class="red--text">Disabled product</strong></v-list-tile-content>
+    </v-list-tile>
     <v-list-tile>
       <v-list-tile-content><strong>Price:</strong></v-list-tile-content>
       <v-list-tile-content class="align-end">{{ product.price }} {{ product.symbol }}</v-list-tile-content>
@@ -14,7 +17,7 @@
     </v-list-tile>
     <v-list-tile v-if="product.maxOrdersPerUser">
       <v-list-tile-content><strong>Max orders:</strong></v-list-tile-content>
-      <v-list-tile-content class="align-end">{{ product.maxOrdersPerUser }}</v-list-tile-content>
+      <v-list-tile-content class="align-end">{{ maxOrdersLabel }}</v-list-tile-content>
     </v-list-tile>
     <v-divider v-if="product.userOrders" />
     <v-list-tile v-if="product.userOrders && product.userOrders.orderedInCurrentPeriod">
@@ -60,7 +63,7 @@ export default {
         return '';
       }
       if(this.product.orderPeriodicity) {
-        return `${this.product.maxOrdersPerUser} per user per ${this.product.orderPeriodicity}`;
+        return `${this.product.maxOrdersPerUser} per user per ${this.product.orderPeriodicityLabel}`;
       } else {
         return `${this.product.maxOrdersPerUser} per user`;
       }
