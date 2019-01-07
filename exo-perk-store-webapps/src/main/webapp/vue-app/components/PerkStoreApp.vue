@@ -9,53 +9,96 @@
           <v-toolbar color="white">
             <v-toolbar-title>Perk store</v-toolbar-title>
             <v-spacer />
-            <v-text-field
-              v-model="search"
-              append-icon="search"
-              label="Search in products"
-              single-line
-              solo
-              hide-details
-              class="searchProductsInput mr-3" />
             <v-btn
-              id="perkStoreAppMenuRefreshButton"
+              v-if="displayProductForm || displayProductOrders"
+              id="perkStoreAppMenuCloseButton"
               icon
               flat
-              title="Refresh store"
-              class="mr-0"
-              @click="$emit('refresh')">
+              title="Close"
+              @click="closeDetails">
               <v-icon size="20px">
-                refresh
+                close
               </v-icon>
             </v-btn>
-            <v-btn
-              v-if="settings.canAddProduct"
-              id="perkStoreAppMenuAddButton"
-              icon
-              flat
-              title="Add product"
-              class="mr-0"
-              @click="$emit('add-product')">
-              <v-icon size="20px">
-                add
-              </v-icon>
-            </v-btn>
-            <v-btn
-              v-if="settings.isAdministrator"
-              id="perkStoreAppMenuSettingsButton"
-              class="mr-0 ml-0"
-              icon
-              flat
-              title="Settings"
-              @click="$emit('modify-settings')">
-              <v-icon size="17px">
-                fa-cog
-              </v-icon>
-            </v-btn>
+            <template v-else>
+              <v-text-field
+                v-model="search"
+                append-icon="search"
+                label="Search in products"
+                single-line
+                solo
+                hide-details
+                class="searchProductsInput mr-3" />
+              <v-btn
+                id="perkStoreAppMenuRefreshButton"
+                icon
+                flat
+                title="Refresh store"
+                class="mr-0"
+                @click="$emit('refresh')">
+                <v-icon size="20px">
+                  refresh
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-if="settings.canAddProduct"
+                id="perkStoreAppMenuAddButton"
+                icon
+                flat
+                title="Add product"
+                class="mr-0"
+                @click="newProduct()">
+                <v-icon size="20px">
+                  add
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-if="settings.isAdministrator"
+                id="perkStoreAppMenuSettingsButton"
+                class="mr-0 ml-0"
+                icon
+                flat
+                title="Settings"
+                @click="$emit('modify-settings')">
+                <v-icon size="17px">
+                  fa-cog
+                </v-icon>
+              </v-btn>
+            </template>
           </v-toolbar>
+
+          <v-toolbar v-if="loading || error" color="white">
+            <v-spacer />
+            <v-progress-circular
+              v-if="loading"
+              color="primary"
+              class="mb-2"
+              indeterminate />
+            <v-flex v-else-if="error" class="text-xs-center">
+              <div class="alert alert-error">
+                <i class="uiIconError"></i> {{ error }}
+              </div>
+            </v-flex>
+            <v-spacer />
+          </v-toolbar>
+
+          <product-orders-list
+            v-if="displayProductOrders"
+            ref="productOrdersList"
+            :product="selectedProduct"
+            @loading="loading = $event"
+            @error="error = $event"
+            @close="displayProductOrders = false; selectedProduct = null;" />
+          <product-form
+            v-else-if="displayProductForm"
+            ref="productForm"
+            :product="selectedProduct"
+            @added="init" />
           <products-list
+            v-else
             :products="filteredProducts"
-            @commands-list="displayCommandsList"
+            :settings="settings"
+            @orders-list="displayCommandsList"
             @edit="editProduct"
             @buy="buyProduct" />
         </v-flex>
@@ -66,81 +109,27 @@
 
 <script>
 import ProductsList from './perk-store/ProductsList.vue';
+import ProductOrdersList from './perk-store/ProductOrdersList.vue';
+import ProductForm from './perk-store/ProductForm.vue';
+
+import {initSettings} from '../js/PerkStoreSettings.js';
+import {getProductList} from '../js/PerkStoreProduct.js';
 
 export default {
   components: {
     ProductsList,
+    ProductOrdersList,
+    ProductForm,
   },
   data: () => ({
+    error: null,
+    loading: false,
+    selectedProduct: null,
+    displayProductForm: false,
+    displayProductOrders: false,
     search: null,
-    settings: {
-      isAdministrator: true,
-      canAddProduct: true,
-    },
-    products: [
-      {
-        id: 1,
-        title: 'Pre-fab homes',
-        description: "Plusieurs variations de Lorem Ipsum peuvent être trouvées ici ou là, mais la majeure partie d'entre elles a été altérée par l'addition d'humour ou de mots aléatoires qui ne ressemblent pas une seconde à du texte standard. Si vous voulez utiliser un passage du Lorem Ipsum, vous devez être sûr qu'il n'y a rien d'embarrassant caché dans le texte. Tous les générateurs de Lorem Ipsum sur Internet tendent à reproduire le même extrait sans fin, ce qui fait de lipsum.com le seul vrai générateur de Lorem Ipsum. Iil utilise un dictionnaire de plus de 200 mots latins, en combinaison de plusieurs structures de phrases, pour générer un Lorem Ipsum irréprochable.",
-        stockType: 'QUANTITY',
-        bought: 50,
-        totalSupply: 100,
-        price: 10,
-        symbol: '$',
-        marchands: ['userroot'], // Notification receivers too
-        receiverMarchand: 'userroot', // Receiver wallet
-        enabled: true,
-        canEdit: true,
-        maxOrdersPerUser: 2,
-        orderPeriodicity: 'WEEK',
-        orderPeriodicityLabel: 'Week',
-        userOrders: {
-          orderedInCurrentPeriod: 2,
-          totalOrders: 3,
-          notDeliveredOrders: 2,
-        },
-        ordersList: [
-          {
-            transactionHash: null,
-            transactionLink: null,
-            quantity: null, // quantity ordered
-            amount: null, // amount sent
-            sender: null, // type + id
-            receiver: null, // type + id
-            orderStatus: null, // 'ordered', 'pending', 'payed', 'delivered', 'canceled', 'refunded'
-            canceledQuantity: null, // canceled quantity to refund
-            refundedAmount: null, // amount to refund
-            createdDate: null,
-            deliveredDate: null,
-            refundDate: null,
-          }
-        ]
-      },
-      {
-        id: 2,
-        title: 'Favorite road trips',
-        description: "On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de distractions, et empêche de se concentrer sur la mise en page elle-même. L'avantage du Lorem Ipsum sur un texte générique comme 'Du texte. Du texte. Du texte.' est qu'il possède une distribution de lettres plus ou moins normale, et en tout cas comparable avec celle du français standard.",
-        img: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        stockType: 'ILLIMITED',
-        price: 20,
-        symbol: '$',
-        enabled: true,
-        canEdit: true,
-      },
-      {
-        id: 3,
-        title: 'Best airlines',
-        description: "Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, quand un imprimeur anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte.",
-        img: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        stockType: 'QUANTITY',
-        bought: 70,
-        totalSupply: 100,
-        price: 5,
-        symbol: '$',
-        enabled: false,
-        canEdit: true,
-      }
-    ]
+    settings: {},
+    products: [],
   }),
   computed: {
     filteredProducts() {
@@ -152,12 +141,48 @@ export default {
       }
     }
   },
+  created() {
+    return this.init();
+  },
   methods: {
+    init() {
+      this.loading = true;
+      return initSettings()
+      .then(() => {
+        this.settings = window.perkStoreSettings;
+      })
+      .then(() => getProductList())
+      .then((products) => {
+        this.products = products;
+      })
+      .catch(e => {
+        this.error = e;
+      })
+      .finally(() => {
+        this.loading = false;
+      });
+    },
     displayCommandsList(product) {
-      // Retrieve product.ordersList and display them
+      if (product && product.canEdit) {
+        this.displayProductOrders = true;
+        this.selectedProduct = product;
+        return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productOrdersList.init());
+      }
+    },
+    closeDetails() {
+      this.displayProductForm = false;
+      this.displayProductOrders = false;
+      this.selectedProduct = null;
+    },
+    newProduct() {
+      this.displayProductForm = true;
+      this.selectedProduct = {};
+      return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productForm.init());
     },
     editProduct(product) {
-      // Display edit product form
+      this.displayProductForm = true;
+      this.selectedProduct = Object.assign({}, product);
+      return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productForm.init());
     },
     buyProduct(product) {
       // Display buy product form

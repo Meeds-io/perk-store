@@ -12,8 +12,9 @@
           v-for="product in products"
           :key="product.id"
           :product="product"
+          :symbol="settings.symbol"
           class="border-box-sizing"
-          @commands-list="$emit('commands-list', $event)"
+          @orders-list="$emit('orders-list', $event)"
           @edit="$emit('edit', $event)"
           @buy="$emit('buy', $event)" />
       </v-layout>
@@ -33,6 +34,12 @@ export default {
       type: Array,
       default: function() {
         return [];
+      },
+    },
+    settings: {
+      type: Object,
+      default: function() {
+        return {};
       },
     },
   },

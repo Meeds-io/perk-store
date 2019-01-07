@@ -17,36 +17,35 @@
               style="height: 100%;">
               <product-detail-content
                 :product="product"
-                :available="available"
-                :is-quantity-stock-type="isQuantityStockType" />
+                :available="available" />
             </div>
           </v-expand-transition>
         </v-img>
         <product-detail-content
           v-else
           :product="product"
-          :available="available"
-          :is-quantity-stock-type="isQuantityStockType" />
+          :symbol="symbol"
+          :available="available" />
         <v-progress-linear
-          v-if="isQuantityStockType"
+          v-if="!product.illimited"
           v-model="boughtPercentage"
           :title="`${boughtPercentage}% articles sold`"
           color="red"
           class="mb-0 mt-0" />
         <v-card-text
-          :class="isQuantityStockType || 'mt-2'"
+          :class="product.illimited && 'mt-2'"
           class="pt-4"
           style="position: relative;">
           <v-btn
             v-if="product.canEdit"
-            title="Commands list"
+            title="Orders list"
             absolute
             color="secondary"
             class="white--text detailsButton"
             fab
             right
             top
-            @click="$emit('commands-list', product)">
+            @click="$emit('orders-list', product)">
             <v-icon>fa-list-ul</v-icon>
           </v-btn>
           <v-btn
@@ -96,6 +95,12 @@ export default {
         return {};
       },
     },
+    symbol: {
+      type: String,
+      default: function() {
+        return '';
+      },
+    },
   },
   data() {
     return {
@@ -104,17 +109,14 @@ export default {
   },
   computed: {
     disabledBuy() {
-      return !this.product.enabled || (this.isQuantityStockType && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return !this.product.enabled || (!this.product.illimited && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
     boughtPercentage() {
-      return this.isQuantityStockType ? ((this.product.bought * 100) /this.product.totalSupply) : 0;
+      return !this.product.illimited ? ((this.product.bought * 100) /this.product.totalSupply) : 0;
     },
     available() {
-      return this.isQuantityStockType ? (this.product.totalSupply - this.product.bought) : 100;
+      return !this.product.illimited ? (this.product.totalSupply - this.product.bought) : 100;
     },
-    isQuantityStockType() {
-      return this.product.stockType === 'QUANTITY';
-    }
   }
 }
 </script>

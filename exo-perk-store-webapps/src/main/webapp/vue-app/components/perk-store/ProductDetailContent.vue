@@ -5,13 +5,13 @@
     </v-list-tile>
     <v-list-tile>
       <v-list-tile-content><strong>Price:</strong></v-list-tile-content>
-      <v-list-tile-content class="align-end">{{ product.price }} {{ product.symbol }}</v-list-tile-content>
+      <v-list-tile-content class="align-end">{{ product.price }} {{ symbol }}</v-list-tile-content>
     </v-list-tile>
-    <v-list-tile v-if="isQuantityStockType">
+    <v-list-tile v-if="!product.illimited">
       <v-list-tile-content><strong>Available:</strong></v-list-tile-content>
       <v-list-tile-content class="align-end">{{ available }}</v-list-tile-content>
     </v-list-tile>
-    <v-list-tile v-if="isQuantityStockType">
+    <v-list-tile v-if="!product.illimited">
       <v-list-tile-content><strong>Total supply:</strong></v-list-tile-content>
       <v-list-tile-content class="align-end">{{ product.totalSupply }}</v-list-tile-content>
     </v-list-tile>
@@ -44,16 +44,16 @@ export default {
         return {};
       },
     },
+    symbol: {
+      type: String,
+      default: function() {
+        return '';
+      },
+    },
     available: {
       type: Number,
       default: function() {
         return 0;
-      },
-    },
-    isQuantityStockType: {
-      type: Boolean,
-      default: function() {
-        return false;
       },
     },
   },
