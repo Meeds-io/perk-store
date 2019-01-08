@@ -24,7 +24,7 @@
         </template>
         <button
           v-else
-          class="btn btn-primary mr-1"
+          class="btn mr-1"
           @click="edit = true">
           Edit
         </button>
@@ -70,11 +70,14 @@
       <v-list-tile :class="edit && 'grey lighten-3'">
         <v-list-tile-content>Order status:</v-list-tile-content>
         <v-list-tile-content v-if="edit" class="align-end">
-          <select v-model="status" class="small">
+          <select v-model="status" class="small mt-1 mb-1">
             <option v-for="option in statusList" :key="option">
               {{ option }}
             </option>
           </select>
+        </v-list-tile-content>
+        <v-list-tile-content v-else-if="order.status === 'error'" class="align-end">
+          <v-icon :title="order.error" color="orange">error</v-icon>
         </v-list-tile-content>
         <v-list-tile-content v-else class="align-end">
           {{ statusLabel }}
@@ -87,7 +90,7 @@
             v-model.number="delivered"
             type="text"
             name="OrderDeliveredQuantity"
-            class="text-xs-right small">
+            class="text-xs-right small mt-1 mb-1">
         </v-list-tile-content>
         <v-list-tile-content v-else class="align-end">
           {{ order.deliveredQuantity || '-' }}
@@ -100,20 +103,20 @@
             v-model.number="refunded"
             type="text"
             name="OrderRefundedQuantity"
-            class="text-xs-right small">
+            class="text-xs-right small mt-1 mb-1">
         </v-list-tile-content>
         <v-list-tile-content v-else class="align-end">
           {{ order.refundedQuantity || '-' }}
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile>
-        <v-list-tile-content>Remaining quantity to treat:</v-list-tile-content>
+        <v-list-tile-content>Remaining quantity to process:</v-list-tile-content>
         <v-list-tile-content class="align-end">
           <v-badge
-            v-if="order.remainingQuantityToTreat"
+            v-if="order.remainingQuantityToProcess"
             color="red"
             left>
-            <span slot="badge">{{ order.remainingQuantityToTreat }}</span>
+            <span slot="badge">{{ order.remainingQuantityToProcess }}</span>
             <span></span>
           </v-badge>
           <template v-else>-</template>
@@ -173,6 +176,7 @@ export default {
       statusList: [
         'ordered',
         'canceled',
+        'error',
         'payed',
         'delivered',
         'refunded'

@@ -22,7 +22,7 @@
           title="Save"
           icon
           @click="saveOrderFilter">
-          <v-icon>save</v-icon>
+          <v-icon>fa-save</v-icon>
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
@@ -35,27 +35,29 @@
             v-model="filter.selectedDate"
             type="date" />
         </template>
-        <h4>Order status</h4>
-        <v-divider />
-        <v-checkbox v-model="filter.notTreated" label="Not completely treated" />
+        <v-checkbox v-model="filter.notProcessed" label="Not completely processed" />
         <v-checkbox
-          v-if="!filter.notTreated"
+          v-if="!filter.notProcessed"
           v-model="filter.ordered"
           label="Ordered" />
         <v-checkbox
-          v-if="!filter.notTreated"
+          v-if="!filter.notProcessed"
           v-model="filter.canceled"
           label="Canceled" />
         <v-checkbox
-          v-if="!filter.notTreated"
+          v-if="!filter.notProcessed"
+          v-model="filter.error"
+          label="Order went wrong" />
+        <v-checkbox
+          v-if="!filter.notProcessed"
           v-model="filter.payed"
           label="Payed" />
         <v-checkbox
-          v-if="!filter.notTreated"
+          v-if="!filter.notProcessed"
           v-model="filter.delivered"
           label="Delivered" />
         <v-checkbox
-          v-if="!filter.notTreated"
+          v-if="!filter.notProcessed"
           v-model="filter.refunded"
           label="Refunded" />
       </v-layout>

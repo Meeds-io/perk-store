@@ -37,7 +37,7 @@ window.perkStoreProductsList = {
     maxOrdersPerUser: 2,
     orderPeriodicity: 'WEEK',
     orderPeriodicityLabel: 'Week',
-    notTreatedOrders: 4,
+    notProcessedOrders: 4,
     userOrders: {
       orderedInCurrentPeriod: 2,
       totalOrders: 3,
@@ -109,7 +109,7 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'ordered', // 'ordered', 'payed', 'delivered', 'canceled'
-      remainingQuantityToTreat: 2,
+      remainingQuantityToProcess: 2,
       deliveredQuantity: 0,
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
@@ -135,7 +135,7 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'payed', // 'ordered', 'payed', 'delivered', 'canceled'
-      remainingQuantityToTreat: 1,
+      remainingQuantityToProcess: 1,
       deliveredQuantity: 0,
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
@@ -161,7 +161,7 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'delivered', // 'ordered', 'payed', 'delivered', 'canceled'
-      remainingQuantityToTreat: 1,
+      remainingQuantityToProcess: 1,
       deliveredQuantity: 3, // amount to refund
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
@@ -187,7 +187,7 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'canceled', // 'ordered', 'payed', 'delivered', 'canceled', 'refunded'
-      remainingQuantityToTreat: 1,
+      remainingQuantityToProcess: 1,
       deliveredQuantity: 0, // amount to refund
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
@@ -213,12 +213,39 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'refunded', // 'ordered', 'canceled', 'payed', 'delivered', 'refunded'
-      remainingQuantityToTreat: 0,
+      remainingQuantityToProcess: 0,
       deliveredQuantity: 0, // amount to refund
       refundedQuantity: 2, // amount to refund
       createdDate: Date.now(),
       deliveredDate: null,
       refundedDate: Date.now(),
+    },
+    6: {
+      id: 6,
+      transactionHash: '0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
+      transactionLink: 'https://ropsten.etherscan.io/tx/0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
+      quantity: 2, // quantity ordered
+      amount: 15, // amount sent
+      sender: {
+        type: 'user',
+        id: 'root',
+        technicalId: '1',
+        displayName: 'Root Root',
+      }, // type + id
+      receiver: {
+        type: 'space',
+        id: 'test_space_renamed_2',
+        technicalId: '7',
+        displayName: 'Test space renamed 2',
+      }, // type + id
+      status: 'error',
+      error: "Payed amount doesn't match price",
+      remainingQuantityToProcess: 1.5,
+      deliveredQuantity: 0, // amount to refund
+      refundedQuantity: 0, // amount to refund
+      createdDate: Date.now(),
+      deliveredDate: null,
+      refundedDate: null,
     },
   },
 };
@@ -246,7 +273,7 @@ window.fetch = (url, options) => {
     if(window.perkStoreOrders[productId]) {
       resultJson = Object.values(window.perkStoreOrders[productId]);
       resultJson = resultJson.filter(order => {
-        if ((parameters.notTreated && !order.remainingQuantityToTreat) || (!parameters.notTreated && !parameters[order.status])) {
+        if ((parameters.notProcessed && !order.remainingQuantityToProcess) || (!parameters.notProcessed && !parameters[order.status])) {
           return false;
         }
         if(parameters.searchInDates && parameters.selectedDate) {
@@ -303,6 +330,7 @@ window.fetch = (url, options) => {
       orderFilter: {
         ordered: true,
         canceled: true,
+        error: true,
         payed: true,
         delivered: true,
         refunded: true,

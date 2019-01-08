@@ -54,10 +54,10 @@
               right
               overlap>
               <span
-                v-if="product.notTreatedOrders"
+                v-if="product.notProcessedOrders"
                 slot="badge"
                 class="orderListBadge">
-                {{ product.notTreatedOrders }}
+                {{ product.notProcessedOrders }}
               </span>
               <v-icon>fa-list-ul</v-icon>
             </v-badge>
