@@ -93,7 +93,7 @@ export default {
     initTiptip() {
       if (this.type === 'space') {
         this.$nextTick(() => {
-          $(`#${this.id}`).spacePopup({
+          $(`#${this.cmpId}`).spacePopup({
             userName: eXo.env.portal.userName,
             spaceID: this.technicalId,
             restURL: '/portal/rest/v1/social/spaces/{0}',
@@ -111,7 +111,7 @@ export default {
         });
       } else {
         this.$nextTick(() => {
-          $(`#${this.id}`).userPopup({
+          $(`#${this.cmpId}`).userPopup({
             restURL: '/portal/rest/social/people/getPeopleInfo/{0}.json',
             userId: this.id,
             labels: this.labels,

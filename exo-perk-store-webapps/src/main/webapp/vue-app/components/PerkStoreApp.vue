@@ -1,13 +1,38 @@
 <template>
   <v-app 
-    id="PerkStoreApp" 
-    color="transaprent" 
+    id="PerkStoreApp"
+    class="transparent"
     flat>
     <main>
       <v-layout justify-center>
         <v-flex xs12>
-          <v-toolbar color="white">
-            <v-toolbar-title>Perk store</v-toolbar-title>
+          <v-toolbar color="white" class="elevation-1">
+            <v-toolbar-title>
+              <v-btn
+                v-if="displayProductOrders && selectedProduct.canEdit"
+                id="perkStoreAppMenuDisplayFilterButton"
+                icon
+                flat
+                title="Display filters"
+                @click="showFilters">
+                <v-icon>
+                  menu
+                </v-icon>
+              </v-btn>
+              Perk store
+              <template v-if="displayProductForm && selectedProduct && selectedProduct.id">
+                - edit product
+              </template>
+              <template v-else-if="displayProductForm && selectedProduct">
+                - Add new product
+              </template>
+              <template v-else-if="displayProductOrders && selectedProduct && selectedProduct.canEdit">
+                - Orders list of <span class="primary--text">{{ selectedProduct.title }}</span>
+              </template>
+              <template v-else-if="displayProductOrders && selectedProduct">
+                - My orders list of <code>{{ selectedProduct.title }}</code>
+              </template>
+            </v-toolbar-title>
             <v-spacer />
             <v-btn
               v-if="displayProductForm || displayProductOrders"
@@ -86,14 +111,16 @@
             v-if="displayProductOrders"
             ref="productOrdersList"
             :product="selectedProduct"
+            :orders-filter="ordersFilter"
             @loading="loading = $event"
             @error="error = $event"
-            @close="displayProductOrders = false; selectedProduct = null;" />
+            @close="closeDetails" />
           <product-form
             v-else-if="displayProductForm"
             ref="productForm"
             :product="selectedProduct"
-            @added="init" />
+            @added="init"
+            @close="closeDetails" />
           <products-list
             v-else
             :products="filteredProducts"
@@ -112,7 +139,7 @@ import ProductsList from './perk-store/ProductsList.vue';
 import ProductOrdersList from './perk-store/ProductOrdersList.vue';
 import ProductForm from './perk-store/ProductForm.vue';
 
-import {initSettings} from '../js/PerkStoreSettings.js';
+import {initSettings, getOrderFilter} from '../js/PerkStoreSettings.js';
 import {getProductList} from '../js/PerkStoreProduct.js';
 
 export default {
@@ -128,6 +155,7 @@ export default {
     displayProductForm: false,
     displayProductOrders: false,
     search: null,
+    ordersFilter: {},
     settings: {},
     products: [],
   }),
@@ -150,6 +178,7 @@ export default {
       return initSettings()
       .then(() => {
         this.settings = window.perkStoreSettings;
+        this.ordersFilter = getOrderFilter(this.settings);
       })
       .then(() => getProductList())
       .then((products) => {
@@ -164,8 +193,8 @@ export default {
     },
     displayCommandsList(product) {
       if (product && product.canEdit) {
-        this.displayProductOrders = true;
         this.selectedProduct = product;
+        this.displayProductOrders = true;
         return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productOrdersList.init());
       }
     },
@@ -177,12 +206,17 @@ export default {
     newProduct() {
       this.displayProductForm = true;
       this.selectedProduct = {};
-      return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productForm.init());
+      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
     },
     editProduct(product) {
       this.displayProductForm = true;
       this.selectedProduct = Object.assign({}, product);
-      return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productForm.init());
+      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
+    },
+    showFilters() {
+      if(this.$refs.productOrdersList) {
+        this.$refs.productOrdersList.showFilters();
+      }
     },
     buyProduct(product) {
       // Display buy product form

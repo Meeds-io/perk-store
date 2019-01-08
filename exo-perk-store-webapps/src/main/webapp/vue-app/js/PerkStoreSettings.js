@@ -41,3 +41,16 @@ export function saveSettings(settings) {
     throw new Error('Error saving empty settings', settings);
   }
 }
+
+export function getOrderFilter(settings) {
+  const filter = localStorage.getItem('exo-perkstore-order-filter');
+  if(filter) {
+    return JSON.parse(filter);
+  } else {
+    return settings.orderFilter;
+  }
+}
+
+export function saveOrderFilter(filter) {
+  localStorage.setItem('exo-perkstore-order-filter', JSON.stringify(filter));
+}

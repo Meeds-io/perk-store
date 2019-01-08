@@ -29,6 +29,10 @@
     margin-bottom: 0;
   }
 
+  select.small, input.small {
+    width: 100px;
+  }
+
   label {
     margin-bottom: 0;
   }
@@ -89,9 +93,10 @@
 
   .contactAutoComplete {
     position: relative;
+    padding-bottom: 1px;
   }
   .contactAutoCompleteContent {
-    top: 55px !important;
+    top: 100% !important;
     left: 0 !important;
     position: absolute;
     width: 100%;
@@ -169,10 +174,6 @@
     width: 100%;
   }
 
-  .productsListParent {
-    justify-content: center;
-  }
-
   .productDetailContent {
     box-sizing: border-box;
     max-width: 380px;
@@ -181,9 +182,46 @@
     .editButton {
       right: 85px;
     }
-    .detailsButton {
+    .orderListButton {
       right: 155px;
+
+      .v-badge__badge {
+        -webkit-backface-visibility: visible;
+        position: relative;
+        left: 19px;
+        top: -24px;
+        opacity: 1;
+        -webkit-transform: initial;
+        transform: initial;
+      }
     }
+  }
+
+  .productCardHeader {
+    height: 210px;
+    max-height: 210px;
+    box-sizing: border-box;
+  }
+  .productCardFooter {
+    min-height: 210px;
+    height: 210px;
+    max-height: 210px;
+    box-sizing: border-box;
+    overflow: auto;
+  }
+  .truncate8 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 8;
+    -webkit-box-orient: vertical;
+  }
+  .uiIconLightGray:before {
+    color: #4d5466;
+  }
+  .productOrderFilter {
+    margin-top: 1px !important;
+    border-left: 1px solid #4d5466;
+    min-width: 320px;
   }
 }
 

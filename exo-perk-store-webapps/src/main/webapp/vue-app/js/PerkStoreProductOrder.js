@@ -1,11 +1,18 @@
-export function getOrderList(productId) {
+export function getOrderList(productId, filter, limit) {
   if (!productId) {
     return Promise.resolve([]);
   }
 
-  return fetch(`/portal/rest/perkstore/api/order/list?productId=${productId}`, {
-    method: 'GET',
+  filter = Object.assign({}, filter, {productId: productId, limit: limit ? limit : 0});
+
+  return fetch('/portal/rest/perkstore/api/order/list', {
+    method: 'POST',
     credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(filter),
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
@@ -33,7 +40,7 @@ export function saveOrder(order) {
   });
 }
 
-export function saveOrderStatus(orderId, status, toRefund, refunded) {
+export function saveOrderStatus(orderId, status, delivered, refunded) {
   return fetch('/portal/rest/perkstore/api/order/saveStatus', {
     method: 'POST',
     credentials: 'include',
@@ -43,8 +50,8 @@ export function saveOrderStatus(orderId, status, toRefund, refunded) {
     body: $.param({
       orderId: Number(orderId),
       status: status,
-      toRefund: toRefund,
-      refunded: refunded,
+      delivered: Number(delivered),
+      refunded: Number(refunded),
     }),
   }).then((resp) => {
     if (resp && resp.ok) {

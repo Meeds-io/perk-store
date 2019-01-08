@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-xl>
+  <v-container grid-list-xl class="white">
     <v-layout
       wrap
       justify-space-between>
@@ -8,8 +8,15 @@
         md4>
         <v-text-field
           v-model="product.title"
-          label="ProductName"
+          name="ProductTitle"
+          label="Product title"
           placeholder="input a product title" />
+
+        <v-text-field
+          v-model="product.img"
+          name="ProductImage"
+          label="Product image"
+          placeholder="input the product image URL" />
 
         <v-textarea
           v-model="product.description"
@@ -26,7 +33,20 @@
           input-placeholder="Select the marchand receiver"
           no-data-label="Search for a user or a space"
           big-field
-          @item-selected="selectRecipient" />
+          @item-selected="selectRecipient"
+          @clear-selection="selectRecipient()" />
+
+        <auto-complete
+          ref="productMarchandsAutocomplete"
+          input-label="Product editors"
+          input-placeholder="Select product editors"
+          no-data-label="Search for a user"
+          multiple
+          only-users
+          no-address
+          big-field
+          @item-selected="selectEditor"
+          @clear-selection="selectEditor()" />
       </v-flex>
 
       <v-flex
@@ -37,11 +57,11 @@
           label="Enabled product" />
 
         <v-checkbox
-          v-model="product.illimited"
-          label="Illimited supply" />
+          v-model="product.unlimited"
+          label="Unlimited supply" />
 
         <v-text-field
-          v-if="!product.illimited"
+          v-if="!product.unlimited"
           v-model.number="product.totalSupply"
           name="ProductTotalSupply"
           label="Total supply"
@@ -81,6 +101,11 @@
         class="btn btn-primary mr-1"
         @click="saveProduct()">
         Save
+      </button>
+      <button
+        class="btn"
+        @click="$emit('close')">
+        Cancel
       </button>
       <v-spacer />
     </v-card-actions>
@@ -142,18 +167,36 @@ export default {
       return label;
     }
   },
-  watch: {
-    product() {
-      // Select item
-    }
-  },
   methods: {
+    init() {
+      if(this.product) {
+        if(this.product.receiverMarchand) {
+          this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
+        }
+        if(this.product.marchands) {
+          this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
+        }
+      }
+    },
     selectRecipient(identity) {
       this.product.receiverMarchand = identity;
     },
+    selectEditor(identity) {
+      if(!this.product.marchands) {
+        this.product.marchands = [];
+      }
+      if(identity) {
+        this.product.marchands.push(identity);
+      } else if(this.product.marchands.length) {
+        this.product.marchands = [];
+      }
+    },
     saveProduct() {
       return saveProduct(this.product)
-        .then(() => this.$emit('added', this.product));
+        .then(() => {
+          this.$emit('added', this.product);
+          this.$emit('close');
+        });
     }
   }
 }

@@ -12,6 +12,7 @@
       :placeholder="inputPlaceholder"
       :content-class="`contactAutoCompleteContent ${bigField && 'bigContactAutoComplete'}`"
       :filter="filterIgnoredItems"
+      :multiple="multiple"
       class="contactAutoComplete"
       max-width="100%"
       item-text="name"
@@ -39,7 +40,7 @@
           :selected="selected"
           :title="addressLoad === 'error' ? 'the recipient doesn\'t have a valid wallet account yet' : ''"
           class="autocompleteSelectedItem"
-          @input="selectItem(item)">
+          @input="selectSingleItem(item)">
           <v-progress-circular
             v-if="addressLoad === 'loading'"
             indeterminate
@@ -55,6 +56,12 @@
           </v-icon>
           <span>
             {{ item.name }}
+            <a
+              href="#"
+              class="remove"
+              @click="remove(item)">
+              <i class="uiIconClose uiIconLightGray"></i>
+            </a>
           </span>
         </v-chip>
         <v-label
@@ -62,8 +69,11 @@
           :selected="selected"
           class="black--text"
           solo
-          @input="selectItem(item)">
+          @input="selectSingleItem(item)">
           {{ item.name }}
+          <a href="#" class="remove">
+            <i class="uiIconClose uiIconLightGray"></i>
+          </a>
         </v-label>
       </template>
 
@@ -109,6 +119,18 @@ export default {
         return false;
       },
     },
+    onlyUsers: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    multiple: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
     disabled: {
       type: Boolean,
       default: function() {
@@ -147,7 +169,7 @@ export default {
     searchTerm(value) {
       if (value && value.length) {
         this.isLoadingSuggestions = true;
-        return searchContact(value).then((data) => {
+        return searchContact(value, this.onlyUsers).then((data) => {
           this.items = data;
           if (!this.items) {
             if (this.currentUserItem) {
@@ -171,53 +193,13 @@ export default {
     selectedValue() {
       this.$refs.selectAutoComplete.isFocused = false;
       this.addressLoad = 'loading';
-      if (this.selectedValue) {
-        const isAddress = this.selectedValue.indexOf('_') < 0;
-        const type = isAddress ? null : this.selectedValue.substring(0, this.selectedValue.indexOf('_'));
-        const id = isAddress ? this.selectedValue : this.selectedValue.substring(this.selectedValue.indexOf('_') + 1);
-        if (this.noAddress || isAddress) {
-          return searchFullName(this.selectedValue)
-            .then(details => {
-              if(details && details.type) {
-                this.addressLoad = 'success';
-                this.$emit('item-selected', {
-                  id: details.id,
-                  type: details.type,
-                  address: details.address,
-                  id_type: `${details.type}_${details.id}`,
-                });
-              } else {
-                this.addressLoad = 'success';
-                this.$emit('item-selected', {
-                  id: id,
-                  type: null,
-                  address: id,
-                });
-              }
-            });
+      const selectedValue = this.selectedValue;
+      this.$emit('clear-selection');
+      if (selectedValue && selectedValue.length) {
+        if(this.multiple) {
+          selectedValue.forEach((value) => this.emitSelectedValue(value));
         } else {
-          return searchAddress(id, type)
-            .then((address) => {
-              if (address && address.length) {
-                this.addressLoad = 'success';
-                this.$emit('item-selected', {
-                  id: id,
-                  type: type,
-                  address: address,
-                });
-              } else {
-                this.addressLoad = 'error';
-                this.$emit('item-selected', {
-                  id: id,
-                  type: type,
-                  address: null,
-                });
-              }
-            })
-            .catch((error) => {
-              console.debug('searchAddress method - error', error);
-              this.addressLoad = 'error';
-            });
+          this.emitSelectedValue(selectedValue);
         }
       }
     },
@@ -231,6 +213,62 @@ export default {
     });
   },
   methods: {
+    emitSelectedValue(selectedValue) {
+      const isAddress = selectedValue.indexOf('_') < 0;
+      const type = isAddress ? null : selectedValue.substring(0, selectedValue.indexOf('_'));
+      const id = isAddress ? selectedValue : selectedValue.substring(selectedValue.indexOf('_') + 1);
+      if (this.noAddress) {
+        this.addressLoad = 'success';
+        this.$emit('item-selected', {
+          id: id,
+          type: type,
+          address: id,
+        });
+      } else if (isAddress) {
+        return searchFullName(selectedValue)
+          .then(details => {
+            if(details && details.type) {
+              this.addressLoad = 'success';
+              this.$emit('item-selected', {
+                id: details.id,
+                type: details.type,
+                address: details.address,
+                id_type: `${details.type}_${details.id}`,
+              });
+            } else {
+              this.addressLoad = 'success';
+              this.$emit('item-selected', {
+                id: id,
+                type: type,
+                address: id,
+              });
+            }
+          });
+      } else {
+        return searchAddress(id, type)
+          .then((address) => {
+            if (address && address.length) {
+              this.addressLoad = 'success';
+              this.$emit('item-selected', {
+                id: id,
+                type: type,
+                address: address,
+              });
+            } else {
+              this.addressLoad = 'error';
+              this.$emit('item-selected', {
+                id: id,
+                type: type,
+                address: null,
+              });
+            }
+          })
+          .catch((error) => {
+            console.debug('searchAddress method - error', error);
+            this.addressLoad = 'error';
+          });
+      }
+    },
     clear() {
       if (this.currentUserItem) {
         this.items = [this.currentUserItem];
@@ -256,7 +294,16 @@ export default {
       }
       return true;
     },
-    selectItem(id, type) {
+    selectItems(items) {
+      if(items) {
+        if(items.splice) {
+          items.forEach((item) => this.selectSingleItem(item.id, item.type));
+        } else {
+          this.selectSingleItem(items.id, items.type);
+        }
+      }
+    },
+    selectSingleItem(id, type) {
       if (!id) {
         this.$refs.selectAutoComplete.selectItem(null);
       } else if (type) {
@@ -272,6 +319,18 @@ export default {
         this.items.push(item);
         if (this.$refs.selectAutoComplete) {
           this.$refs.selectAutoComplete.selectItem(item);
+        }
+      }
+    },
+    remove(item) {
+      if(this.selectedValue) {
+        if(this.selectedValue.splice) {
+          const index = this.selectedValue.indexOf(item.id_type);
+          if (index >= 0){
+            this.selectedValue.splice(index, 1);
+          }
+        } else {
+          this.selectedValue = null;
         }
       }
     },

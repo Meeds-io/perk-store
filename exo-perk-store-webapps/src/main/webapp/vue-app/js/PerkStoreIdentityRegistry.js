@@ -6,12 +6,12 @@
  *  avatar: Avatar URL/URI
  * }
  */
-export function searchContact(filter) {
+export function searchContact(filter, onlyUsers) {
   let items = null;
   return searchUsers(filter)
     .then((users) => (items = users && users.length ? users : []))
-    .then(() => searchSpaces(filter))
-    .then((spaces) => (items = items.concat(spaces)))
+    .then(() => (onlyUsers && []) || searchSpaces(filter))
+    .then((spaces) => (items = spaces && spaces.length ? items.concat(spaces) : items))
     .catch((e) => {
       console.debug('searchContact method - error', e);
     });

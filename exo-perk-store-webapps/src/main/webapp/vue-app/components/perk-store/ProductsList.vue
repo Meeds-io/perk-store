@@ -1,5 +1,5 @@
 <template>
-  <v-card flat transparent>
+  <v-card flat class="transparent">
     <v-container
       class="border-box-sizing"
       fluid
@@ -13,7 +13,7 @@
           :key="product.id"
           :product="product"
           :symbol="settings.symbol"
-          class="border-box-sizing"
+          class="border-box-sizing sm3 xs12"
           @orders-list="$emit('orders-list', $event)"
           @edit="$emit('edit', $event)"
           @buy="$emit('buy', $event)" />

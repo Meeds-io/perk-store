@@ -18,7 +18,7 @@ window.perkStoreProductsList = {
     id: 1,
     title: 'Pre-fab homes',
     description: "Plusieurs variations de Lorem Ipsum peuvent être trouvées ici ou là, mais la majeure partie d'entre elles a été altérée par l'addition d'humour ou de mots aléatoires qui ne ressemblent pas une seconde à du texte standard. Si vous voulez utiliser un passage du Lorem Ipsum, vous devez être sûr qu'il n'y a rien d'embarrassant caché dans le texte. Tous les générateurs de Lorem Ipsum sur Internet tendent à reproduire le même extrait sans fin, ce qui fait de lipsum.com le seul vrai générateur de Lorem Ipsum. Iil utilise un dictionnaire de plus de 200 mots latins, en combinaison de plusieurs structures de phrases, pour générer un Lorem Ipsum irréprochable.",
-    illimited: false,
+    unlimited: false,
     bought: 50,
     totalSupply: 100,
     price: 10,
@@ -37,6 +37,7 @@ window.perkStoreProductsList = {
     maxOrdersPerUser: 2,
     orderPeriodicity: 'WEEK',
     orderPeriodicityLabel: 'Week',
+    notTreatedOrders: 4,
     userOrders: {
       orderedInCurrentPeriod: 2,
       totalOrders: 3,
@@ -47,9 +48,19 @@ window.perkStoreProductsList = {
     id: 2,
     title: 'Favorite road trips',
     description: "On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de distractions, et empêche de se concentrer sur la mise en page elle-même. L'avantage du Lorem Ipsum sur un texte générique comme 'Du texte. Du texte. Du texte.' est qu'il possède une distribution de lettres plus ou moins normale, et en tout cas comparable avec celle du français standard.",
-    img: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-    illimited: true,
+    img: 'http://localhost:8080/rest/private/jcr/repository/collaboration/Users/r___/ro___/roo___/root/Private/Pictures/road.jpg',
+    unlimited: true,
     price: 20,
+    marchands: [
+      {
+        type: 'user',
+        id: 'root',
+      },
+    ], // Notification receivers too
+    receiverMarchand: {
+      type: 'user',
+      id: 'root',
+    }, // Receiver wallet
     enabled: true,
     canEdit: true,
   },
@@ -57,13 +68,23 @@ window.perkStoreProductsList = {
     id: 3,
     title: 'Best airlines',
     description: "Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, quand un imprimeur anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte.",
-    img: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-    illimited: false,
+    img: 'http://localhost:8080/rest/private/jcr/repository/collaboration/Users/r___/ro___/roo___/root/Private/Pictures/plane.jpg',
+    unlimited: false,
     bought: 70,
     totalSupply: 100,
     price: 5,
+    marchands: [
+      {
+        type: 'user',
+        id: 'root',
+      },
+    ], // Notification receivers too
+    receiverMarchand: {
+      type: 'user',
+      id: 'root',
+    }, // Receiver wallet
     enabled: false,
-    canEdit: true,
+    canEdit: false,
   },
 };
 
@@ -88,6 +109,8 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'ordered', // 'ordered', 'payed', 'delivered', 'canceled'
+      remainingQuantityToTreat: 2,
+      deliveredQuantity: 0,
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
       deliveredDate: null,
@@ -95,8 +118,8 @@ window.perkStoreOrders = {
     },
     2: {
       id: 2,
-      transactionHash: null,
-      transactionLink: null,
+      transactionHash: '0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
+      transactionLink: 'https://ropsten.etherscan.io/tx/0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
       quantity: 1, // quantity ordered
       amount: 10, // amount sent
       sender: {
@@ -112,6 +135,8 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'payed', // 'ordered', 'payed', 'delivered', 'canceled'
+      remainingQuantityToTreat: 1,
+      deliveredQuantity: 0,
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
       deliveredDate: null,
@@ -136,7 +161,8 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'delivered', // 'ordered', 'payed', 'delivered', 'canceled'
-      toRefundQuantity: 3, // amount to refund
+      remainingQuantityToTreat: 1,
+      deliveredQuantity: 3, // amount to refund
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
       deliveredDate: Date.now(),
@@ -144,8 +170,8 @@ window.perkStoreOrders = {
     },
     4: {
       id: 4,
-      transactionHash: null,
-      transactionLink: null,
+      transactionHash: '0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
+      transactionLink: 'https://ropsten.etherscan.io/tx/0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
       quantity: 1, // quantity ordered
       amount: 10, // amount sent
       sender: {
@@ -161,7 +187,8 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'canceled', // 'ordered', 'payed', 'delivered', 'canceled', 'refunded'
-      toRefundQuantity: 1, // amount to refund
+      remainingQuantityToTreat: 1,
+      deliveredQuantity: 0, // amount to refund
       refundedQuantity: 0, // amount to refund
       createdDate: Date.now(),
       deliveredDate: null,
@@ -169,8 +196,8 @@ window.perkStoreOrders = {
     },
     5: {
       id: 5,
-      transactionHash: null,
-      transactionLink: null,
+      transactionHash: '0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
+      transactionLink: 'https://ropsten.etherscan.io/tx/0x686cec7fbaad22f7af97dd77edd37c4c98d5bf672c7331a213dc4155082fc450',
       quantity: 2, // quantity ordered
       amount: 20, // amount sent
       sender: {
@@ -186,7 +213,8 @@ window.perkStoreOrders = {
         displayName: 'Test space renamed 2',
       }, // type + id
       status: 'refunded', // 'ordered', 'canceled', 'payed', 'delivered', 'refunded'
-      toRefundQuantity: 2, // amount to refund
+      remainingQuantityToTreat: 0,
+      deliveredQuantity: 0, // amount to refund
       refundedQuantity: 2, // amount to refund
       createdDate: Date.now(),
       deliveredDate: null,
@@ -200,7 +228,6 @@ window.fetch = (url, options) => {
   let resultText = null;
 
   if (url.indexOf('perkstore/api/product/list') >= 0) {
-    // TODO Get products from sessionStorage
     resultJson = Object.values(window.perkStoreProductsList);
   } else if (url.indexOf('perkstore/api/product/save') >= 0) {
     const product = JSON.parse(options.body);
@@ -210,23 +237,53 @@ window.fetch = (url, options) => {
     window.perkStoreProductsList[product.id] = product;
     resultJson = product;
   } else if (url.indexOf('perkstore/api/order/list') >= 0) {
-    const productId = getParameter(url, 'productId');
-    if (Number(productId) === 1) {
-      resultJson = Object.values(window.perkStoreOrders[1]);
+    if (!options || !options.body) {
+      throw new Error(`URL ${url} has empty parameters`, options);
+    }
+    const contractDetails = options.body;
+    const parameters = JSON.parse(contractDetails);
+    const productId = parameters.productId;
+    if(window.perkStoreOrders[productId]) {
+      resultJson = Object.values(window.perkStoreOrders[productId]);
+      resultJson = resultJson.filter(order => {
+        if ((parameters.notTreated && !order.remainingQuantityToTreat) || (!parameters.notTreated && !parameters[order.status])) {
+          return false;
+        }
+        if(parameters.searchInDates && parameters.selectedDate) {
+          let foundDate = false;
+          // Made on chain for reading simplicity
+          if(order.createdDate && new Date(order.createdDate).toISOString().substr(0, 10) === parameters.selectedDate) {
+            foundDate = true;
+          }
+          if(order.deliveredDate && new Date(order.deliveredDate).toISOString().substr(0, 10) === parameters.selectedDate) {
+            foundDate = true;
+          }
+          if(!foundDate) {
+            return false;
+          }
+        }
+        return true;
+      });
+      
+      if(parameters.limit) {
+        resultJson = parameters.limit < resultJson.length ? resultJson.slice(0, parameters.limit) : resultJson;
+      }
+    } else {
+      resultJson = [];
     }
   } else if (url.indexOf('perkstore/api/order/saveStatus') >= 0) {
     options.body = `?${options.body}`;
     const orderId = getParameter(options.body, 'orderId');
     const status = getParameter(options.body, 'status');
-    const toRefund = getParameter(options.body, 'toRefund');
+    const delivered = getParameter(options.body, 'delivered');
     const refunded = getParameter(options.body, 'refunded');
 
     const order = window.perkStoreOrders[1][Number(orderId)];
     if (status) {
       order.status = status;
     }
-    if (toRefund) {
-      order.toRefundQuantity = toRefund;
+    if (delivered) {
+      order.deliveredQuantity = delivered;
     }
     if (refunded) {
       order.refundedQuantity = refunded;
@@ -243,6 +300,13 @@ window.fetch = (url, options) => {
       isAdministrator: true,
       canAddProduct: true,
       symbol: 'Ȼ',
+      orderFilter: {
+        ordered: true,
+        canceled: true,
+        payed: true,
+        delivered: true,
+        refunded: true,
+      },
     };
   } else if (url.indexOf('perkstore/api/settings/save') >= 0) {
     // TODO Save general settings in sessionStorage

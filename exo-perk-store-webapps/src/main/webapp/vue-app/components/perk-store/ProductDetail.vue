@@ -9,7 +9,8 @@
         <v-img
           v-if="product.img"
           :aspect-ratio="16/9"
-          :src="product.img">
+          :src="product.img"
+          class="productCardHeader">
           <v-expand-transition>
             <div
               v-if="hover"
@@ -17,6 +18,7 @@
               style="height: 100%;">
               <product-detail-content
                 :product="product"
+                :symbol="symbol"
                 :available="available" />
             </div>
           </v-expand-transition>
@@ -25,28 +27,40 @@
           v-else
           :product="product"
           :symbol="symbol"
-          :available="available" />
+          :available="available"
+          class="productCardHeader" />
         <v-progress-linear
-          v-if="!product.illimited"
+          v-if="!product.unlimited"
           v-model="boughtPercentage"
           :title="`${boughtPercentage}% articles sold`"
           color="red"
           class="mb-0 mt-0" />
         <v-card-text
-          :class="product.illimited && 'mt-2'"
-          class="pt-4"
+          :class="product.unlimited && 'mt-2'"
+          class="pt-2"
           style="position: relative;">
           <v-btn
             v-if="product.canEdit"
             title="Orders list"
             absolute
             color="secondary"
-            class="white--text detailsButton"
+            class="white--text orderListButton"
             fab
             right
             top
             @click="$emit('orders-list', product)">
-            <v-icon>fa-list-ul</v-icon>
+            <v-badge
+              color="red"
+              right
+              overlap>
+              <span
+                v-if="product.notTreatedOrders"
+                slot="badge"
+                class="orderListBadge">
+                {{ product.notTreatedOrders }}
+              </span>
+              <v-icon>fa-list-ul</v-icon>
+            </v-badge>
           </v-btn>
           <v-btn
             v-if="product.canEdit"
@@ -71,8 +85,18 @@
             @click="$emit('buy', product)">
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
-          <h3 class="mb-2 primary--text text-xs-center">{{ product.title }}</h3>
-          <div class="font-weight-light title mb-2 text-xs-center">
+        </v-card-text>
+        <v-card-title class="pt-0 pb-0">
+          <h3 class="mb-2 primary--text">
+            {{ product.title }}
+          </h3>
+          <v-spacer />
+          <h3 class="mb-2">
+            {{ product.price }} {{ symbol }}
+          </h3>
+        </v-card-title>
+        <v-card-text class="productCardFooter">
+          <div :title="product.description" class="font-weight-light title mb-2 text-xs-center truncate8">
             {{ product.description }}
           </div>
         </v-card-text>
@@ -109,13 +133,13 @@ export default {
   },
   computed: {
     disabledBuy() {
-      return !this.product.enabled || (!this.product.illimited && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
     boughtPercentage() {
-      return !this.product.illimited ? ((this.product.bought * 100) /this.product.totalSupply) : 0;
+      return !this.product.unlimited ? ((this.product.bought * 100) /this.product.totalSupply) : 0;
     },
     available() {
-      return !this.product.illimited ? (this.product.totalSupply - this.product.bought) : 100;
+      return !this.product.unlimited ? (this.product.totalSupply - this.product.bought) : 100;
     },
   }
 }
