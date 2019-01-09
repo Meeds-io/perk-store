@@ -92,7 +92,24 @@
             </template>
           </v-toolbar>
 
-          <v-toolbar v-if="loading || error" color="white">
+          <v-toolbar
+            v-if="!walletAddonInstalled"
+            color="transparent"
+            flat>
+            <v-spacer />
+            <v-flex v-if="!loading && !walletLoading && !walletAddonInstalled" class="text-xs-center">
+              <div class="alert alert-warning">
+                <i class="uiIconWarning"></i>
+                Ethereum wallet addon isn't installed, thus no payment is possible.
+              </div>
+            </v-flex>
+            <v-spacer />
+          </v-toolbar>
+
+          <v-toolbar
+            v-if="loading || error"
+            color="transparent"
+            flat>
             <v-spacer />
             <v-progress-circular
               v-if="loading"
@@ -125,9 +142,17 @@
             v-else
             :products="filteredProducts"
             :settings="settings"
+            :wallet-loading="walletLoading"
+            :wallet-enabled="walletEnabled"
             @orders-list="displayCommandsList"
             @edit="editProduct"
             @buy="buyProduct" />
+          <product-buy-modal
+            ref="productBuyModal"
+            :product="selectedProduct"
+            :symbol="settings.symbol"
+            :need-password="walletNeedPassword"
+            @closed="selectedProduct = null" />
         </v-flex>
       </v-layout>
     </main>
@@ -138,6 +163,7 @@
 import ProductsList from './perk-store/ProductsList.vue';
 import ProductOrdersList from './perk-store/ProductOrdersList.vue';
 import ProductForm from './perk-store/ProductForm.vue';
+import ProductBuyModal from './perk-store/ProductBuyModal.vue';
 
 import {initSettings, getOrderFilter} from '../js/PerkStoreSettings.js';
 import {getProductList} from '../js/PerkStoreProduct.js';
@@ -147,9 +173,14 @@ export default {
     ProductsList,
     ProductOrdersList,
     ProductForm,
+    ProductBuyModal,
   },
   data: () => ({
     error: null,
+    walletAddonInstalled: false,
+    walletLoading: false,
+    walletEnabled: false,
+    walletNeedPassword: false,
     loading: false,
     selectedProduct: null,
     displayProductForm: false,
@@ -170,6 +201,12 @@ export default {
     }
   },
   created() {
+    document.addEventListener('exo-wallet-init-result', this.walletInitialized);
+    if(window.walletAddonInstalled) {
+      this.initWalletAPI();
+    } else {
+      document.addEventListener('exo-wallet-installed', this.initWalletAPI);
+    }
     return this.init();
   },
   methods: {
@@ -188,11 +225,34 @@ export default {
         this.error = e;
       })
       .finally(() => {
+        window.setTimeout(() => {
+          if(window.walletAddonInstalled) {
+            this.initWalletAPI();
+          }
+        }, 2000);
         this.loading = false;
       });
     },
+    initWalletAPI() {
+      if(!this.walletAddonInstalled) {
+        this.walletLoading = true;
+        this.walletAddonInstalled = true;
+        document.dispatchEvent(new CustomEvent('exo-wallet-init'));
+      }
+    },
+    walletInitialized(event) {
+      this.walletLoading = false;
+      const result = event && event.detail;
+      if(!result || result.error) {
+        this.error = `Wallet seems not configured properly ${result && result.error ? (`: ${  result.error}`) : ''}`;
+        this.walletEnabled = false;
+      } else {
+        this.walletEnabled = true;
+        this.walletNeedPassword = result.needPassword;
+      }
+    },
     displayCommandsList(product) {
-      if (product && product.canEdit) {
+      if (product) {
         this.selectedProduct = product;
         this.displayProductOrders = true;
         return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productOrdersList.init());
@@ -219,7 +279,8 @@ export default {
       }
     },
     buyProduct(product) {
-      // Display buy product form
+      this.selectedProduct = product;
+      this.$refs.productBuyModal.open();
     },
   }
 };

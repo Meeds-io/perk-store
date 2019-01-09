@@ -13,6 +13,8 @@
           :key="product.id"
           :product="product"
           :symbol="settings.symbol"
+          :wallet-loading="walletLoading"
+          :wallet-enabled="walletEnabled"
           class="border-box-sizing sm3 xs12"
           @orders-list="$emit('orders-list', $event)"
           @edit="$emit('edit', $event)"
@@ -40,6 +42,18 @@ export default {
       type: Object,
       default: function() {
         return {};
+      },
+    },
+    walletLoading: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    walletEnabled: {
+      type: Boolean,
+      default: function() {
+        return false;
       },
     },
   },

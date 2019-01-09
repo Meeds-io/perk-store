@@ -40,7 +40,7 @@
           class="pt-2"
           style="position: relative;">
           <v-btn
-            v-if="product.canEdit"
+            :class="ordersListBtnClass"
             title="Orders list"
             absolute
             color="secondary"
@@ -54,7 +54,7 @@
               right
               overlap>
               <span
-                v-if="product.notProcessedOrders"
+                v-if="product.canEdit && product.notProcessedOrders"
                 slot="badge"
                 class="orderListBadge">
                 {{ product.notProcessedOrders }}
@@ -64,6 +64,7 @@
           </v-btn>
           <v-btn
             v-if="product.canEdit"
+            :class="editBtnClass"
             title="Edit product"
             absolute
             color="secondary"
@@ -75,10 +76,12 @@
             <v-icon>fa-pen</v-icon>
           </v-btn>
           <v-btn
+            v-if="displayBuyButton"
             title="Buy"
             absolute
             class="white--text primary"
-            :disabled="disabledBuy"
+            :disabled="disabledBuy || !walletEnabled"
+            :loading="!disabledBuy && walletLoading"
             fab
             right
             top
@@ -125,6 +128,18 @@ export default {
         return '';
       },
     },
+    walletLoading: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    walletEnabled: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
   },
   data() {
     return {
@@ -132,6 +147,28 @@ export default {
     };
   },
   computed: {
+    ordersListBtnClass() {
+      if(!this.product) {
+        return '';
+      }
+      let paddingIndex = 0;
+      if(this.product.canEdit) {
+        paddingIndex++;
+      }
+      if(this.displayBuyButton) {
+        paddingIndex++;
+      }
+      return `left-pa${paddingIndex}`;
+    },
+    editBtnClass() {
+      if(this.displayBuyButton) {
+        return 'left-pa1';
+      }
+      return '';
+    },
+    displayBuyButton() {
+      return this.product && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' && this.product.receiverMarchand.id !== eXo.env.portal.userName);
+    },
     disabledBuy() {
       return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },

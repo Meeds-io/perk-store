@@ -19,7 +19,7 @@ window.perkStoreProductsList = {
     title: 'Pre-fab homes',
     description: "Plusieurs variations de Lorem Ipsum peuvent être trouvées ici ou là, mais la majeure partie d'entre elles a été altérée par l'addition d'humour ou de mots aléatoires qui ne ressemblent pas une seconde à du texte standard. Si vous voulez utiliser un passage du Lorem Ipsum, vous devez être sûr qu'il n'y a rien d'embarrassant caché dans le texte. Tous les générateurs de Lorem Ipsum sur Internet tendent à reproduire le même extrait sans fin, ce qui fait de lipsum.com le seul vrai générateur de Lorem Ipsum. Iil utilise un dictionnaire de plus de 200 mots latins, en combinaison de plusieurs structures de phrases, pour générer un Lorem Ipsum irréprochable.",
     unlimited: false,
-    bought: 50,
+    bought: 98,
     totalSupply: 100,
     price: 10,
     marchands: [
@@ -34,7 +34,7 @@ window.perkStoreProductsList = {
     }, // Receiver wallet
     enabled: true,
     canEdit: true,
-    maxOrdersPerUser: 2,
+    maxOrdersPerUser: 10,
     orderPeriodicity: 'WEEK',
     orderPeriodicityLabel: 'Week',
     notProcessedOrders: 4,
@@ -267,8 +267,7 @@ window.fetch = (url, options) => {
     if (!options || !options.body) {
       throw new Error(`URL ${url} has empty parameters`, options);
     }
-    const contractDetails = options.body;
-    const parameters = JSON.parse(contractDetails);
+    const parameters = JSON.parse(options.body);
     const productId = parameters.productId;
     if(window.perkStoreOrders[productId]) {
       resultJson = Object.values(window.perkStoreOrders[productId]);
@@ -317,12 +316,32 @@ window.fetch = (url, options) => {
     }
     resultJson = order;
   } else if (url.indexOf('perkstore/api/order/save') >= 0) {
-    // TODO Save order in sessionStorage
+    const order = JSON.parse(options.body);
+    order.id = Math.floor(Math.random() * 10000);
+    order.transactionLink = '#';
+    order.sender = {
+      type: 'user',
+      id: eXo.env.portal.userName,
+      technicalId: '1',
+      displayName: 'Root Root',
+    };
+    order.receiver.technicalId = 7;
+    order.receiver.displayName = 'Test space renamed 2';
+    order.status = 'ordered';
+    order.remainingQuantityToProcess = order.quantity;
+    order.deliveredQuantity = 0;
+    order.refundedQuantity = 0;
+    order.createdDate = Date.now();
+
+    if(!window.perkStoreOrders[order.productId]) {
+      window.perkStoreOrders[order.productId] = {};
+    }
+    window.perkStoreOrders[order.productId][order.id] = order;
+    resultJson = order;
   } else if (url.indexOf('perkstore/api/account/settings') >= 0) {
     // TODO Get account settings from sessionStorage
     resultJson = {};
   } else if (url.indexOf('perkstore/api/settings') >= 0) {
-    // TODO Get general settings from sessionStorage
     resultJson = {
       isAdministrator: true,
       canAddProduct: true,
