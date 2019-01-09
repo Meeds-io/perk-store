@@ -106,6 +106,11 @@ export default {
       return getOrderList(this.product.id, this.ordersFilter, this.limit)
         .then((orders) => {
           this.orders = orders || [];
+          this.orders.forEach(order => {
+            if(order.transactionHash) {
+              order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.transactionHash}&principal=true`;
+            }
+          });
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
         })
         .catch(e => this.$emit('error', e))

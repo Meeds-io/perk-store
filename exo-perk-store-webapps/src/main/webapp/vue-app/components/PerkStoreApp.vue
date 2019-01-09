@@ -215,7 +215,7 @@ export default {
       return initSettings()
       .then(() => {
         this.settings = window.perkStoreSettings;
-        this.ordersFilter = getOrderFilter(this.settings);
+        this.ordersFilter = getOrderFilter();
       })
       .then(() => getProductList())
       .then((products) => {

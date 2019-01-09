@@ -76,7 +76,7 @@
             </option>
           </select>
         </v-list-tile-content>
-        <v-list-tile-content v-else-if="order.status === 'error'" class="align-end">
+        <v-list-tile-content v-else-if="order.status === 'ERROR'" class="align-end">
           <v-icon :title="order.error" color="orange">error</v-icon>
         </v-list-tile-content>
         <v-list-tile-content v-else class="align-end">
@@ -174,12 +174,12 @@ export default {
       delivered: null,
       refunded: null,
       statusList: [
-        'ordered',
-        'canceled',
-        'error',
-        'payed',
-        'delivered',
-        'refunded'
+        'ORDERED',
+        'CANCELED',
+        'ERROR',
+        'PAYED',
+        'DELIVERED',
+        'REFUNDED'
       ],
     };
   },

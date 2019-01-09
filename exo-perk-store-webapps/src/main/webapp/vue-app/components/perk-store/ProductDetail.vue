@@ -7,9 +7,9 @@
         color="grey lighten-4"
         max-width="600">
         <v-img
-          v-if="product.img"
+          v-if="product.illustrationURL"
           :aspect-ratio="16/9"
-          :src="product.img"
+          :src="product.illustrationURL"
           class="productCardHeader">
           <v-expand-transition>
             <div
@@ -31,8 +31,8 @@
           class="productCardHeader" />
         <v-progress-linear
           v-if="!product.unlimited"
-          v-model="boughtPercentage"
-          :title="`${boughtPercentage}% articles sold`"
+          v-model="purshasedPercentage"
+          :title="`${purshasedPercentage}% articles sold`"
           color="red"
           class="mb-0 mt-0" />
         <v-card-text
@@ -170,13 +170,13 @@ export default {
       return this.product && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' && this.product.receiverMarchand.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
-      return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod && this.product.userOrders.orderedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod && this.product.userOrders.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
-    boughtPercentage() {
-      return !this.product.unlimited ? ((this.product.bought * 100) /this.product.totalSupply) : 0;
+    purshasedPercentage() {
+      return !this.product.unlimited ? ((this.product.purshased * 100) /this.product.totalSupply) : 0;
     },
     available() {
-      return !this.product.unlimited ? (this.product.totalSupply - this.product.bought) : 100;
+      return !this.product.unlimited ? (this.product.totalSupply - this.product.purshased) : 100;
     },
   }
 }

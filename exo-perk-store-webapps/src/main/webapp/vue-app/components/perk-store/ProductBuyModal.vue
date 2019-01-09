@@ -106,7 +106,7 @@ export default {
     },
     available() {
       if(this.product && !this.product.unlimited) {
-        const available = this.product.totalSupply - this.product.bought;
+        const available = this.product.totalSupply - this.product.purshased;
         return available > 0 ? available : 0;
       } else {
         return 0;
@@ -114,7 +114,7 @@ export default {
     },
     maxOrderPerUserQuantity() {
       if(this.product && !this.product.unlimited) {
-        const quantity = this.product.maxOrdersPerUser - ((this.product.userOrders && this.product.userOrders.orderedInCurrentPeriod) || 0);
+        const quantity = this.product.maxOrdersPerUser - ((this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod) || 0);
         return quantity > 0 ? quantity : 0;
       } else {
         return 0;
@@ -226,14 +226,13 @@ export default {
       }
 
       const amount = this.quantity * this.product.price;
-      const label = `Order ${this.quantity} of "${this.product.title}"`;
-      const message = `Order ${this.quantity} of product "${this.product.title}" with price ${this.product.price}${this.symbol} per unit`;
+      const message = `Purchased "${this.product.title}": ${this.quantity} x ${this.product.price}${this.symbol}`;
 
       document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail' : {
         amount: amount,
         receiver: this.product.receiverMarchand,
         password: this.walletPassword,
-        label: label,
+        label: message,
         message: message,
       }}));
     },

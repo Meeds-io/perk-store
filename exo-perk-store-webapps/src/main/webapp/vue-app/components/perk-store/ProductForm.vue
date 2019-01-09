@@ -13,7 +13,7 @@
           placeholder="input a product title" />
 
         <v-text-field
-          v-model="product.img"
+          v-model="product.illustrationURL"
           name="ProductImage"
           label="Product image"
           placeholder="input the product image URL" />

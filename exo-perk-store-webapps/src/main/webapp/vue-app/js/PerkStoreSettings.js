@@ -1,12 +1,7 @@
 export function initSettings() {
-  return fetch(`/portal/rest/perkstore/api/account/settings`, {credentials: 'include'})
-    .then((resp) => resp && resp.ok && resp.json())
-    .then((settings) => (window.perkStoreSettings = settings ? settings : {}))
-    .then(() => getSettings())
+  return getSettings()
     .then((settings) => {
-      if (settings) {
-        window.perkStoreSettings = Object.assign(window.perkStoreSettings, settings);
-      }
+      window.perkStoreSettings = settings ? settings : {};
     });
 }
 
@@ -42,12 +37,19 @@ export function saveSettings(settings) {
   }
 }
 
-export function getOrderFilter(settings) {
+export function getOrderFilter() {
   const filter = localStorage.getItem('exo-perkstore-order-filter');
   if(filter) {
     return JSON.parse(filter);
   } else {
-    return settings.orderFilter;
+    return {
+      ordered: true,
+      canceled: true,
+      error: true,
+      payed: true,
+      delivered: true,
+      refunded: true,
+    };
   }
 }
 

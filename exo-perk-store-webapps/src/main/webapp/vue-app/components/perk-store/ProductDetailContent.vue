@@ -17,9 +17,9 @@
       <v-list-tile-content class="align-end">{{ maxOrdersLabel }}</v-list-tile-content>
     </v-list-tile>
     <v-divider v-if="product.userOrders" />
-    <v-list-tile v-if="product.userOrders && product.userOrders.orderedInCurrentPeriod">
+    <v-list-tile v-if="product.userOrders && product.userOrders.purchasedInCurrentPeriod">
       <v-list-tile-content><strong>My orders in current period:</strong></v-list-tile-content>
-      <v-list-tile-content class="align-end">{{ product.userOrders.orderedInCurrentPeriod }}</v-list-tile-content>
+      <v-list-tile-content class="align-end">{{ product.userOrders.purchasedInCurrentPeriod }}</v-list-tile-content>
     </v-list-tile>
   </v-list>
 </template>
