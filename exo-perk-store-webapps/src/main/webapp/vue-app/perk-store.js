@@ -40,7 +40,7 @@ window.perkStoreProductsList = {
     notProcessedOrders: 4,
     userOrders: {
       purchasedInCurrentPeriod: 2,
-      totalOrders: 3,
+      totalPuchased: 3,
     },
   },
   2: {
@@ -330,9 +330,6 @@ window.fetch = (url, options) => {
     }
     window.perkStoreOrders[order.productId][order.id] = order;
     resultJson = order;
-  } else if (url.indexOf('perkstore/api/account/settings') >= 0) {
-    // TODO Get account settings from sessionStorage
-    resultJson = {};
   } else if (url.indexOf('perkstore/api/settings') >= 0) {
     resultJson = {
       isAdministrator: true,
@@ -340,7 +337,6 @@ window.fetch = (url, options) => {
       symbol: 'Ȼ',
     };
   } else if (url.indexOf('perkstore/api/settings/save') >= 0) {
-    // TODO Save general settings in sessionStorage
     resultText = 'saved';
   } else {
     return originalFetch(url, options);

@@ -53,11 +53,15 @@ public class ProductEntity implements Serializable {
   @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_MARCHAND")
   private List<Long>              marchands;
 
+  @ElementCollection
+  @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_PERMISSIONS")
+  private List<Long>              accessPermissions;
+
   @Column(name = "PERIODICITY", nullable = false)
   private ProductOrderPeriodType  orderPeriodicity;
 
   @Column(name = "MAX_ORDERS_PER_USER", nullable = false)
-  private long                    maxOrdersPerUser;
+  private double                  maxOrdersPerUser;
 
   @Column(name = "CREATED_DATE", nullable = false)
   private long                    createdDate;
@@ -154,6 +158,14 @@ public class ProductEntity implements Serializable {
     this.marchands = marchands;
   }
 
+  public List<Long> getAccessPermissions() {
+    return accessPermissions;
+  }
+
+  public void setAccessPermissions(List<Long> accessPermissions) {
+    this.accessPermissions = accessPermissions;
+  }
+
   public ProductOrderPeriodType getOrderPeriodicity() {
     return orderPeriodicity;
   }
@@ -162,11 +174,11 @@ public class ProductEntity implements Serializable {
     this.orderPeriodicity = orderPeriodicity;
   }
 
-  public long getMaxOrdersPerUser() {
+  public double getMaxOrdersPerUser() {
     return maxOrdersPerUser;
   }
 
-  public void setMaxOrdersPerUser(long maxOrdersPerUser) {
+  public void setMaxOrdersPerUser(double maxOrdersPerUser) {
     this.maxOrdersPerUser = maxOrdersPerUser;
   }
 

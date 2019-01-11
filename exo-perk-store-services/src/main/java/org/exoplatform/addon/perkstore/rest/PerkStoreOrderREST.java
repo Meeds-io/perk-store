@@ -27,7 +27,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
-import org.exoplatform.addon.perkstore.model.Product;
+import org.exoplatform.addon.perkstore.model.OrderFilter;
+import org.exoplatform.addon.perkstore.model.ProductOrder;
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -35,69 +36,102 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 
 /**
  * This class provide a REST endpoint to retrieve detailed information about
- * perk store product
+ * perk store order
  */
-@Path("/perkstore/api/product")
+@Path("/perkstore/api/order")
 @RolesAllowed("users")
-public class PerkStoreProductREST implements ResourceContainer {
+public class PerkStoreOrderREST implements ResourceContainer {
 
-  private static final Log LOG = ExoLogger.getLogger(PerkStoreProductREST.class);
+  private static final Log LOG = ExoLogger.getLogger(PerkStoreOrderREST.class);
 
   private PerkStoreService perkStoreService;
 
-  public PerkStoreProductREST(PerkStoreService perkStoreService) {
+  public PerkStoreOrderREST(PerkStoreService perkStoreService) {
     this.perkStoreService = perkStoreService;
   }
 
   /**
-   * Save product
+   * List orders of a product
    * 
-   * @param product
+   * @param filter
+   * @return
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Path("list")
+  @RolesAllowed("users")
+  public Response listOrders(OrderFilter filter) {
+    if (filter == null) {
+      LOG.warn("Bad request sent to server with empty filter");
+      return Response.status(400).build();
+    }
+    if (filter.getProductId() == 0) {
+      LOG.warn("Bad request sent to server with empty filter product id");
+      return Response.status(400).build();
+    }
+    try {
+      List<ProductOrder> orders = perkStoreService.getOrders(getCurrentUserId(), filter);
+      return Response.ok(orders).build();
+    } catch (Exception e) {
+      LOG.warn("Error listing orders", e);
+      return Response.serverError().build();
+    }
+  }
+
+  /**
+   * Save order
+   * 
+   * @param order
    * @return
    */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("save")
   @RolesAllowed("users")
-  public Response saveProduct(Product product) {
-    if (product == null) {
-      LOG.warn("Bad request sent to server with empty product");
+  public Response saveOrder(ProductOrder order) {
+    if (order == null) {
+      LOG.warn("Bad request sent to server with empty order");
       return Response.status(400).build();
     }
     try {
-      perkStoreService.saveProduct(getCurrentUserId(), product);
+      perkStoreService.createOrder(getCurrentUserId(), order);
+      return Response.ok().build();
     } catch (PerkStoreException e) {
-      LOG.warn("Error saving product", e);
+      LOG.warn("Error saving new order", e);
       return Response.serverError()
                      .entity(getErrorJSONFormat(e))
                      .build();
     } catch (Exception e) {
-      LOG.warn("Error saving product", e);
+      LOG.warn("Error saving new order", e);
       return Response.serverError().build();
     }
-    return Response.ok().build();
   }
 
   /**
-   * Retrieve products
+   * Save order status
    * 
+   * @param order
    * @return
    */
-  @Path("list")
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Path("saveStatus")
   @RolesAllowed("users")
-  public Response listProducts() {
+  public Response saveOrderStatus(ProductOrder order) {
+    if (order == null) {
+      LOG.warn("Bad request sent to server with empty order");
+      return Response.status(400).build();
+    }
     try {
-      List<Product> allProducts = perkStoreService.getAllProducts(getCurrentUserId());
-      return Response.ok(allProducts).build();
+      perkStoreService.saveOrderStatus(getCurrentUserId(), order);
+      return Response.ok().build();
     } catch (PerkStoreException e) {
-      LOG.warn("Error getting products list", e);
+      LOG.warn("Error saving order status", e);
       return Response.serverError()
                      .entity(getErrorJSONFormat(e))
                      .build();
     } catch (Exception e) {
-      LOG.warn("Error getting products list", e);
+      LOG.warn("Error saving order status", e);
       return Response.serverError().build();
     }
   }

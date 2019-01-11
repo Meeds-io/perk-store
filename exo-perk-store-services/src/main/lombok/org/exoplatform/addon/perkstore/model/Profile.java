@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class Profile implements Serializable {
+public class Profile implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 3842109328846936552L;
 
@@ -17,4 +17,12 @@ public class Profile implements Serializable {
 
   private String            displayName;
 
+  @SuppressWarnings("all")
+  public Object clone() {
+    try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new IllegalStateException("Error while cloning object");
+    }
+  }
 }

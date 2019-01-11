@@ -9,10 +9,14 @@ import java.util.stream.Collectors;
 import org.exoplatform.addon.perkstore.dao.PerkStoreOrderDAO;
 import org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO;
 import org.exoplatform.addon.perkstore.entity.ProductEntity;
-import org.exoplatform.addon.perkstore.model.Product;
+import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
+import org.exoplatform.addon.perkstore.exception.PerkStoreException;
+import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.service.utils.Utils;
 
 public class PerkStoreStorage {
+  private static final int    DEFAULT_QUERY_LIMIT = 100;
+
   private PerkStoreProductDAO productDAO;
 
   private PerkStoreOrderDAO   orderDAO;
@@ -33,7 +37,7 @@ public class PerkStoreStorage {
 
   public Product saveProduct(String currentUserId, Product product) {
     if (product == null) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("product argument is null");
     }
 
     ProductEntity entity = toEntity(product);
@@ -62,11 +66,11 @@ public class PerkStoreStorage {
     return orderDAO.countOrderedQuantityByProductId(id);
   }
 
-  public long countRemainingOrders(long id) {
+  public long countRemainingOrdersToProcess(long id) {
     if (id == 0) {
       return 0;
     }
-    return orderDAO.countRemainingOrdersByProductId(id);
+    return orderDAO.countRemainingOrdersToProcessByProductId(id);
   }
 
   public double countUserTotalPurchasedQuantity(long productId, long identityId) {
@@ -81,6 +85,49 @@ public class PerkStoreStorage {
       return 0;
     }
     return orderDAO.countUserPurchasedQuantityInPeriod(productId, identityId, startDate, endDate);
+  }
+
+  public List<ProductOrder> getOrders(String username, OrderFilter filter) {
+    if (filter.getLimit() == 0) {
+      filter.setLimit(DEFAULT_QUERY_LIMIT);
+    }
+    List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter);
+    return entities.stream().map(Utils::fromEntity).collect(Collectors.toList());
+  }
+
+  public ProductOrder getOrder(long orderId) {
+    ProductOrderEntity orderEntity = orderDAO.find(orderId);
+    return orderEntity == null ? null : fromEntity(orderEntity);
+  }
+
+  public ProductOrder saveOrder(ProductOrder order) throws PerkStoreException {
+    if (order == null) {
+      throw new IllegalArgumentException("order argument is null");
+    }
+
+    long productId = order.getProductId();
+    ProductEntity productEntity = null;
+    if (productId != 0) {
+      productEntity = productDAO.find(productId);
+    }
+    if (productEntity == null) {
+      throw new PerkStoreException(PerkStoreError.PRODUCT_NOT_EXISTS, productId);
+    }
+
+    ProductOrderEntity entity = toEntity(productEntity, order);
+    if (order.getId() == 0) {
+      entity.setCreatedDate(System.currentTimeMillis());
+      entity = orderDAO.create(entity);
+    } else {
+      entity = orderDAO.update(entity);
+    }
+
+    return fromEntity(entity);
+  }
+
+  public ProductOrder findOrderByTransactionHash(String hash) {
+    ProductOrderEntity orderEntity = orderDAO.findOrderByTransactionHash(hash);
+    return orderEntity == null ? null : fromEntity(orderEntity);
   }
 
 }

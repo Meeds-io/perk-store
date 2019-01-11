@@ -10,6 +10,8 @@ public class ProductOrder implements Serializable {
 
   private long              id;
 
+  private long              productId;
+
   private String            transactionHash;
 
   private double            quantity;

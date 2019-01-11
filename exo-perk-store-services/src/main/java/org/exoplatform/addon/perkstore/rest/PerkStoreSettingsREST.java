@@ -16,11 +16,15 @@
  */
 package org.exoplatform.addon.perkstore.rest;
 
+import static org.exoplatform.addon.perkstore.service.utils.Utils.getCurrentUserId;
+import static org.exoplatform.addon.perkstore.service.utils.Utils.getErrorJSONFormat;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.GlobalSettings;
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.services.log.ExoLogger;
@@ -49,9 +53,14 @@ public class PerkStoreSettingsREST implements ResourceContainer {
   @RolesAllowed("users")
   public Response getSettings() {
     try {
-      return Response.ok(perkStoreService.getGlobalSettings()).build();
+      return Response.ok(perkStoreService.getGlobalSettings(getCurrentUserId())).build();
+    } catch (PerkStoreException e) {
+      LOG.warn("Error when retrieving global settings", e);
+      return Response.serverError()
+                     .entity(getErrorJSONFormat(e))
+                     .build();
     } catch (Exception e) {
-      LOG.error("Error while accessing global settings", e);
+      LOG.error("Error when retrieving global settings", e);
       return Response.serverError().build();
     }
   }
@@ -67,8 +76,18 @@ public class PerkStoreSettingsREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("administrators")
   public Response saveSettings(GlobalSettings settings) {
-    perkStoreService.saveGlobalSettings(settings);
-    return Response.ok().build();
+    try {
+      perkStoreService.saveGlobalSettings(settings, getCurrentUserId());
+      return Response.ok().build();
+    } catch (PerkStoreException e) {
+      LOG.warn("Error while saving global settings", e);
+      return Response.serverError()
+                     .entity(getErrorJSONFormat(e))
+                     .build();
+    } catch (Exception e) {
+      LOG.error("Error while saving global settings", e);
+      return Response.serverError().build();
+    }
   }
 
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class Product implements Serializable {
+public class Product implements Serializable, Cloneable {
   private static final long serialVersionUID = 3182323147042158001L;
 
   private long              id;
@@ -29,6 +29,8 @@ public class Product implements Serializable {
 
   private List<Profile>     marchands;
 
+  private List<Profile>     accessPermissions;
+
   private String            orderPeriodicity;
 
   private String            orderPeriodicityLabel;
@@ -37,7 +39,7 @@ public class Product implements Serializable {
 
   private String            lastModifier;
 
-  private long              maxOrdersPerUser;
+  private double            maxOrdersPerUser;
 
   private long              createdDate;
 
@@ -52,4 +54,12 @@ public class Product implements Serializable {
   // Processed
   private UserOrders        userOrders;
 
+  @SuppressWarnings("all")
+  public Object clone() {
+    try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new IllegalStateException("Error while cloning object");
+    }
+  }
 }
