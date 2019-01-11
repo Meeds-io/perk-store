@@ -105,11 +105,18 @@ public class PerkStoreService implements Startable {
     }
 
     // Make sure to store only allowed fields to change
-    Product productToStore = perkStoreStorage.getProductById(product.getId());
+    Product productToStore = null;
+    if (product.getId() == 0) {
+      productToStore = new Product();
+    } else {
+      productToStore = perkStoreStorage.getProductById(product.getId());
+    }
+
     productToStore.setTitle(product.getTitle());
     productToStore.setIllustrationURL(product.getIllustrationURL());
     productToStore.setDescription(product.getDescription());
     productToStore.setReceiverMarchand(product.getReceiverMarchand());
+    productToStore.setAccessPermissions(product.getAccessPermissions());
     productToStore.setMarchands(product.getMarchands());
     productToStore.setEnabled(product.isEnabled());
     productToStore.setUnlimited(product.isUnlimited());
@@ -121,7 +128,7 @@ public class PerkStoreService implements Startable {
     perkStoreStorage.saveProduct(username, productToStore);
   }
 
-  public List<Product> getAllProducts(String username) throws Exception {
+  public List<Product> getProducts(String username) throws Exception {
     List<Product> products = perkStoreStorage.getAllProducts();
     if (products == null || products.isEmpty()) {
       return Collections.emptyList();
@@ -163,9 +170,6 @@ public class PerkStoreService implements Startable {
     if (order.getQuantity() <= 0) {
       throw new PerkStoreException(ORDER_CREATION_EMPTY_QUANTITY);
     }
-    if (order.getAmount() <= 0) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_AMOUNT);
-    }
     if (order.getReceiver() == null) {
       throw new PerkStoreException(ORDER_CREATION_EMPTY_RECEIVER);
     }
@@ -178,7 +182,7 @@ public class PerkStoreService implements Startable {
     // Create new instance to avoid injecting annoying values
     ProductOrder productOrder = new ProductOrder();
     productOrder.setProductId(order.getProductId());
-    productOrder.setAmount(order.getAmount());
+    productOrder.setAmount(order.getQuantity() * product.getPrice());
     productOrder.setReceiver(order.getReceiver());
     productOrder.setSender(toProfile(USER_ACCOUNT_TYPE, username));
     productOrder.setTransactionHash(order.getTransactionHash());
@@ -192,7 +196,7 @@ public class PerkStoreService implements Startable {
     perkStoreStorage.saveOrder(productOrder);
   }
 
-  public void saveOrderPaymentStatus(String hash, boolean transactionFailed) throws PerkStoreException {
+  public void saveOrderPaymentStatus(String hash, boolean transactionSuccess) throws PerkStoreException {
     if (StringUtils.isBlank(hash)) {
       throw new IllegalArgumentException("Transaction hash is mandatory");
     }
@@ -202,13 +206,18 @@ public class PerkStoreService implements Startable {
       return;
     }
 
-    if (transactionFailed) {
-      order.setError("Transaction failed");
-    } else {
+    if (transactionSuccess) {
       order.setStatus(PAYED.name());
+    } else {
+      order.setStatus(ERROR.name());
+      order.setError("Transaction failed");
     }
 
     perkStoreStorage.saveOrder(order);
+  }
+
+  public ProductOrder getOrderById(long orderId) {
+    return perkStoreStorage.getOrder(orderId);
   }
 
   public void saveOrderStatus(String username, ProductOrder order) throws Exception {
@@ -237,14 +246,18 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(ORDER_NOT_EXISTS, username, orderId);
     }
 
-    ProductOrderStatus oldStatus = ProductOrderStatus.valueOf(productOrder.getStatus());
-    ProductOrderStatus newStatus = ProductOrderStatus.valueOf(order.getStatus());
+    double deliveredQuantity = order.getDeliveredQuantity();
+    double refundedQuantity = order.getRefundedQuantity();
+    String status = order.getStatus();
 
-    productOrder.setStatus(order.getStatus());
-    productOrder.setDeliveredQuantity(order.getDeliveredQuantity());
-    productOrder.setRefundedQuantity(order.getRefundedQuantity());
-    double remainingQuantityToProcess = productOrder.getQuantity() - order.getRefundedQuantity()
-        - order.getDeliveredQuantity();
+    ProductOrderStatus oldStatus = ProductOrderStatus.valueOf(productOrder.getStatus());
+    ProductOrderStatus newStatus = ProductOrderStatus.valueOf(status);
+
+    productOrder.setStatus(status);
+    productOrder.setDeliveredQuantity(deliveredQuantity);
+    productOrder.setRefundedQuantity(refundedQuantity);
+    double remainingQuantityToProcess = productOrder.getQuantity() - refundedQuantity
+        - deliveredQuantity;
     if (remainingQuantityToProcess < 0) {
       throw new PerkStoreException(ORDER_MODIFICATION_QUANTITY_INVALID_REMAINING,
                                    remainingQuantityToProcess,
@@ -252,17 +265,17 @@ public class PerkStoreService implements Startable {
     }
     productOrder.setRemainingQuantityToProcess(remainingQuantityToProcess);
     if (oldStatus != newStatus) {
-      if ((oldStatus == DELIVERED || order.getDeliveredQuantity() > 0) && productOrder.getDeliveredDate() == 0) {
+      if ((oldStatus == DELIVERED || deliveredQuantity > 0) && productOrder.getDeliveredDate() == 0) {
         productOrder.setDeliveredDate(System.currentTimeMillis());
-      } else if ((oldStatus == REFUNDED || order.getRefundedQuantity() > 0)
+      } else if ((oldStatus == REFUNDED || refundedQuantity > 0)
           && productOrder.getRefundedDate() == 0) {
         productOrder.setRefundedDate(System.currentTimeMillis());
       }
     }
-    if (order.getDeliveredQuantity() == 0) {
+    if (deliveredQuantity == 0) {
       productOrder.setDeliveredDate(0);
     }
-    if (order.getRefundedQuantity() == 0) {
+    if (refundedQuantity == 0) {
       productOrder.setRefundedDate(0);
     }
     perkStoreStorage.saveOrder(productOrder);
@@ -279,11 +292,14 @@ public class PerkStoreService implements Startable {
 
   private void computeProductFields(String username, Product product) throws Exception {
     product.setCanEdit(StringUtils.isNotBlank(username) && canEditProduct(product, username));
+    product.setCanOrder(StringUtils.isNotBlank(username) && canViewProduct(product, username, false));
+    long productId = product.getId();
+
+    product.setPurchased(perkStoreStorage.countOrderedQuantity(productId));
+    product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
+
     // Retrieve the following fields for not marchand only
     if (product.getReceiverMarchand() != null && !StringUtils.equals(product.getReceiverMarchand().getId(), username)) {
-      long productId = product.getId();
-      product.setPurchased(perkStoreStorage.countOrderedQuantity(productId));
-      product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
 
       UserOrders userOrders = new UserOrders();
       product.setUserOrders(userOrders);
@@ -300,7 +316,7 @@ public class PerkStoreService implements Startable {
     if (StringUtils.isBlank(product.getOrderPeriodicity())) {
       return 0;
     }
-    ProductOrderPeriodType periodType = ProductOrderPeriodType.valueOf(product.getOrderPeriodicity());
+    ProductOrderPeriodType periodType = ProductOrderPeriodType.valueOf(product.getOrderPeriodicity().toUpperCase());
     ProductOrderPeriod period = periodType.getPeriodOfTime(LocalDateTime.now());
     return perkStoreStorage.countUserPurchasedQuantityInPeriod(product.getId(),
                                                                identityId,
@@ -321,12 +337,15 @@ public class PerkStoreService implements Startable {
       orderedQuantity = perkStoreStorage.countOrderedQuantity(productId);
     }
 
-    double totalSupply = product.getTotalSupply();
-    if ((orderedQuantity + quantity) > totalSupply) {
-      throw new PerkStoreException(ORDER_CREATION_QUANTITY_EXCEEDS_SUPPLY, username);
+    if (!product.isUnlimited()) {
+      double totalSupply = product.getTotalSupply();
+      if ((orderedQuantity + quantity) > totalSupply) {
+        throw new PerkStoreException(ORDER_CREATION_QUANTITY_EXCEEDS_SUPPLY, username);
+      }
     }
 
-    if (!product.isUnlimited()) {
+    double maxOrdersPerUser = product.getMaxOrdersPerUser();
+    if (maxOrdersPerUser > 0) {
       double purchasedQuantity = 0;
       if (product.getOrderPeriodicity() != null) {
         purchasedQuantity = countPurchasedQuantityInCurrentPeriod(product, identityId);
@@ -334,7 +353,6 @@ public class PerkStoreService implements Startable {
         purchasedQuantity = perkStoreStorage.countUserTotalPurchasedQuantity(productId, identityId);
       }
 
-      double maxOrdersPerUser = product.getMaxOrdersPerUser();
       if ((purchasedQuantity + quantity) > maxOrdersPerUser) {
         throw new PerkStoreException(ORDER_CREATION_QUANTITY_EXCEEDS_ALLOWED, username);
       }
@@ -408,7 +426,7 @@ public class PerkStoreService implements Startable {
 
     List<Profile> accessPermissions = product.getAccessPermissions();
     if (accessPermissions == null || accessPermissions.isEmpty()) {
-      return canAddProduct;
+      return true;
     }
 
     return isUserMemberOf(username, accessPermissions);

@@ -199,13 +199,14 @@ public class Utils {
     product.setId(entity.getId());
     product.setTitle(entity.getTitle());
     product.setDescription(entity.getDescription());
+    product.setPrice(entity.getPrice());
     product.setIllustrationURL(entity.getIllustrationURL());
     product.setEnabled(entity.isEnabled());
     product.setUnlimited(entity.isUnlimited());
     product.setTotalSupply(entity.getTotalSupply());
     product.setMaxOrdersPerUser(entity.getMaxOrdersPerUser());
-    product.setCreator(entity.getCreator());
-    product.setLastModifier(entity.getLastModifier());
+    product.setCreator(toProfile(entity.getCreator()));
+    product.setLastModifier(toProfile(entity.getLastModifier()));
     product.setCreatedDate(entity.getCreatedDate());
     product.setLastModifiedDate(entity.getLastModifiedDate());
     product.setReceiverMarchand(toProfile(entity.getReceiverId()));
@@ -236,6 +237,7 @@ public class Utils {
 
     entity.setId(product.getId());
     entity.setTitle(product.getTitle());
+    entity.setPrice(product.getPrice());
     entity.setDescription(product.getDescription());
     entity.setIllustrationURL(product.getIllustrationURL());
     entity.setEnabled(product.isEnabled());
@@ -243,8 +245,8 @@ public class Utils {
     entity.setTotalSupply(product.getTotalSupply());
     entity.setMaxOrdersPerUser(product.getMaxOrdersPerUser());
     entity.setCreatedDate(product.getCreatedDate());
-    entity.setCreator(product.getCreator());
-    entity.setLastModifier(product.getLastModifier());
+    entity.setCreator(product.getCreator() == null ? 0 : product.getCreator().getTechnicalId());
+    entity.setLastModifier(product.getLastModifier() == null ? 0 : product.getLastModifier().getTechnicalId());
     entity.setLastModifiedDate(product.getLastModifiedDate());
 
     entity.setReceiverId(getTechnicalId(product.getReceiverMarchand()));

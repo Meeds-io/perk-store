@@ -137,13 +137,15 @@
             ref="productForm"
             :product="selectedProduct"
             @added="init"
+            @error="error = $event"
             @close="closeDetails" />
           <products-list
             v-else
             :products="filteredProducts"
             :settings="settings"
+            :loading="loading"
             :wallet-loading="walletLoading"
-            :wallet-enabled="walletEnabled"
+            :wallet-enabled="walletEnabled && walletAddonInstalled"
             @orders-list="displayCommandsList"
             @edit="editProduct"
             @buy="buyProduct" />
@@ -198,6 +200,11 @@ export default {
       } else {
         return this.products.slice();
       }
+    },
+  },
+  watch: {
+    selectedProduct() {
+      this.error = null;
     }
   },
   created() {
@@ -219,9 +226,10 @@ export default {
       })
       .then(() => getProductList())
       .then((products) => {
-        this.products = products;
+        this.products = products || [];
       })
       .catch(e => {
+        console.debug("Error initializing application", e);
         this.error = e;
       })
       .finally(() => {
@@ -234,7 +242,7 @@ export default {
       });
     },
     initWalletAPI() {
-      if(!this.walletAddonInstalled) {
+      if(!this.walletAddonInstalled && window.walletAddonInstalled) {
         this.walletLoading = true;
         this.walletAddonInstalled = true;
         document.dispatchEvent(new CustomEvent('exo-wallet-init'));

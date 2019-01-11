@@ -15,9 +15,7 @@ export function saveProduct(product) {
     },
     body: JSON.stringify(product),
   }).then((resp) => {
-    if (resp && resp.ok) {
-      return resp.json();
-    } else {
+    if (!resp || !resp.ok) {
       throw new Error('Error saving product', product);
     }
   });

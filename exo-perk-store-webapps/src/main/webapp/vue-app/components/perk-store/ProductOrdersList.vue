@@ -11,6 +11,7 @@
       <v-data-iterator
         :items="orders"
         content-tag="v-layout"
+        no-data-text="No orders"
         hide-actions
         row
         wrap>
@@ -113,8 +114,10 @@ export default {
           });
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
         })
-        .catch(e => this.$emit('error', e))
-        .finally(() => this.$emit('loading', false));
+        .catch(e => {
+          console.debug("Error while listing orders", e);
+          this.$emit('error', 'Error listing orders');
+        }).finally(() => this.$emit('loading', false));
     },
     searchOrders() {
       return this.init();

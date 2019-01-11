@@ -11,7 +11,7 @@ public enum PerkStoreError {
   GLOBAL_SETTINGS_ACCESS_DENIED(ERROR_SUFFIX_GLOBAL_SETTINGS_MODIFICATION, "User {} isn't alowed to access global settings", 1),
   GLOBAL_SETTINGS_MODIFICATION_DENIED(ERROR_SUFFIX_GLOBAL_SETTINGS_MODIFICATION, "User {} isn't alowed to modify global settings",
       1),
-  PRODUCT_CREATION_DENIED(ERROR_SUFFIX_PRODUCT_CREATION, "User {} isn't alowed to create product {}", 2),
+  PRODUCT_CREATION_DENIED(ERROR_SUFFIX_PRODUCT_CREATION, "User {} isn't alowed to create a product", 1),
   PRODUCT_MODIFICATION_DENIED(ERROR_SUFFIX_PRODUCT_MODIFICATION, "User {} isn't alowed to modify product {}", 2),
   PRODUCT_NOT_EXISTS(ERROR_SUFFIX_PRODUCT_NOT_EXISTS, "Product with id {} doesn't exists", 1),
   ORDER_MODIFICATION_DENIED(ERROR_SUFFIX_ORDER_MODIFICATION, "User {} isn't allowed to order on product with id {}", 2),
@@ -61,14 +61,14 @@ public enum PerkStoreError {
     } else {
       String descriptionDisplay = description;
       for (Object parameter : parameters) {
-        descriptionDisplay = descriptionDisplay.replaceFirst("{}", String.valueOf(parameter));
+        descriptionDisplay = descriptionDisplay.replaceFirst("\\{\\}", String.valueOf(parameter));
       }
       return descriptionDisplay;
     }
   }
 
   public String getMessage(Serializable... parameters) {
-    return suffix + "-" + code + ": " + getDescription(parameters);
+    return suffix.toUpperCase() + "-" + code + ": " + getDescription(parameters);
   }
 
   public void checkValidParametersCount(Serializable... parameters) {

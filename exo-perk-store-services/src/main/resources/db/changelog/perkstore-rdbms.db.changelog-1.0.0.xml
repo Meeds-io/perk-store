@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2003-2018 eXo Platform SAS. This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version. This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public 
+  License for more details. You should have received a copy of the GNU Lesser General Public License along with this software; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site: http://www.fsf.org. -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+  <!-- Managing both DB that use sequences and db that use auto increment -->
+  <property name="autoIncrement" value="true" dbms="mysql,mssql,h2,sybase,db2,hsqldb"/>
+  <property name="autoIncrement" value="false" dbms="oracle,postgresql"/>
+
+  <changeSet author="perkstore" id="1.0.0-1">
+    <createTable tableName="ADDONS_PERKSTORE_PRODUCT">
+      <column name="PRODUCT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT"/>
+      </column>
+      <column name="TITLE" type="NVARCHAR(200)" />
+      <column name="DESCRIPTION" type="NVARCHAR(2000)" />
+      <column name="ILLUSTRATION_URL" type="NVARCHAR(500)" />
+      <column name="ENABLED" type="BOOLEAN" />
+      <column name="UNLIMITED" type="BOOLEAN" />
+      <column name="TOTAL_SUPPLY" type="DOUBLE" />
+      <column name="PRICE" type="DOUBLE" />
+      <column name="RECEIVER_ID" type="BIGINT" />
+      <column name="PERIODICITY" type="INT" />
+      <column name="MAX_ORDERS_PER_USER" type="DOUBLE" />
+      <column name="CREATED_DATE" type="BIGINT" />
+      <column name="LAST_MODIFIED_DATE" type="BIGINT" />
+      <column name="CREATOR" type="BIGINT" />
+      <column name="LAST_MODIFIER" type="BIGINT" />
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-2">
+    <createTable tableName="ADDONS_PERKSTORE_PRODUCT_ORDER">
+      <column name="ORDER_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_ORDER"/>
+      </column>
+      <column name="PRODUCT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_PERKSTORE_01" references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" nullable="false"/>
+      </column>
+      <column name="TRANSACTION_HASH" type="NVARCHAR(66)" />
+      <column name="ERROR" type="NVARCHAR(200)" />
+      <column name="QUANTITY" type="DOUBLE" />
+      <column name="DELIVERED_QUANTITY" type="DOUBLE" />
+      <column name="REFUNDED_QUANTITY" type="DOUBLE" />
+      <column name="REMAINING_QUANTITY" type="DOUBLE" />
+      <column name="AMOUNT" type="DOUBLE" />
+      <column name="SENDER_ID" type="BIGINT" />
+      <column name="RECEIVER_ID" type="BIGINT" />
+      <column name="STATUS" type="INT" />
+      <column name="CREATED_DATE" type="BIGINT" />
+      <column name="DELIVERED_DATE" type="BIGINT" />
+      <column name="REFUNDED_DATE" type="BIGINT" />
+    </createTable>
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-3">
+    <createTable tableName="ADDONS_PERKSTORE_PRODUCT_MARCHAND">
+      <column name="MARCHAND_IDENTITY_ID" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="PRODUCT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_PERKSTORE_PERKSTORE_PRODUCT_MARCHAND_01" references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ADDONS_PERKSTORE_PRODUCT_MARCHAND"
+            columnNames="PRODUCT_ID, MARCHAND_IDENTITY_ID"
+            constraintName="PK_PERKSTORE_PRODUCT_MARCHAND" />
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-4">
+    <createTable tableName="ADDONS_PERKSTORE_PRODUCT_PERMISSION">
+      <column name="PERMISSION_IDENTITY_ID" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="PRODUCT_ID" type="BIGINT">
+        <constraints foreignKeyName="FK_PERKSTORE_PERKSTORE_PRODUCT_PERMISSION_01" references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="ADDONS_PERKSTORE_PRODUCT_PERMISSION"
+            columnNames="PRODUCT_ID, PERMISSION_IDENTITY_ID"
+            constraintName="PK_PERKSTORE_PRODUCT_PERMISSION" />
+    <modifySql dbms="mysql">
+      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+    </modifySql>
+  </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-5" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_ADDONS_PERKSTORE_PRODUCT_ID" startValue="1"/>
+    <createSequence sequenceName="SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID" startValue="1"/>
+  </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-6">
+    <createIndex tableName="ADDONS_PERKSTORE_PRODUCT" indexName="IDX_ADDONS_PERKSTORE_01">
+      <column name="CREATED_DATE" descending="true"/>
+    </createIndex>
+    <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_01">
+      <column name="PRODUCT_ID" descending="true"/>
+    </createIndex>
+    <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_02">
+      <column name="PRODUCT_ID" descending="true"/>
+      <column name="CREATED_DATE" descending="true"/>
+    </createIndex>
+    <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_03">
+      <column name="PRODUCT_ID" descending="true"/>
+      <column name="SENDER_ID" />
+    </createIndex>
+    <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_04">
+      <column name="PRODUCT_ID" descending="true" />
+      <column name="SENDER_ID" />
+      <column name="CREATED_DATE" descending="true" />
+    </createIndex>
+    <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_05">
+      <column name="TRANSACTION_HASH" type="NVARCHAR(66)" />
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>

@@ -58,6 +58,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
    */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
   @Path("list")
   @RolesAllowed("users")
   public Response listOrders(OrderFilter filter) {
@@ -115,6 +116,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
    */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
   @Path("saveStatus")
   @RolesAllowed("users")
   public Response saveOrderStatus(ProductOrder order) {
@@ -124,7 +126,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
     }
     try {
       perkStoreService.saveOrderStatus(getCurrentUserId(), order);
-      return Response.ok().build();
+      return Response.ok(perkStoreService.getOrderById(order.getId())).build();
     } catch (PerkStoreException e) {
       LOG.warn("Error saving order status", e);
       return Response.serverError()

@@ -32,7 +32,7 @@
         <template v-if="filter.searchInDates">
           <v-divider />
           <v-date-picker
-            v-model="filter.selectedDate"
+            v-model="selectedDate"
             type="date" />
         </template>
         <v-checkbox v-model="filter.notProcessed" label="Not completely processed" />
@@ -80,7 +80,17 @@ export default {
   data() {
     return {
       display: false,
+      selectedDate: null,
     };
+  },
+  watch: {
+    selectedDate() {
+      if(this.selectedDate) {
+        this.filter.selectedDate = new Date(this.selectedDate).getTime();
+      } else {
+        this.filter.selectedDate = 0;
+      }
+    },
   },
   methods: {
     saveOrderFilter() {

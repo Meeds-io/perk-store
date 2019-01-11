@@ -35,9 +35,9 @@ public class Product implements Serializable, Cloneable {
 
   private String            orderPeriodicityLabel;
 
-  private String            creator;
+  private Profile           creator;
 
-  private String            lastModifier;
+  private Profile           lastModifier;
 
   private double            maxOrdersPerUser;
 
@@ -48,6 +48,8 @@ public class Product implements Serializable, Cloneable {
   private double            purchased;
 
   private boolean           canEdit;
+
+  private boolean           canOrder;
 
   private long              notProcessedOrders;
 

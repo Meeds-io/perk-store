@@ -89,7 +89,7 @@ public class PerkStoreProductREST implements ResourceContainer {
   @RolesAllowed("users")
   public Response listProducts() {
     try {
-      List<Product> allProducts = perkStoreService.getAllProducts(getCurrentUserId());
+      List<Product> allProducts = perkStoreService.getProducts(getCurrentUserId());
       return Response.ok(allProducts).build();
     } catch (PerkStoreException e) {
       LOG.warn("Error getting products list", e);

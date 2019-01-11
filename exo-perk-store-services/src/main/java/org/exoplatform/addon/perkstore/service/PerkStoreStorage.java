@@ -1,7 +1,6 @@
 package org.exoplatform.addon.perkstore.service;
 
-import static org.exoplatform.addon.perkstore.service.utils.Utils.fromEntity;
-import static org.exoplatform.addon.perkstore.service.utils.Utils.toEntity;
+import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +12,7 @@ import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.service.utils.Utils;
+import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreStorage {
   private static final int    DEFAULT_QUERY_LIMIT = 100;
@@ -35,18 +35,27 @@ public class PerkStoreStorage {
     }
   }
 
-  public Product saveProduct(String currentUserId, Product product) {
+  public Product saveProduct(String username, Product product) throws PerkStoreException {
     if (product == null) {
       throw new IllegalArgumentException("product argument is null");
     }
 
     ProductEntity entity = toEntity(product);
     if (product.getId() == 0) {
-      entity.setCreator(currentUserId);
+      Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
+      if (identity == null) {
+        throw new PerkStoreException(PerkStoreError.PRODUCT_CREATION_DENIED, username);
+      }
+      entity.setCreator(Long.parseLong(identity.getId()));
       entity.setCreatedDate(System.currentTimeMillis());
+      entity.setId(null);
       entity = productDAO.create(entity);
     } else {
-      entity.setLastModifier(currentUserId);
+      Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
+      if (identity == null) {
+        throw new PerkStoreException(PerkStoreError.PRODUCT_MODIFICATION_DENIED, username, product.getTitle());
+      }
+      entity.setLastModifier(Long.parseLong(identity.getId()));
       entity.setLastModifiedDate(System.currentTimeMillis());
       entity = productDAO.update(entity);
     }
@@ -117,6 +126,7 @@ public class PerkStoreStorage {
     ProductOrderEntity entity = toEntity(productEntity, order);
     if (order.getId() == 0) {
       entity.setCreatedDate(System.currentTimeMillis());
+      entity.setId(null);
       entity = orderDAO.create(entity);
     } else {
       entity = orderDAO.update(entity);

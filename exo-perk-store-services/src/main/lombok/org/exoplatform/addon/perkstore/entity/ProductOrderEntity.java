@@ -4,22 +4,19 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.DynamicUpdate;
-
 import org.exoplatform.addon.perkstore.model.ProductOrderStatus;
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 @Entity(name = "Order")
 @ExoEntity
-@DynamicUpdate
 @Table(name = "ADDONS_PERKSTORE_PRODUCT_ORDER")
 @NamedQueries({
-    @NamedQuery(name = "Order.getAllProductOrders", query = "SELECT o FROM Order WHERE o.product.id = :productId ORDER BY o.createdDate DESC"),
-    @NamedQuery(name = "Order.countOrderedQuantityByProductId", query = "SELECT SUM(o.quantity) FROM Order WHERE o.product.id = :productId"),
-    @NamedQuery(name = "Order.countRemainingOrdersByProductId", query = "SELECT COUNT(o) FROM Order WHERE o.product.id = :productId AND o.remainingQuantity > 0"),
-    @NamedQuery(name = "Order.countUserTotalPurchasedQuantity", query = "SELECT SUM(o.quantity) FROM Order WHERE o.product.id = :productId AND o.senderId = :identityId"),
-    @NamedQuery(name = "Order.countUserPurchasedQuantityInPeriod", query = "SELECT SUM(o.quantity) FROM Order WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :to AND o.createdDate < :from"),
-    @NamedQuery(name = "Order.findOrderByTransactionHash", query = "SELECT o FROM Order WHERE o.transactionHash = :hash"),
+    @NamedQuery(name = "Order.getAllProductOrders", query = "SELECT o FROM Order o WHERE o.product.id = :productId ORDER BY o.createdDate DESC"),
+    @NamedQuery(name = "Order.countOrderedQuantityByProductId", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId"),
+    @NamedQuery(name = "Order.countRemainingOrdersByProductId", query = "SELECT COUNT(o) FROM Order o WHERE o.product.id = :productId AND o.remainingQuantity > 0"),
+    @NamedQuery(name = "Order.countUserTotalPurchasedQuantity", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId"),
+    @NamedQuery(name = "Order.countUserPurchasedQuantityInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to"),
+    @NamedQuery(name = "Order.findOrderByTransactionHash", query = "SELECT o FROM Order o WHERE o.transactionHash = :hash"),
 })
 public class ProductOrderEntity implements Serializable {
 
@@ -37,7 +34,7 @@ public class ProductOrderEntity implements Serializable {
   @Column(name = "QUANTITY", nullable = false)
   private double             quantity;
 
-  @Column(name = "amount", nullable = false)
+  @Column(name = "AMOUNT", nullable = false)
   private double             amount;
 
   @Column(name = "SENDER_ID", nullable = false)
@@ -47,7 +44,7 @@ public class ProductOrderEntity implements Serializable {
   private long               receiverId;
 
   @Enumerated(EnumType.ORDINAL)
-  @Column(name = "status", nullable = false)
+  @Column(name = "STATUS", nullable = false)
   private ProductOrderStatus status;
 
   @Column(name = "ERROR", nullable = true)

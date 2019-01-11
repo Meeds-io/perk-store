@@ -10,7 +10,8 @@
           v-if="product.illustrationURL"
           :aspect-ratio="16/9"
           :src="product.illustrationURL"
-          class="productCardHeader">
+          class="productCardHeader"
+          contain>
           <v-expand-transition>
             <div
               v-if="hover"
@@ -31,8 +32,8 @@
           class="productCardHeader" />
         <v-progress-linear
           v-if="!product.unlimited"
-          v-model="purshasedPercentage"
-          :title="`${purshasedPercentage}% articles sold`"
+          v-model="purchasedPercentage"
+          :title="`${purchasedPercentage}% articles sold`"
           color="red"
           class="mb-0 mt-0" />
         <v-card-text
@@ -167,16 +168,16 @@ export default {
       return '';
     },
     displayBuyButton() {
-      return this.product && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' && this.product.receiverMarchand.id !== eXo.env.portal.userName);
+      return this.product && this.product.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' && this.product.receiverMarchand.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
       return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod && this.product.userOrders.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
-    purshasedPercentage() {
-      return !this.product.unlimited ? ((this.product.purshased * 100) /this.product.totalSupply) : 0;
+    purchasedPercentage() {
+      return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;
     },
     available() {
-      return !this.product.unlimited ? (this.product.totalSupply - this.product.purshased) : 100;
+      return !this.product.unlimited ? (this.product.totalSupply - this.product.purchased) : 100;
     },
   }
 }

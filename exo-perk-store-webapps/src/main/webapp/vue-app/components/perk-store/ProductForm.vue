@@ -38,7 +38,7 @@
 
         <auto-complete
           ref="productMarchandsAutocomplete"
-          input-label="Product editors"
+          input-label="Product editors (optional)"
           input-placeholder="Select product editors"
           no-data-label="Search for a user"
           multiple
@@ -47,6 +47,17 @@
           big-field
           @item-selected="selectEditor"
           @clear-selection="selectEditor()" />
+
+        <auto-complete
+          ref="productAccessPermissionAutocomplete"
+          input-label="Product access permissions (optional)"
+          input-placeholder="Select product access permissions"
+          no-data-label="Search for a user or a space"
+          multiple
+          no-address
+          big-field
+          @item-selected="selectAccessPermission"
+          @clear-selection="selectAccessPermission()" />
       </v-flex>
 
       <v-flex
@@ -75,7 +86,7 @@
 
         <v-combobox
           v-model="product.orderPeriodicity"
-          :items="periods"
+          :items="periodsValues"
           :return-object="false"
           label="User order limitation periodicity"
           hide-no-data
@@ -132,6 +143,7 @@ export default {
   data() {
     return {
       orderPeriodicity: null,
+      periodsValues: ['Week', 'Month', 'Quarter', 'Semester', 'Year'],
       periods: [
         {
           text: 'Week',
@@ -159,11 +171,14 @@ export default {
   computed: {
     orderPeriodicityLabel() {
       let label = null;
-      this.periods.forEach(period => {
-        if(this.product.orderPeriodicity === period.value) {
-          label = period.text;
-        }
-      });
+      if(this.product.orderPeriodicity) {
+        const selectedValue = this.product.orderPeriodicity.toUpperCase();
+        this.periods.forEach(period => {
+          if(selectedValue === period.value) {
+            label = period.text;
+          }
+        });
+      }
       return label;
     }
   },
@@ -175,6 +190,9 @@ export default {
         }
         if(this.product.marchands) {
           this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
+        }
+        if(this.product.accessPermissions) {
+          this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
         }
       }
     },
@@ -191,11 +209,26 @@ export default {
         this.product.marchands = [];
       }
     },
+    selectAccessPermission(identity) {
+      if(!this.product.accessPermissions) {
+        this.product.accessPermissions = [];
+      }
+      if(identity) {
+        this.product.accessPermissions.push(identity);
+      } else if(this.product.accessPermissions.length) {
+        this.product.accessPermissions = [];
+      }
+    },
     saveProduct() {
+      this.$emit('error', null);
       return saveProduct(this.product)
         .then(() => {
           this.$emit('added', this.product);
           this.$emit('close');
+        })
+        .catch(e => {
+          console.debug("Error saving product", e);
+          this.$emit('error', 'Error saving product');
         });
     }
   }

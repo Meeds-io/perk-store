@@ -5,16 +5,13 @@ import java.util.*;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.DynamicUpdate;
-
 import org.exoplatform.addon.perkstore.model.ProductOrderPeriodType;
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 @Entity(name = "Product")
 @ExoEntity
-@DynamicUpdate
 @Table(name = "ADDONS_PERKSTORE_PRODUCT")
-@NamedQueries({ @NamedQuery(name = "Product.getAllProducts", query = "select p from Product ORDER BY p.createdDate DESC") })
+@NamedQueries({ @NamedQuery(name = "Product.getAllProducts", query = "select p from Product p ORDER BY p.createdDate DESC") })
 public class ProductEntity implements Serializable {
 
   private static final long       serialVersionUID = -592052513482849972L;
@@ -49,14 +46,6 @@ public class ProductEntity implements Serializable {
   @Column(name = "RECEIVER_ID", nullable = false)
   private long                    receiverId;
 
-  @ElementCollection
-  @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_MARCHAND")
-  private List<Long>              marchands;
-
-  @ElementCollection
-  @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_PERMISSIONS")
-  private List<Long>              accessPermissions;
-
   @Column(name = "PERIODICITY", nullable = false)
   private ProductOrderPeriodType  orderPeriodicity;
 
@@ -70,13 +59,20 @@ public class ProductEntity implements Serializable {
   private long                    lastModifiedDate;
 
   @Column(name = "CREATOR", nullable = false)
-  private String                  creator;
+  private long                    creator;
 
   @Column(name = "LAST_MODIFIER", nullable = true)
-  private String                  lastModifier;
+  private long                    lastModifier;
 
-  @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = { CascadeType.ALL }, orphanRemoval = true)
-  private Set<ProductOrderEntity> orders           = new HashSet<>();
+  @ElementCollection
+  @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_MARCHAND", joinColumns = @JoinColumn(name = "PRODUCT_ID"))
+  @Column(name = "MARCHAND_IDENTITY_ID")
+  private List<Long>              marchands;
+
+  @ElementCollection
+  @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_PERMISSION", joinColumns = @JoinColumn(name = "PRODUCT_ID"))
+  @Column(name = "PERMISSION_IDENTITY_ID")
+  private List<Long>              accessPermissions;
 
   public Long getId() {
     return id;
@@ -190,22 +186,6 @@ public class ProductEntity implements Serializable {
     this.createdDate = createdDate;
   }
 
-  public String getCreator() {
-    return creator;
-  }
-
-  public void setCreator(String creator) {
-    this.creator = creator;
-  }
-
-  public String getLastModifier() {
-    return lastModifier;
-  }
-
-  public void setLastModifier(String lastModifier) {
-    this.lastModifier = lastModifier;
-  }
-
   public long getLastModifiedDate() {
     return lastModifiedDate;
   }
@@ -214,12 +194,20 @@ public class ProductEntity implements Serializable {
     this.lastModifiedDate = lastModifiedDate;
   }
 
-  public Set<ProductOrderEntity> getOrders() {
-    return orders;
+  public long getCreator() {
+    return creator;
   }
 
-  public void setOrders(Set<ProductOrderEntity> orders) {
-    this.orders = orders;
+  public void setCreator(long creator) {
+    this.creator = creator;
+  }
+
+  public long getLastModifier() {
+    return lastModifier;
+  }
+
+  public void setLastModifier(long lastModifier) {
+    this.lastModifier = lastModifier;
   }
 
 }

@@ -32,26 +32,26 @@ export function saveOrder(order) {
     },
     body: JSON.stringify(order),
   }).then((resp) => {
-    if (resp && resp.ok) {
-      return resp.json();
-    } else {
+    if (!resp || !resp.ok) {
       throw new Error('Error saving order', order);
     }
   });
 }
 
-export function saveOrderStatus(orderId, status, delivered, refunded) {
+export function saveOrderStatus(orderId, productId, status, delivered, refunded) {
   return fetch('/portal/rest/perkstore/api/order/saveStatus', {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
     },
-    body: $.param({
-      orderId: Number(orderId),
+    body: JSON.stringify({
+      id: Number(orderId),
+      productId: Number(productId),
       status: status,
-      delivered: Number(delivered),
-      refunded: Number(refunded),
+      deliveredQuantity: Number(delivered),
+      refundedQuantity: Number(refunded),
     }),
   }).then((resp) => {
     if (resp && resp.ok) {

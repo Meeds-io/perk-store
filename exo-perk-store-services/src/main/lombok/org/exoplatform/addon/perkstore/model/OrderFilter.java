@@ -1,7 +1,5 @@
 package org.exoplatform.addon.perkstore.model;
 
-import java.util.Date;
-
 import lombok.Data;
 
 @Data
@@ -14,9 +12,11 @@ public class OrderFilter {
 
   private boolean searchInDates;
 
-  private Date    selectedDate;
+  private long    selectedDate;
 
   private boolean ordered;
+
+  private boolean canceled;
 
   private boolean payed;
 

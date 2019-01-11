@@ -212,11 +212,13 @@ export default {
     },
     changeOrderStatus(newStatus, delivered, refunded) {
       this.$emit('loading', true);
-      return saveOrderStatus(this.order.id, newStatus, delivered, refunded)
+      return saveOrderStatus(this.order.id, this.order.productId, newStatus, delivered, refunded)
         .then(order => this.$emit('changed', order))
         .then(() => this.$forceUpdate())
-        .catch(e => this.$emit('error', e))
-        .finally(() => this.$emit('loading', false));
+        .catch(e => {
+          console.debug("Error saving status", e);
+          this.$emit('error', "Error saving status");
+        }).finally(() => this.$emit('loading', false));
     }
   }
 }

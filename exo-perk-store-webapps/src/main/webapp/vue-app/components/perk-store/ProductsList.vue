@@ -1,6 +1,7 @@
 <template>
   <v-card flat class="transparent">
     <v-container
+      v-if="products && products.length"
       class="border-box-sizing"
       fluid
       grid-list-md>
@@ -20,6 +21,12 @@
           @edit="$emit('edit', $event)"
           @buy="$emit('buy', $event)" />
       </v-layout>
+    </v-container>
+    <v-container v-else-if="!loading" class="text-xs-center">
+      <div class="alert alert-info" style="display: inline-block">
+        <i class="uiIconInfo"></i>
+        No available products
+      </div>
     </v-container>
   </v-card>
 </template>
@@ -42,6 +49,12 @@ export default {
       type: Object,
       default: function() {
         return {};
+      },
+    },
+    loading: {
+      type: Boolean,
+      default: function() {
+        return false;
       },
     },
     walletLoading: {

@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.listener.*;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -13,10 +15,13 @@ public class EthereumWalletTransactionListener extends Listener<Object, JSONObje
   private static final Log LOG =
                                ExoLogger.getLogger(EthereumWalletTransactionListener.class);
 
+  private ExoContainer     container;
+
   private PerkStoreService perkStoreService;
 
-  public EthereumWalletTransactionListener(PerkStoreService perkStoreService) {
+  public EthereumWalletTransactionListener(PerkStoreService perkStoreService, ExoContainer container) {
     this.perkStoreService = perkStoreService;
+    this.container = container;
   }
 
   @Override
@@ -34,7 +39,12 @@ public class EthereumWalletTransactionListener extends Listener<Object, JSONObje
     if (status == null) {
       LOG.error("Transaction with hash " + hash + " status is null");
     } else {
-      this.perkStoreService.saveOrderPaymentStatus(hash, status);
+      RequestLifeCycle.begin(this.container);
+      try {
+        this.perkStoreService.saveOrderPaymentStatus(hash, status);
+      } finally {
+        RequestLifeCycle.end();
+      }
     }
   }
 
