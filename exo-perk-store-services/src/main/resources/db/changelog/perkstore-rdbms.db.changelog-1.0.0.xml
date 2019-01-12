@@ -8,6 +8,11 @@
   <property name="autoIncrement" value="true" dbms="mysql,mssql,h2,sybase,db2,hsqldb"/>
   <property name="autoIncrement" value="false" dbms="oracle,postgresql"/>
 
+  <changeSet author="perkstore" id="1.0.0-0" dbms="oracle,postgresql">
+    <createSequence sequenceName="SEQ_ADDONS_PERKSTORE_PRODUCT_ID" startValue="1"/>
+    <createSequence sequenceName="SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID" startValue="1"/>
+  </changeSet>
+
   <changeSet author="perkstore" id="1.0.0-1">
     <createTable tableName="ADDONS_PERKSTORE_PRODUCT">
       <column name="PRODUCT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
@@ -64,15 +69,12 @@
   <changeSet author="perkstore" id="1.0.0-3">
     <createTable tableName="ADDONS_PERKSTORE_PRODUCT_MARCHAND">
       <column name="MARCHAND_IDENTITY_ID" type="BIGINT">
-        <constraints nullable="false" />
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT_MARCHAND"/>
       </column>
       <column name="PRODUCT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_PERKSTORE_PERKSTORE_PRODUCT_MARCHAND_01" references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" nullable="false"/>
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT_MARCHAND" foreignKeyName="FK_PERKSTORE_PRODUCT_MARCHAND"  references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" />
       </column>
     </createTable>
-    <addPrimaryKey tableName="ADDONS_PERKSTORE_PRODUCT_MARCHAND"
-            columnNames="PRODUCT_ID, MARCHAND_IDENTITY_ID"
-            constraintName="PK_PERKSTORE_PRODUCT_MARCHAND" />
     <modifySql dbms="mysql">
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
     </modifySql>
@@ -81,26 +83,18 @@
   <changeSet author="perkstore" id="1.0.0-4">
     <createTable tableName="ADDONS_PERKSTORE_PRODUCT_PERMISSION">
       <column name="PERMISSION_IDENTITY_ID" type="BIGINT">
-        <constraints nullable="false" />
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT_PERMISSION"/>
       </column>
       <column name="PRODUCT_ID" type="BIGINT">
-        <constraints foreignKeyName="FK_PERKSTORE_PERKSTORE_PRODUCT_PERMISSION_01" references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" nullable="false"/>
+        <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT_PERMISSION" foreignKeyName="FK_PERKSTORE_PRODUCT_PERMISSION"  references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" />
       </column>
     </createTable>
-    <addPrimaryKey tableName="ADDONS_PERKSTORE_PRODUCT_PERMISSION"
-            columnNames="PRODUCT_ID, PERMISSION_IDENTITY_ID"
-            constraintName="PK_PERKSTORE_PRODUCT_PERMISSION" />
     <modifySql dbms="mysql">
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
     </modifySql>
   </changeSet>
 
-  <changeSet author="perkstore" id="1.0.0-5" dbms="oracle,postgresql">
-    <createSequence sequenceName="SEQ_ADDONS_PERKSTORE_PRODUCT_ID" startValue="1"/>
-    <createSequence sequenceName="SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID" startValue="1"/>
-  </changeSet>
-
-  <changeSet author="perkstore" id="1.0.0-6">
+  <changeSet author="perkstore" id="1.0.0-5">
     <createIndex tableName="ADDONS_PERKSTORE_PRODUCT" indexName="IDX_ADDONS_PERKSTORE_01">
       <column name="CREATED_DATE" descending="true"/>
     </createIndex>
