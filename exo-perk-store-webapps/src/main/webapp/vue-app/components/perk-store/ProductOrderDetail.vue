@@ -217,7 +217,7 @@ export default {
         .then(() => this.$forceUpdate())
         .catch(e => {
           console.debug("Error saving status", e);
-          this.$emit('error', "Error saving status");
+          this.$emit('error', e && e.message ? e.message : String(e));
         }).finally(() => this.$emit('loading', false));
     }
   }

@@ -147,6 +147,15 @@ public class PerkStoreService implements Startable {
   }
 
   public List<ProductOrder> getOrders(String username, OrderFilter filter) throws Exception {
+    if (filter == null) {
+      throw new IllegalArgumentException("Filter is mandatory");
+    }
+    if (StringUtils.isBlank(username)) {
+      String currentUserId = getCurrentUserId();
+      if (StringUtils.isBlank(username) || !canAddProduct(currentUserId)) {
+        throw new IllegalAccessException(currentUserId + " is attempting to access orders list with filter: " + filter);
+      }
+    }
     if (canEditProduct(filter.getProductId(), username)) {
       return perkStoreStorage.getOrders(null, filter);
     } else {
@@ -154,44 +163,52 @@ public class PerkStoreService implements Startable {
     }
   }
 
-  public void createOrder(String username, ProductOrder order) throws PerkStoreException {
+  public void checkCanOrder(String username, ProductOrder order) throws PerkStoreException {
+    if (order == null) {
+      throw new IllegalArgumentException("Order is mandatory");
+    }
     if (order.getId() != 0) {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
     if (order.getProductId() == 0) {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
-    if (order.getStatus() != null) {
-      throw new PerkStoreException(ORDER_CREATION_STATUS_DENIED);
+    Product product = getProduct(order.getProductId());
+
+    order.setSender(toProfile(USER_ACCOUNT_TYPE, username));
+
+    checkOrderCoherence(username, product, order);
+  }
+
+  public void createOrder(String username, ProductOrder order) throws PerkStoreException {
+    if (order == null) {
+      throw new IllegalArgumentException("Order is null");
     }
-    if (StringUtils.isBlank(order.getTransactionHash())) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_TX);
+    if (order.getId() != 0) {
+      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
-    if (order.getQuantity() <= 0) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_QUANTITY);
-    }
-    if (order.getReceiver() == null) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_RECEIVER);
+    if (order.getProductId() == 0) {
+      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
 
     Product product = getProduct(order.getProductId());
-    if (!canViewProduct(product, username, false)) {
-      throw new PerkStoreException(ORDER_CREATION_DENIED, username, product.getTitle());
-    }
 
-    // Create new instance to avoid injecting annoying values
+    Profile sender = toProfile(USER_ACCOUNT_TYPE, username);
+    order.setSender(sender);
+
+    checkOrderCoherence(username, product, order);
+
+    // Create new instance to avoid injecting values from front end
     ProductOrder productOrder = new ProductOrder();
     productOrder.setProductId(order.getProductId());
     productOrder.setAmount(order.getQuantity() * product.getPrice());
     productOrder.setReceiver(order.getReceiver());
-    productOrder.setSender(toProfile(USER_ACCOUNT_TYPE, username));
+    productOrder.setSender(sender);
     productOrder.setTransactionHash(order.getTransactionHash());
     productOrder.setQuantity(order.getQuantity());
     productOrder.setStatus(ORDERED.name());
     productOrder.setRemainingQuantityToProcess(order.getQuantity());
     productOrder.setCreatedDate(System.currentTimeMillis());
-
-    checkCanOrderProduct(product, productOrder);
 
     perkStoreStorage.saveOrder(productOrder);
   }
@@ -324,32 +341,68 @@ public class PerkStoreService implements Startable {
                                                                period.getEndDate());
   }
 
-  private void checkCanOrderProduct(Product product, ProductOrder productOrder) throws PerkStoreException {
+  private void checkOrderCoherence(String username, Product product, ProductOrder order) throws PerkStoreException {
+    if (StringUtils.isBlank(username)) {
+      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
+    }
+    if (order.getId() != 0) {
+      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
+    }
+    if (order.getProductId() == 0) {
+      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
+    }
+    if (product == null) {
+      throw new PerkStoreException(PRODUCT_NOT_EXISTS, order.getProductId());
+    }
+    if (order.getStatus() != null) {
+      throw new PerkStoreException(ORDER_CREATION_STATUS_DENIED);
+    }
+    if (StringUtils.isBlank(order.getTransactionHash())) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_TX);
+    }
+    if (order.getQuantity() <= 0) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_QUANTITY);
+    }
+    if (order.getReceiver() == null) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_RECEIVER);
+    }
+    if (order.getSender() == null) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_SENDER);
+    }
+
+    if (!canViewProduct(product, username, false)) {
+      throw new PerkStoreException(ORDER_CREATION_DENIED, username, product.getTitle());
+    }
+
+    checkOrderQuantity(product, order);
+  }
+
+  private void checkOrderQuantity(Product product, ProductOrder productOrder) throws PerkStoreException {
     double quantity = productOrder.getQuantity();
-    long productId = productOrder.getId();
+    long productId = productOrder.getProductId();
 
     Profile sender = productOrder.getSender();
     String username = sender.getId();
     long identityId = sender.getTechnicalId();
 
-    double orderedQuantity = 0;
-    if (product.isUnlimited()) {
-      orderedQuantity = perkStoreStorage.countOrderedQuantity(productId);
-    }
-
+    // check availability
     if (!product.isUnlimited()) {
+      double orderedQuantity = perkStoreStorage.countOrderedQuantity(productId);
       double totalSupply = product.getTotalSupply();
       if ((orderedQuantity + quantity) > totalSupply) {
         throw new PerkStoreException(ORDER_CREATION_QUANTITY_EXCEEDS_SUPPLY, username);
       }
     }
 
+    // check max user orders
     double maxOrdersPerUser = product.getMaxOrdersPerUser();
     if (maxOrdersPerUser > 0) {
       double purchasedQuantity = 0;
       if (product.getOrderPeriodicity() != null) {
+        // user purchased orders per period
         purchasedQuantity = countPurchasedQuantityInCurrentPeriod(product, identityId);
       } else {
+        // user purchased orders all time
         purchasedQuantity = perkStoreStorage.countUserTotalPurchasedQuantity(productId, identityId);
       }
 
@@ -370,6 +423,10 @@ public class PerkStoreService implements Startable {
   }
 
   private boolean canAccessApplication(GlobalSettings globalSettings, String username) throws Exception {
+    if (StringUtils.isBlank(username)) {
+      return false;
+    }
+
     if (globalSettings == null) {
       return true;
     }
@@ -385,6 +442,10 @@ public class PerkStoreService implements Startable {
   }
 
   private boolean canAddProduct(String username) throws Exception {
+    if (StringUtils.isBlank(username)) {
+      return false;
+    }
+
     GlobalSettings globalSettings = getGlobalSettings();
     if (globalSettings == null) {
       return true;
@@ -402,11 +463,19 @@ public class PerkStoreService implements Startable {
   }
 
   private boolean canEditProduct(long productId, String username) throws Exception {
+    if (StringUtils.isBlank(username)) {
+      return false;
+    }
+
     Product product = getProduct(productId);
     return canEditProduct(product, username);
   }
 
   private boolean canEditProduct(Product product, String username) throws Exception {
+    if (StringUtils.isBlank(username)) {
+      return false;
+    }
+
     if (product.getId() == 0) {
       return true;
     }
@@ -422,6 +491,10 @@ public class PerkStoreService implements Startable {
   private boolean canViewProduct(Product product, String username, boolean canAddProduct) {
     if (canAddProduct) {
       return true;
+    }
+
+    if (StringUtils.isBlank(username)) {
+      return false;
     }
 
     List<Profile> accessPermissions = product.getAccessPermissions();

@@ -1,3 +1,5 @@
+import {throwErrorFromServerCall} from './PerkStoreError.js';
+
 export function getProductList() {
   return fetch('/portal/rest/perkstore/api/product/list', {
     method: 'GET',
@@ -16,7 +18,7 @@ export function saveProduct(product) {
     body: JSON.stringify(product),
   }).then((resp) => {
     if (!resp || !resp.ok) {
-      throw new Error('Error saving product', product);
+      return throwErrorFromServerCall(resp, 'Error saving product');
     }
   });
 }

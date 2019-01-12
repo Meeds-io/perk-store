@@ -1,8 +1,9 @@
+import {throwErrorFromServerCall} from './PerkStoreError.js';
+
 export function initSettings() {
-  return getSettings()
-    .then((settings) => {
-      window.perkStoreSettings = settings ? settings : {};
-    });
+  return getSettings().then((settings) => {
+    window.perkStoreSettings = settings ? settings : {};
+  });
 }
 
 export function getSettings() {
@@ -10,7 +11,7 @@ export function getSettings() {
     if (resp && resp.ok) {
       return resp.json();
     } else {
-      throw new Error('Error getting settings');
+      return throwErrorFromServerCall(resp, 'Error getting settings');
     }
   });
 }
@@ -26,10 +27,8 @@ export function saveSettings(settings) {
       },
       body: JSON.stringify(settings),
     }).then((resp) => {
-      if (resp && resp.ok) {
-        return true;
-      } else {
-        throw new Error('Error saving settings', settings);
+      if (!resp || !resp.ok) {
+        return throwErrorFromServerCall(resp, 'Error saving settings');
       }
     });
   } else {
@@ -39,7 +38,7 @@ export function saveSettings(settings) {
 
 export function getOrderFilter() {
   const filter = localStorage.getItem('exo-perkstore-order-filter');
-  if(filter) {
+  if (filter) {
     return JSON.parse(filter);
   } else {
     return {

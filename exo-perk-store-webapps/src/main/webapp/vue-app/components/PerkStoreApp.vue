@@ -230,7 +230,7 @@ export default {
       })
       .catch(e => {
         console.debug("Error initializing application", e);
-        this.error = e;
+        this.error = e && e.message ? e.message : String(e);
       })
       .finally(() => {
         window.setTimeout(() => {

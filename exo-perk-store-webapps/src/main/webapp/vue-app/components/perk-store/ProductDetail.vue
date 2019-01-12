@@ -86,7 +86,7 @@
             fab
             right
             top
-            @click="$emit('buy', product)">
+            @click="displayBuyModal">
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
         </v-card-text>
@@ -177,8 +177,20 @@ export default {
       return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;
     },
     available() {
-      return !this.product.unlimited ? (this.product.totalSupply - this.product.purchased) : 100;
+      if(this.product.unlimited) {
+        return 10000;
+      } else {
+        const available = this.product.totalSupply - this.product.purchased;
+        return available > 0 ? available : 0;
+      }
     },
+  },
+  methods: {
+    displayBuyModal() {
+      if (!this.disabledBuy && this.walletEnabled) {
+        this.$emit('buy', this.product);
+      }
+    }
   }
 }
 </script>

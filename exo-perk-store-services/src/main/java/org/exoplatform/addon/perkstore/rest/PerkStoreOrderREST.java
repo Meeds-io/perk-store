@@ -16,8 +16,7 @@
  */
 package org.exoplatform.addon.perkstore.rest;
 
-import static org.exoplatform.addon.perkstore.service.utils.Utils.getCurrentUserId;
-import static org.exoplatform.addon.perkstore.service.utils.Utils.getErrorJSONFormat;
+import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
 import java.util.List;
 
@@ -73,9 +72,11 @@ public class PerkStoreOrderREST implements ResourceContainer {
     try {
       List<ProductOrder> orders = perkStoreService.getOrders(getCurrentUserId(), filter);
       return Response.ok(orders).build();
+    } catch (PerkStoreException e) {
+      return computeErrorResponse(LOG, e, "Error listing orders");
     } catch (Exception e) {
-      LOG.warn("Error listing orders", e);
-      return Response.serverError().build();
+      LOG.error("Error listing orders", e);
+      return Response.status(500).build();
     }
   }
 
@@ -91,20 +92,44 @@ public class PerkStoreOrderREST implements ResourceContainer {
   @RolesAllowed("users")
   public Response saveOrder(ProductOrder order) {
     if (order == null) {
-      LOG.warn("Bad request sent to server with empty order");
+      LOG.warn("Bad request sent to server with empty order to create");
       return Response.status(400).build();
     }
     try {
       perkStoreService.createOrder(getCurrentUserId(), order);
       return Response.ok().build();
     } catch (PerkStoreException e) {
-      LOG.warn("Error saving new order", e);
-      return Response.serverError()
-                     .entity(getErrorJSONFormat(e))
-                     .build();
+      return computeErrorResponse(LOG, e, "Error creating new order");
     } catch (Exception e) {
-      LOG.warn("Error saving new order", e);
-      return Response.serverError().build();
+      LOG.error("Error creating order", e);
+      return Response.status(500).build();
+    }
+  }
+
+  /**
+   * Save order simulation
+   * 
+   * @param order
+   * @return
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Path("saveSimulate")
+  @RolesAllowed("users")
+  public Response saveOrderSimulate(ProductOrder order) {
+    if (order == null) {
+      LOG.warn("Bad request sent to server with empty order");
+      return Response.status(400).build();
+    }
+    try {
+      order.setTransactionHash(FAKE_TRANSACTION_HASH);
+      perkStoreService.checkCanOrder(getCurrentUserId(), order);
+      return Response.ok().build();
+    } catch (PerkStoreException e) {
+      return computeErrorResponse(LOG, e, "Error simulating order save");
+    } catch (Exception e) {
+      LOG.error("Error simulating order save", e);
+      return Response.status(500).build();
     }
   }
 
@@ -128,13 +153,10 @@ public class PerkStoreOrderREST implements ResourceContainer {
       perkStoreService.saveOrderStatus(getCurrentUserId(), order);
       return Response.ok(perkStoreService.getOrderById(order.getId())).build();
     } catch (PerkStoreException e) {
-      LOG.warn("Error saving order status", e);
-      return Response.serverError()
-                     .entity(getErrorJSONFormat(e))
-                     .build();
+      return computeErrorResponse(LOG, e, "Error saving order status");
     } catch (Exception e) {
-      LOG.warn("Error saving order status", e);
-      return Response.serverError().build();
+      LOG.error("Error saving order status", e);
+      return Response.status(500).build();
     }
   }
 

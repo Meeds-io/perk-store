@@ -116,7 +116,7 @@ export default {
         })
         .catch(e => {
           console.debug("Error while listing orders", e);
-          this.$emit('error', 'Error listing orders');
+          this.$emit('error', e && e.message ? e.message : String(e));
         }).finally(() => this.$emit('loading', false));
     },
     searchOrders() {

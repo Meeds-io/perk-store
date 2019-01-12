@@ -107,7 +107,6 @@ export default {
     available() {
       if(this.product && !this.product.unlimited) {
         const available = this.product.totalSupply - this.product.purchased;
-        console.log(available, this.product.totalSupply, );
         return available > 0 ? available : 0;
       } else {
         return 0;
@@ -193,9 +192,9 @@ export default {
           this.$emit('ordered', order);
         })
         .catch(e => {
-          this.loading = false;
           console.debug("Error saving order", e);
-          this.error = `Payment is in progress but an error occurred while processing order: ${e}`;
+          this.loading = false;
+          this.error = e && e.message ? e.message : String(e);
         });
     },
     errorTransaction(event) {
@@ -230,13 +229,26 @@ export default {
       const amount = this.quantity * this.product.price;
       const message = `Purchased "${this.product.title}": ${this.quantity} x ${this.product.price}${this.symbol ? this.symbol : ''}`;
 
-      document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail' : {
-        amount: amount,
+      // simulate saving order before sending transaction to blockchain
+      return saveOrder({
+        productId: this.product.id,
+        quantity: this.quantity,
         receiver: this.product.receiverMarchand,
-        password: this.walletPassword,
-        label: message,
-        message: message,
-      }}));
+      }, true)
+        .then(() => {
+          document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail' : {
+            amount: amount,
+            receiver: this.product.receiverMarchand,
+            password: this.walletPassword,
+            label: message,
+            message: message,
+          }}));
+        })
+        .catch(e => {
+          console.debug("Checking order availability error", e);
+          this.loading = false;
+          this.error = e && e.message ? e.message : String(e);
+        });
     },
   },
 };

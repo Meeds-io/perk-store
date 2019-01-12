@@ -16,8 +16,8 @@
  */
 package org.exoplatform.addon.perkstore.rest;
 
+import static org.exoplatform.addon.perkstore.service.utils.Utils.computeErrorResponse;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.getCurrentUserId;
-import static org.exoplatform.addon.perkstore.service.utils.Utils.getErrorJSONFormat;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
@@ -55,13 +55,10 @@ public class PerkStoreSettingsREST implements ResourceContainer {
     try {
       return Response.ok(perkStoreService.getGlobalSettings(getCurrentUserId())).build();
     } catch (PerkStoreException e) {
-      LOG.warn("Error when retrieving global settings", e);
-      return Response.serverError()
-                     .entity(getErrorJSONFormat(e))
-                     .build();
+      return computeErrorResponse(LOG, e, "Error when retrieving global settings");
     } catch (Exception e) {
       LOG.error("Error when retrieving global settings", e);
-      return Response.serverError().build();
+      return Response.status(500).build();
     }
   }
 
@@ -80,13 +77,10 @@ public class PerkStoreSettingsREST implements ResourceContainer {
       perkStoreService.saveGlobalSettings(settings, getCurrentUserId());
       return Response.ok().build();
     } catch (PerkStoreException e) {
-      LOG.warn("Error while saving global settings", e);
-      return Response.serverError()
-                     .entity(getErrorJSONFormat(e))
-                     .build();
+      return computeErrorResponse(LOG, e, "Error while saving global settings");
     } catch (Exception e) {
       LOG.error("Error while saving global settings", e);
-      return Response.serverError().build();
+      return Response.status(500).build();
     }
   }
 

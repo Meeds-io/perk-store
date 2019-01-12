@@ -1,8 +1,10 @@
 package org.exoplatform.addon.perkstore.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class OrderFilter {
   private long    productId;
 

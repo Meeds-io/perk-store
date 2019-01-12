@@ -11,13 +11,11 @@
         <init-params>
           <values-param>
             <name>classpath.resources</name>
-<!--             <value>locale.addon.PerkStore</value> -->
-<!--             <value>locale.notification.PerkStoreNotification</value> -->
+            <value>locale.addon.PerkStoreError</value>
           </values-param>
           <values-param>
             <name>portal.resource.names</name>
-<!--             <value>locale.addon.PerkStore</value> -->
-<!--             <value>locale.notification.PerkStoreNotification</value> -->
+            <value>locale.addon.PerkStoreError</value>
           </values-param>
         </init-params>
         </component-plugin>

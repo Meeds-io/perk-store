@@ -1,3 +1,5 @@
+import {throwErrorFromServerCall} from './PerkStoreError.js';
+
 export function getOrderList(productId, filter, limit) {
   if (!productId) {
     return Promise.resolve([]);
@@ -17,13 +19,13 @@ export function getOrderList(productId, filter, limit) {
     if (resp && resp.ok) {
       return resp.json();
     } else {
-      throw new Error('Error getting orders of product id', productId);
+      return throwErrorFromServerCall(resp, `Error getting orders of product id : ${productId}`);
     }
   });
 }
 
-export function saveOrder(order) {
-  return fetch('/portal/rest/perkstore/api/order/save', {
+export function saveOrder(order, simulate) {
+  return fetch(`/portal/rest/perkstore/api/order/save${simulate ? 'Simulate' : ''}`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -33,7 +35,7 @@ export function saveOrder(order) {
     body: JSON.stringify(order),
   }).then((resp) => {
     if (!resp || !resp.ok) {
-      throw new Error('Error saving order', order);
+      return throwErrorFromServerCall(resp, 'Error saving order');
     }
   });
 }
@@ -57,7 +59,7 @@ export function saveOrderStatus(orderId, productId, status, delivered, refunded)
     if (resp && resp.ok) {
       return resp.json();
     } else {
-      throw new Error('Error saving order status', orderId, status);
+      return throwErrorFromServerCall(resp, 'Error saving order status');
     }
   });
 }

@@ -16,8 +16,8 @@
  */
 package org.exoplatform.addon.perkstore.rest;
 
+import static org.exoplatform.addon.perkstore.service.utils.Utils.computeErrorResponse;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.getCurrentUserId;
-import static org.exoplatform.addon.perkstore.service.utils.Utils.getErrorJSONFormat;
 
 import java.util.List;
 
@@ -67,13 +67,10 @@ public class PerkStoreProductREST implements ResourceContainer {
     try {
       perkStoreService.saveProduct(getCurrentUserId(), product);
     } catch (PerkStoreException e) {
-      LOG.warn("Error saving product", e);
-      return Response.serverError()
-                     .entity(getErrorJSONFormat(e))
-                     .build();
+      return computeErrorResponse(LOG, e, "Error saving product");
     } catch (Exception e) {
-      LOG.warn("Error saving product", e);
-      return Response.serverError().build();
+      LOG.error("Error saving product", e);
+      return Response.status(500).build();
     }
     return Response.ok().build();
   }
@@ -92,13 +89,10 @@ public class PerkStoreProductREST implements ResourceContainer {
       List<Product> allProducts = perkStoreService.getProducts(getCurrentUserId());
       return Response.ok(allProducts).build();
     } catch (PerkStoreException e) {
-      LOG.warn("Error getting products list", e);
-      return Response.serverError()
-                     .entity(getErrorJSONFormat(e))
-                     .build();
+      return computeErrorResponse(LOG, e, "Error getting products list");
     } catch (Exception e) {
-      LOG.warn("Error getting products list", e);
-      return Response.serverError().build();
+      LOG.error("Error getting products list", e);
+      return Response.status(500).build();
     }
   }
 

@@ -6,7 +6,14 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import org.exoplatform.addon.perkstore.entity.ProductEntity;
 import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
@@ -15,10 +22,12 @@ import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.commons.api.settings.data.Context;
 import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.portal.Constants;
+import org.exoplatform.portal.localization.LocaleContextInfoUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.*;
+import org.exoplatform.services.resources.*;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.IdentityRegistry;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -68,6 +77,9 @@ public class Utils {
   public static final String        SPACE_ACCOUNT_TYPE                        = "space";
 
   public static final String        USER_ACCOUNT_TYPE                         = "user";
+
+  public static final String        FAKE_TRANSACTION_HASH                     =
+                                                          "0x0000000000000000000000000000000000000000000000000000000000000000";
 
   private Utils() {
   }
@@ -325,8 +337,89 @@ public class Utils {
     return null;
   }
 
-  public static final String getErrorJSONFormat(PerkStoreException e) {
-    return "{code: " + e.getErrorType().getCode() + ", suffix: \"" + e.getErrorType().getSuffix() + "\"}";
+  public static final Locale getCurrentUserLocale() throws Exception {
+    String username = getCurrentUserId();
+
+    LocalePolicy localePolicy = CommonsUtils.getService(LocalePolicy.class);
+    LocaleContextInfo localeCtx = LocaleContextInfoUtils.buildLocaleContextInfo((HttpServletRequest) null);
+    localeCtx.setUserProfileLocale(getUserLocale(username));
+    localeCtx.setRemoteUser(username);
+    Set<Locale> supportedLocales = LocaleContextInfoUtils.getSupportedLocales();
+
+    Locale locale = localePolicy.determineLocale(localeCtx);
+    boolean supported = supportedLocales.contains(locale);
+
+    if (!supported && !"".equals(locale.getCountry())) {
+      locale = new Locale(locale.getLanguage());
+      supported = supportedLocales.contains(locale);
+    }
+    if (!supported) {
+      LOG.warn("Unsupported locale returned by LocalePolicy: " + localePolicy + ". Falling back to 'en'.");
+      locale = Locale.ENGLISH;
+    }
+    return locale;
+  }
+
+  public static final String getI18NMessage(String messageKey) throws Exception {
+    ResourceBundleService resourceBundleService = CommonsUtils.getService(ResourceBundleService.class);
+    Locale userLocale = getCurrentUserLocale();
+    if (userLocale == null) {
+      userLocale = Locale.ENGLISH;
+    }
+    ResourceBundle resourceBundle = resourceBundleService.getResourceBundle("locale.addon.PerkStoreError", userLocale);
+    if (resourceBundle == null) {
+      throw new IllegalStateException("Resource bundle not found");
+    }
+    String message = resourceBundle.getString(messageKey);
+    if (StringUtils.isBlank(message)) {
+      throw new IllegalStateException("Resource bundle key " + messageKey + "not found");
+    }
+    return message;
+  }
+
+  public static final Locale getUserLocale(String username) throws Exception {
+    OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
+    UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(username);
+    String lang = null;
+    if (profile != null) {
+      lang = profile.getAttribute(Constants.USER_LANGUAGE);
+    }
+    if (StringUtils.isNotBlank(lang)) {
+      return LocaleUtils.toLocale(lang);
+    }
+    return null;
+  }
+
+  public static final Response computeErrorResponse(Log log, PerkStoreException e, String message) {
+    displayErrorLog(log, message, e);
+
+    try {
+      String errorJSONFormat = getErrorJSONFormat(e);
+      return Response.status(500)
+                     .type(MediaType.APPLICATION_JSON)
+                     .entity(errorJSONFormat)
+                     .build();
+    } catch (Exception exception) {
+      LOG.error("Error computing error message", exception);
+      return Response.status(500)
+                     .build();
+    }
+  }
+
+  public static final void displayErrorLog(Log log, String message, PerkStoreException e) {
+    if (log.isDebugEnabled()) {
+      log.warn(message, e);
+    } else {
+      log.warn(message + ": {}", e.getMessage());
+    }
+  }
+
+  public static final String getErrorJSONFormat(PerkStoreException e) throws JSONException {
+    JSONObject errorObject = new JSONObject();
+    errorObject.put("code", e.getErrorType().getCode());
+    errorObject.put("suffix", e.getErrorType().getSuffix());
+    errorObject.put("message", e.getLocalizedMessage());
+    return errorObject.toString();
   }
 
   public static final boolean isUserAdmin(String username) throws Exception {

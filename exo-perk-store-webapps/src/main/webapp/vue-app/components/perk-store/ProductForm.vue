@@ -228,7 +228,7 @@ export default {
         })
         .catch(e => {
           console.debug("Error saving product", e);
-          this.$emit('error', 'Error saving product');
+          this.$emit('error', e && e.message ? e.message : String(e));
         });
     }
   }

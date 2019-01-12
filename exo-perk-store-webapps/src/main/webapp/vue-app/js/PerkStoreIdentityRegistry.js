@@ -20,40 +20,6 @@ export function searchContact(filter, onlyUsers) {
 /*
  * Return the address of a user or space
  */
-export function saveNewAddress(id, type, address, isBrowserWallet) {
-  address = address.toLowerCase();
-  return fetch('/portal/rest/wallet/api/account/saveAddress', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      type: type,
-      id: id,
-      address: address,
-    }),
-  }).then((resp) => {
-    if (resp && resp.ok) {
-      if (isBrowserWallet) {
-        // Save the address as generated using a browser wallet
-        localStorage.setItem(`exo-wallet-${type}-${id}`, address);
-      }
-
-      // Save user's or space's associated address in local storage
-      sessionStorage.setItem(`exo-wallet-address-${type}-${id}`, address);
-      return resp;
-    } else {
-      console.error('Error saving wallet address', resp);
-      throw new Error('Error saving wallet address');
-    }
-  });
-}
-
-/*
- * Return the address of a user or space
- */
 export function searchAddress(id, type) {
   const address = sessionStorage.getItem(`exo-wallet-address-${type}-${id}`.toLowerCase());
   if (address) {
