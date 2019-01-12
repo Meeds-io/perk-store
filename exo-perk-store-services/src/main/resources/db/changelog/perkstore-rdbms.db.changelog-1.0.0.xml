@@ -18,6 +18,7 @@
       <column name="ILLUSTRATION_URL" type="NVARCHAR(500)" />
       <column name="ENABLED" type="BOOLEAN" />
       <column name="UNLIMITED" type="BOOLEAN" />
+      <column name="ALLOW_FRACTION" type="BOOLEAN" />
       <column name="TOTAL_SUPPLY" type="DOUBLE" />
       <column name="PRICE" type="DOUBLE" />
       <column name="RECEIVER_ID" type="BIGINT" />
@@ -122,12 +123,6 @@
     <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_05">
       <column name="TRANSACTION_HASH" type="NVARCHAR(66)" />
     </createIndex>
-  </changeSet>
-
-  <changeSet author="perkstore" id="1.0.0-7">
-    <addColumn tableName="ADDONS_PERKSTORE_PRODUCT">
-      <column name="ALLOW_FRACTION" type="BOOLEAN" defaultValue="false" />
-    </addColumn>
   </changeSet>
 
 </databaseChangeLog>
