@@ -45,13 +45,15 @@
   
           <auto-complete
             ref="productMarchandsAutocomplete"
-            input-label="Product editors (optional)"
+            :rules="requiredRule"
+            input-label="Product editors"
             input-placeholder="Select product editors"
             no-data-label="Search for a user"
             multiple
             only-users
             no-address
             big-field
+            required
             @item-selected="selectEditor"
             @clear-selection="selectEditor()" />
   
@@ -206,6 +208,15 @@ export default {
         if(this.product.receiverMarchand) {
           this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
         }
+
+        if(!this.product.marchands && !this.product.creator) {
+          this.product.marchands = [{
+            type: 'user',
+            id: eXo.env.portal.userName,
+            disabled: true,
+          }];
+        }
+
         if(this.product.marchands) {
           this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
         }
