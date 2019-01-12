@@ -22,7 +22,13 @@ export default {
         return null;
       },
     },
-    technicalId: {
+    spaceId: {
+      type: String,
+      default: function() {
+        return null;
+      },
+    },
+    urlId: {
       type: String,
       default: function() {
         return null;
@@ -70,7 +76,7 @@ export default {
       if (!this.type || this.type === 'user') {
         return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/profile/${this.id}`;
       } else if (this.type === 'space') {
-        return `${eXo.env.portal.context}/g/:spaces:${this.id}/`;
+        return `${eXo.env.portal.context}/g/:spaces:${this.urlId}/`;
       }
       return '#';
     },
@@ -95,7 +101,7 @@ export default {
         this.$nextTick(() => {
           $(`#${this.cmpId}`).spacePopup({
             userName: eXo.env.portal.userName,
-            spaceID: this.technicalId,
+            spaceID: this.spaceId,
             restURL: '/portal/rest/v1/social/spaces/{0}',
             membersRestURL: '/portal/rest/v1/social/spaces/{0}/users?returnSize=true',
             managerRestUrl: '/portal/rest/v1/social/spaces/{0}/users?role=manager&returnSize=true',
@@ -105,7 +111,7 @@ export default {
             labels: this.labels,
             content: false,
             keepAlive: true,
-            defaultPosition: this.tiptipPosition || 'left_bottom',
+            defaultPosition: this.tiptipPosition || 'top_left',
             maxWidth: '240px',
           });
         });
@@ -117,7 +123,7 @@ export default {
             labels: this.labels,
             content: false,
             keepAlive: true,
-            defaultPosition: this.tiptipPosition || 'left_bottom',
+            defaultPosition: this.tiptipPosition || 'top_left',
             maxWidth: '240px',
           });
         });

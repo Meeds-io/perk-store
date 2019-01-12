@@ -124,4 +124,10 @@
     </createIndex>
   </changeSet>
 
+  <changeSet author="perkstore" id="1.0.0-7">
+    <addColumn tableName="ADDONS_PERKSTORE_PRODUCT">
+      <column name="ALLOW_FRACTION" type="BOOLEAN" defaultValue="false" />
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

@@ -73,7 +73,7 @@
           <v-checkbox
             v-model="product.enabled"
             label="Enabled product" />
-  
+
           <v-checkbox
             v-model="product.unlimited"
             label="Unlimited supply" />
@@ -94,12 +94,23 @@
             label="Price"
             placeholder="input the product price"
             required />
+
+          <v-checkbox
+            v-model="product.allowFraction"
+            label="Allow fractioned quantity" />
+  
+          <v-text-field
+            v-model.number="product.maxOrdersPerUser"
+            name="ProductMaxOrdersPerUser"
+            label="Maximum orders per user"
+            placeholder="You can limit the number of user orders" />
   
           <v-combobox
             v-model="product.orderPeriodicity"
             :items="periodsValues"
             :return-object="false"
             label="User order limitation periodicity"
+            placeholder="Periodicity used to limit user orders"
             hide-no-data
             hide-selected
             small-chips>
@@ -109,12 +120,6 @@
               {{ orderPeriodicityLabel }}
             </template>
           </v-combobox>
-  
-          <v-text-field
-            v-model.number="product.maxOrdersPerUser"
-            name="ProductMaxOrdersPerUser"
-            label="Maximum orders per user"
-            placeholder="You can limit the number of user orders" />
         </v-flex>
       </v-layout>
       <v-card-actions>

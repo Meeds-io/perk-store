@@ -1,7 +1,7 @@
 package org.exoplatform.addon.perkstore.entity;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -14,65 +14,68 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
 @NamedQueries({ @NamedQuery(name = "Product.getAllProducts", query = "select p from Product p ORDER BY p.createdDate DESC") })
 public class ProductEntity implements Serializable {
 
-  private static final long       serialVersionUID = -592052513482849972L;
+  private static final long      serialVersionUID = -592052513482849972L;
 
   @Id
   @SequenceGenerator(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ID", sequenceName = "SEQ_ADDONS_PERKSTORE_PRODUCT_ID")
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_PERKSTORE_PRODUCT_ID")
   @Column(name = "PRODUCT_ID")
-  private Long                    id;
+  private Long                   id;
 
   @Column(name = "TITLE", nullable = false)
-  private String                  title;
+  private String                 title;
 
   @Column(name = "DESCRIPTION", nullable = true)
-  private String                  description;
+  private String                 description;
 
   @Column(name = "ILLUSTRATION_URL", nullable = true)
-  private String                  illustrationURL;
+  private String                 illustrationURL;
 
   @Column(name = "ENABLED", nullable = false)
-  private boolean                 enabled;
+  private boolean                enabled;
 
   @Column(name = "UNLIMITED", nullable = false)
-  private boolean                 unlimited;
+  private boolean                unlimited;
+
+  @Column(name = "ALLOW_FRACTION", nullable = false)
+  private boolean                allowFraction;
 
   @Column(name = "TOTAL_SUPPLY", nullable = false)
-  private double                  totalSupply;
+  private double                 totalSupply;
 
   @Column(name = "PRICE", nullable = false)
-  private double                  price;
+  private double                 price;
 
   @Column(name = "RECEIVER_ID", nullable = false)
-  private long                    receiverId;
+  private long                   receiverId;
 
   @Column(name = "PERIODICITY", nullable = false)
-  private ProductOrderPeriodType  orderPeriodicity;
+  private ProductOrderPeriodType orderPeriodicity;
 
   @Column(name = "MAX_ORDERS_PER_USER", nullable = false)
-  private double                  maxOrdersPerUser;
+  private double                 maxOrdersPerUser;
 
   @Column(name = "CREATED_DATE", nullable = false)
-  private long                    createdDate;
+  private long                   createdDate;
 
   @Column(name = "LAST_MODIFIED_DATE", nullable = true)
-  private long                    lastModifiedDate;
+  private long                   lastModifiedDate;
 
   @Column(name = "CREATOR", nullable = false)
-  private long                    creator;
+  private long                   creator;
 
   @Column(name = "LAST_MODIFIER", nullable = true)
-  private long                    lastModifier;
+  private long                   lastModifier;
 
   @ElementCollection
   @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_MARCHAND", joinColumns = @JoinColumn(name = "PRODUCT_ID"))
   @Column(name = "MARCHAND_IDENTITY_ID")
-  private List<Long>              marchands;
+  private List<Long>             marchands;
 
   @ElementCollection
   @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_PERMISSION", joinColumns = @JoinColumn(name = "PRODUCT_ID"))
   @Column(name = "PERMISSION_IDENTITY_ID")
-  private List<Long>              accessPermissions;
+  private List<Long>             accessPermissions;
 
   public Long getId() {
     return id;
@@ -120,6 +123,14 @@ public class ProductEntity implements Serializable {
 
   public void setUnlimited(boolean unlimited) {
     this.unlimited = unlimited;
+  }
+
+  public boolean isAllowFraction() {
+    return allowFraction;
+  }
+
+  public void setAllowFraction(boolean allowFraction) {
+    this.allowFraction = allowFraction;
   }
 
   public double getTotalSupply() {

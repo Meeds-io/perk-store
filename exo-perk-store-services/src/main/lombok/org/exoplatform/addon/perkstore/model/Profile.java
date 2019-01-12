@@ -15,6 +15,10 @@ public class Profile implements Serializable, Cloneable {
 
   private long              technicalId;
 
+  private long              spaceId;
+
+  private String            spaceURLId;
+
   private String            displayName;
 
   @SuppressWarnings("all")

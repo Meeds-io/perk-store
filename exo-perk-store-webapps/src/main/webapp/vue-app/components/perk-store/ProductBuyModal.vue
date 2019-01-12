@@ -206,10 +206,19 @@ export default {
       this.error = null;
       this.loading = true;
 
-      if (!this.quantity || isNaN(parseFloat(this.quantity)) || !Number.isFinite(this.quantity) || !Number.isInteger(this.quantity) || this.quantity <= 0) {
+      let qty = this.quantity;
+      try {
+        qty = this.product.allowFraction ? parseFloat(qty) : parseInt(qty);
+      } catch(e) {
+        // Nothing to do
+      }
+      console.log("qty", qty, !qty || isNaN(qty) || qty <= 0, !Number.isFinite(qty), (!this.product.allowFraction && !Number.isInteger(this.quantity)));
+      if (!qty || isNaN(qty) || qty <= 0 || !Number.isFinite(qty) || (!this.product.allowFraction && !Number.isInteger(this.quantity))) {
         this.error = 'Invalid quantity';
         return;
       }
+
+      this.quantity = qty;
 
       if (!this.product.unlimited && this.quantity > this.maxQuantity) {
         this.error = `You can't buy more than ${this.maxQuantity} as quantity`;

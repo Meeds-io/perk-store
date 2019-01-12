@@ -4,7 +4,13 @@ export function getProductList() {
   return fetch('/portal/rest/perkstore/api/product/list', {
     method: 'GET',
     credentials: 'include',
-  }).then((resp) => resp && resp.ok && resp.json());
+  }).then((resp) => {
+    if(resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error getting products list');
+    }
+  });
 }
 
 export function saveProduct(product) {

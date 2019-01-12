@@ -42,6 +42,8 @@ import org.exoplatform.ws.frameworks.json.JsonParser;
 import org.exoplatform.ws.frameworks.json.impl.*;
 
 public class Utils {
+  private static final String       SPACE_GROUP_PREFIX                        = SpaceUtils.SPACE_GROUP + "/";
+
   private static final Log          LOG                                       = ExoLogger.getLogger(Utils.class);
 
   public static final JsonParser    JSON_PARSER                               = new JsonParserImpl();
@@ -215,6 +217,7 @@ public class Utils {
     product.setIllustrationURL(entity.getIllustrationURL());
     product.setEnabled(entity.isEnabled());
     product.setUnlimited(entity.isUnlimited());
+    product.setAllowFraction(entity.isAllowFraction());
     product.setTotalSupply(entity.getTotalSupply());
     product.setMaxOrdersPerUser(entity.getMaxOrdersPerUser());
     product.setCreator(toProfile(entity.getCreator()));
@@ -254,6 +257,7 @@ public class Utils {
     entity.setIllustrationURL(product.getIllustrationURL());
     entity.setEnabled(product.isEnabled());
     entity.setUnlimited(product.isUnlimited());
+    entity.setAllowFraction(product.isAllowFraction());
     entity.setTotalSupply(product.getTotalSupply());
     entity.setMaxOrdersPerUser(product.getMaxOrdersPerUser());
     entity.setCreatedDate(product.getCreatedDate());
@@ -321,7 +325,14 @@ public class Utils {
   private static Profile toProfile(Identity identity) {
     if (identity != null) {
       Profile profile = new Profile();
-      profile.setDisplayName(identity.getProfile().getFullName());
+      String fullName = identity.getProfile().getFullName();
+      if (StringUtils.isBlank(fullName) && SpaceIdentityProvider.NAME.equals(identity.getProviderId())) {
+        Space space = getSpace(identity.getRemoteId());
+        fullName = space.getDisplayName();
+        profile.setSpaceId(Long.parseLong(space.getId()));
+        profile.setSpaceURLId(space.getGroupId().replace(SPACE_GROUP_PREFIX, ""));
+      }
+      profile.setDisplayName(fullName);
       profile.setTechnicalId(Long.parseLong(identity.getId()));
       profile.setId(identity.getRemoteId());
       profile.setType(getIdentityTypeByProviderId(identity.getProviderId()));

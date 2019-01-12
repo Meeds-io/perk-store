@@ -21,6 +21,8 @@ public class Product implements Serializable, Cloneable {
 
   private boolean           unlimited;
 
+  private boolean           allowFraction;
+
   private double            totalSupply;
 
   private double            price;

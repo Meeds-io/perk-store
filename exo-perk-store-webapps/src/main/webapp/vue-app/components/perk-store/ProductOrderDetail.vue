@@ -4,7 +4,8 @@
       <h4>
         <profile-link
           :id="order.sender.id"
-          :technical-id="order.sender.technicalId"
+          :space-id="order.sender.spaceId"
+          :url-id="order.sender.spaceURLId"
           :type="order.sender.type"
           :display-name="order.sender.displayName" />
       </h4>
@@ -37,7 +38,8 @@
         <v-list-tile-content class="align-end">
           <profile-link
             :id="order.receiver.id"
-            :technical-id="order.receiver.technicalId"
+            :space-id="order.receiver.spaceId"
+            :url-id="order.receiver.spaceURLId"
             :type="order.receiver.type"
             :display-name="order.receiver.displayName" />
         </v-list-tile-content>
@@ -64,7 +66,12 @@
       <v-list-tile>
         <v-list-tile-content>Ordered quantity:</v-list-tile-content>
         <v-list-tile-content class="align-end">
-          {{ order.quantity || '-' }}
+          <v-badge
+            color="green"
+            left>
+            <span slot="badge">{{ order.quantity }}</span>
+            <span></span>
+          </v-badge>
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile :class="edit && 'grey lighten-3'">
