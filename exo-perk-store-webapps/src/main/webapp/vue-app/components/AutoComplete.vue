@@ -3,6 +3,7 @@
     <v-autocomplete
       ref="selectAutoComplete"
       v-model="selectedValue"
+      :rules="rules"
       :items="items"
       :loading="isLoadingSuggestions"
       :search-input.sync="searchTerm"
@@ -13,6 +14,7 @@
       :content-class="`contactAutoCompleteContent ${bigField && 'bigContactAutoComplete'}`"
       :filter="filterIgnoredItems"
       :multiple="multiple"
+      :required="required"
       class="contactAutoComplete"
       max-width="100%"
       item-text="name"
@@ -77,14 +79,17 @@
         </v-label>
       </template>
 
-      <template slot="item" slot-scope="{item}">
+      <template slot="item" slot-scope="data">
+        <template v-if="typeof data.item !== 'object'">
+          <v-list-tile-content v-text="data.item" />
+        </template>
         <v-list-tile-avatar
-          v-if="item.avatar"
+          v-else-if="data.item.avatar"
           tile
           size="20">
-          <img :src="item.avatar">
+          <img :src="data.item.avatar">
         </v-list-tile-avatar>
-        <v-list-tile-title v-text="item.name" />
+        <v-list-tile-title v-text="data.item.name" />
       </template>
     </v-autocomplete>
   </v-flex>
@@ -95,6 +100,18 @@ import {searchAddress, searchContact, searchFullName, searchUserOrSpaceObject} f
 
 export default {
   props: {
+    rules: {
+      type: Array,
+      default: function() {
+        return [];
+      },
+    },
+    required: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
     inputLabel: {
       type: String,
       default: function() {

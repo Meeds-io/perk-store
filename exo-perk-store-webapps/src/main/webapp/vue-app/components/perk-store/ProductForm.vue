@@ -1,126 +1,138 @@
 <template>
-  <v-container grid-list-xl class="white">
-    <v-layout
-      wrap
-      justify-space-between>
-      <v-flex
-        xs12
-        md4>
-        <v-text-field
-          v-model="product.title"
-          name="ProductTitle"
-          label="Product title"
-          placeholder="input a product title" />
+  <v-form ref="form">
+    <v-container grid-list-xl class="white">
+      <v-layout
+        wrap
+        justify-space-between>
+        <v-flex
+          xs12
+          md4>
+          <v-text-field
+            v-model="product.title"
+            :rules="requiredRule"
+            name="ProductTitle"
+            label="Product title"
+            placeholder="input a product title"
+            required />
+  
+          <v-text-field
+            v-model="product.illustrationURL"
+            name="ProductImage"
+            label="Product image"
+            placeholder="input the product image URL" />
+  
+          <v-textarea
+            v-model="product.description"
+            :rules="requiredRule"
+            name="ProductDescription"
+            label="Product description"
+            placeholder="Input a product description"
+            class="mt-4"
+            rows="5"
+            flat
+            required />
+  
+          <auto-complete
+            ref="receiverMarchandAutocomplete"
+            :rules="requiredRule"
+            input-label="Receiver account"
+            input-placeholder="Select the marchand receiver"
+            no-data-label="Search for a user or a space"
+            big-field
+            required
+            @item-selected="selectRecipient"
+            @clear-selection="selectRecipient()" />
+  
+          <auto-complete
+            ref="productMarchandsAutocomplete"
+            input-label="Product editors (optional)"
+            input-placeholder="Select product editors"
+            no-data-label="Search for a user"
+            multiple
+            only-users
+            no-address
+            big-field
+            @item-selected="selectEditor"
+            @clear-selection="selectEditor()" />
+  
+          <auto-complete
+            ref="productAccessPermissionAutocomplete"
+            input-label="Product access permissions (optional)"
+            input-placeholder="Select product access permissions"
+            no-data-label="Search for a user or a space"
+            multiple
+            no-address
+            big-field
+            @item-selected="selectAccessPermission"
+            @clear-selection="selectAccessPermission()" />
+        </v-flex>
+  
+        <v-flex
+          xs12
+          md6>
+          <v-checkbox
+            v-model="product.enabled"
+            label="Enabled product" />
+  
+          <v-checkbox
+            v-model="product.unlimited"
+            label="Unlimited supply" />
 
-        <v-text-field
-          v-model="product.illustrationURL"
-          name="ProductImage"
-          label="Product image"
-          placeholder="input the product image URL" />
+          <v-text-field
+            v-if="!product.unlimited"
+            v-model.number="product.totalSupply"
+            :rules="requiredRule"
+            name="ProductTotalSupply"
+            label="Total supply"
+            placeholder="input the product total supply"
+            required />
 
-        <v-textarea
-          v-model="product.description"
-          name="ProductDescription"
-          label="Product description"
-          placeholder="Input a product description"
-          class="mt-4"
-          rows="5"
-          flat />
-
-        <auto-complete
-          ref="receiverMarchandAutocomplete"
-          input-label="Receiver account"
-          input-placeholder="Select the marchand receiver"
-          no-data-label="Search for a user or a space"
-          big-field
-          @item-selected="selectRecipient"
-          @clear-selection="selectRecipient()" />
-
-        <auto-complete
-          ref="productMarchandsAutocomplete"
-          input-label="Product editors (optional)"
-          input-placeholder="Select product editors"
-          no-data-label="Search for a user"
-          multiple
-          only-users
-          no-address
-          big-field
-          @item-selected="selectEditor"
-          @clear-selection="selectEditor()" />
-
-        <auto-complete
-          ref="productAccessPermissionAutocomplete"
-          input-label="Product access permissions (optional)"
-          input-placeholder="Select product access permissions"
-          no-data-label="Search for a user or a space"
-          multiple
-          no-address
-          big-field
-          @item-selected="selectAccessPermission"
-          @clear-selection="selectAccessPermission()" />
-      </v-flex>
-
-      <v-flex
-        xs12
-        md6>
-        <v-checkbox
-          v-model="product.enabled"
-          label="Enabled product" />
-
-        <v-checkbox
-          v-model="product.unlimited"
-          label="Unlimited supply" />
-
-        <v-text-field
-          v-if="!product.unlimited"
-          v-model.number="product.totalSupply"
-          name="ProductTotalSupply"
-          label="Total supply"
-          placeholder="input the product total supply" />
-
-        <v-text-field
-          v-model.number="product.price"
-          name="ProductPrice"
-          label="Price"
-          placeholder="input the product price" />
-
-        <v-combobox
-          v-model="product.orderPeriodicity"
-          :items="periodsValues"
-          :return-object="false"
-          label="User order limitation periodicity"
-          hide-no-data
-          hide-selected
-          small-chips>
-          <!-- Without slot-scope, the template isn't displayed -->
-          <!-- eslint-disable-next-line vue/no-unused-vars -->
-          <template slot="selection" slot-scope="data">
-            {{ orderPeriodicityLabel }}
-          </template>
-        </v-combobox>
-
-        <v-text-field
-          v-model.number="product.maxOrdersPerUser"
-          name="ProductMaxOrdersPerUser"
-          label="Maximum orders per user"
-          placeholder="You can limit the number of user orders" />
-      </v-flex>
-    </v-layout>
-    <v-card-actions>
-      <v-spacer />
-      <button
-        class="btn btn-primary mr-1"
-        @click="saveProduct()">
-        Save
-      </button>
-      <button
-        class="btn"
-        @click="$emit('close')">
-        Cancel
-      </button>
-      <v-spacer />
-    </v-card-actions>
-  </v-container>
+          <v-text-field
+            v-model.number="product.price"
+            :rules="requiredRule"
+            name="ProductPrice"
+            label="Price"
+            placeholder="input the product price"
+            required />
+  
+          <v-combobox
+            v-model="product.orderPeriodicity"
+            :items="periodsValues"
+            :return-object="false"
+            label="User order limitation periodicity"
+            hide-no-data
+            hide-selected
+            small-chips>
+            <!-- Without slot-scope, the template isn't displayed -->
+            <!-- eslint-disable-next-line vue/no-unused-vars -->
+            <template slot="selection" slot-scope="data">
+              {{ orderPeriodicityLabel }}
+            </template>
+          </v-combobox>
+  
+          <v-text-field
+            v-model.number="product.maxOrdersPerUser"
+            name="ProductMaxOrdersPerUser"
+            label="Maximum orders per user"
+            placeholder="You can limit the number of user orders" />
+        </v-flex>
+      </v-layout>
+      <v-card-actions>
+        <v-spacer />
+        <button
+          class="btn btn-primary mr-1"
+          @click="saveProduct">
+          Save
+        </button>
+        <button
+          class="btn"
+          @click="$event.preventDefault();$event.stopPropagation();$emit('close')">
+          Cancel
+        </button>
+        <v-spacer />
+      </v-card-actions>
+    </v-container>
+  </v-form>
 </template>
 
 <script>
@@ -143,6 +155,7 @@ export default {
   data() {
     return {
       orderPeriodicity: null,
+      requiredRule: [(v) => !!v || 'Required field'],
       periodsValues: ['Week', 'Month', 'Quarter', 'Semester', 'Year'],
       periods: [
         {
@@ -219,8 +232,19 @@ export default {
         this.product.accessPermissions = [];
       }
     },
-    saveProduct() {
+    saveProduct(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if(!this.$refs.form.validate()) {
+        return;
+      }
+
       this.$emit('error', null);
+      if(!this.product.title) {
+        this.$emit('error', 'Empty product title');
+      }
+
       return saveProduct(this.product)
         .then(() => {
           this.$emit('added', this.product);

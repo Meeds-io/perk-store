@@ -85,10 +85,13 @@ public class PerkStoreService implements Startable {
     } else if (!canAccessApplication(globalSettings, username)) {
       throw new PerkStoreException(GLOBAL_SETTINGS_ACCESS_DENIED, username);
     }
+
     globalSettings.setCanAddProduct(canAddProduct(username));
-    globalSettings.setAdministrator(isUserAdmin(username));
+    globalSettings.setAdministrator(isPerkStoreManager(username));
+
+    // Delete useless information for normal user
     if (!globalSettings.isAdministrator()) {
-      // Delete useless information for normal user
+      globalSettings.setManagers(null);
       globalSettings.setAccessPermissions(null);
       globalSettings.setProductCreationPermissions(null);
     }
@@ -133,11 +136,11 @@ public class PerkStoreService implements Startable {
     if (products == null || products.isEmpty()) {
       return Collections.emptyList();
     }
-    boolean canAddProduct = canAddProduct(username);
+    boolean isPerkstoreManager = isPerkStoreManager(username);
     Iterator<Product> productsIterator = products.iterator();
     while (productsIterator.hasNext()) {
       Product product = productsIterator.next();
-      if (canViewProduct(product, username, canAddProduct)) {
+      if (canViewProduct(product, username, isPerkstoreManager)) {
         computeProductFields(username, product);
       } else {
         productsIterator.remove();
@@ -233,10 +236,6 @@ public class PerkStoreService implements Startable {
     perkStoreStorage.saveOrder(order);
   }
 
-  public ProductOrder getOrderById(long orderId) {
-    return perkStoreStorage.getOrder(orderId);
-  }
-
   public void saveOrderStatus(String username, ProductOrder order) throws Exception {
     if (order == null) {
       throw new IllegalArgumentException("Order is null");
@@ -296,6 +295,10 @@ public class PerkStoreService implements Startable {
       productOrder.setRefundedDate(0);
     }
     perkStoreStorage.saveOrder(productOrder);
+  }
+
+  public ProductOrder getOrderById(long orderId) {
+    return perkStoreStorage.getOrder(orderId);
   }
 
   private GlobalSettings loadGlobalSettings() throws JsonException {
@@ -422,6 +425,19 @@ public class PerkStoreService implements Startable {
     }
   }
 
+  private boolean isPerkStoreManager(String username) throws Exception {
+    if (isUserAdmin(username)) {
+      return true;
+    }
+
+    GlobalSettings globalSettings = getGlobalSettings();
+    if (globalSettings != null && globalSettings.getManagers() != null
+        && !globalSettings.getManagers().isEmpty()) {
+      return hasPermission(username, globalSettings.getManagers());
+    }
+    return false;
+  }
+
   private boolean canAccessApplication(GlobalSettings globalSettings, String username) throws Exception {
     if (StringUtils.isBlank(username)) {
       return false;
@@ -431,14 +447,11 @@ public class PerkStoreService implements Startable {
       return true;
     }
 
-    List<String> accessPermissions = globalSettings.getAccessPermissions();
-
-    if (accessPermissions == null) {
-      // No permissions check to do
+    if (isPerkStoreManager(username)) {
       return true;
     }
 
-    return hasPermission(username, accessPermissions);
+    return hasPermission(username, globalSettings.getAccessPermissions());
   }
 
   private boolean canAddProduct(String username) throws Exception {
@@ -451,33 +464,32 @@ public class PerkStoreService implements Startable {
       return true;
     }
 
-    List<String> productCreationPermissions = globalSettings.getProductCreationPermissions();
-    List<String> accessPermissions = globalSettings.getAccessPermissions();
-
-    if (productCreationPermissions == null && accessPermissions == null) {
-      // No permissions check to do
-      return true;
-    }
-
-    return hasPermission(username, productCreationPermissions) && hasPermission(username, accessPermissions);
+    return hasPermission(username, globalSettings.getProductCreationPermissions())
+        && hasPermission(username, globalSettings.getAccessPermissions());
   }
 
   private boolean canEditProduct(long productId, String username) throws Exception {
     if (StringUtils.isBlank(username)) {
       return false;
     }
+    if (isUserAdmin(username)) {
+      return true;
+    }
 
-    Product product = getProduct(productId);
-    return canEditProduct(product, username);
+    return canEditProduct(getProduct(productId), username);
   }
 
   private boolean canEditProduct(Product product, String username) throws Exception {
+    if (product == null) {
+      throw new IllegalArgumentException("Product is mandatory");
+    }
+
     if (StringUtils.isBlank(username)) {
-      return false;
+      throw new IllegalArgumentException("Username is mandatory");
     }
 
     if (product.getId() == 0) {
-      return true;
+      return canAddProduct(username);
     }
 
     List<Profile> marchands = product.getMarchands();
@@ -488,8 +500,8 @@ public class PerkStoreService implements Startable {
     return isUserMemberOf(username, marchands);
   }
 
-  private boolean canViewProduct(Product product, String username, boolean canAddProduct) {
-    if (canAddProduct) {
+  private boolean canViewProduct(Product product, String username, boolean isPerkStoreManager) {
+    if (isPerkStoreManager) {
       return true;
     }
 

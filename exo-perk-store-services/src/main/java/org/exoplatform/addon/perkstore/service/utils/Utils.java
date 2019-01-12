@@ -426,16 +426,28 @@ public class Utils {
     return isUserMemberOf(username, ADMINISTRATORS_GROUP);
   }
 
-  public static final boolean hasPermission(String username, List<String> productCreationPermissions) throws Exception {
-    boolean isProductCreationAllowed = productCreationPermissions == null;
-    if (productCreationPermissions != null) {
-      for (String creationPermission : productCreationPermissions) {
-        if (isUserMemberOf(username, creationPermission)) {
-          isProductCreationAllowed = true;
-        }
+  public static final boolean hasPermission(String username, List<Long> identityIds) throws Exception {
+    if (identityIds == null || identityIds.isEmpty()) {
+      return true;
+    }
+    for (Long identityId : identityIds) {
+      Identity identityById = getIdentityById(identityId);
+      String permissionExpression = getPermissionExpression(identityById);
+      if (isUserMemberOf(username, permissionExpression)) {
+        return true;
       }
     }
-    return isProductCreationAllowed;
+    return false;
+  }
+
+  public static final String getPermissionExpression(Identity identity) {
+    if (SpaceIdentityProvider.NAME.equals(identity.getProviderId())) {
+      String spacePrettyName = identity.getRemoteId();
+      Space space = getSpace(spacePrettyName);
+      return space == null ? null : space.getGroupId();
+    } else {
+      return identity.getRemoteId();
+    }
   }
 
   public static final boolean isUserMemberOf(String username, List<Profile> permittedProfiles) {

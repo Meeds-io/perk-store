@@ -8,17 +8,19 @@ import lombok.Data;
 @Data
 public class GlobalSettings implements Serializable, Cloneable {
 
-  private static final long      serialVersionUID = 6313043752170656574L;
+  private static final long    serialVersionUID = 6313043752170656574L;
 
-  private transient List<String> productCreationPermissions;
+  private transient List<Long> productCreationPermissions;
 
-  private transient List<String> accessPermissions;
+  private transient List<Long> accessPermissions;
 
-  private boolean                isAdministrator;
+  private transient List<Long> managers;
 
-  private boolean                canAddProduct;
+  private boolean              isAdministrator;
 
-  private String                 symbol;
+  private boolean              canAddProduct;
+
+  private String               symbol;
 
   @SuppressWarnings("all")
   public GlobalSettings clone() {
