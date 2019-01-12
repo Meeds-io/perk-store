@@ -208,13 +208,18 @@ export default {
   },
   methods: {
     saveOrder() {
-      this.changeOrderStatus(this.status, this.delivered, this.refunded).then(() => this.edit = false);
-    },
-    changeOrderStatus(newStatus, delivered, refunded) {
+      if(this.order.quantity < this.delivered + this.refunded) {
+        this.$emit('error', 'Product quantity is less than entered values for (delivered + refunded)');
+        return;
+      }
+
       this.$emit('loading', true);
-      return saveOrderStatus(this.order.id, this.order.productId, newStatus, delivered, refunded)
-        .then(order => this.$emit('changed', order))
-        .then(() => this.$forceUpdate())
+      return saveOrderStatus(this.order.id, this.order.productId, this.status, this.delivered, this.refunded)
+        .then(order => {
+          this.edit = false;
+          this.$emit('changed', order);
+          this.$forceUpdate();
+        })
         .catch(e => {
           console.debug("Error saving status", e);
           this.$emit('error', e && e.message ? e.message : String(e));
