@@ -94,14 +94,14 @@
           </v-toolbar>
 
           <v-toolbar
-            v-if="!walletAddonInstalled"
+            v-if="!selectedProduct && !loading && !walletLoading"
             color="transparent"
             flat>
             <v-spacer />
-            <v-flex v-if="!loading && !walletLoading && !walletAddonInstalled" class="text-xs-center">
+            <v-flex class="text-xs-center">
               <div class="alert alert-warning">
                 <i class="uiIconWarning"></i>
-                Ethereum wallet addon isn't installed, thus no payment is possible.
+                {{ warning }}
               </div>
             </v-flex>
             <v-spacer />
@@ -187,6 +187,7 @@ export default {
     SettingsModal,
   },
   data: () => ({
+    warning: null,
     error: null,
     walletAddonInstalled: false,
     walletLoading: false,
@@ -246,6 +247,8 @@ export default {
         window.setTimeout(() => {
           if(window.walletAddonInstalled) {
             this.initWalletAPI();
+          } else {
+            this.warning = 'Ethereum wallet addon isn\'t installed, thus no payment is possible.';
           }
         }, 2000);
         this.loading = false;
@@ -262,7 +265,7 @@ export default {
       this.walletLoading = false;
       const result = event && event.detail;
       if(!result || result.error) {
-        this.error = `Wallet seems not configured properly ${result && result.error ? (`: ${  result.error}`) : ''}`;
+        this.warning = `Wallet seems not configured properly ${result && result.error ? (`: ${  result.error}`) : ''}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
