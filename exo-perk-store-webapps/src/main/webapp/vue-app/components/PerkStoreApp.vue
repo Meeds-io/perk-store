@@ -265,7 +265,7 @@ export default {
       this.walletLoading = false;
       const result = event && event.detail;
       if(!result || result.error) {
-        this.warning = `Wallet seems not configured properly ${result && result.error ? (`: ${  result.error}`) : ''}`;
+        this.warning = `${result && result.error ? (`${  result.error}`) : 'Wallet seems not configured properly'}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
