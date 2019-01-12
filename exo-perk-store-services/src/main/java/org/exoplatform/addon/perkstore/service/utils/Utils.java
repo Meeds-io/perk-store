@@ -107,6 +107,22 @@ public class Utils {
     return time.atZone(ZoneOffset.systemDefault()).toEpochSecond() * 1000;
   }
 
+  public static void addIdentityIdsFromProfiles(List<Profile> permissionsProfiles, List<Long> permissions) {
+    if (permissionsProfiles != null) {
+      for (Profile profile : permissionsProfiles) {
+        if (profile == null || StringUtils.isBlank(profile.getId()) || StringUtils.isBlank(profile.getType())) {
+          continue;
+        }
+        long identityId = profile.getTechnicalId();
+        if (identityId == 0) {
+          Identity identity = getIdentityByTypeAndId(profile.getType(), profile.getId());
+          identityId = Long.parseLong(identity.getId());
+        }
+        permissions.add(identityId);
+      }
+    }
+  }
+
   public static String getIdentityIdByType(Identity receiverIdentity) {
     if (SpaceIdentityProvider.NAME.equals(receiverIdentity.getProviderId())) {
       Space space = getSpace(receiverIdentity.getRemoteId());
@@ -442,8 +458,11 @@ public class Utils {
       return true;
     }
     for (Long identityId : identityIds) {
-      Identity identityById = getIdentityById(identityId);
-      String permissionExpression = getPermissionExpression(identityById);
+      Identity identity = getIdentityById(identityId);
+      if (identity == null) {
+        continue;
+      }
+      String permissionExpression = getPermissionExpression(identity);
       if (isUserMemberOf(username, permissionExpression)) {
         return true;
       }
@@ -452,6 +471,9 @@ public class Utils {
   }
 
   public static final String getPermissionExpression(Identity identity) {
+    if (identity == null) {
+      throw new IllegalArgumentException("Identity is null");
+    }
     if (SpaceIdentityProvider.NAME.equals(identity.getProviderId())) {
       String spacePrettyName = identity.getRemoteId();
       Space space = getSpace(spacePrettyName);
@@ -495,11 +517,9 @@ public class Utils {
       throw new IllegalArgumentException("Username is mandatory");
     }
 
-    if (permissionExpression.contains("/")) {
-      return StringUtils.equals(username, permissionExpression);
-    } else if (permissionExpression.contains(":")) {
+    if (permissionExpression.contains(":")) {
       throw new UnsupportedOperationException("Permission check with role/membershipType isn't implemented ");
-    } else {
+    } else if (permissionExpression.contains("/")) {
       org.exoplatform.services.security.Identity identity = CommonsUtils.getService(IdentityRegistry.class).getIdentity(username);
       if (identity != null) {
         return identity.isMemberOf(permissionExpression);
@@ -523,6 +543,8 @@ public class Utils {
         }
       }
       return false;
+    } else {
+      return StringUtils.equals(username, permissionExpression);
     }
   }
 

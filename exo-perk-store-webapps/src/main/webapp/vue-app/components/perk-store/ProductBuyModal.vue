@@ -212,7 +212,6 @@ export default {
       } catch(e) {
         // Nothing to do
       }
-      console.log("qty", qty, !qty || isNaN(qty) || qty <= 0, !Number.isFinite(qty), (!this.product.allowFraction && !Number.isInteger(this.quantity)));
       if (!qty || isNaN(qty) || qty <= 0 || !Number.isFinite(qty) || (!this.product.allowFraction && !Number.isInteger(this.quantity))) {
         this.error = 'Invalid quantity';
         return;

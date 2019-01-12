@@ -142,11 +142,6 @@ export default {
       },
     },
   },
-  data() {
-    return {
-      isAdministrator: true,
-    };
-  },
   computed: {
     ordersListBtnClass() {
       if(!this.product) {

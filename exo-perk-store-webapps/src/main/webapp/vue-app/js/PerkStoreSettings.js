@@ -2,7 +2,7 @@ import {throwErrorFromServerCall} from './PerkStoreError.js';
 
 export function initSettings() {
   return getSettings().then((settings) => {
-    window.perkStoreSettings = settings ? settings : {};
+    return (window.perkStoreSettings = Object.assign({}, settings));
   });
 }
 

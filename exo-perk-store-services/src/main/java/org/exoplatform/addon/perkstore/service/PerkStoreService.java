@@ -68,9 +68,28 @@ public class PerkStoreService implements Startable {
 
   public void saveGlobalSettings(GlobalSettings settings, String username) throws Exception {
     GlobalSettings globalSettings = getGlobalSettings();
-    if (globalSettings == null || globalSettings.getAccessPermissions() == null && !isUserAdmin(username)) {
+    if (globalSettings == null || globalSettings.getAccessPermissions() == null && !isPerkStoreManager(username)) {
       throw new PerkStoreException(GLOBAL_SETTINGS_MODIFICATION_DENIED, username);
     }
+
+    List<Profile> permissionsProfiles = settings.getAccessPermissionsProfiles();
+    List<Long> permissions = new ArrayList<>();
+    settings.setAccessPermissions(permissions);
+
+    addIdentityIdsFromProfiles(permissionsProfiles, permissions);
+
+    permissionsProfiles = settings.getManagersProfiles();
+    permissions = new ArrayList<>();
+    settings.setManagers(permissions);
+
+    addIdentityIdsFromProfiles(permissionsProfiles, permissions);
+
+    permissionsProfiles = settings.getProductCreationPermissionsProfiles();
+    permissions = new ArrayList<>();
+    settings.setProductCreationPermissions(permissions);
+
+    addIdentityIdsFromProfiles(permissionsProfiles, permissions);
+
     getSettingService().set(PERKSTORE_CONTEXT,
                             PERKSTORE_SCOPE,
                             SETTINGS_KEY_NAME,
@@ -94,6 +113,9 @@ public class PerkStoreService implements Startable {
       globalSettings.setManagers(null);
       globalSettings.setAccessPermissions(null);
       globalSettings.setProductCreationPermissions(null);
+      globalSettings.setManagersProfiles(null);
+      globalSettings.setAccessPermissionsProfiles(null);
+      globalSettings.setProductCreationPermissionsProfiles(null);
     }
     return globalSettings;
   }
@@ -233,7 +255,11 @@ public class PerkStoreService implements Startable {
     }
 
     if (transactionSuccess) {
-      order.setStatus(PAYED.name());
+      String status = order.getStatus();
+      if (StringUtils.equals(ORDERED.name(), status) || StringUtils.equals(CANCELED.name(), status)
+          || StringUtils.equals(ERROR.name(), status)) {
+        order.setStatus(PAYED.name());
+      }
     } else {
       order.setStatus(ERROR.name());
       order.setError("Transaction failed");
@@ -312,7 +338,31 @@ public class PerkStoreService implements Startable {
     if (globalSettingsValue == null || StringUtils.isBlank(globalSettingsValue.getValue().toString())) {
       return new GlobalSettings();
     } else {
-      return fromString(GlobalSettings.class, globalSettingsValue.getValue().toString());
+      GlobalSettings globalSettings = fromString(GlobalSettings.class, globalSettingsValue.getValue().toString());
+      if (globalSettings != null) {
+        List<Long> accessPermissions = globalSettings.getAccessPermissions();
+        if (accessPermissions != null && !accessPermissions.isEmpty()) {
+          globalSettings.setAccessPermissionsProfiles(new ArrayList<>());
+          for (Long identityId : accessPermissions) {
+            globalSettings.getAccessPermissionsProfiles().add(toProfile(identityId));
+          }
+        }
+        List<Long> managers = globalSettings.getManagers();
+        if (managers != null && !managers.isEmpty()) {
+          globalSettings.setManagersProfiles(new ArrayList<>());
+          for (Long identityId : managers) {
+            globalSettings.getManagersProfiles().add(toProfile(identityId));
+          }
+        }
+        List<Long> productCreationPermissions = globalSettings.getProductCreationPermissions();
+        if (productCreationPermissions != null && !productCreationPermissions.isEmpty()) {
+          globalSettings.setProductCreationPermissionsProfiles(new ArrayList<>());
+          for (Long identityId : productCreationPermissions) {
+            globalSettings.getProductCreationPermissionsProfiles().add(toProfile(identityId));
+          }
+        }
+      }
+      return globalSettings;
     }
   }
 
@@ -531,6 +581,9 @@ public class PerkStoreService implements Startable {
   private GlobalSettings getGlobalSettings() throws JsonException {
     if (this.storedGlobalSettings == null) {
       this.storedGlobalSettings = loadGlobalSettings();
+    }
+    if (this.storedGlobalSettings == null) {
+      this.storedGlobalSettings = new GlobalSettings();
     }
     return this.storedGlobalSettings.clone();
   }

@@ -47,6 +47,7 @@
             </v-btn>
             <template v-else>
               <v-text-field
+                v-if="filteredProducts && filteredProducts.length"
                 v-model="search"
                 append-icon="search"
                 label="Search in products"
@@ -60,7 +61,7 @@
                 flat
                 title="Refresh store"
                 class="mr-0"
-                @click="$emit('refresh')">
+                @click="init">
                 <v-icon size="20px">
                   refresh
                 </v-icon>
@@ -78,13 +79,13 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="settings.isAdministrator"
+                v-if="settings.administrator"
                 id="perkStoreAppMenuSettingsButton"
                 class="mr-0 ml-0"
                 icon
                 flat
                 title="Settings"
-                @click="$emit('modify-settings')">
+                @click="displaySettingsModal">
                 <v-icon size="17px">
                   fa-cog
                 </v-icon>
@@ -140,7 +141,8 @@
             @error="error = $event"
             @close="closeDetails" />
           <products-list
-            v-else
+            v-else-if="!error || (filteredProducts && filteredProducts.length)"
+            ref="productsList"
             :products="filteredProducts"
             :settings="settings"
             :loading="loading"
@@ -149,12 +151,17 @@
             @orders-list="displayCommandsList"
             @edit="editProduct"
             @buy="buyProduct" />
+
           <product-buy-modal
             ref="productBuyModal"
             :product="selectedProduct"
             :symbol="settings.symbol"
             :need-password="walletNeedPassword"
             @closed="selectedProduct = null" />
+
+          <settings-modal
+            ref="settingsModal"
+            @saved="init" />
         </v-flex>
       </v-layout>
     </main>
@@ -166,6 +173,7 @@ import ProductsList from './perk-store/ProductsList.vue';
 import ProductOrdersList from './perk-store/ProductOrdersList.vue';
 import ProductForm from './perk-store/ProductForm.vue';
 import ProductBuyModal from './perk-store/ProductBuyModal.vue';
+import SettingsModal from './perk-store/SettingsModal.vue';
 
 import {initSettings, getOrderFilter} from '../js/PerkStoreSettings.js';
 import {getProductList} from '../js/PerkStoreProduct.js';
@@ -176,6 +184,7 @@ export default {
     ProductOrdersList,
     ProductForm,
     ProductBuyModal,
+    SettingsModal,
   },
   data: () => ({
     error: null,
@@ -218,6 +227,7 @@ export default {
   },
   methods: {
     init() {
+      this.products = [];
       this.loading = true;
       return initSettings()
       .then(() => {
@@ -289,6 +299,9 @@ export default {
     buyProduct(product) {
       this.selectedProduct = product;
       this.$refs.productBuyModal.open();
+    },
+    displaySettingsModal() {
+      this.$refs.settingsModal.open();
     },
   }
 };

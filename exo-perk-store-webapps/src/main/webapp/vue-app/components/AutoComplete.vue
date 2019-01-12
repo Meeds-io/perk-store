@@ -314,8 +314,12 @@ export default {
     selectItems(items) {
       if(items) {
         if(items.splice) {
-          items.forEach((item) => this.selectSingleItem(item.id, item.type));
-        } else {
+          items.forEach((item) => {
+            if(item && item.id && item.type) {
+              this.selectSingleItem(item.id, item.type);
+            }
+          });
+        } else if(items.id && items.type) {
           this.selectSingleItem(items.id, items.type);
         }
       }
