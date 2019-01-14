@@ -15,6 +15,7 @@ import org.exoplatform.commons.api.notification.plugin.NotificationPluginUtils;
 import org.exoplatform.commons.api.notification.service.template.TemplateContext;
 import org.exoplatform.commons.notification.template.TemplateUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.portal.config.UserPortalConfigService;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.model.Space;
@@ -142,6 +143,8 @@ public class NotificationUtils {
   private static final String                         TEMPLATE_VARIABLE_SUFFIX_IDENTITY_URL          = "Url";
 
   private static final String                         TEMPLATE_VARIABLE_SUFFIX_IS_SPACE_TYPE         = "IsSpaceType";
+
+  private static String                               defaultSite;
 
   private NotificationUtils() {
   }
@@ -310,7 +313,7 @@ public class NotificationUtils {
   }
 
   public static final String getNotificationURL(Product product, ProductOrder productOrder) {
-    String currentSite = CommonsUtils.getCurrentSite().getName();
+    String currentSite = getDefaultSite();
     String currentDomain = CommonsUtils.getCurrentDomain();
     if (!currentDomain.endsWith("/")) {
       currentDomain += "/";
@@ -320,6 +323,15 @@ public class NotificationUtils {
       notificationURL += "&orderId=" + productOrder.getId();
     }
     return notificationURL;
+  }
+
+  public static String getDefaultSite() {
+    if (defaultSite != null) {
+      return defaultSite;
+    }
+    UserPortalConfigService portalConfig = CommonsUtils.getService(UserPortalConfigService.class);
+    defaultSite = portalConfig.getDefaultPortal();
+    return defaultSite;
   }
 
   public static final TemplateContext buildTemplateParameters(TemplateProvider templateProvider,
@@ -476,7 +488,7 @@ public class NotificationUtils {
   }
 
   private static String getUserAbsoluteURI(String id) {
-    String currentSite = CommonsUtils.getCurrentSite().getName();
+    String currentSite = getDefaultSite();
     String currentDomain = CommonsUtils.getCurrentDomain();
     if (!currentDomain.endsWith("/")) {
       currentDomain += "/";
