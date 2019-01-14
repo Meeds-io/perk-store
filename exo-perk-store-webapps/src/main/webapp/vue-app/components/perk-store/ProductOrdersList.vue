@@ -109,7 +109,11 @@ export default {
           this.orders = orders || [];
           this.orders.forEach(order => {
             if(order.transactionHash) {
-              order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.transactionHash}&principal=true`;
+              if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
+                order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.transactionHash}&principal=true`;
+              } else if (order.receiver.type === 'space') {
+                order.transactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.transactionHash}&principal=true`;
+              }
             }
           });
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;

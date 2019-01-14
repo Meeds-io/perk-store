@@ -47,31 +47,14 @@
       <v-list-tile>
         <v-list-tile-content>Ordered id:</v-list-tile-content>
         <v-list-tile-content class="align-end">
-          #{{ order.id }}
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Order transaction:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
           <a
-            v-if="order.transactionHash"
+            v-if="order.transactionLink"
             :href="order.transactionLink"
             rel="nofollow"
             target="_blank">
-            link
+            #{{ order.id }}
           </a>
-          <template v-else>-</template>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Ordered quantity:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          <v-badge
-            color="green"
-            left>
-            <span slot="badge">{{ order.quantity }}</span>
-            <span></span>
-          </v-badge>
+          <template v-else>#{{ order.id }}</template>
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile :class="edit && 'grey lighten-3'">
@@ -99,8 +82,13 @@
             name="OrderDeliveredQuantity"
             class="text-xs-right small mt-1 mb-1">
         </v-list-tile-content>
-        <v-list-tile-content v-else class="align-end">
-          {{ order.deliveredQuantity || '-' }}
+        <v-list-tile-content v-else class="orderQuantityBadgeParent">
+          <span
+            :class="order.remainingQuantityToProcess ? 'red' : 'green'"
+            class="orderQuantityBadge mr-1">
+            {{ order.deliveredQuantity }}
+          </span>
+          <span> / {{ order.quantity }}</span>
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile :class="edit && 'grey lighten-3'">
@@ -112,21 +100,19 @@
             name="OrderRefundedQuantity"
             class="text-xs-right small mt-1 mb-1">
         </v-list-tile-content>
-        <v-list-tile-content v-else class="align-end">
-          {{ order.refundedQuantity || '-' }}
+        <v-list-tile-content v-else class="orderQuantityBadgeParent">
+          <span
+            :class="order.remainingQuantityToProcess ? 'red' : 'green'"
+            class="orderQuantityBadge mr-1">
+            {{ order.refundedQuantity }}
+          </span>
+          <span> / {{ order.quantity }}</span>
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile>
         <v-list-tile-content>Remaining quantity to process:</v-list-tile-content>
         <v-list-tile-content class="align-end">
-          <v-badge
-            v-if="order.remainingQuantityToProcess"
-            color="red"
-            left>
-            <span slot="badge">{{ order.remainingQuantityToProcess }}</span>
-            <span></span>
-          </v-badge>
-          <template v-else>-</template>
+          {{ order.remainingQuantityToProcess || '-' }}
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile>

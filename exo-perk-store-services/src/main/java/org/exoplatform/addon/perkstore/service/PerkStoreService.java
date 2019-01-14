@@ -325,7 +325,8 @@ public class PerkStoreService implements Startable {
       order = perkStoreStorage.saveOrder(order);
     }
 
-    // Broadcast transaction finished event is different from save Order condition
+    // Broadcast transaction finished event is different from save Order
+    // condition
     if (!oldStatus.equals(order.getStatus())) {
       getListenerService().broadcast(ORDER_PAYED_EVENT, product, order);
     }
@@ -363,9 +364,9 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(ORDER_NOT_EXISTS, username, orderId);
     }
 
-    persistedOrder.setStatus(order.getStatus());
     setOrderQuantities(persistedOrder, order);
-    setOrderDates(persistedOrder, order);
+    setOrderDates(persistedOrder);
+    persistedOrder.setStatus(order.getStatus());
 
     persistedOrder = perkStoreStorage.saveOrder(persistedOrder);
 
@@ -622,22 +623,17 @@ public class PerkStoreService implements Startable {
     return isUserMemberOf(username, accessPermissions);
   }
 
-  private void setOrderDates(ProductOrder persistedOrder, ProductOrder order) {
-    ProductOrderStatus oldStatus = ProductOrderStatus.valueOf(persistedOrder.getStatus());
-    ProductOrderStatus newStatus = ProductOrderStatus.valueOf(order.getStatus());
-    if (oldStatus != newStatus) {
-      if (persistedOrder.getDeliveredDate() == 0 && (oldStatus == DELIVERED || order.getDeliveredQuantity() > 0)) {
-        persistedOrder.setDeliveredDate(System.currentTimeMillis());
-      }
-      if (persistedOrder.getRefundedDate() == 0 && (oldStatus == REFUNDED || order.getRefundedQuantity() > 0)) {
-        persistedOrder.setRefundedDate(System.currentTimeMillis());
-      }
-    }
+  private void setOrderDates(ProductOrder order) {
     if (order.getDeliveredQuantity() == 0) {
-      persistedOrder.setDeliveredDate(0);
+      order.setDeliveredDate(0);
+    } else if (order.getDeliveredDate() == 0) {
+      order.setDeliveredDate(System.currentTimeMillis());
     }
+
     if (order.getRefundedQuantity() == 0) {
-      persistedOrder.setRefundedDate(0);
+      order.setRefundedDate(0);
+    } else if (order.getRefundedDate() == 0) {
+      order.setRefundedDate(System.currentTimeMillis());
     }
   }
 

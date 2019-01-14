@@ -229,6 +229,30 @@
     border-left: 1px solid #4d5466;
     min-width: 320px;
   }
+
+  .orderQuantityBadgeParent {
+    flex-direction: row;
+    align-items: center;
+    flex: 0 1 auto;
+  }
+
+  .orderQuantityBadge {
+    border-radius: 100%;
+    min-width: 22px;
+    min-height: 22px;
+    line-height: 22px;
+    text-align: center;
+
+    &.red {
+      background: #f44336;
+      color: #fff;
+    }
+
+    &.green {
+      background: #018601;
+      color: #fff;
+    }
+  }
 }
 
 /* Override uiPopup !important attributes */

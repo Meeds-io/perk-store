@@ -373,7 +373,7 @@ public class NotificationUtils {
     if (pushNotificationURL != null) {
       messageInfo.subject(pushNotificationURL);
     } else {
-      messageInfo.subject(TemplateUtils.processSubject(templateContext) + ":"
+      messageInfo.subject(TemplateUtils.processSubject(templateContext) + ": "
           + title);
     }
   }
