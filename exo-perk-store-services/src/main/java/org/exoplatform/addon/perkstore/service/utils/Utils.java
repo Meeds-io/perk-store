@@ -45,6 +45,12 @@ public class Utils {
 
   private static final Log          LOG                                       = ExoLogger.getLogger(Utils.class);
 
+  public static final String        SETTINGS_COMETD_CHANNEL                   = "/eXo/Application/Addons/PerkStore/Settings";
+
+  public static final String        PRODUCT_COMETD_CHANNEL                    = "/eXo/Application/Addons/PerkStore/Product";
+
+  public static final String        ORDER_COMETD_CHANNEL                      = "/eXo/Application/Addons/PerkStore/Order";
+
   public static final String        SPACE_GROUP_PREFIX                        = SpaceUtils.SPACE_GROUP + "/";
 
   public static final JsonParser    JSON_PARSER                               = new JsonParserImpl();
@@ -84,13 +90,15 @@ public class Utils {
   public static final String        FAKE_TRANSACTION_HASH                     =
                                                           "0x0000000000000000000000000000000000000000000000000000000000000000";
 
+  public static final String        SETTINGS_MODIFIED_EVENT                   = "exo.perkstore.settings.modified";
+
   public static final String        PRODUCT_CREATE_OR_MODIFY_EVENT            = "exo.addons.perkstore.product.createOrModify";
 
   public static final String        PRODUCT_PURCHASED_EVENT                   = "exo.addons.perkstore.order.new";
 
   public static final String        ORDER_MODIFIED_EVENT                      = "exo.addons.perkstore.order.modification";
 
-  public static final String        ORDER_PAID_EVENT                         = "exo.addons.perkstore.order.paid";
+  public static final String        ORDER_PAID_EVENT                          = "exo.addons.perkstore.order.paid";
 
   private Utils() {
   }
@@ -491,6 +499,61 @@ public class Utils {
     errorObject.put("suffix", e.getErrorType().getSuffix());
     errorObject.put("message", e.getLocalizedMessage());
     return errorObject.toString();
+  }
+
+  public static final boolean getApplicationAccessUsersList(Set<String> recipientUsers,
+                                                            GlobalSettings globalSettings) {
+    List<Profile> applicationAccessPermissions = globalSettings.getAccessPermissionsProfiles();
+    if (applicationAccessPermissions == null || applicationAccessPermissions.isEmpty()) {
+      applicationAccessPermissions = null;
+    }
+
+    boolean accessibleToAll = false;
+    // Send notification to all who can get access permission to product and
+    // application
+    if (applicationAccessPermissions != null) {
+      addIdentityMembersFromProfiles(applicationAccessPermissions, recipientUsers);
+    } else {
+      accessibleToAll = true;
+    }
+    return accessibleToAll;
+  }
+
+  public static final boolean getProductAccessUsersList(Set<String> recipientUsers,
+                                                        Product product,
+                                                        GlobalSettings globalSettings) {
+    List<Profile> productAccessPermissions = product.getAccessPermissions();
+    if (productAccessPermissions == null || productAccessPermissions.isEmpty()) {
+      productAccessPermissions = null;
+    }
+
+    List<Profile> applicationAccessPermissions = globalSettings.getAccessPermissionsProfiles();
+
+    if (applicationAccessPermissions == null || applicationAccessPermissions.isEmpty()) {
+      applicationAccessPermissions = null;
+    }
+
+    // Always add creator
+    recipientUsers.add(product.getCreator().getId());
+
+    boolean accessibleToAll = false;
+    // Send notification to all who can get access permission to product and
+    // application
+    if (productAccessPermissions != null && applicationAccessPermissions != null) {
+      addIdentityMembersFromProfiles(productAccessPermissions, recipientUsers);
+
+      // Retain in recipient list only users who are member of both ACL
+      List<String> applicationRecipientList = new ArrayList<>();
+      addIdentityMembersFromProfiles(applicationAccessPermissions, applicationRecipientList);
+      recipientUsers.retainAll(applicationRecipientList);
+    } else if (productAccessPermissions != null) {
+      addIdentityMembersFromProfiles(productAccessPermissions, recipientUsers);
+    } else if (applicationAccessPermissions != null) {
+      addIdentityMembersFromProfiles(applicationAccessPermissions, recipientUsers);
+    } else {
+      accessibleToAll = true;
+    }
+    return accessibleToAll;
   }
 
   public static final boolean isUserAdmin(String username) throws Exception {

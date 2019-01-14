@@ -99,6 +99,8 @@ public class PerkStoreService implements Startable {
                             SETTINGS_KEY_NAME,
                             SettingValue.create(transformToString(settings)));
     this.storedGlobalSettings = null;
+
+    getListenerService().broadcast(SETTINGS_MODIFIED_EVENT, this, globalSettings);
   }
 
   public GlobalSettings getGlobalSettings() throws JsonException {
