@@ -35,7 +35,7 @@ public class PerkStoreStorage {
     }
   }
 
-  public Product saveProduct(String username, Product product) throws PerkStoreException {
+  public Product saveProduct(Product product, String username) throws PerkStoreException {
     if (product == null) {
       throw new IllegalArgumentException("product argument is null");
     }

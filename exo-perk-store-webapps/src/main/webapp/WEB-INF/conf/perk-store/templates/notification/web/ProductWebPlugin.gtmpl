@@ -1,0 +1,30 @@
+<% senderName = _ctx.escapeHTML(senderName); %>
+<li class="<%= READ %> clearfix" data-id="<%= NOTIFICATION_ID %>">
+  <div class="media perkStoreWebNotifContent">
+    <div class="avatarXSmall pull-left">
+      <img src="<%= senderAvatar %>" alt="<%= senderName %>" />
+    </div>
+    <div class="media-body">
+      <div class="contentSmall" data-link="<%= detailsURL %>">
+        <div class="status">
+          <%
+            String senderLink = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + senderName + "</a>";
+            String message = null;
+            if("true".equals(isNewProduct)) {
+             message = _ctx.appRes("Notification.perkstore.product.created", senderLink);
+            } else {
+             message = _ctx.appRes("Notification.perkstore.product.modified", senderLink);
+            }
+          %>
+          <%= message %>
+        </div>
+        <div class="content">
+          <i class="uiIcon fa fa-shopping-cart uiIconPerkStoreOrder uiIconBlue"></i>
+          <%= productTitle %>
+        </div>
+        <div class="lastUpdatedTime"><%= LAST_UPDATED_TIME %></div>
+      </div>
+    </div>
+  </div>
+  <span class="remove-item" data-rest=""><i class="uiIconClose uiIconLightGray"></i></span>
+</li>

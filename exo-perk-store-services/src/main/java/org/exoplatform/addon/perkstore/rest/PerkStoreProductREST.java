@@ -65,7 +65,7 @@ public class PerkStoreProductREST implements ResourceContainer {
       return Response.status(400).build();
     }
     try {
-      perkStoreService.saveProduct(getCurrentUserId(), product);
+      perkStoreService.saveProduct(product, getCurrentUserId());
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error saving product");
     } catch (Exception e) {

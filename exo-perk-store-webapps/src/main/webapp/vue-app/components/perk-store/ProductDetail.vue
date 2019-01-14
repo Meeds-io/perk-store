@@ -163,10 +163,10 @@ export default {
       return '';
     },
     displayBuyButton() {
-      return this.product && this.product.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' && this.product.receiverMarchand.id !== eXo.env.portal.userName);
+      return this.product && this.product.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
-      return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod && this.product.userOrders.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.maxOrdersPerUser && this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod && this.product.userOrders.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
     purchasedPercentage() {
       return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;

@@ -1,0 +1,9 @@
+<%
+  String message = null;
+  if("true".equals(isNewProduct)) {
+   message = _ctx.appRes("Notification.perkstore.product.createdWithTitle", senderName, productTitle);
+  } else {
+   message = _ctx.appRes("Notification.perkstore.product.modifiedWithTitle", senderName, productTitle);
+  }
+%>
+<%= message %>

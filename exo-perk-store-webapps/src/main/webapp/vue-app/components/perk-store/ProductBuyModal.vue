@@ -113,12 +113,11 @@ export default {
       }
     },
     maxOrderPerUserQuantity() {
-      if(this.product && !this.product.unlimited) {
+      if(this.product && !this.product.unlimited && this.product.maxOrdersPerUser) {
         const quantity = this.product.maxOrdersPerUser - ((this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod) || 0);
         return quantity > 0 ? quantity : 0;
-      } else {
-        return 0;
       }
+      return this.product.unlimited ? 0 : this.available;
     },
     maxQuantity() {
       return Math.min(this.available, this.maxOrderPerUserQuantity);

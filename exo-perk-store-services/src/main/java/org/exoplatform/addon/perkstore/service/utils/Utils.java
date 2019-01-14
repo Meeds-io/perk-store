@@ -42,9 +42,10 @@ import org.exoplatform.ws.frameworks.json.JsonParser;
 import org.exoplatform.ws.frameworks.json.impl.*;
 
 public class Utils {
-  private static final String       SPACE_GROUP_PREFIX                        = SpaceUtils.SPACE_GROUP + "/";
 
   private static final Log          LOG                                       = ExoLogger.getLogger(Utils.class);
+
+  public static final String        SPACE_GROUP_PREFIX                        = SpaceUtils.SPACE_GROUP + "/";
 
   public static final JsonParser    JSON_PARSER                               = new JsonParserImpl();
 
@@ -83,6 +84,14 @@ public class Utils {
   public static final String        FAKE_TRANSACTION_HASH                     =
                                                           "0x0000000000000000000000000000000000000000000000000000000000000000";
 
+  public static final String        PRODUCT_CREATE_OR_MODIFY_EVENT            = "exo.addons.perkstore.product.createOrModify";
+
+  public static final String        PRODUCT_PURCHASED_EVENT                   = "exo.addons.perkstore.order.new";
+
+  public static final String        ORDER_MODIFIED_EVENT                      = "exo.addons.perkstore.order.modification";
+
+  public static final String        ORDER_PAYED_EVENT                         = "exo.addons.perkstore.order.payed";
+
   private Utils() {
   }
 
@@ -107,6 +116,24 @@ public class Utils {
     return time.atZone(ZoneOffset.systemDefault()).toEpochSecond() * 1000;
   }
 
+  public static final void addIdentityMembersFromProfiles(Collection<Profile> profiles, Collection<String> profilesRemoteIds) {
+    if (profiles == null) {
+      return;
+    }
+    for (Profile profile : profiles) {
+      if (isSpaceType(profile.getType())) {
+        Space space = getSpace(profile.getId());
+        if (space == null) {
+          LOG.warn("Can't find a space with id " + profile.getId());
+        } else if (space.getMembers() != null) {
+          profilesRemoteIds.addAll(Arrays.asList(space.getMembers()));
+        }
+      } else {
+        profilesRemoteIds.add(profile.getId());
+      }
+    }
+  }
+
   public static void addIdentityIdsFromProfiles(List<Profile> permissionsProfiles, List<Long> permissions) {
     if (permissionsProfiles != null) {
       for (Profile profile : permissionsProfiles) {
@@ -124,7 +151,10 @@ public class Utils {
   }
 
   public static String getIdentityIdByType(Identity receiverIdentity) {
-    if (SpaceIdentityProvider.NAME.equals(receiverIdentity.getProviderId())) {
+    if (receiverIdentity == null) {
+      throw new IllegalArgumentException("Identity is null");
+    }
+    if (isSpaceType(receiverIdentity.getProviderId())) {
       Space space = getSpace(receiverIdentity.getRemoteId());
       if (space != null) {
         return space.getId();
@@ -134,21 +164,35 @@ public class Utils {
   }
 
   public static Identity getIdentityById(long identityId) {
+    return getIdentityById(String.valueOf(identityId));
+  }
+
+  public static Identity getIdentityById(String identityId) {
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    return identityManager.getIdentity(String.valueOf(identityId), true);
+    return identityManager.getIdentity(identityId, true);
   }
 
   public static Identity getIdentityByTypeAndId(String type, String remoteId) {
-    String providerId = SPACE_ACCOUNT_TYPE.equals(type) ? SpaceIdentityProvider.NAME : OrganizationIdentityProvider.NAME;
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    return identityManager.getOrCreateIdentity(providerId, remoteId, true);
+    return identityManager.getOrCreateIdentity(getIdentityProviderIdByType(type), remoteId, true);
+  }
+
+  public static boolean isSpaceType(String type) {
+    return SPACE_ACCOUNT_TYPE.equals(type) || SpaceIdentityProvider.NAME.equals(type);
   }
 
   public static String getIdentityTypeByProviderId(String providerId) {
     if (providerId == null) {
       throw new IllegalArgumentException("Provider id is null");
     }
-    return SpaceIdentityProvider.NAME.equals(providerId) ? SPACE_ACCOUNT_TYPE : USER_ACCOUNT_TYPE;
+    return isSpaceType(providerId) ? SPACE_ACCOUNT_TYPE : USER_ACCOUNT_TYPE;
+  }
+
+  public static String getIdentityProviderIdByType(String type) {
+    if (type == null) {
+      throw new IllegalArgumentException("Type is null");
+    }
+    return isSpaceType(type) ? SpaceIdentityProvider.NAME : OrganizationIdentityProvider.NAME;
   }
 
   public static Space getSpace(String id) {
@@ -342,7 +386,7 @@ public class Utils {
     if (identity != null) {
       Profile profile = new Profile();
       String fullName = identity.getProfile().getFullName();
-      if (StringUtils.isBlank(fullName) && SpaceIdentityProvider.NAME.equals(identity.getProviderId())) {
+      if (StringUtils.isBlank(fullName) && isSpaceType(identity.getProviderId())) {
         Space space = getSpace(identity.getRemoteId());
         fullName = space.getDisplayName();
         profile.setSpaceId(Long.parseLong(space.getId()));
@@ -474,7 +518,7 @@ public class Utils {
     if (identity == null) {
       throw new IllegalArgumentException("Identity is null");
     }
-    if (SpaceIdentityProvider.NAME.equals(identity.getProviderId())) {
+    if (isSpaceType(identity.getProviderId())) {
       String spacePrettyName = identity.getRemoteId();
       Space space = getSpace(spacePrettyName);
       return space == null ? null : space.getGroupId();
@@ -493,15 +537,15 @@ public class Utils {
         continue;
       }
 
-      if (USER_ACCOUNT_TYPE.equals(profile.getType())) {
-        if (profile.getId().equals(username)) {
-          return true;
-        }
-      } else {
+      if (isSpaceType(profile.getType())) {
         Space space = getSpace(profile.getId());
         if (space == null) {
           LOG.warn("Can't check identity permission on space '{}' because the space wasn't found", profile.getId());
         } else if (CommonsUtils.getService(SpaceService.class).isMember(space, username)) {
+          return true;
+        }
+      } else {
+        if (profile.getId().equals(username)) {
           return true;
         }
       }

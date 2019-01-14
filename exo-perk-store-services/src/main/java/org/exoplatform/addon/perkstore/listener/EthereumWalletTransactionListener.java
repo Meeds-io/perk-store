@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.listener.*;
 import org.exoplatform.services.log.ExoLogger;
@@ -26,25 +27,28 @@ public class EthereumWalletTransactionListener extends Listener<Object, JSONObje
 
   @Override
   public void onEvent(Event<Object, JSONObject> event) throws Exception {
-    JSONObject transactionDetails = event.getData();
-    if (transactionDetails == null) {
-      throw new IllegalStateException("Transaction details is mandatory");
-    }
-    String hash = (String) transactionDetails.get("hash");
-    if (StringUtils.isBlank(hash)) {
-      throw new IllegalStateException("Transaction hash is mandatory");
-    }
-
-    Boolean status = (Boolean) transactionDetails.get("status");
-    if (status == null) {
-      LOG.error("Transaction with hash " + hash + " status is null");
-    } else {
-      RequestLifeCycle.begin(this.container);
-      try {
-        this.perkStoreService.saveOrderPaymentStatus(hash, status);
-      } finally {
-        RequestLifeCycle.end();
+    ExoContainerContext.setCurrentContainer(container);
+    RequestLifeCycle.begin(container);
+    try {
+      JSONObject transactionDetails = event.getData();
+      if (transactionDetails == null) {
+        throw new IllegalStateException("Transaction details is mandatory");
       }
+      String hash = (String) transactionDetails.get("hash");
+      if (StringUtils.isBlank(hash)) {
+        throw new IllegalStateException("Transaction hash is mandatory");
+      }
+
+      Boolean status = (Boolean) transactionDetails.get("status");
+      if (status == null) {
+        LOG.error("Transaction with hash " + hash + " status is null");
+      } else {
+        // This could be triggered three times, when contract TX saved, sender
+        // TX sent and receiver TX saved
+        this.perkStoreService.saveOrderPaymentStatus(hash, status);
+      }
+    } finally {
+      RequestLifeCycle.end();
     }
   }
 

@@ -94,7 +94,7 @@
           </v-toolbar>
 
           <v-toolbar
-            v-if="!selectedProduct && !loading && !walletLoading"
+            v-if="!selectedProduct && !loading && !walletLoading && warning"
             color="transparent"
             flat>
             <v-spacer />

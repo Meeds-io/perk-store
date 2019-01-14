@@ -70,7 +70,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
       return Response.status(400).build();
     }
     try {
-      List<ProductOrder> orders = perkStoreService.getOrders(getCurrentUserId(), filter);
+      List<ProductOrder> orders = perkStoreService.getOrders(filter, getCurrentUserId());
       return Response.ok(orders).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error listing orders");
@@ -96,7 +96,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
       return Response.status(400).build();
     }
     try {
-      perkStoreService.createOrder(getCurrentUserId(), order);
+      perkStoreService.createOrder(order, getCurrentUserId());
       return Response.ok().build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error creating new order");
@@ -123,7 +123,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
     }
     try {
       order.setTransactionHash(FAKE_TRANSACTION_HASH);
-      perkStoreService.checkCanOrder(getCurrentUserId(), order);
+      perkStoreService.checkCanOrder(order, getCurrentUserId());
       return Response.ok().build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error simulating order save");
@@ -150,7 +150,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
       return Response.status(400).build();
     }
     try {
-      perkStoreService.saveOrderStatus(getCurrentUserId(), order);
+      perkStoreService.saveOrderStatus(order, getCurrentUserId());
       return Response.ok(perkStoreService.getOrderById(order.getId())).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error saving order status");

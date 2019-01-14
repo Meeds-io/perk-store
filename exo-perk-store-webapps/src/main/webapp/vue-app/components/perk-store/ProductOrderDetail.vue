@@ -84,7 +84,7 @@
           </select>
         </v-list-tile-content>
         <v-list-tile-content v-else-if="order.status === 'ERROR'" class="align-end">
-          <v-icon :title="order.error" color="orange">error</v-icon>
+          <v-icon :title="order.error || `Transaction ${order.hash || ''} failed`" color="orange">error</v-icon>
         </v-list-tile-content>
         <v-list-tile-content v-else class="align-end">
           {{ statusLabel }}

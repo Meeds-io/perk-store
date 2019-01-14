@@ -31,6 +31,7 @@ import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -40,11 +41,14 @@ import org.exoplatform.ws.frameworks.json.impl.JsonException;
  * A service to manage perkstore entities
  */
 public class PerkStoreService implements Startable {
+
   private static final Log LOG = ExoLogger.getLogger(PerkStoreService.class);
 
   private PerkStoreStorage perkStoreStorage;
 
   private SettingService   settingService;
+
+  private ListenerService  listenerService;
 
   private GlobalSettings   storedGlobalSettings;
 
@@ -97,6 +101,16 @@ public class PerkStoreService implements Startable {
     this.storedGlobalSettings = null;
   }
 
+  public GlobalSettings getGlobalSettings() throws JsonException {
+    if (this.storedGlobalSettings == null) {
+      this.storedGlobalSettings = loadGlobalSettings();
+      if (this.storedGlobalSettings == null) {
+        this.storedGlobalSettings = new GlobalSettings();
+      }
+    }
+    return this.storedGlobalSettings.clone();
+  }
+
   public GlobalSettings getGlobalSettings(String username) throws Exception {
     GlobalSettings globalSettings = getGlobalSettings();
     if (globalSettings == null) {
@@ -120,8 +134,16 @@ public class PerkStoreService implements Startable {
     return globalSettings;
   }
 
-  public void saveProduct(String username, Product product) throws Exception {
-    if (product.getId() == 0) {
+  public void saveProduct(Product product, String username) throws Exception {
+    if (product == null) {
+      throw new IllegalArgumentException("Product is mandatory");
+    }
+    if (StringUtils.isBlank(username)) {
+      throw new IllegalArgumentException("Username is mandatory");
+    }
+
+    boolean isNew = product.getId() == 0;
+    if (isNew) {
       checkCanAddProduct(username);
     }
 
@@ -131,15 +153,23 @@ public class PerkStoreService implements Startable {
 
     // Make sure to store only allowed fields to change
     Product productToStore = null;
-    if (product.getId() == 0) {
+    if (isNew) {
       productToStore = new Product();
     } else {
       productToStore = perkStoreStorage.getProductById(product.getId());
     }
 
-    productToStore.setTitle(product.getTitle());
-    productToStore.setIllustrationURL(product.getIllustrationURL());
-    productToStore.setDescription(product.getDescription());
+    productToStore.setTitle(product.getTitle().trim());
+    if (product.getIllustrationURL() != null) {
+      productToStore.setIllustrationURL(product.getIllustrationURL().trim());
+    } else {
+      productToStore.setIllustrationURL(null);
+    }
+    if (product.getDescription() != null) {
+      productToStore.setDescription(product.getDescription().trim());
+    } else {
+      productToStore.setDescription(null);
+    }
     productToStore.setReceiverMarchand(product.getReceiverMarchand());
     productToStore.setAccessPermissions(product.getAccessPermissions());
     productToStore.setMarchands(product.getMarchands());
@@ -148,10 +178,16 @@ public class PerkStoreService implements Startable {
     productToStore.setAllowFraction(product.isAllowFraction());
     productToStore.setPrice(product.getPrice());
     productToStore.setMaxOrdersPerUser(product.getMaxOrdersPerUser());
-    productToStore.setOrderPeriodicity(product.getOrderPeriodicity());
+    if (product.getOrderPeriodicity() != null) {
+      productToStore.setOrderPeriodicity(product.getOrderPeriodicity().trim());
+    } else {
+      productToStore.setOrderPeriodicity(null);
+    }
     productToStore.setTotalSupply(product.getTotalSupply());
 
-    perkStoreStorage.saveProduct(username, productToStore);
+    product = perkStoreStorage.saveProduct(productToStore, username);
+
+    getListenerService().broadcast(PRODUCT_CREATE_OR_MODIFY_EVENT, product, isNew);
   }
 
   public List<Product> getProducts(String username) throws Exception {
@@ -172,7 +208,7 @@ public class PerkStoreService implements Startable {
     return products;
   }
 
-  public List<ProductOrder> getOrders(String username, OrderFilter filter) throws Exception {
+  public List<ProductOrder> getOrders(OrderFilter filter, String username) throws Exception {
     if (filter == null) {
       throw new IllegalArgumentException("Filter is mandatory");
     }
@@ -189,7 +225,7 @@ public class PerkStoreService implements Startable {
     }
   }
 
-  public void checkCanOrder(String username, ProductOrder order) throws PerkStoreException {
+  public void checkCanOrder(ProductOrder order, String username) throws PerkStoreException {
     if (order == null) {
       throw new IllegalArgumentException("Order is mandatory");
     }
@@ -199,14 +235,14 @@ public class PerkStoreService implements Startable {
     if (order.getProductId() == 0) {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
-    Product product = getProduct(order.getProductId());
+    Product product = getProductById(order.getProductId());
 
     order.setSender(toProfile(USER_ACCOUNT_TYPE, username));
 
     checkOrderCoherence(username, product, order);
   }
 
-  public void createOrder(String username, ProductOrder order) throws PerkStoreException {
+  public void createOrder(ProductOrder order, String username) throws Exception {
     if (order == null) {
       throw new IllegalArgumentException("Order is null");
     }
@@ -214,17 +250,23 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
     if (order.getProductId() == 0) {
-      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_PRODUCT);
     }
 
-    Product product = getProduct(order.getProductId());
+    Product product = getProductById(order.getProductId());
+    if (product == null) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_PRODUCT);
+    }
 
-    Profile sender = toProfile(USER_ACCOUNT_TYPE, username);
-    order.setSender(sender);
     double quantity = order.getQuantity();
     if (!product.isAllowFraction()) {
       quantity = (int) quantity;
       order.setQuantity(quantity);
+    }
+
+    Profile sender = toProfile(USER_ACCOUNT_TYPE, username);
+    if (sender != null) {
+      order.setSender(sender);
     }
 
     checkOrderCoherence(username, product, order);
@@ -239,12 +281,13 @@ public class PerkStoreService implements Startable {
     productOrder.setQuantity(quantity);
     productOrder.setStatus(ORDERED.name());
     productOrder.setRemainingQuantityToProcess(quantity);
-    productOrder.setCreatedDate(System.currentTimeMillis());
 
-    perkStoreStorage.saveOrder(productOrder);
+    productOrder = perkStoreStorage.saveOrder(productOrder);
+
+    getListenerService().broadcast(PRODUCT_PURCHASED_EVENT, product, productOrder);
   }
 
-  public void saveOrderPaymentStatus(String hash, boolean transactionSuccess) throws PerkStoreException {
+  public void saveOrderPaymentStatus(String hash, boolean transactionSuccess) throws Exception {
     if (StringUtils.isBlank(hash)) {
       throw new IllegalArgumentException("Transaction hash is mandatory");
     }
@@ -254,31 +297,57 @@ public class PerkStoreService implements Startable {
       return;
     }
 
+    if (order.getProductId() == 0) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_PRODUCT);
+    }
+
+    Product product = getProductById(order.getProductId());
+    if (product == null) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_PRODUCT);
+    }
+
+    boolean statusChanged = false;
+    String oldStatus = order.getStatus();
+
     if (transactionSuccess) {
-      String status = order.getStatus();
-      if (StringUtils.equals(ORDERED.name(), status) || StringUtils.equals(CANCELED.name(), status)
-          || StringUtils.equals(ERROR.name(), status)) {
+      if (StringUtils.equals(ORDERED.name(), oldStatus) || StringUtils.equals(CANCELED.name(), oldStatus)
+          || StringUtils.equals(ERROR.name(), oldStatus)) {
         order.setStatus(PAYED.name());
+        statusChanged = true;
       }
     } else {
       order.setStatus(ERROR.name());
       order.setError("Transaction failed");
+      statusChanged = true;
     }
 
-    perkStoreStorage.saveOrder(order);
+    if (statusChanged) {
+      order = perkStoreStorage.saveOrder(order);
+    }
+
+    // Broadcast transaction finished event is different from save Order condition
+    if (!oldStatus.equals(order.getStatus())) {
+      getListenerService().broadcast(ORDER_PAYED_EVENT, product, order);
+    }
+
   }
 
-  public void saveOrderStatus(String username, ProductOrder order) throws Exception {
+  public void saveOrderStatus(ProductOrder order, String username) throws Exception {
     if (order == null) {
       throw new IllegalArgumentException("Order is null");
     }
     if (StringUtils.isBlank(username)) {
       throw new IllegalArgumentException("Username is null");
     }
+
     if (order.getProductId() == 0) {
-      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_PRODUCT);
     }
 
+    Product product = getProductById(order.getProductId());
+    if (product == null) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_PRODUCT);
+    }
     long orderId = order.getId();
     if (orderId == 0) {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
@@ -289,48 +358,27 @@ public class PerkStoreService implements Startable {
     }
 
     // Create new instance to avoid injecting annoying values
-    ProductOrder oldOrder = perkStoreStorage.getOrder(orderId);
-    if (oldOrder == null) {
+    ProductOrder persistedOrder = perkStoreStorage.getOrder(orderId);
+    if (persistedOrder == null) {
       throw new PerkStoreException(ORDER_NOT_EXISTS, username, orderId);
     }
 
-    double deliveredQuantity = order.getDeliveredQuantity();
-    double refundedQuantity = order.getRefundedQuantity();
-    String status = order.getStatus();
+    persistedOrder.setStatus(order.getStatus());
+    setOrderQuantities(persistedOrder, order);
+    setOrderDates(persistedOrder, order);
 
-    ProductOrderStatus oldStatus = ProductOrderStatus.valueOf(oldOrder.getStatus());
-    ProductOrderStatus newStatus = ProductOrderStatus.valueOf(status);
+    persistedOrder = perkStoreStorage.saveOrder(persistedOrder);
 
-    oldOrder.setStatus(status);
-    oldOrder.setDeliveredQuantity(deliveredQuantity);
-    oldOrder.setRefundedQuantity(refundedQuantity);
-    double remainingQuantityToProcess = oldOrder.getQuantity() - refundedQuantity
-        - deliveredQuantity;
-    if (remainingQuantityToProcess < 0) {
-      throw new PerkStoreException(ORDER_MODIFICATION_QUANTITY_INVALID_REMAINING,
-                                   remainingQuantityToProcess,
-                                   oldOrder.getId());
-    }
-    oldOrder.setRemainingQuantityToProcess(remainingQuantityToProcess);
-    if (oldStatus != newStatus) {
-      if (oldOrder.getDeliveredDate() == 0 && (oldStatus == DELIVERED || deliveredQuantity > 0)) {
-        oldOrder.setDeliveredDate(System.currentTimeMillis());
-      }
-      if (oldOrder.getRefundedDate() == 0 && (oldStatus == REFUNDED || refundedQuantity > 0)) {
-        oldOrder.setRefundedDate(System.currentTimeMillis());
-      }
-    }
-    if (deliveredQuantity == 0) {
-      oldOrder.setDeliveredDate(0);
-    }
-    if (refundedQuantity == 0) {
-      oldOrder.setRefundedDate(0);
-    }
-    perkStoreStorage.saveOrder(oldOrder);
+    persistedOrder.setLastModifier(toProfile(USER_ACCOUNT_TYPE, username));
+    getListenerService().broadcast(ORDER_MODIFIED_EVENT, product, persistedOrder);
   }
 
   public ProductOrder getOrderById(long orderId) {
     return perkStoreStorage.getOrder(orderId);
+  }
+
+  public Product getProductById(long productId) {
+    return perkStoreStorage.getProductById(productId);
   }
 
   private GlobalSettings loadGlobalSettings() throws JsonException {
@@ -471,10 +519,6 @@ public class PerkStoreService implements Startable {
     }
   }
 
-  private Product getProduct(long productId) {
-    return perkStoreStorage.getProductById(productId);
-  }
-
   private void checkCanAddProduct(String username) throws Exception {
     if (!canAddProduct(username)) {
       throw new PerkStoreException(PerkStoreError.PRODUCT_CREATION_DENIED, username);
@@ -532,7 +576,7 @@ public class PerkStoreService implements Startable {
       return true;
     }
 
-    return canEditProduct(getProduct(productId), username);
+    return canEditProduct(getProductById(productId), username);
   }
 
   private boolean canEditProduct(Product product, String username) throws Exception {
@@ -578,14 +622,38 @@ public class PerkStoreService implements Startable {
     return isUserMemberOf(username, accessPermissions);
   }
 
-  private GlobalSettings getGlobalSettings() throws JsonException {
-    if (this.storedGlobalSettings == null) {
-      this.storedGlobalSettings = loadGlobalSettings();
+  private void setOrderDates(ProductOrder persistedOrder, ProductOrder order) {
+    ProductOrderStatus oldStatus = ProductOrderStatus.valueOf(persistedOrder.getStatus());
+    ProductOrderStatus newStatus = ProductOrderStatus.valueOf(order.getStatus());
+    if (oldStatus != newStatus) {
+      if (persistedOrder.getDeliveredDate() == 0 && (oldStatus == DELIVERED || order.getDeliveredQuantity() > 0)) {
+        persistedOrder.setDeliveredDate(System.currentTimeMillis());
+      }
+      if (persistedOrder.getRefundedDate() == 0 && (oldStatus == REFUNDED || order.getRefundedQuantity() > 0)) {
+        persistedOrder.setRefundedDate(System.currentTimeMillis());
+      }
     }
-    if (this.storedGlobalSettings == null) {
-      this.storedGlobalSettings = new GlobalSettings();
+    if (order.getDeliveredQuantity() == 0) {
+      persistedOrder.setDeliveredDate(0);
     }
-    return this.storedGlobalSettings.clone();
+    if (order.getRefundedQuantity() == 0) {
+      persistedOrder.setRefundedDate(0);
+    }
+  }
+
+  private void setOrderQuantities(ProductOrder persistedOrder, ProductOrder order) throws PerkStoreException {
+    double deliveredQuantity = order.getDeliveredQuantity();
+    double refundedQuantity = order.getRefundedQuantity();
+    persistedOrder.setDeliveredQuantity(deliveredQuantity);
+    persistedOrder.setRefundedQuantity(refundedQuantity);
+    double remainingQuantityToProcess = persistedOrder.getQuantity() - refundedQuantity
+        - deliveredQuantity;
+    if (remainingQuantityToProcess < 0) {
+      throw new PerkStoreException(ORDER_MODIFICATION_QUANTITY_INVALID_REMAINING,
+                                   remainingQuantityToProcess,
+                                   persistedOrder.getId());
+    }
+    persistedOrder.setRemainingQuantityToProcess(remainingQuantityToProcess);
   }
 
   private SettingService getSettingService() {
@@ -595,4 +663,10 @@ public class PerkStoreService implements Startable {
     return settingService;
   }
 
+  private ListenerService getListenerService() {
+    if (listenerService == null) {
+      listenerService = CommonsUtils.getService(ListenerService.class);
+    }
+    return listenerService;
+  }
 }

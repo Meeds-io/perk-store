@@ -4,5 +4,6 @@
 
   <import>war:/conf/perk-store/bundle-configuration.xml</import>
   <import>war:/conf/perk-store/portal-configuration.xml</import>
+  <import>war:/conf/perk-store/notification-configuration.xml</import>
 
 </configuration>

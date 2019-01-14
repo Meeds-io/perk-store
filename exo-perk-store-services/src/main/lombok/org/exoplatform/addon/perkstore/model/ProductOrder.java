@@ -22,6 +22,9 @@ public class ProductOrder implements Serializable {
 
   private Profile           receiver;
 
+  // Not stored, used in notification only
+  private Profile           lastModifier;
+
   private double            deliveredQuantity;
 
   private double            refundedQuantity;
