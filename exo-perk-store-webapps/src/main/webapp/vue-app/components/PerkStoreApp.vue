@@ -235,12 +235,15 @@ export default {
       document.addEventListener('exo-wallet-installed', this.initWalletAPI);
     }
     const search = document.location.search.substring(1);
-    const parameters = JSON.parse(
-      `{"${decodeURI(search)
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g, '":"')}"}`
-    );
+    let parameters = null;
+    if(search) {
+      parameters = JSON.parse(
+          `{"${decodeURI(search)
+            .replace(/"/g, '\\"')
+            .replace(/&/g, '","')
+            .replace(/=/g, '":"')}"}`
+        );
+    }
     return this.init(parameters && parameters.productId, parameters && parameters.orderId);
   },
   methods: {
