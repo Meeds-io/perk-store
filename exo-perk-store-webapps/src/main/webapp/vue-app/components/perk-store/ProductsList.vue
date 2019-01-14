@@ -9,17 +9,21 @@
         row
         wrap
         class="productsListParent">
-        <product-detail
-          v-for="product in products"
-          :key="product.id"
-          :product="product"
-          :symbol="settings.symbol"
-          :wallet-loading="walletLoading"
-          :wallet-enabled="walletEnabled"
-          class="border-box-sizing sm3 xs12"
-          @orders-list="$emit('orders-list', $event)"
-          @edit="$emit('edit', $event)"
-          @buy="$emit('buy', $event)" />
+        <template v-for="product in products">
+          <product-detail
+            v-show="!selectedProduct || selectedProduct.id === product.id"
+            :key="product.id"
+            :product="product"
+            :symbol="settings.symbol"
+            :wallet-loading="walletLoading"
+            :wallet-enabled="walletEnabled"
+            :maximized="selectedProduct && selectedProduct.id === product.id"
+            class="border-box-sizing sm3 xs12"
+            @product-details="$emit('product-details', $event)"
+            @orders-list="$emit('orders-list', $event)"
+            @edit="$emit('edit', $event)"
+            @buy="$emit('buy', $event)" />
+        </template>
       </v-layout>
     </v-container>
     <v-container v-else-if="!loading" class="text-xs-center">
@@ -43,6 +47,12 @@ export default {
       type: Array,
       default: function() {
         return [];
+      },
+    },
+    selectedProduct: {
+      type: Object,
+      default: function() {
+        return null;
       },
     },
     settings: {

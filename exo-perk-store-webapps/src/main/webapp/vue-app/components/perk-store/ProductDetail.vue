@@ -7,14 +7,14 @@
         color="grey lighten-4"
         max-width="600">
         <v-img
-          v-if="product.illustrationURL"
           :aspect-ratio="16/9"
-          :src="product.illustrationURL"
+          :src="product.illustrationURL || ''"
           class="productCardHeader"
+          referrerpolicy="no-referrer"
           contain>
           <v-expand-transition>
             <div
-              v-if="hover"
+              v-if="hover || !product || !product.enabled || !product.illustrationURL"
               class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
               style="height: 100%;">
               <product-detail-content
@@ -24,12 +24,6 @@
             </div>
           </v-expand-transition>
         </v-img>
-        <product-detail-content
-          v-else
-          :product="product"
-          :symbol="symbol"
-          :available="available"
-          class="productCardHeader" />
         <v-progress-linear
           v-if="!product.unlimited"
           v-model="purchasedPercentage"
@@ -92,7 +86,9 @@
         </v-card-text>
         <v-card-title class="pt-0 pb-0">
           <h3 class="mb-2 primary--text">
-            {{ product.title }}
+            <a href="javascript:void(0);" @click="$emit('product-details', product)">
+              {{ product.title }}
+            </a>
           </h3>
           <v-spacer />
           <h3 class="mb-2">
@@ -141,6 +137,12 @@ export default {
         return false;
       },
     },
+    maximized: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
   },
   computed: {
     ordersListBtnClass() {
@@ -163,10 +165,10 @@ export default {
       return '';
     },
     displayBuyButton() {
-      return this.product && this.product.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
+      return this.product && this.product.enabled && this.product.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
-      return !this.product.enabled || (!this.product.unlimited && !this.available) || (this.product.maxOrdersPerUser && this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod && this.product.userOrders.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return (!this.product.unlimited && this.available <= 0) || (this.product.maxOrdersPerUser && this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod && this.product.userOrders.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
     purchasedPercentage() {
       return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;

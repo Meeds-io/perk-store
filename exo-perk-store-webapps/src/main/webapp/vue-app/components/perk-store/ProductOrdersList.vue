@@ -9,7 +9,7 @@
       fluid
       grid-list-md>
       <v-data-iterator
-        :items="orders"
+        :items="filteredOrders"
         content-tag="v-layout"
         no-data-text="No orders"
         hide-actions
@@ -73,6 +73,12 @@ export default {
         return {};
       },
     },
+    selectedOrderId: {
+      type: Number,
+      default: function() {
+        return 0;
+      },
+    },
   },
   data() {
     return {
@@ -83,6 +89,14 @@ export default {
     };
   },
   computed: {
+    filteredOrders() {
+      const order = this.selectedOrderId && this.orders.find(order => order && order.id === this.selectedOrderId);
+      if (order) {
+        return [order];
+      } else {
+        return this.orders;
+      }
+    },
     displayLoadMoreButton() {
       return !this.limitReached && this.orders.length && this.orders.length % this.pageSize === 0;
     }
@@ -115,7 +129,7 @@ export default {
                 order.transactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.transactionHash}&principal=true`;
               }
             }
-          });
+          })
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
         })
         .catch(e => {

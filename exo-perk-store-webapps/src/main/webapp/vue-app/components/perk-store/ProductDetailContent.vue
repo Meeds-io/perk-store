@@ -1,5 +1,8 @@
 <template>
-  <v-list dense transparent>
+  <v-list
+    v-if="product.enabled"
+    dense
+    transparent>
     <v-list-tile v-if="!product.enabled">
       <v-list-tile-content><strong class="red--text">Disabled product</strong></v-list-tile-content>
     </v-list-tile>
@@ -23,6 +26,14 @@
         <v-list-tile-content class="align-end">{{ product.userOrders.purchasedInCurrentPeriod }}</v-list-tile-content>
       </v-list-tile>
     </template>
+  </v-list>
+  <v-list
+    v-else
+    dense
+    transparent>
+    <v-list-tile>
+      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
+    </v-list-tile>
   </v-list>
 </template>
 

@@ -20,11 +20,17 @@
                 </v-icon>
               </v-btn>
               Perk store
-              <template v-if="displayProductForm && selectedProduct && selectedProduct.id">
+              <template v-if="displayProductDetails && selectedProduct">
+                - Details of <span class="primary--text">{{ selectedProduct.title }}</span>
+              </template>
+              <template v-else-if="displayProductForm && selectedProduct && selectedProduct.id">
                 - edit product
               </template>
               <template v-else-if="displayProductForm && selectedProduct">
                 - Add new product
+              </template>
+              <template v-else-if="displayProductOrders && selectedProduct && selectedOrderId">
+                - Order <span class="primary--text">#{{ selectedOrderId }}</span> of <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductOrders && selectedProduct && selectedProduct.canEdit">
                 - Orders list of <span class="primary--text">{{ selectedProduct.title }}</span>
@@ -35,7 +41,7 @@
             </v-toolbar-title>
             <v-spacer />
             <v-btn
-              v-if="displayProductForm || displayProductOrders"
+              v-if="displayProductForm || displayProductOrders || displayProductDetails"
               id="perkStoreAppMenuCloseButton"
               icon
               flat
@@ -129,6 +135,7 @@
             v-if="displayProductOrders"
             ref="productOrdersList"
             :product="selectedProduct"
+            :selected-order-id="selectedOrderId"
             :orders-filter="ordersFilter"
             @loading="loading = $event"
             @error="error = $event"
@@ -144,10 +151,12 @@
             v-else-if="!error || (filteredProducts && filteredProducts.length)"
             ref="productsList"
             :products="filteredProducts"
+            :selected-product="displayProductDetails && selectedProduct"
             :settings="settings"
             :loading="loading"
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled && walletAddonInstalled"
+            @product-details="displayProduct"
             @orders-list="displayCommandsList"
             @edit="editProduct"
             @buy="buyProduct" />
@@ -156,8 +165,7 @@
             ref="productBuyModal"
             :product="selectedProduct"
             :symbol="settings.symbol"
-            :need-password="walletNeedPassword"
-            @closed="selectedProduct = null" />
+            :need-password="walletNeedPassword" />
 
           <settings-modal
             ref="settingsModal"
@@ -195,6 +203,8 @@ export default {
     walletNeedPassword: false,
     loading: false,
     selectedProduct: null,
+    selectedOrderId: null,
+    displayProductDetails: false,
     displayProductForm: false,
     displayProductOrders: false,
     search: null,
@@ -224,10 +234,10 @@ export default {
     } else {
       document.addEventListener('exo-wallet-installed', this.initWalletAPI);
     }
-    return this.init();
+    return this.init(true);
   },
   methods: {
-    init() {
+    init(firstInit) {
       this.products = [];
       this.loading = true;
       return initSettings()
@@ -238,6 +248,27 @@ export default {
       .then(() => getProductList())
       .then((products) => {
         this.products = products || [];
+
+        if (firstInit && this.products.length) {
+          const search = document.location.search.substring(1);
+          const parameters = JSON.parse(
+            `{"${decodeURI(search)
+              .replace(/"/g, '\\"')
+              .replace(/&/g, '","')
+              .replace(/=/g, '":"')}"}`
+          );
+          if(parameters && parameters.productId) {
+            const selectedProduct = this.products.find(product => product.id === Number(parameters.productId));
+            if(selectedProduct) {
+              if(parameters.orderId) {
+                console.log("selectedProduct", selectedProduct, Number(parameters.orderId));
+                this.displayCommandsList(selectedProduct, Number(parameters.orderId));
+              } else {
+                this.displayProduct(selectedProduct);
+              }
+            }
+          }
+        }
       })
       .catch(e => {
         console.debug("Error initializing application", e);
@@ -272,27 +303,39 @@ export default {
         this.walletNeedPassword = result.needPassword;
       }
     },
-    displayCommandsList(product) {
-      if (product) {
-        this.selectedProduct = product;
-        this.displayProductOrders = true;
-        return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productOrdersList.init());
-      }
-    },
     closeDetails() {
+      this.displayProductDetails = false;
       this.displayProductForm = false;
       this.displayProductOrders = false;
       this.selectedProduct = null;
+      this.selectedOrderId = 0;
+    },
+    displayCommandsList(product, orderId) {
+      if (!product) {
+        return;
+      }
+      this.closeDetails();
+      this.selectedProduct = product;
+      this.selectedOrderId = orderId;
+      this.displayProductOrders = true;
+      return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productOrdersList.init());
     },
     newProduct() {
+      this.closeDetails();
       this.displayProductForm = true;
       this.selectedProduct = {};
       return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
     },
     editProduct(product) {
+      this.closeDetails();
       this.displayProductForm = true;
       this.selectedProduct = Object.assign({}, product);
       return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
+    },
+    displayProduct(product) {
+      this.closeDetails();
+      this.displayProductDetails = true;
+      this.selectedProduct = Object.assign({}, product);
     },
     showFilters() {
       if(this.$refs.productOrdersList) {

@@ -84,8 +84,8 @@
         </v-list-tile-content>
         <v-list-tile-content v-else class="orderQuantityBadgeParent">
           <span
-            :class="order.remainingQuantityToProcess ? 'red' : 'green'"
-            class="orderQuantityBadge mr-1">
+            :class="order.remainingQuantityToProcess ? 'red' : ''"
+            class="orderQuantityBadge">
             {{ order.deliveredQuantity }}
           </span>
           <span> / {{ order.quantity }}</span>
@@ -102,8 +102,8 @@
         </v-list-tile-content>
         <v-list-tile-content v-else class="orderQuantityBadgeParent">
           <span
-            :class="order.remainingQuantityToProcess ? 'red' : 'green'"
-            class="orderQuantityBadge mr-1">
+            :class="order.remainingQuantityToProcess ? 'red' : ''"
+            class="orderQuantityBadge">
             {{ order.refundedQuantity }}
           </span>
           <span> / {{ order.quantity }}</span>
