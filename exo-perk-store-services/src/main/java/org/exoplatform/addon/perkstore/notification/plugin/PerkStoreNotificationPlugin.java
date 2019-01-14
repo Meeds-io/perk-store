@@ -61,7 +61,7 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
       this.newOrder = Boolean.parseBoolean(newOrderParam.getValue());
     }
     if (newProduct && newOrder) {
-      throw new IllegalStateException("The notification couldn't be of type newly added product and about a order that was payed");
+      throw new IllegalStateException("The notification couldn't be of type newly added product and about a order that was paid");
     }
     if (newProduct && mandatoryOrder) {
       throw new IllegalStateException("The notification couldn't be of type newly added product and with a mandatory order");

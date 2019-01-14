@@ -312,7 +312,7 @@ public class PerkStoreService implements Startable {
     if (transactionSuccess) {
       if (StringUtils.equals(ORDERED.name(), oldStatus) || StringUtils.equals(CANCELED.name(), oldStatus)
           || StringUtils.equals(ERROR.name(), oldStatus)) {
-        order.setStatus(PAYED.name());
+        order.setStatus(PAID.name());
         statusChanged = true;
       }
     } else {
@@ -328,7 +328,7 @@ public class PerkStoreService implements Startable {
     // Broadcast transaction finished event is different from save Order
     // condition
     if (!oldStatus.equals(order.getStatus())) {
-      getListenerService().broadcast(ORDER_PAYED_EVENT, product, order);
+      getListenerService().broadcast(ORDER_PAID_EVENT, product, order);
     }
 
   }
@@ -359,7 +359,7 @@ public class PerkStoreService implements Startable {
     }
 
     // Create new instance to avoid injecting annoying values
-    ProductOrder persistedOrder = perkStoreStorage.getOrder(orderId);
+    ProductOrder persistedOrder = perkStoreStorage.getOrderById(orderId);
     if (persistedOrder == null) {
       throw new PerkStoreException(ORDER_NOT_EXISTS, username, orderId);
     }
@@ -375,7 +375,7 @@ public class PerkStoreService implements Startable {
   }
 
   public ProductOrder getOrderById(long orderId) {
-    return perkStoreStorage.getOrder(orderId);
+    return perkStoreStorage.getOrderById(orderId);
   }
 
   public Product getProductById(long productId) {

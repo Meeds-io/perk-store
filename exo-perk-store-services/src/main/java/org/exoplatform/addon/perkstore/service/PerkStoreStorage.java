@@ -11,7 +11,6 @@ import org.exoplatform.addon.perkstore.entity.ProductEntity;
 import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
-import org.exoplatform.addon.perkstore.service.utils.Utils;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreStorage {
@@ -65,7 +64,8 @@ public class PerkStoreStorage {
 
   public List<Product> getAllProducts() {
     List<ProductEntity> productEntities = productDAO.findAll();
-    return productEntities.stream().map(Utils::fromEntity).collect(Collectors.toList());
+    // Used to enable cache usage
+    return productEntities.stream().map(productEntity -> getProductById(productEntity.getId())).collect(Collectors.toList());
   }
 
   public double countOrderedQuantity(long id) {
@@ -101,10 +101,10 @@ public class PerkStoreStorage {
       filter.setLimit(DEFAULT_QUERY_LIMIT);
     }
     List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter);
-    return entities.stream().map(Utils::fromEntity).collect(Collectors.toList());
+    return entities.stream().map(orderEntity -> getOrderById(orderEntity.getId())).collect(Collectors.toList());
   }
 
-  public ProductOrder getOrder(long orderId) {
+  public ProductOrder getOrderById(long orderId) {
     ProductOrderEntity orderEntity = orderDAO.find(orderId);
     return orderEntity == null ? null : fromEntity(orderEntity);
   }

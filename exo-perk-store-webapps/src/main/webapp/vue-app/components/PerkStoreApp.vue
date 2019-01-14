@@ -67,7 +67,7 @@
                 flat
                 title="Refresh store"
                 class="mr-0"
-                @click="init">
+                @click="init()">
                 <v-icon size="20px">
                   refresh
                 </v-icon>
@@ -144,8 +144,8 @@
             v-else-if="displayProductForm"
             ref="productForm"
             :product="selectedProduct"
-            @added="init"
-            @error="error = $event"
+            @added="init()"
+            @error="error=$event"
             @close="closeDetails" />
           <products-list
             v-else-if="!error || (filteredProducts && filteredProducts.length)"
@@ -169,7 +169,7 @@
 
           <settings-modal
             ref="settingsModal"
-            @saved="init" />
+            @saved="init()" />
         </v-flex>
       </v-layout>
     </main>
@@ -234,10 +234,17 @@ export default {
     } else {
       document.addEventListener('exo-wallet-installed', this.initWalletAPI);
     }
-    return this.init(true);
+    const search = document.location.search.substring(1);
+    const parameters = JSON.parse(
+      `{"${decodeURI(search)
+        .replace(/"/g, '\\"')
+        .replace(/&/g, '","')
+        .replace(/=/g, '":"')}"}`
+    );
+    return this.init(parameters && parameters.productId, parameters && parameters.orderId);
   },
   methods: {
-    init(firstInit) {
+    init(selectedProductId, selectedOrderId) {
       this.products = [];
       this.loading = true;
       return initSettings()
@@ -249,23 +256,13 @@ export default {
       .then((products) => {
         this.products = products || [];
 
-        if (firstInit && this.products.length) {
-          const search = document.location.search.substring(1);
-          const parameters = JSON.parse(
-            `{"${decodeURI(search)
-              .replace(/"/g, '\\"')
-              .replace(/&/g, '","')
-              .replace(/=/g, '":"')}"}`
-          );
-          if(parameters && parameters.productId) {
-            const selectedProduct = this.products.find(product => product.id === Number(parameters.productId));
-            if(selectedProduct) {
-              if(parameters.orderId) {
-                console.log("selectedProduct", selectedProduct, Number(parameters.orderId));
-                this.displayCommandsList(selectedProduct, Number(parameters.orderId));
-              } else {
-                this.displayProduct(selectedProduct);
-              }
+        if (this.products.length && selectedProductId) {
+          const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
+          if(selectedProduct) {
+            if(selectedOrderId) {
+              this.displayCommandsList(selectedProduct, Number(selectedOrderId));
+            } else {
+              this.displayProduct(selectedProduct);
             }
           }
         }

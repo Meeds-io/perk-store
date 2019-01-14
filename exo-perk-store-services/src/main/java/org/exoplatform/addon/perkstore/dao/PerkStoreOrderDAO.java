@@ -129,8 +129,8 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     if (filter.isOrdered()) {
       statuses.add(ProductOrderStatus.ORDERED.ordinal());
     }
-    if (filter.isPayed()) {
-      statuses.add(ProductOrderStatus.PAYED.ordinal());
+    if (filter.isPaid()) {
+      statuses.add(ProductOrderStatus.PAID.ordinal());
     }
     if (filter.isCanceled()) {
       statuses.add(ProductOrderStatus.CANCELED.ordinal());

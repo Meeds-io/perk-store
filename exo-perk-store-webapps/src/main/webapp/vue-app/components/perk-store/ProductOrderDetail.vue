@@ -170,7 +170,7 @@ export default {
         'ORDERED',
         'CANCELED',
         'ERROR',
-        'PAYED',
+        'PAID',
         'DELIVERED',
         'REFUNDED'
       ],

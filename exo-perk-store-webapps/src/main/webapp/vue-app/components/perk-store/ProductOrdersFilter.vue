@@ -50,8 +50,8 @@
           label="Order went wrong" />
         <v-checkbox
           v-if="!filter.notProcessed"
-          v-model="filter.payed"
-          label="Payed" />
+          v-model="filter.paid"
+          label="Paid" />
         <v-checkbox
           v-if="!filter.notProcessed"
           v-model="filter.delivered"

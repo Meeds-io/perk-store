@@ -90,7 +90,7 @@ public class Utils {
 
   public static final String        ORDER_MODIFIED_EVENT                      = "exo.addons.perkstore.order.modification";
 
-  public static final String        ORDER_PAYED_EVENT                         = "exo.addons.perkstore.order.payed";
+  public static final String        ORDER_PAID_EVENT                         = "exo.addons.perkstore.order.paid";
 
   private Utils() {
   }
