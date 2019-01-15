@@ -1,140 +1,175 @@
 <template>
   <v-card v-if="order">
     <v-card-title v-if="order.sender">
-      <h4>
-        <profile-link
-          :id="order.sender.id"
-          :space-id="order.sender.spaceId"
-          :url-id="order.sender.spaceURLId"
-          :type="order.sender.type"
-          :display-name="order.sender.displayName" />
-      </h4>
+      <h4><strong>#{{ order.id }}</strong></h4>
       <v-spacer />
       <template v-if="userData.canEdit">
-        <template v-if="edit">
-          <button
-            class="btn btn-primary mr-1"
-            @click="saveOrder">
-            Save
-          </button>
-          <button
-            class="btn mr-1"
-            @click="edit = false">
-            Cancel
-          </button>
-        </template>
-        <button
-          v-else
-          class="btn mr-1"
-          @click="edit = true">
-          Edit
-        </button>
+        <select
+          v-model="order.status"
+          class="small mt-1 mb-1 mr-2"
+          @change="changeStatus">
+          <option v-for="option in statusList" :key="option">
+            {{ option }}
+          </option>
+        </select>
+        <div
+          v-if="order.remainingQuantityToProcess"
+          :title="`${order.remainingQuantityToProcess} to deliver`"
+          class="orderQuantityBadgeParent">
+          <div class="orderQuantityBadge red">
+            {{ order.remainingQuantityToProcess }}
+          </div>
+        </div>
       </template>
+      <span v-else>{{ statusLabel }}</span>
     </v-card-title>
+
     <v-divider />
+
     <v-list dense>
       <v-list-tile>
-        <v-list-tile-content>Receiver:</v-list-tile-content>
+        <v-list-tile-content>Buyer:</v-list-tile-content>
         <v-list-tile-content class="align-end">
           <profile-link
-            :id="order.receiver.id"
-            :space-id="order.receiver.spaceId"
-            :url-id="order.receiver.spaceURLId"
-            :type="order.receiver.type"
-            :display-name="order.receiver.displayName" />
+            :id="order.sender.id"
+            :space-id="order.sender.spaceId"
+            :url-id="order.sender.spaceURLId"
+            :type="order.sender.type"
+            :display-name="order.sender.displayName"
+            display-avatar />
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile>
-        <v-list-tile-content>Ordered id:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          <a
-            v-if="order.transactionLink"
-            :href="order.transactionLink"
-            rel="nofollow"
-            target="_blank">
-            #{{ order.id }}
-          </a>
-          <template v-else>#{{ order.id }}</template>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile :class="edit && 'grey lighten-3'">
-        <v-list-tile-content>Order status:</v-list-tile-content>
-        <v-list-tile-content v-if="edit" class="align-end">
-          <select v-model="status" class="small mt-1 mb-1">
-            <option v-for="option in statusList" :key="option">
-              {{ option }}
-            </option>
-          </select>
-        </v-list-tile-content>
-        <v-list-tile-content v-else-if="order.status === 'ERROR'" class="align-end">
-          <v-icon :title="order.error || `Transaction ${order.hash || ''} failed`" color="orange">error</v-icon>
-        </v-list-tile-content>
-        <v-list-tile-content v-else class="align-end">
-          {{ statusLabel }}
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile :class="edit && 'grey lighten-3'">
-        <v-list-tile-content>Order delivered quantity:</v-list-tile-content>
-        <v-list-tile-content v-if="edit" class="align-end">
-          <input
-            v-model.number="delivered"
-            type="text"
-            name="OrderDeliveredQuantity"
-            class="text-xs-right small mt-1 mb-1">
-        </v-list-tile-content>
-        <v-list-tile-content v-else class="orderQuantityBadgeParent">
-          <span
-            :class="order.remainingQuantityToProcess ? 'red' : ''"
-            class="orderQuantityBadge">
-            {{ order.deliveredQuantity }}
-          </span>
-          <span> / {{ order.quantity }}</span>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile :class="edit && 'grey lighten-3'">
-        <v-list-tile-content>Order refunded quantity:</v-list-tile-content>
-        <v-list-tile-content v-if="edit" class="align-end">
-          <input
-            v-model.number="refunded"
-            type="text"
-            name="OrderRefundedQuantity"
-            class="text-xs-right small mt-1 mb-1">
-        </v-list-tile-content>
-        <v-list-tile-content v-else class="orderQuantityBadgeParent">
-          <span
-            :class="order.remainingQuantityToProcess ? 'red' : ''"
-            class="orderQuantityBadge">
-            {{ order.refundedQuantity }}
-          </span>
-          <span> / {{ order.quantity }}</span>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Remaining quantity to process:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          {{ order.remainingQuantityToProcess || '-' }}
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Date of order:</v-list-tile-content>
+        <v-list-tile-content>Date:</v-list-tile-content>
         <v-list-tile-content class="align-end">
           {{ createdDateLabel }}
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile>
-        <v-list-tile-content>Date of delivery:</v-list-tile-content>
+        <v-list-tile-content>Items:</v-list-tile-content>
         <v-list-tile-content class="align-end">
-          {{ deliveredDateLabel }}
+          <div>
+            {{ order.quantity }} x 
+            <a href="javascript:void(0);" @click="$emit('display-product', product)">
+              {{ productTitle }}
+            </a>
+          </div>
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile>
-        <v-list-tile-content>Date of refund:</v-list-tile-content>
+        <v-list-tile-content>
+          Payment:
+          <v-icon
+            v-if="transactionSuccess"
+            title="Transaction succeeded"
+            class="green">
+            fa-check-circle
+          </v-icon>
+          <v-icon
+            v-else-if="transactionFailed"
+            title="Transaction failed"
+            class="red">
+            fa-exclamation-circle
+          </v-icon>
+          <v-progress-circular
+            v-else-if="transactionLoading"
+            color="primary"
+            indeterminate
+            size="20" />
+        </v-list-tile-content>
         <v-list-tile-content class="align-end">
+          <div>
+            <a
+              v-if="order.transactionLink"
+              :href="order.transactionLink"
+              rel="nofollow"
+              target="_blank">
+              {{ order.amount }} {{ symbol }}
+            </a>
+            to
+            <profile-link
+              :id="order.receiver.id"
+              :space-id="order.receiver.spaceId"
+              :url-id="order.receiver.spaceURLId"
+              :type="order.receiver.type"
+              :display-name="order.receiver.displayName" />
+          </div>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+
+    <v-divider />
+
+    <v-list dense class="orderProcessingContent">
+      <v-list-tile>
+        <v-list-tile-content>Processing:</v-list-tile-content>
+        <v-list-tile-content class="align-end">
+          <div class="no-wrap">
+            <div v-if="!order.remainingQuantityToProcess || isError">
+              <v-icon class="green">fa-check-circle</v-icon>DONE
+            </div>
+            <button
+              v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
+              class="btn btn-primary orderProcessingBtn mr-1"
+              @click="$emit('open-deliver', order)">
+              Deliver
+            </button>
+            <button
+              v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
+              class="btn orderProcessingBtn mr-1"
+              @click="$emit('open-refund', order)">
+              {{ refundButtonLabel }}
+            </button>
+            <button
+              v-if="isOrdered"
+              class="btn orderProcessingBtn mr-1"
+              @click="edit = false">
+              Cancel
+            </button>
+          </div>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-list-tile>
+        <v-list-tile-content>
+          <div>
+            Delivered:
+            <v-progress-circular
+              :rotate="360"
+              :size="40"
+              :width="5"
+              :value="deliveredPercentage"
+              color="teal"
+              class="ml-2">
+              <span class="no-wrap">
+                {{ order.deliveredQuantity }}/{{ order.quantity }}
+              </span>
+            </v-progress-circular>
+          </div>
+        </v-list-tile-content>
+        <v-list-tile-content v-if="order.deliveredDate" class="align-end">
+          {{ deliveredDateLabel }}
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-list-tile v-if="order.refundedQuantity && order.refundTransactionLink">
+        <v-list-tile-content>
+          <div>
+            Refunded:
+            <a
+              v-if="order.refundTransactionLink"
+              :href="order.refundTransactionLink"
+              rel="nofollow"
+              target="_blank">
+              {{ order.refundedQuantity }} {{ symbol }}
+            </a>
+          </div>
+        </v-list-tile-content>
+        <v-list-tile-content v-if="order.refundedDate" class="align-end">
           {{ refundedDateLabel }}
         </v-list-tile-content>
       </v-list-tile>
     </v-list>
   </v-card>
+  <span v-else class="hidden"></span>
 </template>
 
 <script>
@@ -159,24 +194,33 @@ export default {
         return {};
       },
     },
+    symbol: {
+      type: String,
+      default: function() {
+        return "";
+      },
+    },
   },
   data() {
     return {
-      edit: false,
-      status: null,
-      delivered: null,
-      refunded: null,
+      transactionSuccess: false,
+      transactionError: false,
+      transactionLoading: false,
       statusList: [
         'ORDERED',
         'CANCELED',
         'ERROR',
         'PAID',
+        'PARTIAL',
         'DELIVERED',
         'REFUNDED'
       ],
     };
   },
   computed: {
+    productTitle() {
+      return (this.product && this.product.title) || (this.order && this.order.productTitle) || '';
+    },
     userData() {
       return (this.product && this.product.userData) || {};
     },
@@ -191,28 +235,43 @@ export default {
     },
     statusLabel() {
       return this.order.status;
-    }
-  },
-  watch: {
-    edit() {
-      if(this.edit) {
-        this.status = this.order.status;
-        this.delivered = this.order.deliveredQuantity;
-        this.refunded = this.order.refundedQuantity;
-      }
-    }
+    },
+    refundButtonLabel() {
+      return this.order.deliveredQuantity > 0 ? 'Refund' : 'Refund all';
+    },
+    deliveredPercentage() {
+      return parseInt(((this.order.deliveredQuantity + this.order.refundedQuantity) * 100) / this.order.quantity);
+    },
+    statusLowerCase() {
+      return this.order.status && this.order.status.toLowerCase();
+    },
+    isError() {
+      return this.statusLowerCase === 'error';
+    },
+    isPaid() {
+      return this.statusLowerCase === 'paid';
+    },
+    isDelivered() {
+      return this.statusLowerCase === 'delivered';
+    },
+    isRefunded() {
+      return this.statusLowerCase === 'refunded';
+    },
+    isCanceled() {
+      return this.statusLowerCase === 'canceled';
+    },
+    isOrdered() {
+      return this.statusLowerCase === 'ordered';
+    },
+    isPartial() {
+      return this.statusLowerCase === 'partial';
+    },
   },
   methods: {
-    saveOrder() {
-      if(this.order.quantity < this.delivered + this.refunded) {
-        this.$emit('error', 'Product quantity is less than entered values for (delivered + refunded)');
-        return;
-      }
-
+    changeStatus() {
       this.$emit('loading', true);
-      return saveOrderStatus(this.order.id, this.order.productId, this.status, this.delivered, this.refunded)
+      return saveOrderStatus(this.order.id, this.order.productId, this.order.status, this.order.delivered, this.order.refunded)
         .then(order => {
-          this.edit = false;
           this.$emit('changed', order);
           this.$forceUpdate();
         })

@@ -151,6 +151,8 @@
             :product="selectedProduct"
             :selected-order-id="selectedOrderId"
             :orders-filter="ordersFilter"
+            :symbol="settings.symbol"
+            @display-product="displayProduct($event)"
             @loading="loading = $event"
             @error="error = $event"
             @close="closeDetails" />

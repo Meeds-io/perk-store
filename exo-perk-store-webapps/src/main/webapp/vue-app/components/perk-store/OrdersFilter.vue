@@ -54,6 +54,10 @@
           label="Paid" />
         <v-checkbox
           v-if="!filter.notProcessed"
+          v-model="filter.partial"
+          label="Partial" />
+        <v-checkbox
+          v-if="!filter.notProcessed"
           v-model="filter.delivered"
           label="Delivered" />
         <v-checkbox

@@ -27,6 +27,8 @@
           <order-detail
             :order="props.item"
             :product="product"
+            :symbol="symbol"
+            @display-product="$emit('display-product', $event)"
             @changed="updateOrder(props.item, $event)"
             @loading="$emit('loading', $event)"
             @error="$emit('error', $event)" />
@@ -77,6 +79,12 @@ export default {
       type: Number,
       default: function() {
         return 0;
+      },
+    },
+    symbol: {
+      type: String,
+      default: function() {
+        return "";
       },
     },
   },
@@ -154,10 +162,10 @@ export default {
     },
     updateOrderFromWS(event) {
       const wsMessage = event.detail;
-      if(wsMessage.productOrder && wsMessage.productOrder.id) {
-        const order = this.selectedOrderId && this.orders.find(order => order && order.id === wsMessage.productOrder.id);
+      if(this.orders && this.orders/length && wsMessage.productorder && wsMessage.productorder.id) {
+        const order = this.orders.find(order => order && order.id === wsMessage.productorder.id);
         if(order) {
-          this.updateOrder(order, wsMessage.productOrder);
+          this.updateOrder(order, wsMessage.productorder);
         } else {
           // New order: do nothing for now
         }

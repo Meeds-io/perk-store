@@ -33,6 +33,12 @@
     margin-bottom: 0;
   }
 
+  .no-wrap {
+    white-space: nowrap;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
   select.small, input.small {
     width: 100px;
     height: 32px;
@@ -231,6 +237,13 @@
   .uiIconLightGray:before {
     color: #4d5466;
   }
+
+  .profileAvatarCircle {
+    max-height: 29px;
+    max-width: 29px;
+    border-radius: 100px;
+  }
+
   .productOrderFilter {
     margin-top: 1px !important;
     border-left: 1px solid #4d5466;
@@ -262,6 +275,18 @@
       color: #fff;
       margin-right: 4px;
     }
+  }
+
+  .orderProcessingContent {
+    background: #e3ecf6;
+    min-height: 140px;
+    max-height: 140px;
+  }
+
+  .orderProcessingBtn {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 17px;
   }
 }
 

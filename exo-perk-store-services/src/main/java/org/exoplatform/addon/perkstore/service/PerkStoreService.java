@@ -246,15 +246,20 @@ public class PerkStoreService implements Startable {
         throw new IllegalAccessException(currentUserId + " is attempting to access orders list with filter: " + filter);
       }
     }
+    List<ProductOrder> orders = null;
     if (filter.getProductId() == 0 && StringUtils.isBlank(username)) {
       throw new IllegalAccessException("No user nor product is chosen to display commands");
     } else if (filter.getProductId() == 0) {
-      return perkStoreStorage.getOrders(username, filter);
+      orders = perkStoreStorage.getOrders(username, filter);
     } else if (canEditProduct(filter.getProductId(), username)) {
-      return perkStoreStorage.getOrders(null, filter);
+      orders = perkStoreStorage.getOrders(null, filter);
     } else {
-      return perkStoreStorage.getOrders(username, filter);
+      orders = perkStoreStorage.getOrders(username, filter);
     }
+    if (orders != null && !orders.isEmpty()) {
+      orders.stream().forEach(order -> computeOrderFields(null, order));
+    }
+    return orders;
   }
 
   public void checkCanOrder(ProductOrder order, String username) throws PerkStoreException {
@@ -316,6 +321,8 @@ public class PerkStoreService implements Startable {
 
     productOrder = perkStoreStorage.saveOrder(productOrder);
 
+    computeOrderFields(product, productOrder);
+
     getListenerService().broadcast(PRODUCT_PURCHASED_EVENT, product, productOrder);
   }
 
@@ -360,6 +367,8 @@ public class PerkStoreService implements Startable {
     // Broadcast transaction finished event is different from save Order
     // condition
     if (!oldStatus.equals(order.getStatus())) {
+      computeOrderFields(product, order);
+
       getListenerService().broadcast(ORDER_PAID_EVENT, product, order);
     }
 
@@ -391,7 +400,7 @@ public class PerkStoreService implements Startable {
     }
 
     // Create new instance to avoid injecting annoying values
-    ProductOrder persistedOrder = perkStoreStorage.getOrderById(orderId);
+    ProductOrder persistedOrder = getOrderById(orderId);
     if (persistedOrder == null) {
       throw new PerkStoreException(ORDER_NOT_EXISTS, username, orderId);
     }
@@ -403,11 +412,14 @@ public class PerkStoreService implements Startable {
     persistedOrder = perkStoreStorage.saveOrder(persistedOrder);
 
     persistedOrder.setLastModifier(toProfile(USER_ACCOUNT_TYPE, username));
+
+    computeOrderFields(product, order);
+
     getListenerService().broadcast(ORDER_MODIFIED_EVENT, product, persistedOrder);
   }
 
   public ProductOrder getOrderById(long orderId) {
-    return perkStoreStorage.getOrderById(orderId);
+    return computeOrderFields(null, perkStoreStorage.getOrderById(orderId));
   }
 
   public Product getProductById(long productId, String username) throws Exception {
@@ -460,6 +472,20 @@ public class PerkStoreService implements Startable {
       }
       return globalSettings;
     }
+  }
+
+  private ProductOrder computeOrderFields(Product product, ProductOrder order) {
+    if (order == null) {
+      return null;
+    }
+    if (product == null) {
+      product = getProductById(order.getProductId());
+    }
+    if (product == null) {
+      return order;
+    }
+    order.setProductTitle(product.getTitle());
+    return order;
   }
 
   private void computeProductFields(String username, Product product) throws Exception {

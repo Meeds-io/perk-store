@@ -20,6 +20,8 @@ public class OrderFilter {
 
   private boolean canceled;
 
+  private boolean partial;
+
   private boolean paid;
 
   private boolean error;

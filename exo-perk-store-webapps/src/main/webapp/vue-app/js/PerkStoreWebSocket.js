@@ -8,6 +8,6 @@ export function initCometd(settings) {
 
   cCometd.subscribe(settings.userSettings.cometdChannel, null, (event) => {
     const data = event.data && JSON.parse(event.data);
-    document.dispatchEvent(new CustomEvent(data.eventId, {detail : data && data.message}));
+    document.dispatchEvent(new CustomEvent(data.eventId, {detail: data && data.message}));
   });
 }

@@ -6,6 +6,11 @@
     :href="url"
     rel="nofollow"
     target="_blank">
+    <img
+      v-if="displayAvatar"
+      :alt="displayName"
+      :src="avatar"
+      class="profileAvatarCircle">
     {{ displayName }}
   </a>
   <code v-else-if="displayName">{{ displayName }}</code>
@@ -46,6 +51,12 @@ export default {
         return null;
       },
     },
+    displayAvatar: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
     tiptipPosition: {
       type: String,
       default: function() {
@@ -72,13 +83,19 @@ export default {
     };
   },
   computed: {
-    url() {
-      if (!this.type || this.type === 'user') {
-        return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/profile/${this.id}`;
-      } else if (this.type === 'space') {
-        return `${eXo.env.portal.context}/g/:spaces:${this.urlId}/`;
+    avatar() {
+      if (this.type === 'space') {
+        return `/portal/rest/v1/social/spaces/${this.id}/avatar`;
+      } else {
+        return `/portal/rest/v1/social/users/${this.id}/avatar`;
       }
-      return '#';
+    },
+    url() {
+      if (this.type === 'space') {
+        return `${eXo.env.portal.context}/g/:spaces:${this.urlId}/`;
+      } else {
+        return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/profile/${this.id}`;
+      }
     },
   },
   watch: {

@@ -49,6 +49,7 @@ export function getOrderFilter() {
       canceled: true,
       error: true,
       paid: true,
+      partial: true,
       delivered: true,
       refunded: true,
     };
