@@ -1,6 +1,6 @@
 <template>
   <v-layout row class="border-box-sizing mr-0 ml-0">
-    <product-orders-filter
+    <orders-filter
       ref="productOrdersFilter"
       :filter="ordersFilter"
       @search="searchOrders" />
@@ -24,7 +24,7 @@
           md4
           lg3
           xl2>
-          <product-order-detail
+          <order-detail
             :order="props.item"
             :product="product"
             @changed="updateOrder(props.item, $event)"
@@ -50,15 +50,15 @@
 </template>
 
 <script>
-import ProductOrderDetail from './ProductOrderDetail.vue';
-import ProductOrdersFilter from './ProductOrdersFilter.vue';
+import OrderDetail from './OrderDetail.vue';
+import OrdersFilter from './OrdersFilter.vue';
 
 import {getOrderList} from '../../js/PerkStoreProductOrder.js';
 
 export default {
   components: {
-    ProductOrderDetail,
-    ProductOrdersFilter,
+    OrderDetail,
+    OrdersFilter,
   },
   props: {
     product: {
@@ -117,13 +117,10 @@ export default {
   },
   methods: {
     init() {
-      if(!this.product) {
-        return;
-      }
       this.$emit('error', null);
       this.$emit('loading', true);
       const initialOrdersLength = this.orders.length;
-      return getOrderList(this.product.id, this.ordersFilter, this.limit)
+      return getOrderList(this.product && this.product.id, this.ordersFilter, this.limit)
         .then((orders) => {
           this.orders = orders || [];
           this.orders.forEach(order => {

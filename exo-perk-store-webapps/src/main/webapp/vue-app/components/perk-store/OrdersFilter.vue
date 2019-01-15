@@ -9,7 +9,7 @@
         <h3>Filter orders</h3>
       </v-toolbar-title>
       <v-spacer />
-      <v-toolbar-items class="hidden-sm-and-down">
+      <v-toolbar-items>
         <v-btn
           class="mr-1 primary"
           icon

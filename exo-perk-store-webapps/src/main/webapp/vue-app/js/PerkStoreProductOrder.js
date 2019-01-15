@@ -2,10 +2,10 @@ import {throwErrorFromServerCall} from './PerkStoreError.js';
 
 export function getOrderList(productId, filter, limit) {
   if (!productId) {
-    return Promise.resolve([]);
+    productId = 0;
   }
 
-  filter = Object.assign({}, filter, {productId: productId, limit: limit ? limit : 0});
+  filter = Object.assign(filter, {productId: productId, limit: limit ? limit : 0});
 
   return fetch('/portal/rest/perkstore/api/order/list', {
     method: 'POST',

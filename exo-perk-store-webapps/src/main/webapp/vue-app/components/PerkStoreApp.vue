@@ -15,8 +15,8 @@
                 flat
                 title="Display filters"
                 @click="showFilters">
-                <v-icon>
-                  menu
+                <v-icon color="primary">
+                  fa-filter
                 </v-icon>
               </v-btn>
               Perk store
@@ -38,10 +38,13 @@
               <template v-else-if="displayProductOrders && selectedProduct">
                 - My orders list of <code>{{ selectedProduct.title }}</code>
               </template>
+              <template v-else-if="displayMyOrders">
+                - My orders
+              </template>
             </v-toolbar-title>
             <v-spacer />
             <v-btn
-              v-if="displayProductForm || displayProductOrders || displayProductDetails"
+              v-if="displayCloseIcon"
               id="perkStoreAppMenuCloseButton"
               icon
               flat
@@ -70,6 +73,17 @@
                 @click="init()">
                 <v-icon size="20px">
                   refresh
+                </v-icon>
+              </v-btn>
+              <v-btn
+                id="perkStoreAppMyOrdersButton"
+                icon
+                flat
+                title="My orders"
+                class="mr-0"
+                @click="displayMyOrdersList">
+                <v-icon size="20px">
+                  fa-file-invoice-dollar
                 </v-icon>
               </v-btn>
               <v-btn
@@ -131,9 +145,9 @@
             <v-spacer />
           </v-toolbar>
 
-          <product-orders-list
-            v-if="displayProductOrders"
-            ref="productOrdersList"
+          <orders-list
+            v-if="displayProductOrders || displayMyOrders"
+            ref="ordersList"
             :product="selectedProduct"
             :selected-order-id="selectedOrderId"
             :orders-filter="ordersFilter"
@@ -157,12 +171,12 @@
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled && walletAddonInstalled"
             @product-details="displayProduct"
-            @orders-list="displayCommandsList"
+            @orders-list="displayProductOrdersList"
             @edit="editProduct"
             @buy="buyProduct" />
 
-          <product-buy-modal
-            ref="productBuyModal"
+          <buy-modal
+            ref="buyModal"
             :product="selectedProduct"
             :symbol="settings.symbol"
             :need-password="walletNeedPassword" />
@@ -177,22 +191,22 @@
 </template>
 
 <script>
-import ProductsList from './perk-store/ProductsList.vue';
-import ProductOrdersList from './perk-store/ProductOrdersList.vue';
-import ProductForm from './perk-store/ProductForm.vue';
-import ProductBuyModal from './perk-store/ProductBuyModal.vue';
 import SettingsModal from './perk-store/SettingsModal.vue';
+import ProductsList from './perk-store/ProductsList.vue';
+import OrdersList from './perk-store/OrdersList.vue';
+import ProductForm from './perk-store/ProductForm.vue';
+import BuyModal from './perk-store/BuyModal.vue';
 
 import {initSettings, getOrderFilter} from '../js/PerkStoreSettings.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 
 export default {
   components: {
-    ProductsList,
-    ProductOrdersList,
-    ProductForm,
-    ProductBuyModal,
     SettingsModal,
+    ProductsList,
+    OrdersList,
+    ProductForm,
+    BuyModal,
   },
   data: () => ({
     warning: null,
@@ -204,6 +218,7 @@ export default {
     loading: false,
     selectedProduct: null,
     selectedOrderId: null,
+    displayMyOrders: false,
     displayProductDetails: false,
     displayProductForm: false,
     displayProductOrders: false,
@@ -216,6 +231,9 @@ export default {
   computed: {
     canEditSelectedProduct() {
       return  this.selectedProduct && this.selectedProduct.userData && this.selectedProduct.userData.canEdit;
+    },
+    displayCloseIcon() {
+      return this.displayProductForm || this.displayProductOrders || this.displayProductDetails || this.displayMyOrders;
     },
     filteredProducts() {
       if(this.search && this.search.trim().length) {
@@ -275,7 +293,7 @@ export default {
           const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
           if(selectedProduct) {
             if(selectedOrderId) {
-              this.displayCommandsList(selectedProduct, Number(selectedOrderId));
+              this.displayProductOrdersList(selectedProduct, Number(selectedOrderId));
             } else {
               this.displayProduct(selectedProduct);
             }
@@ -319,10 +337,11 @@ export default {
       this.displayProductDetails = false;
       this.displayProductForm = false;
       this.displayProductOrders = false;
+      this.displayMyOrders = false;
       this.selectedProduct = null;
       this.selectedOrderId = 0;
     },
-    displayCommandsList(product, orderId) {
+    displayProductOrdersList(product, orderId) {
       if (!product) {
         return;
       }
@@ -330,7 +349,14 @@ export default {
       this.selectedProduct = product;
       this.selectedOrderId = orderId;
       this.displayProductOrders = true;
-      return this.$nextTick().then(() => this.$refs.productOrdersList && this.$refs.productOrdersList.init());
+      return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init());
+    },
+    displayMyOrdersList() {
+      this.closeDetails();
+      this.selectedProduct = null;
+      this.selectedOrderId = 0;
+      this.displayMyOrders = true;
+      return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init());
     },
     newProduct() {
       this.closeDetails();
@@ -350,13 +376,13 @@ export default {
       this.selectedProduct = Object.assign({}, product);
     },
     showFilters() {
-      if(this.$refs.productOrdersList) {
-        this.$refs.productOrdersList.showFilters();
+      if(this.$refs.ordersList) {
+        this.$refs.ordersList.showFilters();
       }
     },
     buyProduct(product) {
       this.selectedProduct = product;
-      this.$refs.productBuyModal.open();
+      this.$refs.buyModal.open();
     },
     displaySettingsModal() {
       this.$refs.settingsModal.open();

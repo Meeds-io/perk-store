@@ -65,10 +65,6 @@ public class PerkStoreOrderREST implements ResourceContainer {
       LOG.warn("Bad request sent to server with empty filter");
       return Response.status(400).build();
     }
-    if (filter.getProductId() == 0) {
-      LOG.warn("Bad request sent to server with empty filter product id");
-      return Response.status(400).build();
-    }
     try {
       List<ProductOrder> orders = perkStoreService.getOrders(filter, getCurrentUserId());
       return Response.ok(orders).build();

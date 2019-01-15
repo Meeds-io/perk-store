@@ -35,6 +35,7 @@
           class="pt-2"
           style="position: relative;">
           <v-btn
+            v-if="userData.canEdit"
             :class="ordersListBtnClass"
             title="Orders list"
             absolute
@@ -56,6 +57,19 @@
               </span>
               <v-icon>fa-list-ul</v-icon>
             </v-badge>
+          </v-btn>
+          <v-btn
+            v-else
+            :class="ordersListBtnClass"
+            title="My orders"
+            absolute
+            color="secondary"
+            class="white--text myOrderButton"
+            fab
+            right
+            top
+            @click="$emit('orders-list', product)">
+            <v-icon>fa-file-invoice-dollar</v-icon>
           </v-btn>
           <v-btn
             v-if="userData.canEdit"

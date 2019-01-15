@@ -20,6 +20,7 @@ import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Long> {
+  private static final String AND_OPERATOR = " AND ";
   private static final String PRODUCT_ID_PARAMETER = "productId";
 
   @Override
@@ -91,22 +92,42 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
 
   private String getFilterQueryString(String username, OrderFilter filter) {
     StringBuilder query = new StringBuilder("Select o from Order o WHERE ");
-    query.append(" o.product.id = ");
-    query.append(filter.getProductId());
+
+    boolean firstConditionAdded = false;
+    if (filter.getProductId() != 0) {
+      query.append(" o.product.id = ");
+      query.append(filter.getProductId());
+      firstConditionAdded = true;
+    }
 
     if (StringUtils.isNotBlank(username)) {
       Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
-      query.append(" AND o.senderId = ");
+      if (firstConditionAdded) {
+        query.append(AND_OPERATOR);
+      } else {
+        firstConditionAdded = true;
+      }
+      query.append(" o.senderId = ");
       query.append(identity.getId());
     }
 
     if (filter.isNotProcessed()) {
-      query.append(" AND o.remainingQuantity > 0");
+      if (firstConditionAdded) {
+        query.append(AND_OPERATOR);
+      } else {
+        firstConditionAdded = true;
+      }
+      query.append(" o.remainingQuantity > 0");
     } else {
       List<Integer> statuses = getSelectedStatuses(filter);
 
       if (!statuses.isEmpty()) {
-        query.append(" AND o.status in (");
+        if (firstConditionAdded) {
+          query.append(AND_OPERATOR);
+        } else {
+          firstConditionAdded = true;
+        }
+        query.append(" o.status in (");
         query.append(StringUtils.join(statuses, ", "));
         query.append(" )");
       }
@@ -114,7 +135,10 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
 
     long selectedDate = filter.getSelectedDate();
     if (filter.isSearchInDates() && selectedDate > 0) {
-      query.append(" AND o.createdDate > ");
+      if (firstConditionAdded) {
+        query.append(AND_OPERATOR);
+      }
+      query.append(" o.createdDate > ");
       query.append(getStartOfDayMillis(selectedDate));
       query.append(" AND o.createdDate < ");
       query.append(getEndOfDayMillis(selectedDate));

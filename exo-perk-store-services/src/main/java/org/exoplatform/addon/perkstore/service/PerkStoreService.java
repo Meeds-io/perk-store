@@ -242,11 +242,15 @@ public class PerkStoreService implements Startable {
     }
     if (StringUtils.isBlank(username)) {
       String currentUserId = getCurrentUserId();
-      if (StringUtils.isBlank(username) || !canAddProduct(currentUserId)) {
+      if (StringUtils.isBlank(currentUserId) || !canAddProduct(currentUserId)) {
         throw new IllegalAccessException(currentUserId + " is attempting to access orders list with filter: " + filter);
       }
     }
-    if (canEditProduct(filter.getProductId(), username)) {
+    if (filter.getProductId() == 0 && StringUtils.isBlank(username)) {
+      throw new IllegalAccessException("No user nor product is chosen to display commands");
+    } else if (filter.getProductId() == 0) {
+      return perkStoreStorage.getOrders(username, filter);
+    } else if (canEditProduct(filter.getProductId(), username)) {
       return perkStoreStorage.getOrders(null, filter);
     } else {
       return perkStoreStorage.getOrders(username, filter);
