@@ -14,7 +14,7 @@
           contain>
           <v-expand-transition>
             <div
-              v-if="hover || !product || !product.enabled || !product.illustrationURL"
+              v-if="hover || !product || !product.enabled || !product.illustrationURL || !available"
               class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
               style="height: 100%;">
               <product-detail-content

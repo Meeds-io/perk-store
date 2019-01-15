@@ -1,6 +1,23 @@
 <template>
   <v-list
-    v-if="product.enabled"
+    v-if="!product.unlimited && !available"
+    class="soldOutBlock"
+    dense
+    transparent>
+    <v-list-tile>
+      <v-list-tile-content class="align-center"><strong class="red--text"><strong class="red--text">Sold out</strong></strong></v-list-tile-content>
+    </v-list-tile>
+  </v-list>
+  <v-list
+    v-else-if="!product.enabled"
+    dense
+    transparent>
+    <v-list-tile>
+      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
+    </v-list-tile>
+  </v-list>
+  <v-list
+    v-else
     dense
     transparent>
     <v-list-tile v-if="!product.enabled">
@@ -26,14 +43,6 @@
         <v-list-tile-content class="align-end">{{ product.userData.purchasedInCurrentPeriod }}</v-list-tile-content>
       </v-list-tile>
     </template>
-  </v-list>
-  <v-list
-    v-else
-    dense
-    transparent>
-    <v-list-tile>
-      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
-    </v-list-tile>
   </v-list>
 </template>
 
