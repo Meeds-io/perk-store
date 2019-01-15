@@ -1,20 +1,20 @@
 package org.exoplatform.addon.perkstore.listener;
 
-import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
+import static org.exoplatform.addon.perkstore.service.utils.Utils.getApplicationAccessUsersList;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.exoplatform.addon.perkstore.model.GlobalSettings;
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
+import org.exoplatform.addon.perkstore.service.PerkStoreWebSocketService;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.listener.*;
-import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
 @Asynchronous
 public class WebSocketSettingsListener extends Listener<PerkStoreService, GlobalSettings> {
 
-  private ContinuationService continuationService;
+  private PerkStoreWebSocketService webSocketService;
 
   @Override
   public void onEvent(Event<PerkStoreService, GlobalSettings> event) throws Exception {
@@ -22,25 +22,15 @@ public class WebSocketSettingsListener extends Listener<PerkStoreService, Global
 
     Set<String> recipientUsers = new HashSet<>();
     boolean sendToAll = getApplicationAccessUsersList(recipientUsers, globalSettings);
-    String message = transformToString(globalSettings);
 
-    getContinuationService();
-    if (sendToAll) {
-      continuationService.sendBroadcastMessage(PRODUCT_COMETD_CHANNEL, message);
-    } else {
-      for (String recipient : recipientUsers) {
-        if (continuationService.isPresent(recipient)) {
-          continuationService.sendMessage(recipient, PRODUCT_COMETD_CHANNEL, message);
-        }
-      }
-    }
+    getWebSocketService().sendMessage(event.getEventName(), recipientUsers, sendToAll, globalSettings);
   }
 
-  public ContinuationService getContinuationService() {
-    if (continuationService == null) {
-      continuationService = CommonsUtils.getService(ContinuationService.class);
+  private PerkStoreWebSocketService getWebSocketService() {
+    if (webSocketService == null) {
+      webSocketService = CommonsUtils.getService(PerkStoreWebSocketService.class);
     }
-    return continuationService;
+    return webSocketService;
   }
 
 }

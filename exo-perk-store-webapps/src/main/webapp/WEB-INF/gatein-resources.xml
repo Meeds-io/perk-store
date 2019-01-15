@@ -54,6 +54,10 @@
         <module>social-ui-activity</module>
         <as>UIActivity</as>
       </depends>
+      <depends>
+        <module>commons-cometd3</module>
+        <as>cCometd</as>
+      </depends>
     </module>
   </portlet>
 

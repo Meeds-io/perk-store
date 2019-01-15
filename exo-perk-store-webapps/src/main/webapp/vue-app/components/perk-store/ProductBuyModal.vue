@@ -114,7 +114,7 @@ export default {
     },
     maxOrderPerUserQuantity() {
       if(this.product && !this.product.unlimited && this.product.maxOrdersPerUser) {
-        const quantity = this.product.maxOrdersPerUser - ((this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod) || 0);
+        const quantity = this.product.maxOrdersPerUser - ((this.product.userData && this.product.userData.purchasedInCurrentPeriod) || 0);
         return quantity > 0 ? quantity : 0;
       }
       return this.product.unlimited ? 0 : this.available;

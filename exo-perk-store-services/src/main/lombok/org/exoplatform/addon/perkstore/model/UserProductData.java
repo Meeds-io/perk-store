@@ -5,8 +5,12 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class UserOrders implements Serializable, Cloneable {
+public class UserProductData implements Serializable, Cloneable {
   private static final long serialVersionUID = -7144496703478026420L;
+
+  private boolean           canEdit;
+
+  private boolean           canOrder;
 
   private double            purchasedInCurrentPeriod;
 
@@ -14,10 +18,6 @@ public class UserOrders implements Serializable, Cloneable {
 
   @SuppressWarnings("all")
   public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException("Error while cloning object");
-    }
+    return new UserProductData();
   }
 }

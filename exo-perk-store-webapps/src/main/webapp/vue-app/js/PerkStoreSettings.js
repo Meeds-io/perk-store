@@ -1,8 +1,11 @@
+import {initCometd} from './PerkStoreWebSocket.js';
 import {throwErrorFromServerCall} from './PerkStoreError.js';
 
 export function initSettings() {
   return getSettings().then((settings) => {
-    return (window.perkStoreSettings = Object.assign({}, settings));
+    settings = window.perkStoreSettings = Object.assign({}, settings);
+    initCometd(settings);
+    return settings;
   });
 }
 

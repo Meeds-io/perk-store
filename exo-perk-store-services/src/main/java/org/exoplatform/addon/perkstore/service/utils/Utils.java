@@ -45,11 +45,7 @@ public class Utils {
 
   private static final Log          LOG                                       = ExoLogger.getLogger(Utils.class);
 
-  public static final String        SETTINGS_COMETD_CHANNEL                   = "/eXo/Application/Addons/PerkStore/Settings";
-
-  public static final String        PRODUCT_COMETD_CHANNEL                    = "/eXo/Application/Addons/PerkStore/Product";
-
-  public static final String        ORDER_COMETD_CHANNEL                      = "/eXo/Application/Addons/PerkStore/Order";
+  public static final String        COMETD_CHANNEL                            = "/eXo/Application/Addons/PerkStore";
 
   public static final String        SPACE_GROUP_PREFIX                        = SpaceUtils.SPACE_GROUP + "/";
 

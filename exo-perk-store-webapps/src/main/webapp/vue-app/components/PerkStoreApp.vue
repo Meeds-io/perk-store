@@ -9,7 +9,7 @@
           <v-toolbar color="white" class="elevation-1">
             <v-toolbar-title>
               <v-btn
-                v-if="displayProductOrders && selectedProduct.canEdit"
+                v-if="displayProductOrders && canEditSelectedProduct"
                 id="perkStoreAppMenuDisplayFilterButton"
                 icon
                 flat
@@ -32,7 +32,7 @@
               <template v-else-if="displayProductOrders && selectedProduct && selectedOrderId">
                 - Order <span class="primary--text">#{{ selectedOrderId }}</span> of <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
-              <template v-else-if="displayProductOrders && selectedProduct && selectedProduct.canEdit">
+              <template v-else-if="displayProductOrders && canEditSelectedProduct">
                 - Orders list of <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductOrders && selectedProduct">
@@ -73,7 +73,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="settings.canAddProduct"
+                v-if="userSettings.canAddProduct"
                 id="perkStoreAppMenuAddButton"
                 icon
                 flat
@@ -85,7 +85,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="settings.administrator"
+                v-if="userSettings.administrator"
                 id="perkStoreAppMenuSettingsButton"
                 class="mr-0 ml-0"
                 icon
@@ -184,7 +184,7 @@ import ProductBuyModal from './perk-store/ProductBuyModal.vue';
 import SettingsModal from './perk-store/SettingsModal.vue';
 
 import {initSettings, getOrderFilter} from '../js/PerkStoreSettings.js';
-import {getProductList} from '../js/PerkStoreProduct.js';
+import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 
 export default {
   components: {
@@ -210,9 +210,13 @@ export default {
     search: null,
     ordersFilter: {},
     settings: {},
+    userSettings: {},
     products: [],
   }),
   computed: {
+    canEditSelectedProduct() {
+      return  this.selectedProduct && this.selectedProduct.userData && this.selectedProduct.userData.canEdit;
+    },
     filteredProducts() {
       if(this.search && this.search.trim().length) {
         const searchTerm = this.search.trim().toLowerCase();
@@ -228,6 +232,13 @@ export default {
     }
   },
   created() {
+    document.addEventListener('exo.perkstore.settings.modified', this.init);
+
+    document.addEventListener('exo.addons.perkstore.product.createOrModify', this.updateProduct);
+    document.addEventListener('exo.addons.perkstore.order.new', this.updateProduct);
+    document.addEventListener('exo.addons.perkstore.order.modification', this.updateProduct);
+    document.addEventListener('exo.addons.perkstore.order.paid', this.updateProduct);
+
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
     if(window.walletAddonInstalled) {
       this.initWalletAPI();
@@ -253,6 +264,7 @@ export default {
       return initSettings()
       .then(() => {
         this.settings = window.perkStoreSettings;
+        this.userSettings = this.settings.userSettings;
         this.ordersFilter = getOrderFilter();
       })
       .then(() => getProductList())
@@ -348,6 +360,18 @@ export default {
     },
     displaySettingsModal() {
       this.$refs.settingsModal.open();
+    },
+    updateProduct(event) {
+      const wsMessage = event.detail;
+      if(wsMessage.product && wsMessage.product.id) {
+        const product = this.products && this.products.find(product => product && product.id === wsMessage.product.id);
+        // Existing product
+        if(product && product.id) {
+          getProduct(product.id).then(freshProduct => Object.assign(product, freshProduct));
+        } else {
+          // New product: do nothing for now
+        }
+      }
     },
   }
 };

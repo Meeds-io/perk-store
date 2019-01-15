@@ -15,7 +15,7 @@
       <type>org.exoplatform.addon.perkstore.listener.ProductOrderNotificationListener</type>
     </component-plugin>
     <component-plugin>
-      <name>exo.addons.perkstore.order.payed</name>
+      <name>exo.addons.perkstore.order.paid</name>
       <set-method>addListener</set-method>
       <type>org.exoplatform.addon.perkstore.listener.ProductOrderNotificationListener</type>
     </component-plugin>

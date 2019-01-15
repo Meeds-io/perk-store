@@ -20,6 +20,10 @@
   </component>
 
   <component>
+    <type>org.exoplatform.addon.perkstore.service.PerkStoreWebSocketService</type>
+  </component>
+
+  <component>
     <type>org.exoplatform.addon.perkstore.rest.PerkStoreOrderREST</type>
   </component>
 

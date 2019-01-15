@@ -47,16 +47,14 @@ public class Product implements Serializable, Cloneable {
 
   private long              lastModifiedDate;
 
-  private double            purchased;
-
-  private boolean           canEdit;
-
-  private boolean           canOrder;
-
+  // Computed
   private long              notProcessedOrders;
 
-  // Processed
-  private UserOrders        userOrders;
+  // Computed
+  private double            purchased;
+
+  // Computed
+  private UserProductData   userData         = new UserProductData();
 
   @SuppressWarnings("all")
   public Object clone() {

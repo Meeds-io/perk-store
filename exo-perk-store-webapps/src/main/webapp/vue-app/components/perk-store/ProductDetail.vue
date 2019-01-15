@@ -49,7 +49,7 @@
               right
               overlap>
               <span
-                v-if="product.canEdit && product.notProcessedOrders"
+                v-if="userData.canEdit && product.notProcessedOrders"
                 slot="badge"
                 class="orderListBadge">
                 {{ product.notProcessedOrders }}
@@ -58,7 +58,7 @@
             </v-badge>
           </v-btn>
           <v-btn
-            v-if="product.canEdit"
+            v-if="userData.canEdit"
             :class="editBtnClass"
             title="Edit product"
             absolute
@@ -145,12 +145,15 @@ export default {
     },
   },
   computed: {
+    userData() {
+      return (this.product && this.product.userData) || {};
+    },
     ordersListBtnClass() {
       if(!this.product) {
         return '';
       }
       let paddingIndex = 0;
-      if(this.product.canEdit) {
+      if(this.userData.canEdit) {
         paddingIndex++;
       }
       if(this.displayBuyButton) {
@@ -165,10 +168,10 @@ export default {
       return '';
     },
     displayBuyButton() {
-      return this.product && this.product.enabled && this.product.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
+      return this.product && this.product.enabled && this.userData.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
-      return (!this.product.unlimited && this.available <= 0) || (this.product.maxOrdersPerUser && this.product.userOrders && this.product.userOrders.purchasedInCurrentPeriod && this.product.userOrders.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return (!this.product.unlimited && this.available <= 0) || (this.product.maxOrdersPerUser && this.userData && this.userData.purchasedInCurrentPeriod && this.userData.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
     },
     purchasedPercentage() {
       return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;

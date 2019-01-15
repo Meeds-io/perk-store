@@ -10,7 +10,7 @@
           :display-name="order.sender.displayName" />
       </h4>
       <v-spacer />
-      <template v-if="product.canEdit">
+      <template v-if="userData.canEdit">
         <template v-if="edit">
           <button
             class="btn btn-primary mr-1"
@@ -177,6 +177,9 @@ export default {
     };
   },
   computed: {
+    userData() {
+      return (this.product && this.product.userData) || {};
+    },
     createdDateLabel() {
       return this.order.createdDate ? new Date(this.order.createdDate).toLocaleString() : '-';
     },

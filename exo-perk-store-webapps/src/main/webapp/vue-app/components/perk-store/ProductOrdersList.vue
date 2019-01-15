@@ -110,6 +110,11 @@ export default {
       }
     }
   },
+  created() {
+    document.addEventListener('exo.addons.perkstore.order.new', this.updateOrderFromWS);
+    document.addEventListener('exo.addons.perkstore.order.modification', this.updateOrderFromWS);
+    document.addEventListener('exo.addons.perkstore.order.paid', this.updateOrderFromWS);
+  },
   methods: {
     init() {
       if(!this.product) {
@@ -144,11 +149,22 @@ export default {
       this.$refs.productOrdersFilter.showFilters();
     },
     updateOrder(order, newOrder) {
-      Object.keys(order).forEach(key => order[key] = newOrder[key]);
+      Object.assign(order, newOrder);
     },
     loadMore() {
       this.limit += this.pageSize;
       return this.init();
+    },
+    updateOrderFromWS(event) {
+      const wsMessage = event.detail;
+      if(wsMessage.productOrder && wsMessage.productOrder.id) {
+        const order = this.selectedOrderId && this.orders.find(order => order && order.id === wsMessage.productOrder.id);
+        if(order) {
+          this.updateOrder(order, wsMessage.productOrder);
+        } else {
+          // New order: do nothing for now
+        }
+      }
     },
   },
 }

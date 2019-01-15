@@ -26,6 +26,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.Product;
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
@@ -73,6 +75,32 @@ public class PerkStoreProductREST implements ResourceContainer {
       return Response.status(500).build();
     }
     return Response.ok().build();
+  }
+
+  /**
+   * Get product details
+   * 
+   * @param productId
+   * @return
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("get")
+  @RolesAllowed("users")
+  public Response getProduct(@QueryParam("productId") String productId) {
+    if (StringUtils.isBlank(productId)) {
+      LOG.warn("Bad request sent to server with empty productId");
+      return Response.status(400).build();
+    }
+    try {
+      Product product = perkStoreService.getProductById(Long.parseLong(productId), getCurrentUserId());
+      return Response.ok(product).build();
+    } catch (PerkStoreException e) {
+      return computeErrorResponse(LOG, e, "Error getting product");
+    } catch (Exception e) {
+      LOG.error("Error getting product", e);
+      return Response.status(500).build();
+    }
   }
 
   /**

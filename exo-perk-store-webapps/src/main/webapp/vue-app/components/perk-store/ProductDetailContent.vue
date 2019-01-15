@@ -12,18 +12,18 @@
     </v-list-tile>
     <v-list-tile v-if="!product.unlimited">
       <v-list-tile-content><strong>Available:</strong></v-list-tile-content>
-      <v-list-tile-content v-if="product.canEdit" class="align-end">{{ available }} / {{ product.totalSupply }}</v-list-tile-content>
+      <v-list-tile-content v-if="userData.canEdit" class="align-end">{{ available }} / {{ product.totalSupply }}</v-list-tile-content>
       <v-list-tile-content v-else class="align-end">{{ available }}</v-list-tile-content>
     </v-list-tile>
     <v-list-tile v-if="product.maxOrdersPerUser">
       <v-list-tile-content><strong>Max orders:</strong></v-list-tile-content>
       <v-list-tile-content class="align-end">{{ maxOrdersLabel }}</v-list-tile-content>
     </v-list-tile>
-    <template v-if="product.userOrders && product.userOrders.purchasedInCurrentPeriod">
+    <template v-if="userData.purchasedInCurrentPeriod">
       <v-divider />
       <v-list-tile>
         <v-list-tile-content><strong>My orders in current period:</strong></v-list-tile-content>
-        <v-list-tile-content class="align-end">{{ product.userOrders.purchasedInCurrentPeriod }}</v-list-tile-content>
+        <v-list-tile-content class="align-end">{{ product.userData.purchasedInCurrentPeriod }}</v-list-tile-content>
       </v-list-tile>
     </template>
   </v-list>
@@ -60,6 +60,9 @@ export default {
     },
   },
   computed: {
+    userData() {
+      return (this.product && this.product.userData) || {};
+    },
     maxOrdersLabel() {
       if(!this.product.maxOrdersPerUser) {
         return '';

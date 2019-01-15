@@ -13,6 +13,19 @@ export function getProductList() {
   });
 }
 
+export function getProduct(productId) {
+  return fetch(`/portal/rest/perkstore/api/product/get?productId=${productId}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then((resp) => {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
+      throw new Error('Error getting product with id', productId);
+    }
+  });
+}
+
 export function saveProduct(product) {
   return fetch('/portal/rest/perkstore/api/product/save', {
     method: 'POST',

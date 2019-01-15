@@ -42,18 +42,22 @@ import org.exoplatform.ws.frameworks.json.impl.JsonException;
  */
 public class PerkStoreService implements Startable {
 
-  private static final Log LOG = ExoLogger.getLogger(PerkStoreService.class);
+  private static final Log          LOG = ExoLogger.getLogger(PerkStoreService.class);
 
-  private PerkStoreStorage perkStoreStorage;
+  private PerkStoreWebSocketService webSocketService;
 
-  private SettingService   settingService;
+  private PerkStoreStorage          perkStoreStorage;
 
-  private ListenerService  listenerService;
+  private SettingService            settingService;
 
-  private GlobalSettings   storedGlobalSettings;
+  private ListenerService           listenerService;
 
-  public PerkStoreService(PerkStoreStorage perkStoreStorage) {
+  private GlobalSettings            storedGlobalSettings;
+
+  public PerkStoreService(PerkStoreWebSocketService webSocketService,
+                          PerkStoreStorage perkStoreStorage) {
     this.perkStoreStorage = perkStoreStorage;
+    this.webSocketService = webSocketService;
   }
 
   @Override
@@ -94,13 +98,23 @@ public class PerkStoreService implements Startable {
 
     addIdentityIdsFromProfiles(permissionsProfiles, permissions);
 
+    // Delete useless data for storage
+    settings.setUserSettings(null);
+    settings.setAccessPermissionsProfiles(null);
+    settings.setManagers(null);
+    settings.setProductCreationPermissionsProfiles(null);
+
     getSettingService().set(PERKSTORE_CONTEXT,
                             PERKSTORE_SCOPE,
                             SETTINGS_KEY_NAME,
                             SettingValue.create(transformToString(settings)));
     this.storedGlobalSettings = null;
 
-    getListenerService().broadcast(SETTINGS_MODIFIED_EVENT, this, globalSettings);
+    try {
+      getListenerService().broadcast(SETTINGS_MODIFIED_EVENT, this, getGlobalSettings());
+    } catch (Exception e) {
+      LOG.warn("Error while braodcasting event {}", SETTINGS_MODIFIED_EVENT, e);
+    }
   }
 
   public GlobalSettings getGlobalSettings() throws JsonException {
@@ -114,6 +128,10 @@ public class PerkStoreService implements Startable {
   }
 
   public GlobalSettings getGlobalSettings(String username) throws Exception {
+    if (StringUtils.isBlank(username)) {
+      throw new IllegalStateException("username is null");
+    }
+
     GlobalSettings globalSettings = getGlobalSettings();
     if (globalSettings == null) {
       globalSettings = new GlobalSettings();
@@ -121,11 +139,18 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(GLOBAL_SETTINGS_ACCESS_DENIED, username);
     }
 
-    globalSettings.setCanAddProduct(canAddProduct(username));
-    globalSettings.setAdministrator(isPerkStoreManager(username));
+    UserSettings userSettings = globalSettings.getUserSettings();
+    if (userSettings == null) {
+      userSettings = new UserSettings();
+    }
+
+    userSettings.setCometdToken(webSocketService.getUserToken(username));
+    userSettings.setCometdContext(webSocketService.getCometdContextName());
+    userSettings.setCanAddProduct(canAddProduct(username));
+    userSettings.setAdministrator(isPerkStoreManager(username));
 
     // Delete useless information for normal user
-    if (!globalSettings.isAdministrator()) {
+    if (!userSettings.isAdministrator()) {
       globalSettings.setManagers(null);
       globalSettings.setAccessPermissions(null);
       globalSettings.setProductCreationPermissions(null);
@@ -133,6 +158,7 @@ public class PerkStoreService implements Startable {
       globalSettings.setAccessPermissionsProfiles(null);
       globalSettings.setProductCreationPermissionsProfiles(null);
     }
+
     return globalSettings;
   }
 
@@ -380,6 +406,21 @@ public class PerkStoreService implements Startable {
     return perkStoreStorage.getOrderById(orderId);
   }
 
+  public Product getProductById(long productId, String username) throws Exception {
+    if (StringUtils.isBlank(username)) {
+      throw new IllegalArgumentException("username is madatory");
+    }
+    Product product = getProductById(productId);
+    if (product == null) {
+      throw new PerkStoreException(PerkStoreError.PRODUCT_NOT_EXISTS, productId);
+    }
+    if (!canViewProduct(product, username, isPerkStoreManager(username))) {
+      return null;
+    }
+    computeProductFields(username, product);
+    return product;
+  }
+
   public Product getProductById(long productId) {
     return perkStoreStorage.getProductById(productId);
   }
@@ -418,24 +459,27 @@ public class PerkStoreService implements Startable {
   }
 
   private void computeProductFields(String username, Product product) throws Exception {
-    product.setCanEdit(StringUtils.isNotBlank(username) && canEditProduct(product, username));
-    product.setCanOrder(StringUtils.isNotBlank(username) && canViewProduct(product, username, false));
     long productId = product.getId();
-
-    product.setPurchased(perkStoreStorage.countOrderedQuantity(productId));
     product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
+    product.setPurchased(perkStoreStorage.countOrderedQuantity(productId));
+
+    UserProductData userData = product.getUserData();
+    if (userData == null) {
+      userData = new UserProductData();
+      product.setUserData(userData);
+    }
+
+    userData.setCanEdit(StringUtils.isNotBlank(username) && canEditProduct(product, username));
+    userData.setCanOrder(StringUtils.isNotBlank(username) && canViewProduct(product, username, false));
 
     // Retrieve the following fields for not marchand only
     if (product.getReceiverMarchand() != null && !StringUtils.equals(product.getReceiverMarchand().getId(), username)) {
-
-      UserOrders userOrders = new UserOrders();
-      product.setUserOrders(userOrders);
       Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
       long identityId = Long.parseLong(identity.getId());
-      userOrders.setTotalPuchased(perkStoreStorage.countUserTotalPurchasedQuantity(productId, identityId));
+      userData.setTotalPuchased(perkStoreStorage.countUserTotalPurchasedQuantity(productId, identityId));
 
       double purchasedQuantityInPeriod = countPurchasedQuantityInCurrentPeriod(product, identityId);
-      userOrders.setPurchasedInCurrentPeriod(purchasedQuantityInPeriod);
+      userData.setPurchasedInCurrentPeriod(purchasedQuantityInPeriod);
     }
   }
 
@@ -667,4 +711,5 @@ public class PerkStoreService implements Startable {
     }
     return listenerService;
   }
+
 }

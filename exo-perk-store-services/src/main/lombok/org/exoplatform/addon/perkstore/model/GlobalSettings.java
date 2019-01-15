@@ -27,10 +27,7 @@ public class GlobalSettings implements Serializable, Cloneable {
   private List<Profile>     managersProfiles;
 
   // Computed
-  private boolean           isAdministrator;
-
-  // Computed
-  private boolean           canAddProduct;
+  private UserSettings      userSettings     = new UserSettings();
 
   @SuppressWarnings("all")
   public GlobalSettings clone() {
@@ -40,4 +37,5 @@ public class GlobalSettings implements Serializable, Cloneable {
       throw new IllegalStateException("Error while cloning object");
     }
   }
+
 }
