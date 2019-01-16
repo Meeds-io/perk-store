@@ -100,8 +100,11 @@
           </v-btn>
         </v-card-text>
         <v-card-title class="pt-0 pb-0">
-          <h3 class="mb-2 primary--text">
-            <a href="javascript:void(0);" @click="$emit('product-details', product)">
+          <h3 :title="product.title" class="mb-2 primary--text ellipsis">
+            <a
+              href="javascript:void(0);"
+              class="ellipsis"
+              @click="$emit('product-details', product)">
               {{ product.title }}
             </a>
           </h3>
