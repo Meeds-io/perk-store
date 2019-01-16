@@ -6,7 +6,11 @@
     <main>
       <v-layout justify-center>
         <v-flex xs12>
-          <v-toolbar color="white" class="elevation-1">
+          <v-toolbar
+            color="white"
+            class="application-toolbar"
+            flat
+            dense>
             <v-toolbar-title>
               <v-btn
                 v-if="displayProductOrders && canEditSelectedProduct"
@@ -55,15 +59,12 @@
               </v-icon>
             </v-btn>
             <template v-else>
-              <v-text-field
+              <input
                 v-if="filteredProducts && filteredProducts.length"
                 v-model="search"
-                append-icon="search"
-                label="Search in products"
-                single-line
-                solo
-                hide-details
-                class="searchProductsInput mr-3" />
+                placeholder="Search in products"
+                type="text"
+                class="searchProductsInput mr-3 mt-2">
               <v-btn
                 id="perkStoreAppMenuRefreshButton"
                 icon
