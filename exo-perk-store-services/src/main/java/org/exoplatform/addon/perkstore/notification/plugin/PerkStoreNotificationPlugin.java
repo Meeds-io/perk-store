@@ -113,9 +113,7 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
 
     setNotificationRecipients(notification, globalSettings, product, order, newProduct, newOrder);
     if (!notification.isSendAll() && (notification.getSendToUserIds() == null || notification.getSendToUserIds().isEmpty())) {
-      if (LOG.isDebugEnabled()) {
-        LOG.warn("Notification type '{}' doesn't have a recipient", getId());
-      }
+      LOG.debug("Notification type '{}' doesn't have a recipient", getId());
       return null;
     } else {
       storeSettingsParameters(globalSettings, notification);

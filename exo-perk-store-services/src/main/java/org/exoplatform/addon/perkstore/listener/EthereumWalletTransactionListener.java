@@ -43,9 +43,11 @@ public class EthereumWalletTransactionListener extends Listener<Object, JSONObje
       if (status == null) {
         LOG.error("Transaction with hash " + hash + " status is null");
       } else {
-        // This could be triggered three times, when contract TX saved, sender
-        // TX sent and receiver TX saved
-        this.perkStoreService.saveOrderPaymentStatus(hash, status);
+        // This could be triggered three times:
+        // - when contract TX saved
+        // - sender TX saved
+        // - receiver TX saved
+        this.perkStoreService.saveOrderTransactionStatus(hash, status);
       }
     } finally {
       RequestLifeCycle.end();

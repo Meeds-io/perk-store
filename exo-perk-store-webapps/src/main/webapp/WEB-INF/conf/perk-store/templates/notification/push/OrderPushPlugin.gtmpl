@@ -3,12 +3,12 @@
   if("true".equals(isNewOrder)) {
     message = _ctx.appRes("Notification.perkstore.order.created", senderName, orderQuantity, productTitle);
   } else {
-    String key = "Notification.perkstore.order.modified." + orderStatus.toLowerCase();
+    String key = "Notification.perkstore.order.modified." + orderStatusLabel;
     if (org.apache.commons.lang.StringUtils.isBlank(modifierName)) {
       // System modification
       key += ".system";
     }
-    message = _ctx.appRes(key, senderName, modifierName, orderQuantity, productTitle);
+    message = _ctx.appRes(key, senderName, modifierName, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, orderDeliveredQuantity);
   }
 %> 
 <%= message %>

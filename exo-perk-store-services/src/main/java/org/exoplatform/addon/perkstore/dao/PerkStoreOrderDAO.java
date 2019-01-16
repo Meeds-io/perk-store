@@ -15,12 +15,13 @@ import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.addon.perkstore.model.OrderFilter;
-import org.exoplatform.addon.perkstore.model.ProductOrderStatus;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Long> {
-  private static final String AND_OPERATOR = " AND ";
+  private static final String AND_OPERATOR         = " AND ";
+
   private static final String PRODUCT_ID_PARAMETER = "productId";
 
   @Override
@@ -80,6 +81,18 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
 
   public ProductOrderEntity findOrderByTransactionHash(String hash) {
     TypedQuery<ProductOrderEntity> query = getEntityManager().createNamedQuery("Order.findOrderByTransactionHash",
+                                                                               ProductOrderEntity.class);
+
+    query.setParameter("hash", hash);
+    try {
+      return query.getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    }
+  }
+
+  public ProductOrderEntity findOrderByRefundTransactionHash(String hash) {
+    TypedQuery<ProductOrderEntity> query = getEntityManager().createNamedQuery("Order.findOrderByRefundTransactionHash",
                                                                                ProductOrderEntity.class);
 
     query.setParameter("hash", hash);

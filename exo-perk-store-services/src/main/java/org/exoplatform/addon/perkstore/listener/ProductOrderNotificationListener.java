@@ -1,12 +1,10 @@
 package org.exoplatform.addon.perkstore.listener;
 
 import static org.exoplatform.addon.perkstore.service.utils.NotificationUtils.*;
-import static org.exoplatform.addon.perkstore.service.utils.Utils.PRODUCT_PURCHASED_EVENT;
-
-import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.addon.perkstore.model.Product;
 import org.exoplatform.addon.perkstore.model.ProductOrder;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.PluginKey;
@@ -32,17 +30,18 @@ public class ProductOrderNotificationListener extends Listener<Product, ProductO
     ExoContainerContext.setCurrentContainer(container);
     RequestLifeCycle.begin(container);
     try {
-      boolean isNew = StringUtils.equals(PRODUCT_PURCHASED_EVENT, event.getEventName());
+      ProductOrder order = event.getData();
+      ProductOrderModificationType modificationType = order.getModificationType();
+      boolean isNew = modificationType == ProductOrderModificationType.NEW;
 
       NotificationContext ctx = NotificationContextImpl.cloneInstance();
 
       ctx.append(SETTINGS_PARAMETER, getPerkStoreService().getGlobalSettings());
       ctx.append(PRODUCT_PARAMETER, event.getSource());
-      ctx.append(ORDER_PARAMETER, event.getData());
+      ctx.append(ORDER_PARAMETER, order);
       ctx.append(ORDER_IS_NEW_PARAMETER, isNew);
 
-      String pluginId = isNew ? PERKSTORE_ORDER_ADDED_NOTIFICATION_PLUGIN
-                              : PERKSTORE_ORDER_MODIFIED_NOTIFICATION_PLUGIN;
+      String pluginId = isNew ? PERKSTORE_ORDER_ADDED_NOTIFICATION_PLUGIN : PERKSTORE_ORDER_MODIFIED_NOTIFICATION_PLUGIN;
 
       ctx.getNotificationExecutor().with(ctx.makeCommand(PluginKey.key(pluginId))).execute(ctx);
     } finally {

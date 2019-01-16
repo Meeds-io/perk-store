@@ -2,45 +2,57 @@ package org.exoplatform.addon.perkstore.model;
 
 import java.io.Serializable;
 
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
+
 import lombok.Data;
 
 @Data
 public class ProductOrder implements Serializable {
-  private static final long serialVersionUID = 1315929554209305549L;
+  private static final long            serialVersionUID = 1315929554209305549L;
 
-  private long              id;
+  private long                         id;
 
-  private long              productId;
+  private long                         productId;
 
-  private String            transactionHash;
+  private String                       transactionHash;
 
-  private double            quantity;
+  private String                       refundTransactionHash;
 
-  private double            amount;
+  private double                       quantity;
 
-  private Profile           sender;
+  private double                       amount;
 
-  private Profile           receiver;
+  private double                       refundedAmount;
 
-  private double            deliveredQuantity;
+  private Profile                      sender;
 
-  private double            refundedQuantity;
+  private Profile                      receiver;
 
-  private double            remainingQuantityToProcess;
+  private double                       deliveredQuantity;
 
-  private long              createdDate;
+  private double                       refundedQuantity;
 
-  private long              deliveredDate;
+  private double                       remainingQuantityToProcess;
 
-  private long              refundedDate;
+  private long                         createdDate;
 
-  private String            error;
+  private long                         deliveredDate;
 
-  private String            status;
+  private long                         refundedDate;
 
-  // Not stored, used in notification only
-  private Profile           lastModifier;
+  private String                       status;
+
+  private String                       transactionStatus;
+
+  private String                       refundTransactionStatus;
 
   // Processed
-  private String            productTitle;
+  private String                       productTitle;
+
+  // Not stored, used in notification only to identity modifier for listeners
+  private Profile                      lastModifier;
+
+  // Not stored, used in notification only to identity modification type for
+  // listeners
+  private ProductOrderModificationType modificationType;
 }

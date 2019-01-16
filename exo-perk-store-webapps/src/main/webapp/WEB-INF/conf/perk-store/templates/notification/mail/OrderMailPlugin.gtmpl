@@ -33,12 +33,12 @@
                                          message = _ctx.appRes("Notification.perkstore.order.created", senderLink, orderQuantity, productTitle);
                                         } else {
                                          String modifierLink = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + modifierName + "</a>";
-                                         String key = "Notification.perkstore.order.modified." + orderStatus.toLowerCase();
+                                         String key = "Notification.perkstore.order.modified." + orderStatusLabel;
                                          if (org.apache.commons.lang.StringUtils.isBlank(modifierName)) {
                                            // System modification
                                            key += ".system";
                                          }
-                                         message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle);
+                                         message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, orderDeliveredQuantity);
                                         }
                                       %> 
                                       <%= message %>
@@ -50,9 +50,9 @@
                                                     <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                       <% _ctx.appRes("Notification.perkstore.order.status") %>: <%= orderStatus %>
                                                     </p>
-                                                    <% if(org.apache.commons.lang.StringUtils.isNotBlank(orderError) && !org.apache.commons.lang.StringUtils.equalsIgnoreCase(orderStatus, "error")) { %>
+                                                    <% if(org.apache.commons.lang.StringUtils.equalsIgnoreCase(orderStatus, "error")) { %>
                                                       <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
-                                                        <% _ctx.appRes("Notification.perkstore.order.error") %>: <%= orderError %>
+                                                        <% _ctx.appRes("Notification.perkstore.order.error") %>
                                                       </p>
                                                     <% } %>
                                                     <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">

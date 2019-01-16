@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.exoplatform.addon.perkstore.model.ProductOrderPeriodType;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderPeriodType;
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 @Entity(name = "Product")

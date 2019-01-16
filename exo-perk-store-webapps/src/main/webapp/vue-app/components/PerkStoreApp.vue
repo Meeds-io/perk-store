@@ -152,6 +152,7 @@
             :selected-order-id="selectedOrderId"
             :orders-filter="ordersFilter"
             :symbol="settings.symbol"
+            @init-wallet="initWalletAPI(true)"
             @display-product="displayProduct($event)"
             @loading="loading = $event"
             @error="error = $event"
@@ -255,9 +256,7 @@ export default {
     document.addEventListener('exo.perkstore.settings.modified', this.init);
 
     document.addEventListener('exo.addons.perkstore.product.createOrModify', this.updateProduct);
-    document.addEventListener('exo.addons.perkstore.order.new', this.updateProduct);
-    document.addEventListener('exo.addons.perkstore.order.modification', this.updateProduct);
-    document.addEventListener('exo.addons.perkstore.order.paid', this.updateProduct);
+    document.addEventListener('exo.addons.perkstore.order.createOrModify', this.updateProduct);
 
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
     if(window.walletAddonInstalled) {
@@ -317,10 +316,10 @@ export default {
         this.loading = false;
       });
     },
-    initWalletAPI() {
-      if(!this.walletAddonInstalled && window.walletAddonInstalled) {
-        this.walletLoading = true;
+    initWalletAPI(forceReload) {
+      if(forceReload || (!this.walletAddonInstalled && window.walletAddonInstalled)) {
         this.walletAddonInstalled = true;
+        this.walletLoading = true;
         document.dispatchEvent(new CustomEvent('exo-wallet-init'));
       }
     },

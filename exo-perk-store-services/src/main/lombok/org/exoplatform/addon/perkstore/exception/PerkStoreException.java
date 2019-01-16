@@ -5,7 +5,7 @@ import static org.exoplatform.addon.perkstore.service.utils.Utils.getI18NMessage
 import java.io.Serializable;
 import java.util.MissingResourceException;
 
-import org.exoplatform.addon.perkstore.model.PerkStoreError;
+import org.exoplatform.addon.perkstore.model.constant.PerkStoreError;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 

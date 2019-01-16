@@ -11,6 +11,7 @@ import org.exoplatform.addon.perkstore.entity.ProductEntity;
 import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
+import org.exoplatform.addon.perkstore.model.constant.PerkStoreError;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreStorage {
@@ -137,6 +138,11 @@ public class PerkStoreStorage {
 
   public ProductOrder findOrderByTransactionHash(String hash) {
     ProductOrderEntity orderEntity = orderDAO.findOrderByTransactionHash(hash);
+    return orderEntity == null ? null : fromEntity(orderEntity);
+  }
+  
+  public ProductOrder findOrderByRefundTransactionHash(String hash) {
+    ProductOrderEntity orderEntity = orderDAO.findOrderByRefundTransactionHash(hash);
     return orderEntity == null ? null : fromEntity(orderEntity);
   }
 

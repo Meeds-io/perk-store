@@ -14,12 +14,13 @@
           contain>
           <v-expand-transition>
             <div
-              v-if="hover || !product || !product.enabled || !product.illustrationURL || !available"
+              v-if="hover || !product || !product.enabled || !product.illustrationURL || !available || maxOrdersReached"
               class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
               style="height: 100%;">
               <product-detail-content
                 :product="product"
                 :symbol="symbol"
+                :max-orders-reached="maxOrdersReached"
                 :available="available" />
             </div>
           </v-expand-transition>
@@ -185,10 +186,19 @@ export default {
       return this.product && this.product.enabled && this.userData.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
-      return (!this.product.unlimited && this.available <= 0) || (this.product.maxOrdersPerUser && this.userData && this.userData.purchasedInCurrentPeriod && this.userData.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser);
+      return (!this.product.unlimited && this.available <= 0) || this.maxOrdersReached;
     },
     purchasedPercentage() {
       return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;
+    },
+    maxOrdersCurrentPeriodReached() {
+      return this.userData && this.product.orderPeriodicity && this.userData.purchasedInCurrentPeriod && this.userData.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser;
+    },
+    maxOrdersAllTimeReached() {
+      return this.userData && !this.product.orderPeriodicity && this.userData.totalPuchased && this.userData.totalPuchased >= this.product.maxOrdersPerUser;
+    },
+    maxOrdersReached() {
+      return this.product.maxOrdersPerUser && this.userData && (this.maxOrdersCurrentPeriodReached || this.maxOrdersAllTimeReached);
     },
     available() {
       if(this.product.unlimited) {

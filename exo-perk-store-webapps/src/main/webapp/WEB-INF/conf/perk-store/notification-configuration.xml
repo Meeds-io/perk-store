@@ -5,17 +5,7 @@
   <external-component-plugins>
     <target-component>org.exoplatform.services.listener.ListenerService</target-component>
     <component-plugin>
-      <name>exo.addons.perkstore.order.new</name>
-      <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.ProductOrderNotificationListener</type>
-    </component-plugin>
-    <component-plugin>
-      <name>exo.addons.perkstore.order.modification</name>
-      <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.ProductOrderNotificationListener</type>
-    </component-plugin>
-    <component-plugin>
-      <name>exo.addons.perkstore.order.paid</name>
+      <name>exo.addons.perkstore.order.createOrModify</name>
       <set-method>addListener</set-method>
       <type>org.exoplatform.addon.perkstore.listener.ProductOrderNotificationListener</type>
     </component-plugin>

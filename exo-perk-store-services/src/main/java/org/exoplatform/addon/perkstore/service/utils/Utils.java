@@ -19,6 +19,7 @@ import org.exoplatform.addon.perkstore.entity.ProductEntity;
 import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
+import org.exoplatform.addon.perkstore.model.constant.*;
 import org.exoplatform.commons.api.settings.data.Context;
 import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -90,11 +91,7 @@ public class Utils {
 
   public static final String        PRODUCT_CREATE_OR_MODIFY_EVENT            = "exo.addons.perkstore.product.createOrModify";
 
-  public static final String        PRODUCT_PURCHASED_EVENT                   = "exo.addons.perkstore.order.new";
-
-  public static final String        ORDER_MODIFIED_EVENT                      = "exo.addons.perkstore.order.modification";
-
-  public static final String        ORDER_PAID_EVENT                          = "exo.addons.perkstore.order.paid";
+  public static final String        ORDER_CREATE_OR_MODIFY_EVENT              = "exo.addons.perkstore.order.createOrModify";
 
   private Utils() {
   }
@@ -229,8 +226,10 @@ public class Utils {
     order.setId(entity.getId());
     order.setProductId(entity.getProduct().getId());
     order.setTransactionHash(entity.getTransactionHash());
+    order.setRefundTransactionHash(entity.getRefundTransactionHash());
     order.setQuantity(entity.getQuantity());
     order.setAmount(entity.getAmount());
+    order.setRefundedAmount(entity.getRefundedAmount());
     order.setSender(toProfile(entity.getSenderId()));
     order.setReceiver(toProfile(entity.getReceiverId()));
     order.setDeliveredQuantity(entity.getDeliveredQuantity());
@@ -238,7 +237,8 @@ public class Utils {
     order.setCreatedDate(entity.getCreatedDate());
     order.setDeliveredDate(entity.getDeliveredDate());
     order.setRefundedDate(entity.getRefundedDate());
-    order.setError(entity.getError());
+    order.setTransactionStatus(entity.getTransactionStatus().name());
+    order.setRefundTransactionStatus(entity.getRefundTransactionStatus().name());
     order.setStatus(entity.getStatus().name());
     order.setRemainingQuantityToProcess(entity.getRemainingQuantity());
     return order;
@@ -253,8 +253,10 @@ public class Utils {
     entity.setId(order.getId());
     entity.setProduct(productEntity);
     entity.setTransactionHash(order.getTransactionHash());
+    entity.setRefundTransactionHash(order.getRefundTransactionHash());
     entity.setQuantity(order.getQuantity());
     entity.setAmount(order.getAmount());
+    entity.setRefundedAmount(order.getRefundedAmount());
     entity.setSenderId(getTechnicalId(order.getSender()));
     entity.setReceiverId(getTechnicalId(order.getReceiver()));
     entity.setDeliveredQuantity(order.getDeliveredQuantity());
@@ -262,7 +264,10 @@ public class Utils {
     entity.setCreatedDate(order.getCreatedDate());
     entity.setDeliveredDate(order.getDeliveredDate());
     entity.setRefundedDate(order.getRefundedDate());
-    entity.setError(order.getError());
+    entity.setTransactionStatus(order.getTransactionStatus() == null ? ProductOrderTransactionStatus.NONE
+                                                                     : ProductOrderTransactionStatus.valueOf(order.getTransactionStatus()));
+    entity.setRefundTransactionStatus(order.getRefundTransactionStatus() == null ? ProductOrderTransactionStatus.NONE
+                                                                                 : ProductOrderTransactionStatus.valueOf(order.getRefundTransactionStatus()));
     entity.setStatus(ProductOrderStatus.valueOf(order.getStatus()));
     entity.setRemainingQuantity(order.getQuantity() - order.getDeliveredQuantity() - order.getRefundedQuantity());
     return entity;
@@ -374,6 +379,9 @@ public class Utils {
   }
 
   public static Profile toProfile(String type, String id) {
+    if (StringUtils.isBlank(type) || StringUtils.isBlank(id)) {
+      return null;
+    }
     Identity identity = getIdentityByTypeAndId(type, id);
     return toProfile(identity);
   }
@@ -470,14 +478,10 @@ public class Utils {
 
     try {
       String errorJSONFormat = getErrorJSONFormat(e);
-      return Response.status(500)
-                     .type(MediaType.APPLICATION_JSON)
-                     .entity(errorJSONFormat)
-                     .build();
+      return Response.status(500).type(MediaType.APPLICATION_JSON).entity(errorJSONFormat).build();
     } catch (Exception exception) {
       LOG.error("Error computing error message", exception);
-      return Response.status(500)
-                     .build();
+      return Response.status(500).build();
     }
   }
 
@@ -497,8 +501,7 @@ public class Utils {
     return errorObject.toString();
   }
 
-  public static final boolean getApplicationAccessUsersList(Set<String> recipientUsers,
-                                                            GlobalSettings globalSettings) {
+  public static final boolean getApplicationAccessUsersList(Set<String> recipientUsers, GlobalSettings globalSettings) {
     List<Profile> applicationAccessPermissions = globalSettings.getAccessPermissionsProfiles();
     if (applicationAccessPermissions == null || applicationAccessPermissions.isEmpty()) {
       applicationAccessPermissions = null;
@@ -630,9 +633,7 @@ public class Utils {
 
       Collection<Group> groupsOfUser;
       try {
-        groupsOfUser = CommonsUtils.getService(OrganizationService.class)
-                                   .getGroupHandler()
-                                   .findGroupsOfUser(username);
+        groupsOfUser = CommonsUtils.getService(OrganizationService.class).getGroupHandler().findGroupsOfUser(username);
       } catch (Exception e) {
         LOG.error("Error getting groups of user " + username);
         throw e;

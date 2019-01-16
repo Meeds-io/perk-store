@@ -1,4 +1,4 @@
-package org.exoplatform.addon.perkstore.model;
+package org.exoplatform.addon.perkstore.model.constant;
 
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
@@ -28,7 +28,7 @@ public enum PerkStoreError {
   ORDER_CREATION_QUANTITY_EXCEEDS_SUPPLY(ERROR_SUFFIX_ORDER_CREATION, "Ordered quantity by user {} exceeds available supply.", 1),
   ORDER_CREATION_QUANTITY_EXCEEDS_ALLOWED(ERROR_SUFFIX_ORDER_CREATION,
       "Ordered quantity by user {} exceeds allowed quantity per user.", 1),
-  ORDER_MODIFICATION_DENIED(ERROR_SUFFIX_ORDER_MODIFICATION, "User {} isn't allowed to order on product with id {}", 2),
+  ORDER_MODIFICATION_DENIED(ERROR_SUFFIX_ORDER_MODIFICATION, "User {} isn't allowed to changed order on product with id {}", 2),
   ORDER_MODIFICATION_QUANTITY_INVALID_REMAINING(ERROR_SUFFIX_ORDER_MODIFICATION,
       "Remaining quantity to process {} isn't valid for order with id {}.", 2),
   ORDER_NOT_EXISTS(ERROR_SUFFIX_ORDER_NOT_EXISTS, "Order with id {} doesn't exists", 1),

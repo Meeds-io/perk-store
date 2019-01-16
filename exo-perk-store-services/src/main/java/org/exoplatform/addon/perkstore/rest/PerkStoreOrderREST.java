@@ -16,8 +16,10 @@
  */
 package org.exoplatform.addon.perkstore.rest;
 
+import static org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType.*;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -25,9 +27,12 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.OrderFilter;
 import org.exoplatform.addon.perkstore.model.ProductOrder;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -41,9 +46,14 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 @RolesAllowed("users")
 public class PerkStoreOrderREST implements ResourceContainer {
 
-  private static final Log LOG = ExoLogger.getLogger(PerkStoreOrderREST.class);
+  private static final Log                                LOG                         =
+                                                              ExoLogger.getLogger(PerkStoreOrderREST.class);
 
-  private PerkStoreService perkStoreService;
+  private static final List<ProductOrderModificationType> ALLOWED_ORDER_MODIFICATIONS = Arrays.asList(DELIVERED_QUANTITY,
+                                                                                                      REFUNDED_QUANTITY,
+                                                                                                      STATUS);
+
+  private PerkStoreService                                perkStoreService;
 
   public PerkStoreOrderREST(PerkStoreService perkStoreService) {
     this.perkStoreService = perkStoreService;
@@ -77,7 +87,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
   }
 
   /**
-   * Save order
+   * Create order
    * 
    * @param order
    * @return
@@ -86,7 +96,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("save")
   @RolesAllowed("users")
-  public Response saveOrder(ProductOrder order) {
+  public Response createOrder(ProductOrder order) {
     if (order == null) {
       LOG.warn("Bad request sent to server with empty order to create");
       return Response.status(400).build();
@@ -140,13 +150,22 @@ public class PerkStoreOrderREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("saveStatus")
   @RolesAllowed("users")
-  public Response saveOrderStatus(ProductOrder order) {
+  public Response saveOrder(ProductOrder order, @QueryParam("modificationType") String modificationType) {
     if (order == null) {
       LOG.warn("Bad request sent to server with empty order");
       return Response.status(400).build();
     }
+    if (StringUtils.isBlank(modificationType)) {
+      LOG.warn("Bad request sent to server with empty order modification type");
+      return Response.status(400).build();
+    }
+    ProductOrderModificationType orderModificationType = ProductOrderModificationType.valueOf(modificationType.toUpperCase());
+    if (!ALLOWED_ORDER_MODIFICATIONS.contains(orderModificationType)) {
+      LOG.warn("Bad request sent to server with denied order modification type");
+      return Response.status(403).build();
+    }
     try {
-      perkStoreService.saveOrderStatus(order, getCurrentUserId());
+      perkStoreService.saveOrder(order, orderModificationType, getCurrentUserId());
       return Response.ok(perkStoreService.getOrderById(order.getId())).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error saving order status");

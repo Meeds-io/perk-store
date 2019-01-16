@@ -1,6 +1,14 @@
 <template>
   <v-list
-    v-if="!product.unlimited && !available"
+    v-if="!product.enabled"
+    dense
+    transparent>
+    <v-list-tile>
+      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
+    </v-list-tile>
+  </v-list>
+  <v-list
+    v-else-if="!product.unlimited && !available"
     class="soldOutBlock"
     dense
     transparent>
@@ -9,11 +17,11 @@
     </v-list-tile>
   </v-list>
   <v-list
-    v-else-if="!product.enabled"
+    v-else-if="maxOrdersReached"
     dense
     transparent>
     <v-list-tile>
-      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
+      <v-list-tile-content class="align-center"><strong class="red--text"><strong class="red--text">You maximum orders has been reached{{ periodicityLabel }}</strong></strong></v-list-tile-content>
     </v-list-tile>
   </v-list>
   <v-list
@@ -67,10 +75,23 @@ export default {
         return 0;
       },
     },
+    maxOrdersReached: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
   },
   computed: {
     userData() {
       return (this.product && this.product.userData) || {};
+    },
+    periodicityLabel() {
+      if(this.product.orderPeriodicity) {
+        return ` this ${this.product.orderPeriodicityLabel}`;
+      } else {
+        return '';
+      }
     },
     maxOrdersLabel() {
       if(!this.product.maxOrdersPerUser) {

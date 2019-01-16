@@ -24,7 +24,7 @@ export function getOrderList(productId, filter, limit) {
   });
 }
 
-export function saveOrder(order, simulate) {
+export function createOrder(order, simulate) {
   return fetch(`/portal/rest/perkstore/api/order/save${simulate ? 'Simulate' : ''}`, {
     method: 'POST',
     credentials: 'include',
@@ -40,21 +40,16 @@ export function saveOrder(order, simulate) {
   });
 }
 
-export function saveOrderStatus(orderId, productId, status, delivered, refunded) {
-  return fetch('/portal/rest/perkstore/api/order/saveStatus', {
+export function saveOrderStatus(order, modificationType) {
+  delete order.modificationType;
+  return fetch(`/portal/rest/perkstore/api/order/saveStatus?modificationType=${modificationType}`, {
     method: 'POST',
     credentials: 'include',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      id: Number(orderId),
-      productId: Number(productId),
-      status: status,
-      deliveredQuantity: Number(delivered),
-      refundedQuantity: Number(refunded),
-    }),
+    body: JSON.stringify(order),
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();

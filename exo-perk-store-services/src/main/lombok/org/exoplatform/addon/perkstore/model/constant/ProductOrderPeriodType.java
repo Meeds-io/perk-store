@@ -1,8 +1,10 @@
-package org.exoplatform.addon.perkstore.model;
+package org.exoplatform.addon.perkstore.model.constant;
 
 import static org.exoplatform.addon.perkstore.service.utils.Utils.timeToMilliseconds;
 
 import java.time.*;
+
+import org.exoplatform.addon.perkstore.model.ProductOrderPeriod;
 
 public enum ProductOrderPeriodType {
   WEEK("Week", "week"), MONTH("Month", "month"), QUARTER("Quarter", "quarter"), SEMESTER("Semester", "semester"), YEAR("Year",

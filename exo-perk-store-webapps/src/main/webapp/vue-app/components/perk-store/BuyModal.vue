@@ -32,6 +32,7 @@
           placeholder="Select a quantity to buy"
           @click:prepend-inner="decrementQuantity"
           @click:append="incrementQuantity" />
+        <div>Amount: {{ amountLabel }} </div>
         <v-text-field
           v-if="needPassword"
           v-model="walletPassword"
@@ -67,7 +68,7 @@
 </template>
 
 <script>
-import {saveOrder} from '../../js/PerkStoreProductOrder.js';
+import {createOrder} from '../../js/PerkStoreProductOrder.js';
 
 export default {
   props: {
@@ -104,6 +105,9 @@ export default {
     disablePayButton() {
       return this.maxOrdersReached || !this.product || !this.quantity || (!this.product.unlimited && this.quantity > this.maxQuantity);
     },
+    amount() {
+      return (this.quantity && this.product && this.product.price && (this.product.price * this.quantity)) || 0;
+    },
     available() {
       if(this.product && !this.product.unlimited) {
         const available = this.product.totalSupply - this.product.purchased;
@@ -125,11 +129,14 @@ export default {
     maxOrdersReached() {
       return this.product && !this.product.unlimited && !this.maxQuantity;
     },
+    amountLabel() {
+      return `${this.amount || 0} ${this.symbol}`;
+    },
     quantityInputLabel() {
       if(this.product && !this.product.unlimited && !this.maxOrdersReached) {
         return `Quantity (max: ${this.maxQuantity})`;
       } else {
-        return 'Quantity';
+        return `Quantity`;
       }
     },
     productTitle() {
@@ -177,24 +184,27 @@ export default {
       this.quantity = Math.floor(this.quantity);
     },
     pendingTransaction(event) {
-      const pendingTransaction = event.detail;
-      return saveOrder({
-        productId: this.product.id,
-        transactionHash: pendingTransaction.hash,
-        amount: pendingTransaction.amount,
-        quantity: this.quantity,
-        receiver: this.product.receiverMarchand,
-      })
-        .then((order) => {
-          this.dialog = false;
-          this.loading = false;
-          this.$emit('ordered', order);
+      // Check if the event is triggered for current window
+      if(this.dialog && this.loading) {
+        const pendingTransaction = event.detail;
+        return createOrder({
+          productId: this.product.id,
+          transactionHash: pendingTransaction.hash,
+          amount: pendingTransaction.amount,
+          quantity: this.quantity,
+          receiver: this.product.receiverMarchand,
         })
-        .catch(e => {
-          console.debug("Error saving order", e);
-          this.loading = false;
-          this.error = e && e.message ? e.message : String(e);
-        });
+          .then((order) => {
+            this.dialog = false;
+            this.loading = false;
+            this.$emit('ordered', order);
+          })
+          .catch(e => {
+            console.debug("Error saving order", e);
+            this.loading = false;
+            this.error = e && e.message ? e.message : String(e);
+          });
+      }
     },
     errorTransaction(event) {
       this.loading = false;
@@ -211,6 +221,7 @@ export default {
       } catch(e) {
         // Nothing to do
       }
+
       if (!qty || isNaN(qty) || qty <= 0 || !Number.isFinite(qty) || (!this.product.allowFraction && !Number.isInteger(this.quantity))) {
         this.error = 'Invalid quantity';
         return;
@@ -233,19 +244,27 @@ export default {
         return;
       }
 
-      const amount = this.quantity * this.product.price;
+      if (!this.amount) {
+        this.error = `Empty amount`;
+        return;
+      }
+
       const message = `Purchased "${this.product.title}": ${this.quantity} x ${this.product.price}${this.symbol ? this.symbol : ''}`;
 
       // simulate saving order before sending transaction to blockchain
-      return saveOrder({
+      return createOrder({
         productId: this.product.id,
         quantity: this.quantity,
         receiver: this.product.receiverMarchand,
       }, true)
         .then(() => {
           document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail' : {
-            amount: amount,
+            amount: this.amount,
             receiver: this.product.receiverMarchand,
+            sender: {
+              type: 'user',
+              id: eXo.env.portal.userName,
+            },
             password: this.walletPassword,
             label: message,
             message: message,

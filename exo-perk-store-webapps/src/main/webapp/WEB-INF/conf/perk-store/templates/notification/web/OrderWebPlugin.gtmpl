@@ -16,12 +16,12 @@
              message = _ctx.appRes("Notification.perkstore.order.created", senderLink, orderQuantity, productTitle);
             } else {
              String modifierLink = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + modifierName + "</a>";
-             String key = "Notification.perkstore.order.modified." + orderStatus.toLowerCase();
+             String key = "Notification.perkstore.order.modified." + orderStatusLabel;
              if (org.apache.commons.lang.StringUtils.isBlank(modifierName)) {
                // System modification
                key += ".system";
              }
-             message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle);
+             message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, orderDeliveredQuantity);
             }
           %> 
           <%= message %>

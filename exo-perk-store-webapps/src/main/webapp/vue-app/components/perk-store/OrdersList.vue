@@ -28,6 +28,7 @@
             :order="props.item"
             :product="product"
             :symbol="symbol"
+            @init-wallet="$emit('init-wallet')"
             @display-product="$emit('display-product', $event)"
             @changed="updateOrder(props.item, $event)"
             @loading="$emit('loading', $event)"
@@ -90,8 +91,8 @@ export default {
   },
   data() {
     return {
-      pageSize: 20,
-      limit: 20,
+      pageSize: 12,
+      limit: 12,
       limitReached: false,
       orders: [],
     };
@@ -119,9 +120,7 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo.addons.perkstore.order.new', this.updateOrderFromWS);
-    document.addEventListener('exo.addons.perkstore.order.modification', this.updateOrderFromWS);
-    document.addEventListener('exo.addons.perkstore.order.paid', this.updateOrderFromWS);
+    document.addEventListener('exo.addons.perkstore.order.createOrModify', this.updateOrderFromWS);
   },
   methods: {
     init() {
@@ -137,6 +136,13 @@ export default {
                 order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.transactionHash}&principal=true`;
               } else if (order.receiver.type === 'space') {
                 order.transactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.transactionHash}&principal=true`;
+              }
+            }
+            if(order.refundTransactionHash) {
+              if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
+                order.refundTransactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.refundTransactionHash}&principal=true`;
+              } else if (order.receiver.type === 'space') {
+                order.refundTransactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.refundTransactionHash}&principal=true`;
               }
             }
           })
@@ -155,6 +161,20 @@ export default {
     },
     updateOrder(order, newOrder) {
       Object.assign(order, newOrder);
+      if(order.transactionHash) {
+        if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
+          order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.transactionHash}&principal=true`;
+        } else if (order.receiver.type === 'space') {
+          order.transactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.transactionHash}&principal=true`;
+        }
+      }
+      if(order.refundTransactionHash) {
+        if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
+          order.refundTransactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.refundTransactionHash}&principal=true`;
+        } else if (order.receiver.type === 'space') {
+          order.refundTransactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.refundTransactionHash}&principal=true`;
+        }
+      }
     },
     loadMore() {
       this.limit += this.pageSize;
@@ -162,7 +182,7 @@ export default {
     },
     updateOrderFromWS(event) {
       const wsMessage = event.detail;
-      if(this.orders && this.orders/length && wsMessage.productorder && wsMessage.productorder.id) {
+      if(this.orders && this.orders.length && wsMessage.productorder && wsMessage.productorder.id) {
         const order = this.orders.find(order => order && order.id === wsMessage.productorder.id);
         if(order) {
           this.updateOrder(order, wsMessage.productorder);

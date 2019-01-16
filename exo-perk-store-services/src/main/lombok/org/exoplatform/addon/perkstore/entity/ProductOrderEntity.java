@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
-import org.exoplatform.addon.perkstore.model.ProductOrderStatus;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderTransactionStatus;
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 @Entity(name = "Order")
@@ -17,60 +18,72 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
     @NamedQuery(name = "Order.countUserTotalPurchasedQuantity", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId"),
     @NamedQuery(name = "Order.countUserPurchasedQuantityInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to"),
     @NamedQuery(name = "Order.findOrderByTransactionHash", query = "SELECT o FROM Order o WHERE o.transactionHash = :hash"),
+    @NamedQuery(name = "Order.findOrderByRefundTransactionHash", query = "SELECT o FROM Order o WHERE o.refundTransactionHash = :hash"),
 })
 public class ProductOrderEntity implements Serializable {
 
-  private static final long  serialVersionUID = -592052513482849972L;
+  private static final long             serialVersionUID = -592052513482849972L;
 
   @Id
   @SequenceGenerator(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID", sequenceName = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID")
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID")
   @Column(name = "ORDER_ID")
-  private Long               id;
+  private Long                          id;
 
-  @Column(name = "TRANSACTION_HASH", nullable = false)
-  private String             transactionHash;
+  @Column(name = "TRANSACTION_HASH", nullable = true)
+  private String                        transactionHash;
+
+  @Column(name = "REFUND_TRANSACTION_HASH", nullable = true)
+  private String                        refundTransactionHash;
 
   @Column(name = "QUANTITY", nullable = false)
-  private double             quantity;
+  private double                        quantity;
 
-  @Column(name = "AMOUNT", nullable = false)
-  private double             amount;
+  @Column(name = "AMOUNT", nullable = true)
+  private double                        amount;
+
+  @Column(name = "REFUNDED_AMOUNT", nullable = true)
+  private double                        refundedAmount;
 
   @Column(name = "SENDER_ID", nullable = false)
-  private long               senderId;
+  private long                          senderId;
 
   @Column(name = "RECEIVER_ID", nullable = false)
-  private long               receiverId;
+  private long                          receiverId;
 
   @Enumerated(EnumType.ORDINAL)
   @Column(name = "STATUS", nullable = false)
-  private ProductOrderStatus status;
+  private ProductOrderStatus            status;
 
-  @Column(name = "ERROR", nullable = true)
-  private String             error;
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "TX_STATUS", nullable = false)
+  private ProductOrderTransactionStatus transactionStatus;
+
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "REFUND_TX_STATUS", nullable = false)
+  private ProductOrderTransactionStatus refundTransactionStatus;
 
   @Column(name = "DELIVERED_QUANTITY", nullable = true)
-  private double             deliveredQuantity;
+  private double                        deliveredQuantity;
 
   @Column(name = "REFUNDED_QUANTITY", nullable = true)
-  private double             refundedQuantity;
+  private double                        refundedQuantity;
 
   @Column(name = "REMAINING_QUANTITY", nullable = true)
-  private double             remainingQuantity;
+  private double                        remainingQuantity;
 
   @Column(name = "CREATED_DATE", nullable = false)
-  private long               createdDate;
+  private long                          createdDate;
 
   @Column(name = "DELIVERED_DATE", nullable = true)
-  private long               deliveredDate;
+  private long                          deliveredDate;
 
   @Column(name = "REFUNDED_DATE", nullable = true)
-  private long               refundedDate;
+  private long                          refundedDate;
 
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
-  private ProductEntity      product;
+  private ProductEntity                 product;
 
   public Long getId() {
     return id;
@@ -104,6 +117,14 @@ public class ProductOrderEntity implements Serializable {
     this.amount = amount;
   }
 
+  public double getRefundedAmount() {
+    return refundedAmount;
+  }
+
+  public void setRefundedAmount(double refundedAmount) {
+    this.refundedAmount = refundedAmount;
+  }
+
   public long getSenderId() {
     return senderId;
   }
@@ -128,14 +149,6 @@ public class ProductOrderEntity implements Serializable {
     this.status = status;
   }
 
-  public String getError() {
-    return error;
-  }
-
-  public void setError(String error) {
-    this.error = error;
-  }
-
   public double getDeliveredQuantity() {
     return deliveredQuantity;
   }
@@ -146,6 +159,30 @@ public class ProductOrderEntity implements Serializable {
 
   public double getRefundedQuantity() {
     return refundedQuantity;
+  }
+
+  public String getRefundTransactionHash() {
+    return refundTransactionHash;
+  }
+
+  public void setRefundTransactionHash(String refundTransactionHash) {
+    this.refundTransactionHash = refundTransactionHash;
+  }
+
+  public ProductOrderTransactionStatus getTransactionStatus() {
+    return transactionStatus;
+  }
+
+  public void setTransactionStatus(ProductOrderTransactionStatus transactionStatus) {
+    this.transactionStatus = transactionStatus;
+  }
+
+  public ProductOrderTransactionStatus getRefundTransactionStatus() {
+    return refundTransactionStatus;
+  }
+
+  public void setRefundTransactionStatus(ProductOrderTransactionStatus refundTransactionStatus) {
+    this.refundTransactionStatus = refundTransactionStatus;
   }
 
   public void setRefundedQuantity(double refundedQuantity) {

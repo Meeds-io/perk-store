@@ -7,6 +7,8 @@ import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.addon.perkstore.model.*;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.NotificationMessageUtils;
 import org.exoplatform.commons.api.notification.channel.template.TemplateProvider;
@@ -84,19 +86,21 @@ public class NotificationUtils {
 
   private static final String                         STORED_PARAMETER_ORDER_STATUS                  = "ORDER_STATUS";
 
-  private static final String                         STORED_PARAMETER_ORDER_ERROR                   = "ORDER_ERROR";
-
   private static final String                         STORED_PARAMETER_QUANTITY_ORDER                = "ORDER_QUANTITY";
 
-  private static final String                         STORED_PARAMETER_ORDER_DELIVERED_QUANTITY      =
-                                                                                                "ORDER_DELIVERED_QUANTITY";
+  private static final String                         STORED_PARAMETER_ORDER_DELIVERED_QUANTITY      = "ORDER_DELIVERED_QUANTITY";
+
+  private static final String                         STORED_PARAMETER_ORDER_REFUND_TX_STATUS        = "ORDER_REFUNDED_TX_STATUS";
 
   private static final String                         STORED_PARAMETER_ORDER_REFUNDED_QUANTITY       = "ORDER_REFUNDED_QUANTITY";
 
-  private static final String                         STORED_PARAMETER_ORDER_REMAINING_QUANTITY      =
-                                                                                                "ORDER_REMAINING_QUANTITY";
+  private static final String                         STORED_PARAMETER_ORDER_REFUNDED_AMOUNT         = "ORDER_REFUNDED_AMOUNT";
+
+  private static final String                         STORED_PARAMETER_ORDER_REMAINING_QUANTITY      = "ORDER_REMAINING_QUANTITY";
 
   private static final String                         STORED_PARAMETER_ORDER_IS_NEW                  = "ORDER_IS_NEW";
+
+  private static final String                         STORED_PARAMETER_ORDER_MODIFICATION_TYPE       = "ORDER_MODIFICATION_TYPE";
 
   private static final String                         STORED_PARAMETER_MODIFIER_IDENTITY_ID          = "MODIFIER_ID";
 
@@ -122,7 +126,7 @@ public class NotificationUtils {
 
   private static final String                         TEMPLATE_VARIABLE_ORDER_STATUS                 = "orderStatus";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_ERROR                  = "orderError";
+  private static final String                         TEMPLATE_VARIABLE_ORDER_LABEL_STATUS           = "orderStatusLabel";
 
   private static final String                         TEMPLATE_VARIABLE_ORDER_QUANTITY               = "orderQuantity";
 
@@ -130,9 +134,16 @@ public class NotificationUtils {
 
   private static final String                         TEMPLATE_VARIABLE_ORDER_REFUNDED_QUANTITY      = "orderRefundedQuantity";
 
+  private static final String                         TEMPLATE_VARIABLE_ORDER_REFUND_TX_STATUS       =
+                                                                                               "orderRefundTransactionStatus";
+
+  private static final String                         TEMPLATE_VARIABLE_ORDER_REFUNDED_AMOUNT        = "orderRefundedAmount";
+
   private static final String                         TEMPLATE_VARIABLE_ORDER_REMAINING_QUANTITY     = "orderRemainingQuantity";
 
   private static final String                         TEMPLATE_VARIABLE_ORDER_IS_NEW                 = "isNewOrder";
+
+  private static final String                         TEMPLATE_VARIABLE_ORDER_MODIFICATION_TYPE      = "modificationType";
 
   private static final String                         TEMPLATE_VARIABLE_NOTIFICATION_URL             = "detailsURL";
 
@@ -271,18 +282,17 @@ public class NotificationUtils {
       notification.with(STORED_PARAMETER_MODIFIER_IDENTITY_ID, String.valueOf(order.getLastModifier().getTechnicalId()));
     }
 
-    String error = order.getError() == null ? "" : order.getError();
-
-    notification
-                .with(STORED_PARAMETER_ORDER_ID, String.valueOf(order.getId()))
+    notification.with(STORED_PARAMETER_ORDER_ID, String.valueOf(order.getId()))
                 .with(STORED_PARAMETER_RECEIVER_IDENTITY_ID, String.valueOf(order.getReceiver().getTechnicalId()))
                 .with(STORED_PARAMETER_SENDER_IDENTITY_ID, String.valueOf(order.getSender().getTechnicalId()))
                 .with(STORED_PARAMETER_ORDER_STATUS, order.getStatus())
-                .with(STORED_PARAMETER_ORDER_ERROR, error)
-                .with(STORED_PARAMETER_QUANTITY_ORDER, String.valueOf(order.getQuantity()))
-                .with(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY, String.valueOf(order.getDeliveredQuantity()))
-                .with(STORED_PARAMETER_ORDER_REFUNDED_QUANTITY, String.valueOf(order.getRefundedQuantity()))
-                .with(STORED_PARAMETER_ORDER_REMAINING_QUANTITY, String.valueOf(order.getRemainingQuantityToProcess()))
+                .with(STORED_PARAMETER_QUANTITY_ORDER, stringifyDouble(order.getQuantity()))
+                .with(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY, stringifyDouble(order.getDeliveredQuantity()))
+                .with(STORED_PARAMETER_ORDER_REFUND_TX_STATUS, order.getRefundTransactionStatus())
+                .with(STORED_PARAMETER_ORDER_MODIFICATION_TYPE, order.getModificationType().name())
+                .with(STORED_PARAMETER_ORDER_REFUNDED_AMOUNT, stringifyDouble(order.getRefundedAmount()))
+                .with(STORED_PARAMETER_ORDER_REFUNDED_QUANTITY, stringifyDouble(order.getRefundedQuantity()))
+                .with(STORED_PARAMETER_ORDER_REMAINING_QUANTITY, stringifyDouble(order.getRemainingQuantityToProcess()))
                 .with(STORED_PARAMETER_ORDER_IS_NEW, String.valueOf(isNew));
   }
 
@@ -303,13 +313,21 @@ public class NotificationUtils {
     }
 
     long receiverId = isNew ? product.getCreator().getTechnicalId() : product.getLastModifier().getTechnicalId();
-    notification
-                .with(STORED_PARAMETER_PRODUCT_ID, String.valueOf(product.getId()))
+    notification.with(STORED_PARAMETER_PRODUCT_ID, String.valueOf(product.getId()))
                 .with(STORED_PARAMETER_SENDER_IDENTITY_ID, String.valueOf(receiverId))
                 .with(STORED_PARAMETER_PRODUCT_TITLE, product.getTitle())
-                .with(STORED_PARAMETER_PRODUCT_SUPPLY, String.valueOf(product.getTotalSupply()))
-                .with(STORED_PARAMETER_PRODUCT_PRICE, String.valueOf(product.getPrice()))
+                .with(STORED_PARAMETER_PRODUCT_SUPPLY, stringifyDouble(product.getTotalSupply()))
+                .with(STORED_PARAMETER_PRODUCT_PRICE, stringifyDouble(product.getPrice()))
                 .with(STORED_PARAMETER_PRODUCT_IS_NEW, String.valueOf(isNew));
+  }
+
+  public static final String stringifyDouble(double value) {
+    long longValue = (long) value;
+    if (value == longValue) {
+      return String.format("%d", longValue);
+    } else {
+      return String.format("%s", value);
+    }
   }
 
   public static final String getNotificationURL(Product product, ProductOrder productOrder) {
@@ -373,8 +391,7 @@ public class NotificationUtils {
     if (pushNotificationURL != null) {
       messageInfo.subject(pushNotificationURL);
     } else {
-      messageInfo.subject(TemplateUtils.processSubject(templateContext) + ": "
-          + title);
+      messageInfo.subject(TemplateUtils.processSubject(templateContext) + ": " + title);
     }
   }
 
@@ -400,21 +417,47 @@ public class NotificationUtils {
     if (StringUtils.isNotBlank(orderId)) {
       String isNewString = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_IS_NEW);
       boolean isNew = StringUtils.isNotBlank(isNewString) && Boolean.parseBoolean(isNewString);
-      String orderError = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_ERROR);
-      orderError = orderError == null ? "" : orderError;
+
+      String modificationType = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_MODIFICATION_TYPE);
+      String orderStatus = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_STATUS);
+      String deliveredQuantity = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY);
+      String refundedQuantity = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REFUNDED_QUANTITY);
+      String remainingQuantity = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REMAINING_QUANTITY);
+      String orderRefundedAmount = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REFUNDED_AMOUNT);
+      String orderRefundTxStatus = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REFUND_TX_STATUS);
+
+      if (StringUtils.isBlank(orderRefundedAmount)) {
+        orderRefundedAmount = "0";
+      }
+      if (StringUtils.isBlank(orderRefundTxStatus)) {
+        orderRefundTxStatus = "NONE";
+      }
+
+      if (ProductOrderModificationType.valueOf(modificationType) == ProductOrderModificationType.REFUND_TX_STATUS) {
+        String orderStatusLabel = ProductOrderStatus.REFUNDED.name().toLowerCase();
+        if (StringUtils.equals(orderRefundTxStatus, "failed")) {
+          templateContext.put(TEMPLATE_VARIABLE_ORDER_LABEL_STATUS, "error." + orderStatusLabel);
+        } else {
+          templateContext.put(TEMPLATE_VARIABLE_ORDER_LABEL_STATUS, orderStatusLabel);
+        }
+      } else if (ProductOrderModificationType.valueOf(modificationType) == ProductOrderModificationType.REFUNDED_QUANTITY) {
+        templateContext.put(TEMPLATE_VARIABLE_ORDER_LABEL_STATUS, ProductOrderStatus.REFUNDED.name().toLowerCase());
+      } else if (ProductOrderModificationType.valueOf(modificationType) == ProductOrderModificationType.DELIVERED_QUANTITY) {
+        templateContext.put(TEMPLATE_VARIABLE_ORDER_LABEL_STATUS, ProductOrderStatus.DELIVERED.name().toLowerCase());
+      } else {
+        templateContext.put(TEMPLATE_VARIABLE_ORDER_LABEL_STATUS, orderStatus.toLowerCase());
+      }
 
       templateContext.put(TEMPLATE_VARIABLE_ORDER_ID, orderId);
-      templateContext.put(TEMPLATE_VARIABLE_ORDER_STATUS, notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_STATUS));
-      templateContext.put(TEMPLATE_VARIABLE_ORDER_ERROR, orderError);
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_STATUS, orderStatus);
       templateContext.put(TEMPLATE_VARIABLE_ORDER_QUANTITY, notification.getValueOwnerParameter(STORED_PARAMETER_QUANTITY_ORDER));
-      templateContext.put(TEMPLATE_VARIABLE_ORDER_DELIVERED_QUANTITY,
-                          notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY));
-      templateContext.put(TEMPLATE_VARIABLE_ORDER_REFUNDED_QUANTITY,
-                          notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REFUNDED_QUANTITY));
-      templateContext.put(TEMPLATE_VARIABLE_ORDER_REMAINING_QUANTITY,
-                          notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REMAINING_QUANTITY));
-      templateContext.put(TEMPLATE_VARIABLE_ORDER_IS_NEW,
-                          String.valueOf(isNew));
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_DELIVERED_QUANTITY, deliveredQuantity);
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_REFUNDED_QUANTITY, refundedQuantity);
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_REFUNDED_AMOUNT, orderRefundedAmount);
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_REFUND_TX_STATUS, orderRefundTxStatus);
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_REMAINING_QUANTITY, remainingQuantity);
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_MODIFICATION_TYPE, modificationType);
+      templateContext.put(TEMPLATE_VARIABLE_ORDER_IS_NEW, String.valueOf(isNew));
     }
   }
 
