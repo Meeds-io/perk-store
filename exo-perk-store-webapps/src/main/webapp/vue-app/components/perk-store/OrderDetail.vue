@@ -1,214 +1,216 @@
 <template>
-  <v-card v-if="order">
-    <v-card-title v-if="order.sender" class="pt-1 pb-1">
-      <h4>
-        <a
-          :href="orderLink"
-          rel="nofollow"
-          target="_blank">
-          <strong>#{{ order.id }}</strong>
-        </a>
-      </h4>
-      <v-spacer />
-      <template v-if="userData && userData.canEdit">
-        <select
-          v-model="order.status"
-          class="small mt-1 mb-1 mr-2"
-          @change="changeStatus('STATUS')">
-          <option v-for="option in statusList" :key="option">
-            {{ option }}
-          </option>
-        </select>
-        <div
-          v-if="order.remainingQuantityToProcess"
-          :title="`${order.remainingQuantityToProcess} to deliver`"
-          class="orderQuantityBadgeParent">
-          <div class="orderQuantityBadge red">
-            {{ order.remainingQuantityToProcess }}
+  <v-hover v-if="order">
+    <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 3}`">
+      <v-card-title v-if="order.sender" class="pt-1 pb-1">
+        <h4>
+          <a
+            :href="orderLink"
+            rel="nofollow"
+            target="_blank">
+            <strong>#{{ order.id }}</strong>
+          </a>
+        </h4>
+        <v-spacer />
+        <template v-if="userData && userData.canEdit">
+          <select
+            v-model="order.status"
+            class="small mt-1 mb-1 mr-2"
+            @change="changeStatus('STATUS')">
+            <option v-for="option in statusList" :key="option">
+              {{ option }}
+            </option>
+          </select>
+          <div
+            v-if="order.remainingQuantityToProcess"
+            :title="`${order.remainingQuantityToProcess} to deliver`"
+            class="orderQuantityBadgeParent">
+            <div class="orderQuantityBadge red">
+              {{ order.remainingQuantityToProcess }}
+            </div>
           </div>
-        </div>
-      </template>
-      <span v-else>{{ statusLabel }}</span>
-    </v-card-title>
-
-    <v-divider />
-
-    <v-list dense>
-      <v-list-tile>
-        <v-list-tile-content>Buyer:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          <profile-link
-            :id="order.sender.id"
-            :space-id="order.sender.spaceId"
-            :url-id="order.sender.spaceURLId"
-            :type="order.sender.type"
-            :display-name="order.sender.displayName"
-            display-avatar />
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Date:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          {{ createdDateLabel }}
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Items:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          <div class="ellipsis orderDetailText">
-            {{ order.quantity }} x 
-            <a href="javascript:void(0);" @click="$emit('display-product', order.productId)">
-              {{ productTitle }}
-            </a>
-          </div>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Payment:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          <div class="no-wrap ellipsis orderDetailText">
-            <v-icon
-              v-if="order.transactionStatus === 'SUCCESS'"
-              title="Transaction succeeded"
-              class="green--text"
-              size="16">
-              fa-check-circle
-            </v-icon>
-            <v-icon
-              v-if="order.transactionStatus === 'FAILED'"
-              title="Transaction failed"
-              class="red--text"
-              size="16">
-              fa-exclamation-circle
-            </v-icon>
-            <v-icon
-              v-if="order.transactionStatus === 'PENDING'"
-              title="Transaction in progress"
-              class="orange--text"
-              size="16">
-              far fa-clock
-            </v-icon>
-            <a
-              v-if="order.transactionLink"
-              :href="order.transactionLink"
-              rel="nofollow"
-              target="_blank">
-              {{ order.amount }} {{ symbol }}
-            </a>
-            to
+        </template>
+        <span v-else>{{ statusLabel }}</span>
+      </v-card-title>
+  
+      <v-divider />
+  
+      <v-list dense>
+        <v-list-tile>
+          <v-list-tile-content>Buyer:</v-list-tile-content>
+          <v-list-tile-content class="align-end">
             <profile-link
-              :id="order.receiver.id"
-              :space-id="order.receiver.spaceId"
-              :url-id="order.receiver.spaceURLId"
-              :type="order.receiver.type"
-              :display-name="order.receiver.displayName" />
-          </div>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-
-    <v-divider />
-
-    <v-list dense class="orderProcessingContent">
-      <v-list-tile>
-        <v-list-tile-content>Processing:</v-list-tile-content>
-        <v-list-tile-content class="align-end">
-          <div class="no-wrap">
-            <div v-if="!order.remainingQuantityToProcess || isError">
-              <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>DONE
+              :id="order.sender.id"
+              :space-id="order.sender.spaceId"
+              :url-id="order.sender.spaceURLId"
+              :type="order.sender.type"
+              :display-name="order.sender.displayName"
+              display-avatar />
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-content>Date:</v-list-tile-content>
+          <v-list-tile-content class="align-end">
+            {{ createdDateLabel }}
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-content>Items:</v-list-tile-content>
+          <v-list-tile-content class="align-end">
+            <div class="ellipsis orderDetailText">
+              {{ order.quantity }} x 
+              <a href="javascript:void(0);" @click="$emit('display-product', order.productId)">
+                {{ productTitle }}
+              </a>
             </div>
-            <template v-else-if="userData && userData.canEdit">
-              <deliver-modal
-                v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
-                :product="product"
-                :order="order" />
-              <refund-modal
-                v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
-                :product="product"
-                :order="order"
-                :symbol="symbol"
-                @refunded="refunded"
-                @closed="refundDialogClosed" />
-              <button
-                v-if="isOrdered"
-                class="btn orderProcessingBtn mr-1"
-                @click="cancelOrder">
-                Cancel
-              </button>
-            </template>
-            <div v-else-if="isCanceled">
-              CANCELED
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-content>Payment:</v-list-tile-content>
+          <v-list-tile-content class="align-end">
+            <div class="no-wrap ellipsis orderDetailText">
+              <v-icon
+                v-if="order.transactionStatus === 'SUCCESS'"
+                title="Transaction succeeded"
+                class="green--text"
+                size="16">
+                fa-check-circle
+              </v-icon>
+              <v-icon
+                v-if="order.transactionStatus === 'FAILED'"
+                title="Transaction failed"
+                class="red--text"
+                size="16">
+                fa-exclamation-circle
+              </v-icon>
+              <v-icon
+                v-if="order.transactionStatus === 'PENDING'"
+                title="Transaction in progress"
+                class="orange--text"
+                size="16">
+                far fa-clock
+              </v-icon>
+              <a
+                v-if="order.transactionLink"
+                :href="order.transactionLink"
+                rel="nofollow"
+                target="_blank">
+                {{ order.amount }} {{ symbol }}
+              </a>
+              to
+              <profile-link
+                :id="order.receiver.id"
+                :space-id="order.receiver.spaceId"
+                :url-id="order.receiver.spaceURLId"
+                :type="order.receiver.type"
+                :display-name="order.receiver.displayName" />
             </div>
-            <div v-else>
-              <v-icon class="orange--text mr-1" size="16px">far fa-clock</v-icon>PENDING
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+  
+      <v-divider />
+  
+      <v-list dense class="orderProcessingContent">
+        <v-list-tile>
+          <v-list-tile-content>Processing:</v-list-tile-content>
+          <v-list-tile-content class="align-end">
+            <div class="no-wrap">
+              <div v-if="!order.remainingQuantityToProcess || isError">
+                <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>DONE
+              </div>
+              <template v-else-if="userData && userData.canEdit">
+                <deliver-modal
+                  v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
+                  :product="product"
+                  :order="order" />
+                <refund-modal
+                  v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
+                  :product="product"
+                  :order="order"
+                  :symbol="symbol"
+                  @refunded="refunded"
+                  @closed="refundDialogClosed" />
+                <button
+                  v-if="isOrdered"
+                  class="btn orderProcessingBtn mr-1"
+                  @click="cancelOrder">
+                  Cancel
+                </button>
+              </template>
+              <div v-else-if="isCanceled">
+                CANCELED
+              </div>
+              <div v-else>
+                <v-icon class="orange--text mr-1" size="16px">far fa-clock</v-icon>PENDING
+              </div>
             </div>
-          </div>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>
-          <div>
-            Delivered:
-            <v-progress-circular
-              :rotate="360"
-              :size="40"
-              :width="5"
-              :value="deliveredPercentage"
-              color="teal"
-              class="ml-2">
-              <span class="no-wrap">
-                {{ order.deliveredQuantity }}/{{ order.quantity }}
-              </span>
-            </v-progress-circular>
-          </div>
-        </v-list-tile-content>
-        <v-list-tile-content v-if="order.deliveredDate" class="align-end">
-          {{ deliveredDateLabel }}
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile v-if="order.refundedAmount && order.refundTransactionHash">
-        <v-list-tile-content>
-          <div class="no-wrap">
-            Refunded:
-            <v-icon
-              v-if="order.refundTransactionStatus === 'SUCCESS'"
-              title="Transaction succeeded"
-              class="green--text"
-              size="16">
-              fa-check-circle
-            </v-icon>
-            <v-icon
-              v-if="order.refundTransactionStatus === 'FAILED'"
-              title="Transaction failed"
-              class="red--text"
-              size="16">
-              fa-exclamation-circle
-            </v-icon>
-            <v-icon
-              v-if="order.refundTransactionStatus === 'PENDING'"
-              title="Transaction in progress"
-              class="orange--text"
-              size="16">
-              far fa-clock
-            </v-icon>
-            <a
-              v-if="order.refundTransactionLink"
-              :href="order.refundTransactionLink"
-              rel="nofollow"
-              target="_blank">
-              {{ order.refundedAmount }} {{ symbol }}
-            </a>
-            <template v-else>
-              {{ order.refundedAmount }} {{ symbol }}
-            </template>
-          </div>
-        </v-list-tile-content>
-        <v-list-tile-content v-if="order.refundedDate" class="align-end">
-          {{ refundedDateLabel }}
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-  </v-card>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-content>
+            <div>
+              Delivered:
+              <v-progress-circular
+                :rotate="360"
+                :size="40"
+                :width="5"
+                :value="deliveredPercentage"
+                color="teal"
+                class="ml-2">
+                <span class="no-wrap">
+                  {{ order.deliveredQuantity }}/{{ order.quantity }}
+                </span>
+              </v-progress-circular>
+            </div>
+          </v-list-tile-content>
+          <v-list-tile-content v-if="order.deliveredDate" class="align-end">
+            {{ deliveredDateLabel }}
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile v-if="order.refundedAmount && order.refundTransactionHash">
+          <v-list-tile-content>
+            <div class="no-wrap">
+              Refunded:
+              <v-icon
+                v-if="order.refundTransactionStatus === 'SUCCESS'"
+                title="Transaction succeeded"
+                class="green--text"
+                size="16">
+                fa-check-circle
+              </v-icon>
+              <v-icon
+                v-if="order.refundTransactionStatus === 'FAILED'"
+                title="Transaction failed"
+                class="red--text"
+                size="16">
+                fa-exclamation-circle
+              </v-icon>
+              <v-icon
+                v-if="order.refundTransactionStatus === 'PENDING'"
+                title="Transaction in progress"
+                class="orange--text"
+                size="16">
+                far fa-clock
+              </v-icon>
+              <a
+                v-if="order.refundTransactionLink"
+                :href="order.refundTransactionLink"
+                rel="nofollow"
+                target="_blank">
+                {{ order.refundedAmount }} {{ symbol }}
+              </a>
+              <template v-else>
+                {{ order.refundedAmount }} {{ symbol }}
+              </template>
+            </div>
+          </v-list-tile-content>
+          <v-list-tile-content v-if="order.refundedDate" class="align-end">
+            {{ refundedDateLabel }}
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-card>
+  </v-hover>
   <span v-else class="hidden"></span>
 </template>
 

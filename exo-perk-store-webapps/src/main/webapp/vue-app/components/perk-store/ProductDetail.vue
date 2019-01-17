@@ -3,7 +3,7 @@
     <v-hover>
       <v-card
         slot-scope="{ hover }"
-        class="mx-auto elevation-3"
+        :class="`elevation-${hover ? 9 : 3}`"
         color="grey lighten-4"
         max-width="600">
         <v-img
