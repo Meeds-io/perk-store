@@ -26,6 +26,7 @@
       <v-data-iterator
         :items="filteredOrders"
         content-tag="v-layout"
+        content-class="mt-0 mb-0"
         no-data-text="No orders"
         hide-actions
         row
@@ -33,7 +34,7 @@
         <v-flex
           slot="item"
           slot-scope="props"
-          class="border-box-sizing"
+          class="border-box-sizing pt-0"
           xs12
           sm6
           md4
