@@ -53,12 +53,14 @@ public class PerkStoreCachedStorage extends PerkStoreStorage implements Startabl
 
   @Override
   public ProductOrder getOrderById(long orderId) {
-    return this.orderFutureCache.get(null, orderId);
+    ProductOrder order = this.orderFutureCache.get(null, orderId);
+    return order == null ? null : order.clone();
   }
 
   @Override
   public Product getProductById(long productId) {
-    return this.productFutureCache.get(null, productId);
+    Product product = this.productFutureCache.get(null, productId);
+    return product == null ? null : product.clone();
   }
 
   @Override

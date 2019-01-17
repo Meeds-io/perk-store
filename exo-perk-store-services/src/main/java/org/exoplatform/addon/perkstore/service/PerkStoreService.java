@@ -559,6 +559,7 @@ public class PerkStoreService implements Startable {
     UserProductData userData = new UserProductData();
     product.setUserData(userData);
 
+    userData.setUsername(username);
     userData.setCanEdit(StringUtils.isNotBlank(username) && canEditProduct(product, username));
     userData.setCanOrder(StringUtils.isNotBlank(username) && canViewProduct(product, username, false));
 

@@ -14,7 +14,7 @@ export function getProductList() {
 }
 
 export function getProduct(productId) {
-  return fetch(`/portal/rest/perkstore/api/product/get?productId=${productId}`, {
+  return fetch(`/portal/rest/perkstore/api/product/get?productId=${productId}&username=${eXo.env.portal.userName}`, {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {

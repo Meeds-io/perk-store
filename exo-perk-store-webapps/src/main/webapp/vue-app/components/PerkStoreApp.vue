@@ -395,7 +395,12 @@ export default {
         const product = this.products && this.products.find(product => product && product.id === wsMessage.product.id);
         // Existing product
         if(product && product.id) {
-          getProduct(product.id).then(freshProduct => Object.assign(product, freshProduct));
+          getProduct(product.id).then(freshProduct => {
+            if(freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
+              // Additional check for user data target
+              Object.assign(product, freshProduct);
+            }
+          });
         } else {
           // New product: do nothing for now
         }

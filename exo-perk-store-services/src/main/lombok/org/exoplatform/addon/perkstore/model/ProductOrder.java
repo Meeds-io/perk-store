@@ -7,7 +7,7 @@ import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationTy
 import lombok.Data;
 
 @Data
-public class ProductOrder implements Serializable {
+public class ProductOrder implements Serializable, Cloneable {
   private static final long            serialVersionUID = 1315929554209305549L;
 
   private long                         id;
@@ -55,4 +55,14 @@ public class ProductOrder implements Serializable {
   // Not stored, used in notification only to identity modification type for
   // listeners
   private ProductOrderModificationType modificationType;
+
+  @SuppressWarnings("all")
+  @Override
+  public ProductOrder clone() {
+    try {
+      return (ProductOrder) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new IllegalStateException("Error while cloning Order object");
+    }
+  }
 }

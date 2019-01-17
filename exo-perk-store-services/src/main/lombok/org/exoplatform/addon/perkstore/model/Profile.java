@@ -22,11 +22,12 @@ public class Profile implements Serializable, Cloneable {
   private String            displayName;
 
   @SuppressWarnings("all")
+  @Override
   public Object clone() {
     try {
       return super.clone();
     } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException("Error while cloning object");
+      throw new IllegalStateException("Error while cloning Profile object");
     }
   }
 }

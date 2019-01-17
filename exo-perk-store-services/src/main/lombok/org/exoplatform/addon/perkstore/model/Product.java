@@ -57,11 +57,11 @@ public class Product implements Serializable, Cloneable {
   private UserProductData   userData         = new UserProductData();
 
   @SuppressWarnings("all")
-  public Object clone() {
+  public Product clone() {
     try {
-      return super.clone();
+      return (Product) super.clone();
     } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException("Error while cloning object");
+      throw new IllegalStateException("Error while cloning Product object");
     }
   }
 }

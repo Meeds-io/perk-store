@@ -87,14 +87,20 @@ public class PerkStoreProductREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("get")
   @RolesAllowed("users")
-  public Response getProduct(@QueryParam("productId") String productId) {
+  public Response getProduct(@QueryParam("productId") String productId, @QueryParam("username") String username) {
     if (StringUtils.isBlank(productId)) {
       LOG.warn("Bad request sent to server with empty productId");
       return Response.status(400).build();
     }
     try {
-      Product product = perkStoreService.getProductById(Long.parseLong(productId), getCurrentUserId());
-      return Response.ok(product).build();
+      String userId = getCurrentUserId();
+      if (StringUtils.equals(userId, username)) {
+        Product product = perkStoreService.getProductById(Long.parseLong(productId), userId);
+        return Response.ok(product).build();
+      } else {
+        LOG.warn("User '{}' is attempting to access user '{}' data", userId, username);
+        return Response.status(403).build();
+      }
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error getting product");
     } catch (Exception e) {
