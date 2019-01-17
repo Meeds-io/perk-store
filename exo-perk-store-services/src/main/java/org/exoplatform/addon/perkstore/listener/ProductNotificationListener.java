@@ -28,12 +28,19 @@ public class ProductNotificationListener extends Listener<Product, Boolean> {
     ExoContainerContext.setCurrentContainer(container);
     RequestLifeCycle.begin(container);
     try {
+      Product product = event.getSource();
+
+      // Avoid sending notifications about a disabled product
+      if (!product.isEnabled()) {
+        return;
+      }
+
       boolean isNew = event.getData();
 
       NotificationContext ctx = NotificationContextImpl.cloneInstance();
 
       ctx.append(SETTINGS_PARAMETER, getPerkStoreService().getGlobalSettings());
-      ctx.append(PRODUCT_PARAMETER, event.getSource());
+      ctx.append(PRODUCT_PARAMETER, product);
       ctx.append(PRODUCT_IS_NEW_PARAMETER, isNew);
 
       String pluginId = isNew ? PERKSTORE_PRODUCT_ADDED_NOTIFICATION_PLUGIN
