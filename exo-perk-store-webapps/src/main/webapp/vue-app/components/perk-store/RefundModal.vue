@@ -21,7 +21,7 @@
           class="uiIconClose pull-right"
           aria-hidden="true"
           @click="close"></a>
-        <span class="PopupTitle popupTitle">
+        <span class="PopupTitle popupTitle ellipsis">
           Refund order #{{ order && order.id }}
         </span>
       </div>

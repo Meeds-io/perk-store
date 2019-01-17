@@ -12,7 +12,7 @@
         <a
           class="uiIconClose pull-right"
           aria-hidden="true"
-          @click="close"></a> <span class="PopupTitle popupTitle">
+          @click="close"></a> <span class="PopupTitle popupTitle ellipsis">
             Buy {{ productTitle }}
           </span>
       </div>
@@ -95,7 +95,7 @@ export default {
     return {
       dialog: false,
       loading: false,
-      quantity: null,
+      quantity: 1,
       walletPassword: '',
       walletPasswordShow: false,
       error: null,
@@ -151,7 +151,7 @@ export default {
     },
     dialog() {
       if (this.dialog) {
-        this.quantity = null;
+        this.quantity = 1;
         this.warning = null;
         this.error = null;
         this.loading = false;

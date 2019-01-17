@@ -15,7 +15,7 @@
           class="uiIconClose pull-right"
           aria-hidden="true"
           @click="dialog = false"></a>
-        <span class="PopupTitle popupTitle">
+        <span class="PopupTitle popupTitle ellipsis">
           Deliver order #{{ order && order.id }}
         </span>
       </div>

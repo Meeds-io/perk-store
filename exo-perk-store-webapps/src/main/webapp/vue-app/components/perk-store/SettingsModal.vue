@@ -14,7 +14,7 @@
           aria-hidden="true"
           @click="close">
         </a>
-        <span class="PopupTitle popupTitle">
+        <span class="PopupTitle popupTitle ellipsis">
           Perk store settings
         </span>
       </div>
