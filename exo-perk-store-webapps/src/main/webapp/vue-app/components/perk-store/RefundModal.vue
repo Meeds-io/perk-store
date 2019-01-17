@@ -254,7 +254,7 @@ export default {
         return;
       }
 
-      if ((this.quantity * this.product.price) > this.amount) {
+      if (this.amount > (this.quantity * this.product.price)) {
         this.error = 'Amount to send is greater than quantity * price';
         return;
       }
