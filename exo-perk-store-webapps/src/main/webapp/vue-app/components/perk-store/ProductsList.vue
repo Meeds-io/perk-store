@@ -18,7 +18,7 @@
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled"
             :maximized="selectedProduct && selectedProduct.id === product.id"
-            class="border-box-sizing sm3 xs12"
+            class="border-box-sizing xs12 sm6 md4 lg3 xl2"
             @product-details="$emit('product-details', $event)"
             @orders-list="$emit('orders-list', $event)"
             @edit="$emit('edit', $event)"
