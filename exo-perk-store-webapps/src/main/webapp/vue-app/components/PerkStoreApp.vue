@@ -13,7 +13,7 @@
             dense>
             <v-toolbar-title>
               <v-btn
-                v-if="displayProductOrders && canEditSelectedProduct"
+                v-show="displayFilterButton"
                 id="perkStoreAppMenuDisplayFilterButton"
                 icon
                 flat
@@ -246,6 +246,9 @@ export default {
     canEditSelectedProduct() {
       return  this.selectedProduct && this.selectedProduct.userData && this.selectedProduct.userData.canEdit;
     },
+    displayFilterButton() {
+      return (this.displayProductOrders && !this.selectedOrderId) || this.displayMyOrders;
+    },
     displayCloseIcon() {
       return this.displayProductForm || this.displayProductOrders || this.displayProductDetails || this.displayMyOrders;
     },
@@ -372,7 +375,6 @@ export default {
     displayMyOrdersList() {
       this.closeDetails();
       this.selectedProduct = null;
-      this.selectedOrderId = 0;
       this.displayMyOrders = true;
       return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init());
     },

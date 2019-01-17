@@ -39,20 +39,24 @@ export function saveSettings(settings) {
   }
 }
 
+export function getDefaultOrderFilter() {
+  return {
+    ordered: true,
+    canceled: true,
+    error: true,
+    paid: true,
+    partial: true,
+    delivered: true,
+    refunded: true,
+  };
+}
+
 export function getOrderFilter() {
   const filter = localStorage.getItem('exo-perkstore-order-filter');
   if (filter) {
     return JSON.parse(filter);
   } else {
-    return {
-      ordered: true,
-      canceled: true,
-      error: true,
-      paid: true,
-      partial: true,
-      delivered: true,
-      refunded: true,
-    };
+    return getDefaultOrderFilter();
   }
 }
 

@@ -8,6 +8,21 @@
       class="productOrdersParent border-box-sizing mt-0"
       fluid
       grid-list-md>
+      <v-card
+        v-if="displayFilterDetails && filterDescriptionLabels && filterDescriptionLabels.length"
+        class="transparent mb-2 mt-0 pt-0" 
+        flat>
+        <v-card-title class="mt-0 pt-0">
+          <v-spacer />
+          <div class="no-wrap ellipsis">
+            Selected filter:
+            <v-chip v-for="filterDescription in filterDescriptionLabels" :key="filterDescription">
+              {{ filterDescription }}
+            </v-chip>
+          </div>
+          <v-spacer />
+        </v-card-title>
+      </v-card>
       <v-data-iterator
         :items="filteredOrders"
         content-tag="v-layout"
@@ -61,6 +76,7 @@ import OrdersFilter from './OrdersFilter.vue';
 import OrderNotification from './OrderNotification.vue';
 
 import {getOrderList} from '../../js/PerkStoreProductOrder.js';
+import {getDefaultOrderFilter} from '../../js/PerkStoreSettings.js';
 
 export default {
   components: {
@@ -99,11 +115,16 @@ export default {
       pageSize: 12,
       limit: 12,
       limitReached: false,
+      filterDescriptionLabels: [],
+      displayFilterDetails: false,
       orders: [],
       newAddedOrders: [],
     };
   },
   computed: {
+    selectedOrdersFilter() {
+      return (!this.selectedOrderId && this.ordersFilter) || getDefaultOrderFilter();
+    },
     filteredOrders() {
       const order = this.selectedOrderId && this.orders.find(order => order && order.id === this.selectedOrderId);
       if (order) {
@@ -133,7 +154,7 @@ export default {
       this.$emit('error', null);
       this.$emit('loading', true);
       const initialOrdersLength = this.orders.length;
-      return getOrderList(this.product && this.product.id, this.ordersFilter, this.limit)
+      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.limit)
         .then((orders) => {
           this.orders = orders || [];
           this.orders.forEach(order => {
@@ -153,6 +174,8 @@ export default {
             }
           })
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
+          this.computeDisplayFilterDetails();
+          this.computeDescriptionLabels();
         })
         .catch(e => {
           console.debug("Error while listing orders", e);
@@ -161,6 +184,58 @@ export default {
     },
     searchOrders() {
       return this.init();
+    },
+    computeDisplayFilterDetails() {
+      if(!this.selectedOrdersFilter) {
+        this.displayFilterDetails = false;
+        return;
+      }
+      const selectedOrdersFilter = Object.assign(this.selectedOrdersFilter);
+      if(!selectedOrdersFilter.notProcessed) {
+        delete selectedOrdersFilter.notProcessed;
+      }
+      if(!selectedOrdersFilter.searchInDates) {
+        delete selectedOrdersFilter.searchInDates;
+        delete selectedOrdersFilter.selectedDate;
+      }
+      if(!selectedOrdersFilter.productId) {
+        delete selectedOrdersFilter.productId;
+      }
+      // Check if all details are checked by default
+      this.displayFilterDetails = selectedOrdersFilter.notProcessed || !Object.values(selectedOrdersFilter).every(value => value);
+    },
+    computeDescriptionLabels() {
+      const filterLabels = [];
+      if(this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
+        const dateString = new Date(this.selectedOrdersFilter.selectedDate).toLocaleString().substring(0, 10);
+        filterLabels.push(`DATE: ${dateString}`);
+      }
+      if(this.selectedOrdersFilter.notProcessed) {
+        filterLabels.push("NOT PROCESSED");
+      } else {
+        if (this.selectedOrdersFilter.ordered) {
+          filterLabels.push("ORDERED");
+        }
+        if (this.selectedOrdersFilter.canceled) {
+          filterLabels.push("CANCELED");
+        }
+        if (this.selectedOrdersFilter.error) {
+          filterLabels.push("ERROR");
+        }
+        if (this.selectedOrdersFilter.paid) {
+          filterLabels.push("PAID");
+        }
+        if (this.selectedOrdersFilter.partial) {
+          filterLabels.push("PARTIAL");
+        }
+        if (this.selectedOrdersFilter.delivered) {
+          filterLabels.push("DELIVERED");
+        }
+        if (this.selectedOrdersFilter.refunded) {
+          filterLabels.push("REFUNDED");
+        }
+      }
+      this.filterDescriptionLabels = filterLabels;
     },
     showFilters() {
       this.$refs.productOrdersFilter.showFilters();
