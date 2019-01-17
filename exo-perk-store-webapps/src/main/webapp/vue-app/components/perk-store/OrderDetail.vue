@@ -55,7 +55,7 @@
       <v-list-tile>
         <v-list-tile-content>Items:</v-list-tile-content>
         <v-list-tile-content class="align-end">
-          <div>
+          <div class="ellipsis orderDetailText">
             {{ order.quantity }} x 
             <a href="javascript:void(0);" @click="$emit('display-product', product)">
               {{ productTitle }}
@@ -66,7 +66,7 @@
       <v-list-tile>
         <v-list-tile-content>Payment:</v-list-tile-content>
         <v-list-tile-content class="align-end">
-          <div class="no-wrap">
+          <div class="no-wrap ellipsis orderDetailText">
             <v-icon
               v-if="order.transactionStatus === 'SUCCESS'"
               title="Transaction succeeded"
