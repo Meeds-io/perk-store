@@ -31,9 +31,17 @@
     <v-list-tile v-if="!product.enabled">
       <v-list-tile-content><strong class="red--text">Disabled product</strong></v-list-tile-content>
     </v-list-tile>
-    <v-list-tile v-if="product.receiver">
+    <v-list-tile v-if="product.receiverMarchand">
       <v-list-tile-content><strong>Marchand:</strong></v-list-tile-content>
-      <v-list-tile-content class="align-end">{{ product.receiver.displayName }}</v-list-tile-content>
+      <v-list-tile-content class="align-end">
+        <profile-link
+          :id="product.receiverMarchand.id"
+          :space-id="product.receiverMarchand.spaceId"
+          :url-id="product.receiverMarchand.spaceURLId"
+          :type="product.receiverMarchand.type"
+          :display-name="product.receiverMarchand.displayName"
+          display-avatar />
+      </v-list-tile-content>
     </v-list-tile>
     <v-list-tile>
       <v-list-tile-content><strong>Price:</strong></v-list-tile-content>
@@ -59,7 +67,12 @@
 </template>
 
 <script>
+import ProfileLink from '../ProfileLink.vue';
+
 export default {
+  components: {
+    ProfileLink,
+  },
   props: {
     product: {
       type: Object,
