@@ -99,7 +99,7 @@
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
         </v-card-text>
-        <v-card-title class="pt-0 pb-0">
+        <v-card-title class="ellipsis no-wrap pt-0 pb-0">
           <h3 :title="product.title" class="mb-2 primary--text ellipsis">
             <a
               href="javascript:void(0);"
