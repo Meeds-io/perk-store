@@ -1,68 +1,57 @@
 <template>
   <v-list
-    v-if="!product.enabled"
+    class="pt-0 pb-0"
     dense
     transparent>
-    <v-list-tile>
-      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
-    </v-list-tile>
-  </v-list>
-  <v-list
-    v-else-if="!product.unlimited && !available"
-    class="soldOutBlock"
-    dense
-    transparent>
-    <v-list-tile>
+    <v-list-tile v-if="!product.unlimited && !available" class="soldOutBlock white">
       <v-list-tile-content class="align-center"><strong class="red--text"><strong class="red--text">Sold out</strong></strong></v-list-tile-content>
     </v-list-tile>
-  </v-list>
-  <v-list
-    v-else-if="maxOrdersReached"
-    dense
-    transparent>
-    <v-list-tile>
-      <v-list-tile-content class="align-center"><strong class="red--text"><strong class="red--text">You maximum orders has been reached{{ periodicityLabel }}</strong></strong></v-list-tile-content>
-    </v-list-tile>
-  </v-list>
-  <v-list
-    v-else
-    dense
-    transparent>
     <v-list-tile v-if="!product.enabled">
-      <v-list-tile-content><strong class="red--text">Disabled product</strong></v-list-tile-content>
+      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
     </v-list-tile>
-    <v-list-tile v-if="product.receiverMarchand">
-      <v-list-tile-content><strong>Offered By:</strong></v-list-tile-content>
-      <v-list-tile-content class="align-end">
-        <profile-link
-          :id="product.receiverMarchand.id"
-          :space-id="product.receiverMarchand.spaceId"
-          :url-id="product.receiverMarchand.spaceURLId"
-          :type="product.receiverMarchand.type"
-          :display-name="product.receiverMarchand.displayName"
-          display-avatar />
+    <v-list-tile v-if="maxOrdersReached">
+      <v-list-tile-content class="align-center">
+        <strong class="red--text">
+          Maximum {{ product.maxOrdersPerUser }} orders{{ periodicityLabelContext1 }} has been reached
+        </strong>
       </v-list-tile-content>
     </v-list-tile>
-    <v-list-tile>
-      <v-list-tile-content><strong>Price:</strong></v-list-tile-content>
-      <v-list-tile-content class="align-end">{{ product.price }} {{ symbol }}</v-list-tile-content>
-    </v-list-tile>
-    <v-list-tile v-if="!product.unlimited">
-      <v-list-tile-content><strong>Available:</strong></v-list-tile-content>
-      <v-list-tile-content v-if="userData.canEdit" class="align-end">{{ available }} / {{ product.totalSupply }}</v-list-tile-content>
-      <v-list-tile-content v-else class="align-end">{{ available }}</v-list-tile-content>
-    </v-list-tile>
-    <v-list-tile v-if="product.maxOrdersPerUser">
-      <v-list-tile-content><strong>Max orders:</strong></v-list-tile-content>
-      <v-list-tile-content class="align-end">{{ maxOrdersLabel }}</v-list-tile-content>
-    </v-list-tile>
-    <template v-if="userData.purchasedInCurrentPeriod">
-      <v-divider />
-      <v-list-tile>
-        <v-list-tile-content><strong>My orders in current period:</strong></v-list-tile-content>
-        <v-list-tile-content class="align-end">{{ product.userData.purchasedInCurrentPeriod }}</v-list-tile-content>
-      </v-list-tile>
-    </template>
+    <v-expand-transition>
+      <div v-if="hover">
+        <v-list-tile v-if="product.receiverMarchand">
+          <v-list-tile-content><strong>Offered By:</strong></v-list-tile-content>
+          <v-list-tile-content class="align-end">
+            <profile-link
+              :id="product.receiverMarchand.id"
+              :space-id="product.receiverMarchand.spaceId"
+              :url-id="product.receiverMarchand.spaceURLId"
+              :type="product.receiverMarchand.type"
+              :display-name="product.receiverMarchand.displayName"
+              display-avatar />
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile v-if="!product.unlimited">
+          <v-list-tile-content><strong>Available:</strong></v-list-tile-content>
+          <v-list-tile-content v-if="userData.canEdit" class="align-end">{{ available }} / {{ product.totalSupply }}</v-list-tile-content>
+          <v-list-tile-content v-else class="align-end">{{ available }}</v-list-tile-content>
+        </v-list-tile>
+        <template v-if="!maxOrdersReached && product.maxOrdersPerUser">
+          <v-divider />
+          <v-list-tile v-if="product.orderPeriodicity && product.userData.purchasedInCurrentPeriod">
+            <v-list-tile-content><strong>My orders:</strong></v-list-tile-content>
+            <v-list-tile-content class="align-end">{{ product.userData.purchasedInCurrentPeriod }}/{{ product.maxOrdersPerUser }}{{ periodicityLabelContext2 }}</v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile v-else-if="!product.orderPeriodicity && product.userData.totalPurchased">
+            <v-list-tile-content><strong>My orders:</strong></v-list-tile-content>
+            <v-list-tile-content class="align-end">{{ product.userData.totalPurchased }}/{{ product.maxOrdersPerUser }}</v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile v-else>
+            <v-list-tile-content><strong>Max orders:</strong></v-list-tile-content>
+            <v-list-tile-content class="align-end">{{ maxOrdersLabel }}</v-list-tile-content>
+          </v-list-tile>
+        </template>
+      </div>
+    </v-expand-transition>
   </v-list>
 </template>
 
@@ -98,12 +87,25 @@ export default {
         return false;
       },
     },
+    hover: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
   },
   computed: {
     userData() {
       return (this.product && this.product.userData) || {};
     },
-    periodicityLabel() {
+    periodicityLabelContext1() {
+      if(this.product.orderPeriodicity) {
+        return ` per ${this.product.orderPeriodicityLabel}`;
+      } else {
+        return '';
+      }
+    },
+    periodicityLabelContext2() {
       if(this.product.orderPeriodicity) {
         return ` this ${this.product.orderPeriodicityLabel}`;
       } else {

@@ -116,24 +116,25 @@ export default {
         return 0;
       }
     },
-    maxOrderPerUserQuantity() {
-      if(this.product && !this.product.unlimited && this.product.maxOrdersPerUser) {
-        const quantity = this.product.maxOrdersPerUser - ((this.product.userData && this.product.userData.purchasedInCurrentPeriod) || 0);
+    maxOrdersRemaining() {
+      if(this.product && this.product.maxOrdersPerUser && this.product.userData) {
+        const totalPurchased = this.product.orderPeriodicity ? (this.product.userData.purchasedInCurrentPeriod || 0) : (this.product.userData.totalPurchased || 0);
+        const quantity = this.product.maxOrdersPerUser - totalPurchased;
         return quantity > 0 ? quantity : 0;
       }
-      return this.product.unlimited ? 0 : this.available;
+      return (this.product && this.product.unlimited) ? 0 : this.available;
     },
     maxQuantity() {
-      return Math.min(this.available, this.maxOrderPerUserQuantity);
+      return this.product && this.product.unlimited ? this.maxOrdersRemaining : Math.min(this.available, this.maxOrdersRemaining);
     },
     maxOrdersReached() {
-      return this.product && !this.product.unlimited && !this.maxQuantity;
+      return this.product && !this.maxQuantity;
     },
     amountLabel() {
       return `${this.amount || 0} ${this.symbol}`;
     },
     quantityInputLabel() {
-      if(this.product && !this.product.unlimited && !this.maxOrdersReached) {
+      if(this.product && (this.product.maxOrdersPerUser || !this.product.unlimited)) {
         return `Quantity (max: ${this.maxQuantity})`;
       } else {
         return `Quantity`;

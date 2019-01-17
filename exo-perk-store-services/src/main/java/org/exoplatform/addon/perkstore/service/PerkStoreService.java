@@ -571,7 +571,7 @@ public class PerkStoreService implements Startable {
 
     // Retrieve the following fields for not marchand only
     if (product.getReceiverMarchand() != null && !StringUtils.equals(product.getReceiverMarchand().getId(), username)) {
-      userData.setTotalPuchased(perkStoreStorage.countUserTotalPurchasedQuantity(productId, identityId));
+      userData.setTotalPurchased(perkStoreStorage.countUserTotalPurchasedQuantity(productId, identityId));
 
       double purchasedQuantityInPeriod = countPurchasedQuantityInCurrentPeriod(product, identityId);
       userData.setPurchasedInCurrentPeriod(purchasedQuantityInPeriod);

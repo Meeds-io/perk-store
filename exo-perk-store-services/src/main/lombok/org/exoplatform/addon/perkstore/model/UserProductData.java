@@ -16,7 +16,7 @@ public class UserProductData implements Serializable, Cloneable {
 
   private double            purchasedInCurrentPeriod;
 
-  private double            totalPuchased;
+  private double            totalPurchased;
 
   @SuppressWarnings("all")
   public Object clone() {

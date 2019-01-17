@@ -10,16 +10,20 @@
           <v-text-field
             v-model="product.title"
             :rules="requiredRule"
+            :maxlength="200"
             name="ProductTitle"
             label="Product title"
             placeholder="input a product title"
-            required />
+            required
+            counter />
   
           <v-text-field
             v-model="product.illustrationURL"
+            :maxlength="500"
             name="ProductImage"
             label="Product image"
-            placeholder="input the product image URL" />
+            placeholder="input the product image URL"
+            counter />
   
           <v-textarea
             v-model="product.description"

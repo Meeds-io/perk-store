@@ -21,6 +21,7 @@
                 :product="product"
                 :symbol="symbol"
                 :max-orders-reached="maxOrdersReached"
+                :hover="hover || !product.illustrationURL"
                 :available="available" />
             </div>
           </v-expand-transition>
@@ -192,7 +193,7 @@ export default {
       return this.userData && this.product.orderPeriodicity && this.userData.purchasedInCurrentPeriod && this.userData.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser;
     },
     maxOrdersAllTimeReached() {
-      return this.userData && !this.product.orderPeriodicity && this.userData.totalPuchased && this.userData.totalPuchased >= this.product.maxOrdersPerUser;
+      return this.userData && !this.product.orderPeriodicity && this.userData.totalPurchased && this.userData.totalPurchased >= this.product.maxOrdersPerUser;
     },
     maxOrdersReached() {
       return this.product.maxOrdersPerUser && this.userData && (this.maxOrdersCurrentPeriodReached || this.maxOrdersAllTimeReached);
