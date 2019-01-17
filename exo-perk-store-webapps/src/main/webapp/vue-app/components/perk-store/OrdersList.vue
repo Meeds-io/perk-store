@@ -195,7 +195,7 @@ export default {
       if(!selectedOrdersFilter.notProcessed) {
         delete selectedOrdersFilter.notProcessed;
       }
-      if(!selectedOrdersFilter.searchInDates) {
+      if(!selectedOrdersFilter.searchInDates || !selectedOrdersFilter.selectedDate) {
         delete selectedOrdersFilter.searchInDates;
         delete selectedOrdersFilter.selectedDate;
       }
