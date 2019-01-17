@@ -152,7 +152,7 @@
             :product="selectedProduct"
             :selected-order-id="selectedOrderId"
             :orders-filter="ordersFilter"
-            :symbol="settings.symbol"
+            :symbol="symbol"
             @init-wallet="initWalletAPI(true)"
             @display-product="displayProduct($event)"
             @loading="loading = $event"
@@ -170,7 +170,7 @@
             ref="productsList"
             :products="filteredProducts"
             :selected-product="displayProductDetails && selectedProduct"
-            :settings="settings"
+            :symbol="symbol"
             :loading="loading"
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled && walletAddonInstalled"
@@ -182,7 +182,7 @@
           <buy-modal
             ref="buyModal"
             :product="selectedProduct"
-            :symbol="settings.symbol"
+            :symbol="symbol"
             :need-password="walletNeedPassword" />
 
           <settings-modal
@@ -235,6 +235,7 @@ export default {
     search: null,
     ordersFilter: {},
     settings: {},
+    symbol: null,
     userSettings: {},
     createOrUpdateOrderEvent: 'exo.addons.perkstore.order.createOrModify',
     createOrUpdateProductEvent: 'exo.addons.perkstore.product.createOrModify',
@@ -294,6 +295,10 @@ export default {
       return initSettings()
       .then(() => {
         this.settings = window.perkStoreSettings;
+        if(!this.settings) {
+          this.settings = {};
+        }
+        this.settings.symbol = this.symbol = this.settings.symbol || this.symbol;
         this.userSettings = this.settings.userSettings;
         this.ordersFilter = getOrderFilter();
       })
@@ -343,6 +348,7 @@ export default {
       } else {
         this.walletEnabled = true;
         this.walletNeedPassword = result.needPassword;
+        this.settings.symbol = this.symbol = this.symbol || result.symbol;
       }
     },
     closeDetails() {

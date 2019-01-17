@@ -14,7 +14,7 @@
             v-show="!selectedProduct || selectedProduct.id === product.id"
             :key="product.id"
             :product="product"
-            :symbol="settings.symbol"
+            :symbol="symbol"
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled"
             :maximized="selectedProduct && selectedProduct.id === product.id"
@@ -55,10 +55,10 @@ export default {
         return null;
       },
     },
-    settings: {
-      type: Object,
+    symbol: {
+      type: String,
       default: function() {
-        return {};
+        return '';
       },
     },
     loading: {
