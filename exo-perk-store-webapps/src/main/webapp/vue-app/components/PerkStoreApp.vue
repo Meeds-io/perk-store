@@ -188,6 +188,10 @@
           <settings-modal
             ref="settingsModal"
             @saved="init()" />
+
+          <product-notification
+            :products="modifiedProducts"
+            @refresh-list="addNewProductsToList" />
         </v-flex>
       </v-layout>
     </main>
@@ -200,6 +204,7 @@ import ProductsList from './perk-store/ProductsList.vue';
 import OrdersList from './perk-store/OrdersList.vue';
 import ProductForm from './perk-store/ProductForm.vue';
 import BuyModal from './perk-store/BuyModal.vue';
+import ProductNotification from './perk-store/ProductNotification.vue';
 
 import {initSettings, getOrderFilter} from '../js/PerkStoreSettings.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
@@ -211,6 +216,7 @@ export default {
     OrdersList,
     ProductForm,
     BuyModal,
+    ProductNotification,
   },
   data: () => ({
     warning: null,
@@ -230,7 +236,10 @@ export default {
     ordersFilter: {},
     settings: {},
     userSettings: {},
+    createOrUpdateOrderEvent: 'exo.addons.perkstore.order.createOrModify',
+    createOrUpdateProductEvent: 'exo.addons.perkstore.product.createOrModify',
     products: [],
+    modifiedProducts: [],
   }),
   computed: {
     canEditSelectedProduct() {
@@ -256,8 +265,9 @@ export default {
   created() {
     document.addEventListener('exo.perkstore.settings.modified', this.init);
 
-    document.addEventListener('exo.addons.perkstore.product.createOrModify', this.updateProduct);
-    document.addEventListener('exo.addons.perkstore.order.createOrModify', this.updateProduct);
+    document.addEventListener(this.createOrUpdateProductEvent, this.updateProduct);
+
+    document.addEventListener(this.createOrUpdateOrderEvent, this.updateProduct);
 
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
     if(window.walletAddonInstalled) {
@@ -392,19 +402,49 @@ export default {
     updateProduct(event) {
       const wsMessage = event.detail;
       if(wsMessage.product && wsMessage.product.id) {
-        const product = this.products && this.products.find(product => product && product.id === wsMessage.product.id);
+        let product = this.products && this.products.find(product => product && product.id === wsMessage.product.id);
         // Existing product
         if(product && product.id) {
           getProduct(product.id).then(freshProduct => {
             if(freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
               // Additional check for user data target
               Object.assign(product, freshProduct);
+
+              // Add notification to non last modifier
+              /*
+              Disabled to not add notification about product modification
+
+              if(event.type === this.createOrUpdateProductEvent && (product.lastModifier && product.lastModifier.id !== eXo.env.portal.userName) || (!product.lastModifier && product.creator && product.creator.id !== eXo.env.portal.userName)) {
+                this.modifiedProducts.unshift(product);
+              }
+              */
             }
           });
         } else {
-          // New product: do nothing for now
+          product = wsMessage.product;
+
+          // New product added
+          getProduct(product.id).then(freshProduct => {
+            if(freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
+              // Additional check for user data target
+              Object.assign(product, freshProduct);
+
+              // Add notification to non last modifier
+              if(event.type === this.createOrUpdateProductEvent && (product.lastModifier && product.lastModifier.id !== eXo.env.portal.userName) || (!product.lastModifier && product.creator && product.creator.id !== eXo.env.portal.userName)) {
+                this.modifiedProducts.unshift(product);
+              }
+            }
+          });
         }
       }
+    },
+    addNewProductsToList() {
+      this.modifiedProducts.forEach(product => {
+        if (!product.lastModifiedDate && !this.products.find(existingProduct => existingProduct.id === product.id)) {
+          this.products.unshift(product);
+        }
+      });
+      this.modifiedProducts.splice(0, this.modifiedProducts.length);
     },
   }
 };

@@ -48,6 +48,9 @@
           </v-btn>
         </v-flex>
       </v-data-iterator>
+      <order-notification
+        :orders="newAddedOrders"
+        @refresh-list="addNewOrdersToList" />
     </v-container>
   </v-layout>
 </template>
@@ -55,6 +58,7 @@
 <script>
 import OrderDetail from './OrderDetail.vue';
 import OrdersFilter from './OrdersFilter.vue';
+import OrderNotification from './OrderNotification.vue';
 
 import {getOrderList} from '../../js/PerkStoreProductOrder.js';
 
@@ -62,6 +66,7 @@ export default {
   components: {
     OrderDetail,
     OrdersFilter,
+    OrderNotification,
   },
   props: {
     product: {
@@ -95,6 +100,7 @@ export default {
       limit: 12,
       limitReached: false,
       orders: [],
+      newAddedOrders: [],
     };
   },
   computed: {
@@ -159,7 +165,10 @@ export default {
     showFilters() {
       this.$refs.productOrdersFilter.showFilters();
     },
-    updateOrder(order, newOrder) {
+    updateOrder(order, newOrder, orders) {
+      if (!orders) {
+        orders = this.orders;
+      }
       Object.assign(order, newOrder);
       if(order.transactionHash) {
         if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
@@ -186,10 +195,19 @@ export default {
         const order = this.orders.find(order => order && order.id === wsMessage.productorder.id);
         if(order) {
           this.updateOrder(order, wsMessage.productorder);
+          this.updateOrder(order, wsMessage.productorder, this.newAddedOrders);
         } else {
-          // New order: do nothing for now
+          this.newAddedOrders.unshift(wsMessage.productorder);
         }
       }
+    },
+    addNewOrdersToList() {
+      this.newAddedOrders.forEach(order => {
+        if (!this.orders.find(existingOrder => existingOrder.id === order.id)) {
+          this.orders.unshift(order);
+        }
+      });
+      this.newAddedOrders.splice(0, this.newAddedOrders.length);
     },
   },
 }
