@@ -31,6 +31,10 @@
     <v-list-tile v-if="!product.enabled">
       <v-list-tile-content><strong class="red--text">Disabled product</strong></v-list-tile-content>
     </v-list-tile>
+    <v-list-tile v-if="product.receiver">
+      <v-list-tile-content><strong>Marchand:</strong></v-list-tile-content>
+      <v-list-tile-content class="align-end">{{ product.receiver.displayName }}</v-list-tile-content>
+    </v-list-tile>
     <v-list-tile>
       <v-list-tile-content><strong>Price:</strong></v-list-tile-content>
       <v-list-tile-content class="align-end">{{ product.price }} {{ symbol }}</v-list-tile-content>

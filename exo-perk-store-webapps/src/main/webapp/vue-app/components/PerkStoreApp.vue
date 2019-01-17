@@ -253,12 +253,13 @@ export default {
       return this.displayProductForm || this.displayProductOrders || this.displayProductDetails || this.displayMyOrders;
     },
     filteredProducts() {
+      let products = this.products.slice();
       if(this.search && this.search.trim().length) {
         const searchTerm = this.search.trim().toLowerCase();
-        return this.products.slice().filter(product => (product.title && product.title.toLowerCase().indexOf(searchTerm)) >= 0 || (product.description && product.description.toLowerCase().indexOf(searchTerm) >= 0));
-      } else {
-        return this.products.slice();
+        products.slice().filter(product => (product.title && product.title.toLowerCase().indexOf(searchTerm)) >= 0 || (product.description && product.description.toLowerCase().indexOf(searchTerm) >= 0));
       }
+      products = products.filter(product => product.enabled || (product.userData && product.userData.canEdit));
+      return products;
     },
   },
   watch: {
