@@ -5,7 +5,7 @@
     class="elevation-3 productOrderFilter"
     temporary
     width="380">
-    <v-toolbar flat>
+    <v-toolbar flat dense class="productOrderFilterHeader">
       <v-toolbar-title>
         <h3>Filter orders</h3>
       </v-toolbar-title>
@@ -27,7 +27,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-container grid-list-xl class="border-box-sizing pr-1">
+    <v-container grid-list-xl class="border-box-sizing pr-1 productOrderFilterContent">
       <v-layout wrap column>
         <h4><v-checkbox v-model="filter.searchInDates" label="Search in dates" /></h4>
         <template v-if="filter.searchInDates">
