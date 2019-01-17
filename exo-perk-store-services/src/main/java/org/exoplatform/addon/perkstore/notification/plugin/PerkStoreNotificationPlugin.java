@@ -117,7 +117,11 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
       return null;
     } else {
       storeSettingsParameters(globalSettings, notification);
-      storeProductParameters(notification, product, newProduct);
+
+      // This is made to avoid a special case: a product is created and never modified
+      // and it receives orders
+      boolean isNew = newProduct || (order != null && product.getLastModifier() == null);
+      storeProductParameters(notification, product, isNew);
       if (order != null) {
         storeOrderParameters(notification, order, newOrder);
       }

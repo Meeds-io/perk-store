@@ -313,9 +313,9 @@ public class NotificationUtils {
       throw new IllegalStateException("last modifier is null");
     }
 
-    long receiverId = isNew ? product.getCreator().getTechnicalId() : product.getLastModifier().getTechnicalId();
+    long modifierId = isNew ? product.getCreator().getTechnicalId() : product.getLastModifier().getTechnicalId();
     notification.with(STORED_PARAMETER_PRODUCT_ID, String.valueOf(product.getId()))
-                .with(STORED_PARAMETER_SENDER_IDENTITY_ID, String.valueOf(receiverId))
+                .with(STORED_PARAMETER_SENDER_IDENTITY_ID, String.valueOf(modifierId))
                 .with(STORED_PARAMETER_PRODUCT_TITLE, product.getTitle())
                 .with(STORED_PARAMETER_PRODUCT_SUPPLY, stringifyDouble(product.getTotalSupply()))
                 .with(STORED_PARAMETER_PRODUCT_PRICE, stringifyDouble(product.getPrice()))
