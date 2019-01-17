@@ -101,18 +101,12 @@
             v-model="product.allowFraction"
             label="Allow fractioned quantity"
             class="hidden" />
-  
-          <v-text-field
-            v-model.number="product.maxOrdersPerUser"
-            name="ProductMaxOrdersPerUser"
-            label="Maximum orders per user"
-            placeholder="You can limit the number of user orders" />
-  
+
           <v-combobox
             v-model="product.orderPeriodicity"
             :items="periodsValues"
             :return-object="false"
-            label="User order limitation periodicity"
+            label="User orders limitation periodicity"
             placeholder="Periodicity used to limit user orders"
             hide-no-data
             hide-selected
@@ -123,6 +117,12 @@
               {{ orderPeriodicityLabel }}
             </template>
           </v-combobox>
+
+          <v-text-field
+            v-model.number="product.maxOrdersPerUser"
+            :label="maxOrdersPerUserLabel"
+            name="ProductMaxOrdersPerUser"
+            placeholder="You can limit the number of user orders" />
         </v-flex>
       </v-layout>
       <v-card-actions>
@@ -190,6 +190,9 @@ export default {
     };
   },
   computed: {
+    maxOrdersPerUserLabel() {
+      return this.orderPeriodicityLabel ? `Max orders per user per ${this.orderPeriodicityLabel}` : 'Max orders per user'
+    },
     orderPeriodicityLabel() {
       let label = null;
       if(this.product.orderPeriodicity) {
