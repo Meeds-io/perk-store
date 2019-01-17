@@ -556,11 +556,8 @@ public class PerkStoreService implements Startable {
     product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
     product.setPurchased(perkStoreStorage.countOrderedQuantity(productId));
 
-    UserProductData userData = product.getUserData();
-    if (userData == null) {
-      userData = new UserProductData();
-      product.setUserData(userData);
-    }
+    UserProductData userData = new UserProductData();
+    product.setUserData(userData);
 
     userData.setCanEdit(StringUtils.isNotBlank(username) && canEditProduct(product, username));
     userData.setCanOrder(StringUtils.isNotBlank(username) && canViewProduct(product, username, false));
