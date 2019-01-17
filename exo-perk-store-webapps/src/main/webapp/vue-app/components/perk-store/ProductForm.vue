@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form">
+  <v-form ref="form" class="productFormParent">
     <v-container grid-list-xl class="white">
       <v-layout
         wrap
