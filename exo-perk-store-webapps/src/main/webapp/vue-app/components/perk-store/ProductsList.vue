@@ -2,7 +2,7 @@
   <v-card flat class="transparent">
     <v-container
       v-if="products && products.length"
-      class="border-box-sizing"
+      class="border-box-sizing productsListParentContainer"
       fluid
       grid-list-md>
       <v-layout

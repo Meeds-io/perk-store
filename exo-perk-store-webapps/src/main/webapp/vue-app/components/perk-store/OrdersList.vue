@@ -10,7 +10,7 @@
       grid-list-md>
       <v-card
         v-if="displayFilterDetails && filterDescriptionLabels && filterDescriptionLabels.length"
-        class="transparent mb-2 mt-0 pt-0" 
+        class="transparent mb-0 mt-0 pt-0"
         flat>
         <v-card-title class="mt-0 pt-0">
           <v-spacer />
