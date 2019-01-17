@@ -29,8 +29,7 @@
             placeholder="Input a product description"
             class="mt-4"
             rows="5"
-            flat
-            required />
+            flat />
   
           <auto-complete
             ref="receiverMarchandAutocomplete"
