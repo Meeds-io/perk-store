@@ -25,15 +25,6 @@
             </div>
           </v-expand-transition>
         </v-img>
-        <v-tooltip v-if="!product.unlimited" bottom>
-          <v-progress-linear
-            slot="activator"
-            v-model="purchasedPercentage"
-            :open-delay="0"
-            color="red"
-            class="mb-0 mt-0" />
-          <strong>{{ purchasedPercentage }}% articles sold</strong>
-        </v-tooltip>
         <v-card-text
           :class="product.unlimited && 'mt-2'"
           class="pt-2"
@@ -89,20 +80,33 @@
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
         </v-card-text>
-        <v-card-title class="ellipsis no-wrap pt-0 pb-0">
-          <h3 :title="product.title" class="mb-2 primary--text ellipsis">
-            <a
-              href="javascript:void(0);"
-              class="ellipsis"
-              @click="$emit('product-details', product)">
-              {{ product.title }}
-            </a>
-          </h3>
-          <v-spacer />
-          <h3 class="mb-2">
-            {{ product.price }} {{ symbol }}
-          </h3>
-        </v-card-title>
+        <v-tooltip bottom>
+          <v-card-title slot="activator" class="ellipsis no-wrap pt-0 pb-0">
+            <h3 :title="product.title" class="mb-2 primary--text ellipsis">
+              <a
+                href="javascript:void(0);"
+                class="ellipsis"
+                @click="$emit('product-details', product)">
+                {{ product.title }}
+              </a>
+            </h3>
+            <v-spacer />
+            <h3 class="mb-2">
+              {{ product.price }} {{ symbol }}
+            </h3>
+          </v-card-title>
+          <strong v-if="!product.unlimited">{{ purchasedPercentage }}% articles sold</strong>
+          <strong v-else>Unlimited supply</strong>
+        </v-tooltip>
+        <v-tooltip v-if="!product.unlimited" bottom>
+          <v-progress-linear
+            slot="activator"
+            v-model="purchasedPercentage"
+            :open-delay="0"
+            color="red"
+            class="mb-0 mt-0" />
+          <strong>{{ purchasedPercentage }}% articles sold</strong>
+        </v-tooltip>
         <v-card-text class="productCardFooter">
           <div :title="product.description" class="font-weight-light title mb-2 text-xs-center truncate8">
             {{ product.description }}
