@@ -553,7 +553,7 @@ public class PerkStoreService implements Startable {
 
   private void computeProductFields(String username, Product product) throws Exception {
     long productId = product.getId();
-    product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
+
     product.setPurchased(perkStoreStorage.countOrderedQuantity(productId));
 
     UserProductData userData = new UserProductData();
@@ -563,14 +563,24 @@ public class PerkStoreService implements Startable {
     userData.setCanEdit(StringUtils.isNotBlank(username) && canEditProduct(product, username));
     userData.setCanOrder(StringUtils.isNotBlank(username) && canViewProduct(product, username, false));
 
+    long identityId = 0;
+    if (StringUtils.isNotBlank(username)) {
+      Identity currentUserIdentity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
+      identityId = Long.parseLong(currentUserIdentity.getId());
+    }
+
     // Retrieve the following fields for not marchand only
     if (product.getReceiverMarchand() != null && !StringUtils.equals(product.getReceiverMarchand().getId(), username)) {
-      Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
-      long identityId = Long.parseLong(identity.getId());
       userData.setTotalPuchased(perkStoreStorage.countUserTotalPurchasedQuantity(productId, identityId));
 
       double purchasedQuantityInPeriod = countPurchasedQuantityInCurrentPeriod(product, identityId);
       userData.setPurchasedInCurrentPeriod(purchasedQuantityInPeriod);
+    }
+
+    if (userData.isCanEdit()) {
+      product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
+    } else if(identityId > 0) {
+      product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(identityId, productId));
     }
   }
 

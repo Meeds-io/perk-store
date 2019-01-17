@@ -20,9 +20,11 @@ import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Long> {
-  private static final String AND_OPERATOR         = " AND ";
+  private static final String IDENTITY_ID_PARAMETER = "identityId";
 
-  private static final String PRODUCT_ID_PARAMETER = "productId";
+  private static final String AND_OPERATOR          = " AND ";
+
+  private static final String PRODUCT_ID_PARAMETER  = "productId";
 
   @Override
   public void deleteAll() {
@@ -39,16 +41,25 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     throw new UnsupportedOperationException();
   }
 
-  public double countOrderedQuantityByProductId(long id) {
+  public double countOrderedQuantityByProductId(long productId) {
     TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countOrderedQuantityByProductId", Double.class);
-    query.setParameter(PRODUCT_ID_PARAMETER, id);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
     Double result = query.getSingleResult();
     return result == null ? 0 : result;
   }
 
-  public long countRemainingOrdersToProcessByProductId(long id) {
+  public long countRemainingOrdersToProcessByProductId(long productId) {
     TypedQuery<Long> query = getEntityManager().createNamedQuery("Order.countRemainingOrdersByProductId", Long.class);
-    query.setParameter(PRODUCT_ID_PARAMETER, id);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    Long result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+
+  public long countRemainingOrdersByIdentityIdAndProductId(long identityId, long productId) {
+    TypedQuery<Long> query =
+                           getEntityManager().createNamedQuery("Order.countRemainingOrdersByIdentityIdAndProductId", Long.class);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    query.setParameter(IDENTITY_ID_PARAMETER, identityId);
     Long result = query.getSingleResult();
     return result == null ? 0 : result;
   }
@@ -56,7 +67,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
   public double countUserTotalPurchasedQuantity(long productId, long identityId) {
     TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countUserTotalPurchasedQuantity", Double.class);
     query.setParameter(PRODUCT_ID_PARAMETER, productId);
-    query.setParameter("identityId", identityId);
+    query.setParameter(IDENTITY_ID_PARAMETER, identityId);
     Double result = query.getSingleResult();
     return result == null ? 0 : result;
   }
@@ -64,7 +75,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
   public double countUserPurchasedQuantityInPeriod(long productId, long identityId, long startDate, long endDate) {
     TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countUserPurchasedQuantityInPeriod", Double.class);
     query.setParameter(PRODUCT_ID_PARAMETER, productId);
-    query.setParameter("identityId", identityId);
+    query.setParameter(IDENTITY_ID_PARAMETER, identityId);
     query.setParameter("from", startDate);
     query.setParameter("to", endDate);
     Double result = query.getSingleResult();

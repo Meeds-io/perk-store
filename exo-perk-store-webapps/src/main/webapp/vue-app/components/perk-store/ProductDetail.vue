@@ -36,7 +36,6 @@
           class="pt-2"
           style="position: relative;">
           <v-btn
-            v-if="userData.canEdit"
             :class="ordersListBtnClass"
             title="Orders list"
             absolute
@@ -47,30 +46,18 @@
             top
             @click="$emit('orders-list', product)">
             <v-badge
-              color="red"
+              :color="userData.canEdit ? 'red' : 'orange'"
               right
               overlap>
               <span
-                v-if="userData.canEdit && product.notProcessedOrders"
+                v-if="product.notProcessedOrders"
                 slot="badge"
                 class="orderListBadge">
                 {{ product.notProcessedOrders }}
               </span>
-              <v-icon>fa-list-ul</v-icon>
+              <v-icon v-if="userData.canEdit">fa-list-ul</v-icon>
+              <v-icon v-else>fa-file-invoice-dollar</v-icon>
             </v-badge>
-          </v-btn>
-          <v-btn
-            v-else
-            :class="ordersListBtnClass"
-            title="My orders"
-            absolute
-            color="secondary"
-            class="white--text myOrderButton"
-            fab
-            right
-            top
-            @click="$emit('orders-list', product)">
-            <v-icon>fa-file-invoice-dollar</v-icon>
           </v-btn>
           <v-btn
             v-if="userData.canEdit"

@@ -83,6 +83,13 @@ public class PerkStoreStorage {
     return orderDAO.countRemainingOrdersToProcessByProductId(id);
   }
 
+  public long countRemainingOrdersToProcess(long identityId, long productId) {
+    if (identityId == 0 || productId == 0) {
+      return 0;
+    }
+    return orderDAO.countRemainingOrdersByIdentityIdAndProductId(identityId, productId);
+  }
+
   public double countUserTotalPurchasedQuantity(long productId, long identityId) {
     if (productId == 0) {
       return 0;
@@ -140,7 +147,7 @@ public class PerkStoreStorage {
     ProductOrderEntity orderEntity = orderDAO.findOrderByTransactionHash(hash);
     return orderEntity == null ? null : fromEntity(orderEntity);
   }
-  
+
   public ProductOrder findOrderByRefundTransactionHash(String hash) {
     ProductOrderEntity orderEntity = orderDAO.findOrderByRefundTransactionHash(hash);
     return orderEntity == null ? null : fromEntity(orderEntity);
