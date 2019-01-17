@@ -24,12 +24,14 @@
           <v-textarea
             v-model="product.description"
             :rules="requiredRule"
+            :maxlength="maxTextAreaSize"
             name="ProductDescription"
             label="Product description"
             placeholder="Input a product description"
             class="mt-4"
             rows="5"
-            flat />
+            flat
+            counter />
   
           <auto-complete
             ref="receiverMarchandAutocomplete"
@@ -163,6 +165,7 @@ export default {
     return {
       orderPeriodicity: null,
       requiredRule: [(v) => !!v || 'Required field'],
+      maxTextAreaSize: 2000,
       periodsValues: ['Week', 'Month', 'Quarter', 'Semester', 'Year'],
       periods: [
         {
