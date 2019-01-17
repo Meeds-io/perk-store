@@ -3,6 +3,7 @@
     v-show="display"
     v-model="display"
     class="elevation-3 productOrderFilter"
+    temporary
     width="380">
     <v-toolbar flat>
       <v-toolbar-title>
