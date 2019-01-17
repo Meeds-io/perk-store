@@ -99,7 +99,8 @@
 
           <v-checkbox
             v-model="product.allowFraction"
-            label="Allow fractioned quantity" />
+            label="Allow fractioned quantity"
+            class="hidden" />
   
           <v-text-field
             v-model.number="product.maxOrdersPerUser"
