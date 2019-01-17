@@ -308,6 +308,7 @@ public class NotificationUtils {
     if (product.getCreator() == null || product.getCreator().getTechnicalId() == 0) {
       throw new IllegalStateException("creator is null");
     }
+
     if (!isNew && (product.getLastModifier() == null || product.getLastModifier().getTechnicalId() == 0)) {
       throw new IllegalStateException("last modifier is null");
     }

@@ -60,7 +60,7 @@
             </v-btn>
             <template v-else>
               <input
-                v-if="filteredProducts && filteredProducts.length"
+                v-if="products && products.length"
                 v-model="search"
                 placeholder="Search in products"
                 type="text"
