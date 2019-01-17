@@ -25,12 +25,14 @@
             </div>
           </v-expand-transition>
         </v-img>
-        <v-progress-linear
-          v-if="!product.unlimited"
-          v-model="purchasedPercentage"
-          :title="`${purchasedPercentage}% articles sold`"
-          color="red"
-          class="mb-0 mt-0" />
+        <v-tooltip v-if="!product.unlimited" bottom>
+          <v-progress-linear
+            slot="activator"
+            v-model="purchasedPercentage"
+            color="red"
+            class="mb-0 mt-0" />
+          <strong>{{ purchasedPercentage }}% articles sold</strong>
+        </v-tooltip>
         <v-card-text
           :class="product.unlimited && 'mt-2'"
           class="pt-2"
