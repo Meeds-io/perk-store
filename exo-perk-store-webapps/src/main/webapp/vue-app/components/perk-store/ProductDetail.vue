@@ -39,7 +39,7 @@
           style="position: relative;">
           <v-btn
             :class="ordersListBtnClass"
-            title="Orders list"
+            :title="userData.canEdit ? 'Orders list' : 'My orders'"
             absolute
             color="secondary"
             class="white--text orderListButton"
