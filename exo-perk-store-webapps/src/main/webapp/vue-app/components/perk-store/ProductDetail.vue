@@ -29,6 +29,7 @@
           <v-progress-linear
             slot="activator"
             v-model="purchasedPercentage"
+            :open-delay="0"
             color="red"
             class="mb-0 mt-0" />
           <strong>{{ purchasedPercentage }}% articles sold</strong>

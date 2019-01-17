@@ -579,7 +579,7 @@ public class PerkStoreService implements Startable {
 
     if (userData.isCanEdit()) {
       product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
-    } else if(identityId > 0) {
+    } else if (identityId > 0) {
       product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(identityId, productId));
     }
   }
@@ -722,8 +722,8 @@ public class PerkStoreService implements Startable {
       return true;
     }
 
-    return hasPermission(username, globalSettings.getProductCreationPermissions())
-        && hasPermission(username, globalSettings.getAccessPermissions());
+    return isUserAdmin(username) || (hasPermission(username, globalSettings.getProductCreationPermissions())
+        && hasPermission(username, globalSettings.getAccessPermissions()));
   }
 
   private boolean canEditProduct(long productId, String username) throws Exception {
@@ -748,6 +748,10 @@ public class PerkStoreService implements Startable {
 
     if (product.getId() == 0) {
       return canAddProduct(username);
+    }
+
+    if (isUserAdmin(username)) {
+      return true;
     }
 
     Profile creator = product.getCreator();

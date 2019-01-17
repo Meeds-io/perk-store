@@ -32,7 +32,7 @@
       <v-list-tile-content><strong class="red--text">Disabled product</strong></v-list-tile-content>
     </v-list-tile>
     <v-list-tile v-if="product.receiverMarchand">
-      <v-list-tile-content><strong>Marchand:</strong></v-list-tile-content>
+      <v-list-tile-content><strong>Offered By:</strong></v-list-tile-content>
       <v-list-tile-content class="align-end">
         <profile-link
           :id="product.receiverMarchand.id"
