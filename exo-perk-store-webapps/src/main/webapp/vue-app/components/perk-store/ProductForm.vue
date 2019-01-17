@@ -88,7 +88,7 @@
           <v-text-field
             v-if="!product.unlimited"
             v-model.number="product.totalSupply"
-            :rules="requiredRule"
+            :rules="requiredIntegerRule"
             name="ProductTotalSupply"
             label="Total supply"
             placeholder="input the product total supply"
@@ -96,7 +96,7 @@
 
           <v-text-field
             v-model.number="product.price"
-            :rules="requiredRule"
+            :rules="requiredNumberRule"
             name="ProductPrice"
             label="Price"
             placeholder="input the product price"
@@ -125,6 +125,7 @@
 
           <v-text-field
             v-model.number="product.maxOrdersPerUser"
+            :rules="integerRule"
             :label="maxOrdersPerUserLabel"
             name="ProductMaxOrdersPerUser"
             placeholder="You can limit the number of user orders" />
@@ -169,6 +170,17 @@ export default {
     return {
       orderPeriodicity: null,
       requiredRule: [(v) => !!v || 'Required field'],
+      integerRule: [
+        (v) => this.isPositiveNumber(v, true) || 'Invalid positive integer',
+      ],
+      requiredIntegerRule: [
+        (v) => !!v || 'Required field',
+        (v) => this.isPositiveNumber(v, true) || 'Invalid positive integer',
+      ],
+      requiredNumberRule: [
+        (v) => !!v || 'Required field',
+        (v) => this.isPositiveNumber(v) || 'Invalid positive number',
+      ],
       maxTextAreaSize: 2000,
       periodsValues: ['Week', 'Month', 'Quarter', 'Semester', 'Year'],
       periods: [
@@ -257,6 +269,9 @@ export default {
       } else if(this.product.accessPermissions.length) {
         this.product.accessPermissions = [];
       }
+    },
+    isPositiveNumber(value, isInt) {
+      return value && !isNaN(value) && value > 0 && Number.isFinite(value) && (!isInt || Number.isInteger(value));
     },
     saveProduct(event) {
       event.preventDefault();
