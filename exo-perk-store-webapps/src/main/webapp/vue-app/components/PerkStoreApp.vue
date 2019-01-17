@@ -389,9 +389,15 @@ export default {
       return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
     },
     displayProduct(product) {
-      this.closeDetails();
-      this.displayProductDetails = true;
-      this.selectedProduct = Object.assign({}, product);
+      if (product && !product.id) {
+        // It's may be about product id and not the object
+        product = this.products.find(existingProduct => existingProduct.id === product);
+      }
+      if(product) {
+        this.closeDetails();
+        this.displayProductDetails = true;
+        this.selectedProduct = Object.assign({}, product);
+      }
     },
     showFilters() {
       if(this.$refs.ordersList) {

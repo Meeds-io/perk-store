@@ -149,7 +149,7 @@ export default {
 
       return saveOrderStatus({
         id: this.order.id,
-        productId: this.product.id,
+        productId: this.order.productId,
         deliveredQuantity: Number(this.quantity),
       }, 'DELIVERED_QUANTITY')
         .then((order) => {

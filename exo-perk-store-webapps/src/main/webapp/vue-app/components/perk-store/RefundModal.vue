@@ -212,7 +212,7 @@ export default {
       if(this.dialog && this.loading) {
         return saveOrderStatus({
           id: this.order.id,
-          productId: this.product.id,
+          productId: this.order.productId,
           refundTransactionHash: pendingTransaction.hash,
           refundedQuantity: Number(this.quantity),
           refundedAmount: Number(this.amount),
