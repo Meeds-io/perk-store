@@ -36,8 +36,8 @@
           <auto-complete
             ref="receiverMarchandAutocomplete"
             :rules="requiredRule"
-            input-label="Receiver account"
-            input-placeholder="Select the marchand receiver"
+            input-label="Funds receiver account"
+            input-placeholder="Select the wallet of marchand"
             no-data-label="Search for a user or a space"
             big-field
             required
