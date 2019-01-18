@@ -171,15 +171,15 @@ export default {
       orderPeriodicity: null,
       requiredRule: [(v) => !!v || 'Required field'],
       integerRule: [
-        (v) => this.isPositiveNumber(v, true) || 'Invalid positive integer',
+        (v) => !v || this.isPositiveNumber(v, true) || 'Invalid positive integer',
       ],
       requiredIntegerRule: [
         (v) => !!v || 'Required field',
-        (v) => this.isPositiveNumber(v, true) || 'Invalid positive integer',
+        (v) => !v || this.isPositiveNumber(v, true) || 'Invalid positive integer',
       ],
       requiredNumberRule: [
         (v) => !!v || 'Required field',
-        (v) => this.isPositiveNumber(v) || 'Invalid positive number',
+        (v) => !v || this.isPositiveNumber(v) || 'Invalid positive number',
       ],
       maxTextAreaSize: 2000,
       periodsValues: ['Week', 'Month', 'Quarter', 'Semester', 'Year'],
