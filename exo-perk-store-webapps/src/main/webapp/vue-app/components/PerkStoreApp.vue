@@ -115,14 +115,14 @@
           </v-toolbar>
 
           <v-toolbar
-            v-if="!selectedProduct && !loading && !walletLoading && warning"
+            v-if="!selectedProduct && !loading && !walletLoading && walletWarning"
             color="transparent"
             flat>
             <v-spacer />
             <v-flex class="text-xs-center">
               <div class="alert alert-warning">
                 <i class="uiIconWarning"></i>
-                {{ warning }}
+                {{ walletWarning }}
               </div>
             </v-flex>
             <v-spacer />
@@ -219,7 +219,7 @@ export default {
     ProductNotification,
   },
   data: () => ({
-    warning: null,
+    walletWarning: null,
     error: null,
     walletAddonInstalled: false,
     walletLoading: false,
@@ -275,6 +275,7 @@ export default {
     document.addEventListener(this.createOrUpdateOrderEvent, this.updateProduct);
 
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
+    document.addEventListener('exo-wallet-init-loading', this.walletIsLoading);
     if(window.walletAddonInstalled) {
       this.initWalletAPI();
     } else {
@@ -330,29 +331,32 @@ export default {
           if(window.walletAddonInstalled) {
             this.initWalletAPI();
           } else {
-            this.warning = 'Ethereum wallet addon isn\'t installed, thus no payment is possible.';
+            this.walletWarning = 'Ethereum wallet addon isn\'t installed, thus no payment is possible.';
           }
         }, 2000);
         this.loading = false;
       });
     },
+    walletIsLoading() {
+      this.walletAddonInstalled = true;
+      this.walletLoading = true;
+      this.walletWarning = null;
+    },
     initWalletAPI(forceReload) {
       if(forceReload || (!this.walletAddonInstalled && window.walletAddonInstalled)) {
-        this.walletAddonInstalled = true;
-        this.walletLoading = true;
         document.dispatchEvent(new CustomEvent('exo-wallet-init'));
       }
     },
     walletInitialized(event) {
       this.walletLoading = false;
       const result = event && event.detail;
+      this.settings.symbol = this.symbol = this.symbol || (result && result.symbol) || '';
       if(!result || result.error) {
-        this.warning = `${result && result.error ? (`${  result.error}`) : 'Wallet seems not configured properly'}`;
+        this.walletWarning = `${result && result.error ? (`${  result.error}`) : 'Wallet seems not configured properly'}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
         this.walletNeedPassword = result.needPassword;
-        this.settings.symbol = this.symbol = this.symbol || result.symbol;
       }
     },
     closeDetails() {

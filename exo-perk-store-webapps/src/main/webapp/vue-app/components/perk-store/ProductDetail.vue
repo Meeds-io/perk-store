@@ -72,7 +72,7 @@
             title="Buy"
             absolute
             class="white--text primary"
-            :disabled="disabledBuy || !walletEnabled"
+            :disabled="disabledBuy || !walletEnabled || walletLoading"
             :loading="!disabledBuy && walletLoading"
             fab
             right

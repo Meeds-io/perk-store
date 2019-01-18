@@ -60,7 +60,10 @@
           <v-list-tile-content class="align-end">
             <div class="ellipsis orderDetailText">
               {{ order.quantity }} x 
-              <a :title="productTitle" href="javascript:void(0);" @click="$emit('display-product', order.productId)">
+              <a
+                :title="productTitle"
+                href="javascript:void(0);"
+                @click="$emit('display-product', order.productId)">
                 {{ productTitle }}
               </a>
             </div>
