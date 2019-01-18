@@ -1,17 +1,17 @@
 <template>
   <v-snackbar
     v-model="snackbar"
-    :timeout="10000"
-    class="orderNotificationParent"
+    :timeout="12000000"
+    class="notificationParent"
     color="black">
     <v-card
       flat
       dark
       class="transparent">
-      <template v-for="order in orders">
+      <template v-for="order in filteredOrders">
         <v-card-text
           :key="order.id"
-          class="ellipsis orderNotificationContent"
+          class="ellipsis notificationContent"
           dark>
           New order #{{ order.id }} from {{ order.sender.displayName }}
         </v-card-text>
@@ -55,21 +55,27 @@ export default {
   data () {
     return {
       snackbar: false,
+      snackbarDisplayed: [],
     }
   },
   computed: {
     displayDivider() {
       return this.orders && this.orders.length > 1;
     },
+    filteredOrders() {
+      return this.orders.filter(order => this.snackbarDisplayed.indexOf(order.id) < 0).slice(0, Math.min(3, this.orders.length));
+    },
   },
   watch: {
     snackbar() {
       if(!this.snackbar) {
-        this.orders.splice(0, this.orders.length);
+        this.orders.forEach(order => this.snackbarDisplayed.push(order.id));
       }
     },
     orders() {
-      this.snackbar = this.orders && this.orders.length;
+      console.log("this.filteredOrders", this.filteredOrders);
+      this.snackbar = !!this.orders.filter(order => this.snackbarDisplayed.indexOf(order.id) < 0).length;
+      console.log("this.snackbar", this.snackbar);
     },
   },
   methods: {
@@ -77,7 +83,7 @@ export default {
       this.$emit('refresh-list');
     },
     close() {
-      this.orders.splice(0, this.orders.length);
+      this.snackbar = false;
     }
   },
 }

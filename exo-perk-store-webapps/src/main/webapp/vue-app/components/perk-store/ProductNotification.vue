@@ -2,16 +2,16 @@
   <v-snackbar
     v-model="snackbar"
     :timeout="10000"
-    class="productNotificationParent"
+    class="notificationParent"
     color="black">
     <v-card
       flat
       dark
       class="transparent">
-      <template v-for="product in products">
+      <template v-for="product in filteredProducts">
         <v-card-text
           :key="product.id"
-          class="ellipsis productNotificationContent"
+          class="ellipsis notificationContent"
           dark>
           <template v-if="product.lastModifiedDate">
             Product modified: {{ product.title }}
@@ -60,6 +60,7 @@ export default {
   data () {
     return {
       snackbar: false,
+      snackbarDisplayed: [],
     }
   },
   computed: {
@@ -69,15 +70,18 @@ export default {
     hasNewProducts() {
       return this.products && this.products.find(product => !product.lastModifiedDate);
     },
+    filteredProducts() {
+      return this.products.filter(product => this.snackbarDisplayed.indexOf(product.id) < 0).slice(0, Math.min(3, this.products.length));
+    },
   },
   watch: {
     snackbar() {
       if(!this.snackbar) {
-        this.products.splice(0, this.products.length);
+        this.products.forEach(product => this.snackbarDisplayed.push(product.id));
       }
     },
     products() {
-      this.snackbar = this.products && this.products.length;
+      this.snackbar = this.products.filter(product => this.snackbarDisplayed.indexOf(product.id) < 0).length;
     },
   },
   methods: {
@@ -85,7 +89,7 @@ export default {
       this.$emit('refresh-list');
     },
     close() {
-      this.products.splice(0, this.products.length);
+      this.snackbar = false;
     }
   },
 }

@@ -64,7 +64,7 @@ public class PerkStoreStorage {
   }
 
   public List<Product> getAllProducts() {
-    List<ProductEntity> productEntities = productDAO.findAll();
+    List<ProductEntity> productEntities = productDAO.getAllProducts();
     // Used to enable cache usage
     return productEntities.stream().map(productEntity -> getProductById(productEntity.getId())).collect(Collectors.toList());
   }

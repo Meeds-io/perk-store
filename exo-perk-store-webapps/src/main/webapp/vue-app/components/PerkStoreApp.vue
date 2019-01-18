@@ -449,7 +449,7 @@ export default {
               Object.assign(product, freshProduct);
 
               // Add notification to non last modifier
-              if(event.type === this.createOrUpdateProductEvent && (product.lastModifier && product.lastModifier.id !== eXo.env.portal.userName) || (!product.lastModifier && product.creator && product.creator.id !== eXo.env.portal.userName)) {
+              if(event.type === this.createOrUpdateProductEvent && !this.modifiedProducts.find(modifiedProduct => modifiedProduct.id === product.id) && (product.lastModifier && product.lastModifier.id !== eXo.env.portal.userName) || (!product.lastModifier && product.creator && product.creator.id !== eXo.env.portal.userName)) {
                 this.modifiedProducts.unshift(product);
               }
             }
@@ -458,7 +458,7 @@ export default {
       }
     },
     addNewProductsToList() {
-      this.modifiedProducts.forEach(product => {
+      this.modifiedProducts.reverse().forEach(product => {
         if (!product.lastModifiedDate && !this.products.find(existingProduct => existingProduct.id === product.id)) {
           this.products.unshift(product);
         }

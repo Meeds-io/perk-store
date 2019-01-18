@@ -283,13 +283,13 @@ export default {
         if(order) {
           this.updateOrder(order, wsMessage.productorder);
           this.updateOrder(order, wsMessage.productorder, this.newAddedOrders);
-        } else {
+        } else if(!this.newAddedOrders.find(order => order.id === wsMessage.productorder.id)) {
           this.newAddedOrders.unshift(wsMessage.productorder);
         }
       }
     },
     addNewOrdersToList() {
-      this.newAddedOrders.forEach(order => {
+      this.newAddedOrders.reverse().forEach(order => {
         if (!this.orders.find(existingOrder => existingOrder.id === order.id)) {
           this.orders.unshift(order);
         }

@@ -23,6 +23,9 @@ public class WebSocketProductListener extends Listener<Product, Boolean> {
   public void onEvent(Event<Product, Boolean> event) throws Exception {
     Product product = event.getSource();
 
+    if (!product.isEnabled()) {
+      return;
+    }
     GlobalSettings globalSettings = getPerkStoreService().getGlobalSettings();
 
     Set<String> recipientUsers = new HashSet<>();

@@ -115,7 +115,7 @@ export default {
   },
   computed: {
     disablePayButton() {
-      return this.maxOrdersReached || !this.product || !this.quantity || !this.isPositiveNumber(this.quantity) || (!this.product.unlimited && this.quantity > this.maxQuantity);
+      return !this.product || !this.quantity || (this.maxOrdersReached && !this.product.unlimited) || !this.isPositiveNumber(this.quantity) || (!this.product.unlimited && this.quantity > this.maxQuantity);
     },
     amount() {
       return (this.quantity && this.product && this.product.price && (this.product.price * this.quantity)) || 0;
