@@ -6,7 +6,10 @@
     temporary
     absolute
     width="380">
-    <v-toolbar flat dense class="productOrderFilterHeader">
+    <v-toolbar
+      flat
+      dense
+      class="productOrderFilterHeader">
       <v-toolbar-title>
         <h3>Filter orders</h3>
       </v-toolbar-title>

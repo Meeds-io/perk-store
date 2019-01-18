@@ -1,5 +1,5 @@
 <template>
-  <v-hover v-if="order">
+  <v-hover v-if="order" class="orderDetailParent">
     <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 3}`">
       <v-card-title v-if="order.sender" class="pt-1 pb-1">
         <h4>
@@ -50,7 +50,9 @@
         <v-list-tile>
           <v-list-tile-content>Date:</v-list-tile-content>
           <v-list-tile-content class="align-end">
-            {{ createdDateLabel }}
+            <div :title="createdDateLabel" class="orderCreatedDate ellipsis">
+              {{ createdDateLabel }}
+            </div>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile>
@@ -58,7 +60,7 @@
           <v-list-tile-content class="align-end">
             <div class="ellipsis orderDetailText">
               {{ order.quantity }} x 
-              <a href="javascript:void(0);" @click="$emit('display-product', order.productId)">
+              <a :title="productTitle" href="javascript:void(0);" @click="$emit('display-product', order.productId)">
                 {{ productTitle }}
               </a>
             </div>
@@ -110,11 +112,11 @@
   
       <v-divider />
   
-      <v-list dense class="orderProcessingContent">
-        <v-list-tile>
+      <v-list dense class="orderProcessingDetails">
+        <v-list-tile class="orderProcessingContent">
           <v-list-tile-content>Processing:</v-list-tile-content>
-          <v-list-tile-content class="align-end">
-            <div class="no-wrap">
+          <v-list-tile-content class="align-end orderProcessingActions">
+            <div>
               <div v-if="!order.remainingQuantityToProcess || isError">
                 <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>DONE
               </div>
@@ -132,7 +134,7 @@
                   @closed="refundDialogClosed" />
                 <button
                   v-if="isOrdered"
-                  class="btn orderProcessingBtn mr-1"
+                  class="btn orderProcessingBtn"
                   @click="cancelOrder">
                   Cancel
                 </button>
@@ -146,9 +148,9 @@
             </div>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-content>
-            <div>
+        <v-list-tile class="mt-1">
+          <v-list-tile-content class="orderDeliveredLabel">
+            <div class="no-wrap">
               Delivered:
               <v-progress-circular
                 :rotate="360"
@@ -164,11 +166,13 @@
             </div>
           </v-list-tile-content>
           <v-list-tile-content v-if="order.deliveredDate" class="align-end">
-            {{ deliveredDateLabel }}
+            <div :title="deliveredDateLabel" class="orderDeliveredDate ellipsis">
+              {{ deliveredDateLabel }}
+            </div>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile v-if="order.refundedAmount && order.refundTransactionHash">
-          <v-list-tile-content>
+        <v-list-tile v-if="order.refundedAmount && order.refundTransactionHash" class="mt-1">
+          <v-list-tile-content class="orderRefundedLabel">
             <div class="no-wrap">
               Refunded:
               <v-icon
@@ -205,7 +209,9 @@
             </div>
           </v-list-tile-content>
           <v-list-tile-content v-if="order.refundedDate" class="align-end">
-            {{ refundedDateLabel }}
+            <div :title="refundedDateLabel" class="orderRefundedDate ellipsis">
+              {{ refundedDateLabel }}
+            </div>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>

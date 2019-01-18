@@ -39,6 +39,9 @@
     flex-wrap: nowrap;
   }
 
+  .ellipsis {
+    max-width: 100%;
+  }
   select.small, input.small {
     width: auto;
     height: 32px;
@@ -220,9 +223,6 @@
     transform: rotate(45deg);
     width: 150px;
   }
-  .orderDetailText {
-    max-width: 180px;
-  }
   .productNotificationParent {
     .v-snack__content {
       height: auto;
@@ -295,43 +295,66 @@
     padding: 20px 6px 20px 12px;
   }
 
-  .orderQuantityBadgeParent {
-    flex-direction: row;
-    align-items: center;
-    flex: 0 1 auto;
-  }
-
-  .orderQuantityBadge {
-    border-radius: 100%;
-    min-width: 22px;
-    min-height: 22px;
-    text-align: center;
-    line-height: 23px;
-    box-sizing: border-box;
-
-    &.red {
-      background: #f44336;
-      color: #fff;
-      margin-right: 4px;
+  .orderDetailParent {
+    .v-list__tile__content {
+      max-width: 50%; 
     }
-
-    &.green {
-      background: #018601;
-      color: #fff;
-      margin-right: 4px;
+    .orderQuantityBadgeParent {
+      flex-direction: row;
+      align-items: center;
+      flex: 0 1 auto;
     }
-  }
+    .orderDeliveredLabel {
+      min-width: 110px;
+    }
+    .orderRefundedLabel {
+      min-width: 135px;
+    }
+    .orderProcessingContent {
+      .v-list__tile {
+        height: fit-content;
+      }
+      .orderProcessingActions {
+        height: fit-content;
+        width: fit-content;
+        min-width: auto;
+        max-width: none;
 
-  .orderProcessingContent {
-    background: #e3ecf6;
-    min-height: 140px;
-    max-height: 140px;
-  }
+        > div {
+          text-align: right;
+        }
+      }
+    }
+    .orderQuantityBadge {
+      border-radius: 100%;
+      min-width: 22px;
+      min-height: 22px;
+      text-align: center;
+      line-height: 23px;
+      box-sizing: border-box;
 
-  .orderProcessingBtn {
-    height: 30px;
-    line-height: 30px;
-    padding: 0 17px;
+      &.red {
+        background: #f44336;
+        color: #fff;
+        margin-right: 4px;
+      }
+
+      &.green {
+        background: #018601;
+        color: #fff;
+        margin-right: 4px;
+      }
+    }
+    .orderProcessingDetails {
+      background: #e3ecf6;
+      min-height: 140px;
+      max-height: 140px;
+    }
+    .orderProcessingBtn {
+      height: 30px;
+      line-height: 30px;
+      padding: 0 17px;
+    }
   }
 }
 

@@ -11,8 +11,8 @@
     <button
       slot="activator"
       :disabled="!walletAddonInstalled"
-      class="btn orderProcessingBtn mr-1">
-      {{ refundButtonLabel }}
+      class="btn orderProcessingBtn ml-1">
+      Refund
     </button>
 
     <v-card class="elevation-12">
@@ -140,9 +140,6 @@ export default {
     },
     productTitle() {
       return (this.product && this.product.title)  || (this.order.productTitle) || '';
-    },
-    refundButtonLabel() {
-      return this.order.deliveredQuantity > 0 || this.order.refundedQuantity > 0 ? 'Refund' : 'Refund all';
     },
   },
   watch: {

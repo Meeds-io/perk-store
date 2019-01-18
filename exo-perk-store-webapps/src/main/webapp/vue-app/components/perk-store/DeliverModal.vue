@@ -7,7 +7,7 @@
     max-width="100vw"
     persistent
     @keydown.esc="dialog = false">
-    <button slot="activator" class="btn btn-primary orderProcessingBtn mr-1">Deliver</button>
+    <button slot="activator" class="btn btn-primary orderProcessingBtn ml-1">Deliver</button>
 
     <v-card class="elevation-12">
       <div class="popupHeader ClearFix">
