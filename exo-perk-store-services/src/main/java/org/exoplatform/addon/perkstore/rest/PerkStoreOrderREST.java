@@ -75,11 +75,12 @@ public class PerkStoreOrderREST implements ResourceContainer {
       LOG.warn("Bad request sent to server with empty filter");
       return Response.status(400).build();
     }
+    String currentUserId = getCurrentUserId();
     try {
-      List<ProductOrder> orders = perkStoreService.getOrders(filter, getCurrentUserId());
+      List<ProductOrder> orders = perkStoreService.getOrders(filter, currentUserId);
       return Response.ok(orders).build();
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error listing orders");
+      return computeErrorResponse(LOG, e, "Listing orders", currentUserId, filter);
     } catch (Exception e) {
       LOG.error("Error listing orders", e);
       return Response.status(500).build();
@@ -101,11 +102,12 @@ public class PerkStoreOrderREST implements ResourceContainer {
       LOG.warn("Bad request sent to server with empty order to create");
       return Response.status(400).build();
     }
+    String currentUserId = getCurrentUserId();
     try {
-      perkStoreService.createOrder(order, getCurrentUserId());
+      perkStoreService.createOrder(order, currentUserId);
       return Response.ok().build();
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error creating new order");
+      return computeErrorResponse(LOG, e, "Creating new order", currentUserId, order);
     } catch (Exception e) {
       LOG.error("Error creating order", e);
       return Response.status(500).build();
@@ -127,12 +129,13 @@ public class PerkStoreOrderREST implements ResourceContainer {
       LOG.warn("Bad request sent to server with empty order");
       return Response.status(400).build();
     }
+    String currentUserId = getCurrentUserId();
     try {
       order.setTransactionHash(FAKE_TRANSACTION_HASH);
-      perkStoreService.checkCanOrder(order, getCurrentUserId());
+      perkStoreService.checkCanCreateOrder(order, currentUserId);
       return Response.ok().build();
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error simulating order save");
+      return computeErrorResponse(LOG, e, "Simulating order creation", currentUserId, order);
     } catch (Exception e) {
       LOG.error("Error simulating order save", e);
       return Response.status(500).build();
@@ -164,11 +167,12 @@ public class PerkStoreOrderREST implements ResourceContainer {
       LOG.warn("Bad request sent to server with denied order modification type");
       return Response.status(403).build();
     }
+    String currentUserId = getCurrentUserId();
     try {
-      perkStoreService.saveOrder(order, orderModificationType, getCurrentUserId(), true);
+      perkStoreService.saveOrder(order, orderModificationType, currentUserId, true);
       return Response.ok(perkStoreService.getOrderById(order.getId())).build();
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error saving order status");
+      return computeErrorResponse(LOG, e, "Saving order status", currentUserId, order);
     } catch (Exception e) {
       LOG.error("Error saving order status", e);
       return Response.status(500).build();

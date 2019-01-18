@@ -52,10 +52,11 @@ public class PerkStoreSettingsREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
   public Response getSettings() {
+    String currentUserId = getCurrentUserId();
     try {
-      return Response.ok(perkStoreService.getGlobalSettings(getCurrentUserId())).build();
+      return Response.ok(perkStoreService.getGlobalSettings(currentUserId)).build();
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error when retrieving global settings");
+      return computeErrorResponse(LOG, e, "Retrieving global settings", currentUserId, null);
     } catch (Exception e) {
       LOG.error("Error when retrieving global settings", e);
       return Response.status(500).build();
@@ -73,11 +74,12 @@ public class PerkStoreSettingsREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("administrators")
   public Response saveSettings(GlobalSettings settings) {
+    String currentUserId = getCurrentUserId();
     try {
-      perkStoreService.saveGlobalSettings(settings, getCurrentUserId());
+      perkStoreService.saveGlobalSettings(settings, currentUserId);
       return Response.ok().build();
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error while saving global settings");
+      return computeErrorResponse(LOG, e, "Saving global settings", currentUserId, null);
     } catch (Exception e) {
       LOG.error("Error while saving global settings", e);
       return Response.status(500).build();

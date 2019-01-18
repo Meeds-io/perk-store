@@ -2,9 +2,11 @@ package org.exoplatform.addon.perkstore.model;
 
 import java.io.Serializable;
 
+import groovy.transform.ToString;
 import lombok.Data;
 
 @Data
+@ToString
 public class UserProductData implements Serializable, Cloneable {
   private static final long serialVersionUID = -7144496703478026420L;
 

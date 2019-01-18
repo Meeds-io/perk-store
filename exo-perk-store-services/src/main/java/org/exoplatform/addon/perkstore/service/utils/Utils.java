@@ -80,6 +80,8 @@ public class Utils {
 
   public static final String        ERROR_SUFFIX_PRODUCT_NOT_EXISTS           = "product.existance";
 
+  public static final String        ERROR_SUFFIX_PRODUCT_IS_DISABLED          = "product.disabled";
+
   public static final String        SPACE_ACCOUNT_TYPE                        = "space";
 
   public static final String        USER_ACCOUNT_TYPE                         = "user";
@@ -473,8 +475,12 @@ public class Utils {
     return null;
   }
 
-  public static final Response computeErrorResponse(Log log, PerkStoreException e, String message) {
-    displayErrorLog(log, message, e);
+  public static final Response computeErrorResponse(Log log,
+                                                    PerkStoreException e,
+                                                    String operationDescription,
+                                                    String username,
+                                                    Object objectToDisplay) {
+    displayErrorLog(log, operationDescription, username, objectToDisplay, e);
 
     try {
       String errorJSONFormat = getErrorJSONFormat(e);
@@ -485,11 +491,27 @@ public class Utils {
     }
   }
 
-  public static final void displayErrorLog(Log log, String message, PerkStoreException e) {
+  public static final void displayErrorLog(Log log,
+                                           String operationDescription,
+                                           String username,
+                                           Object objectToDisplay,
+                                           PerkStoreException e) {
     if (log.isDebugEnabled()) {
-      log.warn(message, e);
+      if (objectToDisplay == null) {
+        log.warn("{} denied for user {}.", operationDescription, username, e);
+      } else {
+        log.warn("{} denied for user {}: Object = {}", operationDescription, username, objectToDisplay, e);
+      }
     } else {
-      log.warn(message + ": {}", e.getMessage());
+      if (objectToDisplay == null) {
+        log.info("{} denied for user {}. Message = {}", operationDescription, username, e.getMessage());
+      } else {
+        log.info("{} denied for user {}: Message = {} Object = {}",
+                 operationDescription,
+                 username,
+                 e.getMessage(),
+                 objectToDisplay);
+      }
     }
   }
 

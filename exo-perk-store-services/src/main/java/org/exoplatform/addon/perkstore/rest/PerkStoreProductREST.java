@@ -66,10 +66,12 @@ public class PerkStoreProductREST implements ResourceContainer {
       LOG.warn("Bad request sent to server with empty product");
       return Response.status(400).build();
     }
+
+    String currentUserId = getCurrentUserId();
     try {
-      perkStoreService.saveProduct(product, getCurrentUserId());
+      perkStoreService.saveProduct(product, currentUserId);
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error saving product");
+      return computeErrorResponse(LOG, e, "Saving product", currentUserId, product);
     } catch (Exception e) {
       LOG.error("Error saving product", e);
       return Response.status(500).build();
@@ -92,17 +94,17 @@ public class PerkStoreProductREST implements ResourceContainer {
       LOG.warn("Bad request sent to server with empty productId");
       return Response.status(400).build();
     }
+    String currentUserId = getCurrentUserId();
     try {
-      String userId = getCurrentUserId();
-      if (StringUtils.equals(userId, username)) {
-        Product product = perkStoreService.getProductById(Long.parseLong(productId), userId);
+      if (StringUtils.equals(currentUserId, username)) {
+        Product product = perkStoreService.getProductById(Long.parseLong(productId), currentUserId);
         return Response.ok(product).build();
       } else {
-        LOG.warn("User '{}' is attempting to access user '{}' data", userId, username);
+        LOG.warn("User '{}' is attempting to access user '{}' data", currentUserId, username);
         return Response.status(403).build();
       }
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error getting product");
+      return computeErrorResponse(LOG, e, "Getting product details", currentUserId, productId);
     } catch (Exception e) {
       LOG.error("Error getting product", e);
       return Response.status(500).build();
@@ -119,11 +121,12 @@ public class PerkStoreProductREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
   public Response listProducts() {
+    String currentUserId = getCurrentUserId();
     try {
-      List<Product> allProducts = perkStoreService.getProducts(getCurrentUserId());
+      List<Product> allProducts = perkStoreService.getProducts(currentUserId);
       return Response.ok(allProducts).build();
     } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Error getting products list");
+      return computeErrorResponse(LOG, e, "Getting products list", currentUserId, null);
     } catch (Exception e) {
       LOG.error("Error getting products list", e);
       return Response.status(500).build();

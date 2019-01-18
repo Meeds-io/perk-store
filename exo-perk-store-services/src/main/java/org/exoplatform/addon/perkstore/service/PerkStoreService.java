@@ -270,7 +270,7 @@ public class PerkStoreService implements Startable {
     return orders;
   }
 
-  public void checkCanOrder(ProductOrder order, String username) throws PerkStoreException {
+  public void checkCanCreateOrder(ProductOrder order, String username) throws PerkStoreException {
     if (order == null) {
       throw new IllegalArgumentException("Order is mandatory");
     }
@@ -281,6 +281,9 @@ public class PerkStoreService implements Startable {
     if (product == null) {
       throw new PerkStoreException(PRODUCT_NOT_EXISTS, order.getProductId());
     }
+    if (!product.isEnabled()) {
+      throw new PerkStoreException(PRODUCT_IS_DISABLED, product.getTitle());
+    }
     if (order.getId() != 0) {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, product.getTitle());
     }
@@ -290,7 +293,7 @@ public class PerkStoreService implements Startable {
   }
 
   public void createOrder(ProductOrder order, String username) throws Exception {
-    checkCanOrder(order, username);
+    checkCanCreateOrder(order, username);
 
     Product product = getProductById(order.getProductId());
 
