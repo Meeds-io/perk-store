@@ -4,6 +4,7 @@
     v-model="display"
     class="elevation-3 productOrderFilter"
     temporary
+    absolute
     width="380">
     <v-toolbar flat dense class="productOrderFilterHeader">
       <v-toolbar-title>

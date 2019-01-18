@@ -232,8 +232,11 @@ public class PerkStoreService implements Startable {
     Iterator<Product> productsIterator = products.iterator();
     while (productsIterator.hasNext()) {
       Product product = productsIterator.next();
-      if (canViewProduct(product, username, isPerkstoreManager)) {
-        computeProductFields(username, product);
+      boolean canEdit = canEditProduct(product, username);
+
+      if (canViewProduct(product, username, isPerkstoreManager)
+          && (product.isEnabled() || canEdit)) {
+        computeProductFields(username, product, canEdit);
       } else {
         productsIterator.remove();
       }
@@ -346,7 +349,7 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(ORDER_NOT_EXISTS, orderId);
     }
 
-    if (!StringUtils.isBlank(username) && !canEditProduct(order.getProductId(), username)) {
+    if (!canEditProduct(order.getProductId(), username)) {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
 
@@ -474,7 +477,7 @@ public class PerkStoreService implements Startable {
     if (!canViewProduct(product, username, isPerkStoreManager(username))) {
       return null;
     }
-    computeProductFields(username, product);
+    computeProductFields(username, product, canEditProduct(product, username));
     return product;
   }
 
@@ -551,7 +554,7 @@ public class PerkStoreService implements Startable {
     persistedOrder.setRemainingQuantityToProcess(remainingQuantityToProcess);
   }
 
-  private void computeProductFields(String username, Product product) throws Exception {
+  private void computeProductFields(String username, Product product, boolean canEdit) {
     long productId = product.getId();
 
     product.setPurchased(perkStoreStorage.countOrderedQuantity(productId));
@@ -560,7 +563,7 @@ public class PerkStoreService implements Startable {
     product.setUserData(userData);
 
     userData.setUsername(username);
-    userData.setCanEdit(StringUtils.isNotBlank(username) && canEditProduct(product, username));
+    userData.setCanEdit(canEdit);
     userData.setCanOrder(StringUtils.isNotBlank(username) && canViewProduct(product, username, false));
 
     long identityId = 0;
@@ -743,7 +746,7 @@ public class PerkStoreService implements Startable {
     }
 
     if (StringUtils.isBlank(username)) {
-      throw new IllegalArgumentException(USERNAME_IS_MANDATORY_ERROR);
+      return false;
     }
 
     if (product.getId() == 0) {
