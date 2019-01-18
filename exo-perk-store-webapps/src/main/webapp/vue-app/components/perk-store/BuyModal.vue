@@ -21,30 +21,36 @@
           <i class="uiIconError"></i>
           {{ error }}
         </div>
-        <v-text-field
-          v-model.number="quantity"
-          :disabled="loading"
-          :label="quantityInputLabel"
-          append-icon="fa-plus"
-          prepend-inner-icon="fa-minus"
-          class="text-xs-center"
-          name="quantity"
-          placeholder="Select a quantity to buy"
-          @click:prepend-inner="decrementQuantity"
-          @click:append="incrementQuantity" />
-        <div>Amount: {{ amountLabel }} </div>
-        <v-text-field
-          v-if="needPassword"
-          v-model="walletPassword"
-          :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
-          :type="walletPasswordShow ? 'text' : 'password'"
-          :disabled="loading"
-          name="walletPassword"
-          label="Wallet password"
-          placeholder="Enter your wallet password"
-          counter
-          autocomplete="current-passord"
-          @click:append="walletPasswordShow = !walletPasswordShow" />
+        <v-form ref="form">
+          <v-text-field
+            v-model.number="quantity"
+            :disabled="loading"
+            :label="quantityInputLabel"
+            :rules="requiredNumberRule"
+            append-icon="fa-plus"
+            prepend-inner-icon="fa-minus"
+            class="text-xs-center"
+            name="quantity"
+            placeholder="Select a quantity to buy"
+            required
+            @click:prepend-inner="decrementQuantity"
+            @click:append="incrementQuantity" />
+          <div>Amount: {{ amountLabel }} </div>
+          <v-text-field
+            v-if="needPassword"
+            v-model="walletPassword"
+            :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
+            :type="walletPasswordShow ? 'text' : 'password'"
+            :disabled="loading"
+            :rules="requiredRule"
+            name="walletPassword"
+            label="Wallet password"
+            placeholder="Enter your wallet password"
+            autocomplete="current-passord"
+            counter
+            required
+            @click:append="walletPasswordShow = !walletPasswordShow" />
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -99,11 +105,17 @@ export default {
       walletPassword: '',
       walletPasswordShow: false,
       error: null,
+      requiredRule: [(v) => !!v || 'Required field'],
+      requiredNumberRule: [
+        (v) => !!v || 'Required field',
+        (v) => !v || this.isPositiveNumber(v) || 'Invalid positive number',
+        (v) => !v || !this.limitedQuantity || this.quantity <= this.maxQuantity || `Orders quantity must be less than ${this.maxQuantity}`,
+      ],
     };
   },
   computed: {
     disablePayButton() {
-      return this.maxOrdersReached || !this.product || !this.quantity || (!this.product.unlimited && this.quantity > this.maxQuantity);
+      return this.maxOrdersReached || !this.product || !this.quantity || !this.isPositiveNumber(this.quantity) || (!this.product.unlimited && this.quantity > this.maxQuantity);
     },
     amount() {
       return (this.quantity && this.product && this.product.price && (this.product.price * this.quantity)) || 0;
@@ -133,8 +145,11 @@ export default {
     amountLabel() {
       return `${this.amount || 0} ${this.symbol}`;
     },
+    limitedQuantity() {
+      return this.product && (this.product.maxOrdersPerUser || !this.product.unlimited);
+    },
     quantityInputLabel() {
-      if(this.product && (this.product.maxOrdersPerUser || !this.product.unlimited)) {
+      if(this.limitedQuantity) {
         return `Quantity (max: ${this.maxQuantity})`;
       } else {
         return `Quantity`;
@@ -176,6 +191,9 @@ export default {
         this.dialog = false;
       }
     },
+    isPositiveNumber(value) {
+      return this.product && value && !isNaN(value) && value > 0 && Number.isFinite(value) && (this.product.allowFraction || Number.isSafeInteger(value));
+    },
     incrementQuantity() {
       this.quantity = this.quantity && (this.quantity + 1) > 0 ? this.quantity + 1 : 1;
       this.quantity = Math.floor(this.quantity);
@@ -212,8 +230,16 @@ export default {
 
       this.error = event.detail;
     },
-    payProduct() {
+    payProduct(event) {
       this.error = null;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if(!this.$refs.form.validate()) {
+        return;
+      }
+
       this.loading = true;
 
       let qty = this.quantity;
@@ -223,7 +249,7 @@ export default {
         // Nothing to do
       }
 
-      if (!qty || isNaN(qty) || qty <= 0 || !Number.isFinite(qty) || (!this.product.allowFraction && !Number.isInteger(this.quantity))) {
+      if (!qty || isNaN(qty) || qty <= 0 || !Number.isFinite(qty) || (!this.product.allowFraction && !Number.isSafeInteger(this.quantity))) {
         this.error = 'Invalid quantity';
         return;
       }

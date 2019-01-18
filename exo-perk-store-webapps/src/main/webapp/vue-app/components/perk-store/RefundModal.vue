@@ -236,7 +236,7 @@ export default {
     refundProduct() {
       this.error = null;
 
-      if (!this.isPositiveNumber(this.quantity) || (!this.product.allowFraction && !Number.isInteger(this.quantity))) {
+      if (!this.isPositiveNumber(this.quantity) || (!this.product.allowFraction && !Number.isSafeInteger(this.quantity))) {
         this.error = 'Invalid quantity';
         return;
       }

@@ -250,9 +250,14 @@
   .productCardFooter {
     min-height: 210px;
     height: 210px;
-    max-height: 210px;
     box-sizing: border-box;
-    overflow: auto;
+    max-height: 210px;
+    overflow: hidden;
+
+    .productCardFooterDescription {
+      max-height: 190px;
+      overflow: hidden;
+    }
   }
   .truncate8 {
     overflow: hidden;

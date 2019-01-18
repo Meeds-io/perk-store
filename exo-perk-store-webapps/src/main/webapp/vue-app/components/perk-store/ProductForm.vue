@@ -271,7 +271,7 @@ export default {
       }
     },
     isPositiveNumber(value, isInt) {
-      return value && !isNaN(value) && value > 0 && Number.isFinite(value) && (!isInt || Number.isInteger(value));
+      return value && !isNaN(value) && value > 0 && Number.isFinite(value) && (!isInt || Number.isSafeInteger(value));
     },
     saveProduct(event) {
       event.preventDefault();

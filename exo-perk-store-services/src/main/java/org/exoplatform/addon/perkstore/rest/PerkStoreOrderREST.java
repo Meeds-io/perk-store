@@ -165,7 +165,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
       return Response.status(403).build();
     }
     try {
-      perkStoreService.saveOrder(order, orderModificationType, getCurrentUserId());
+      perkStoreService.saveOrder(order, orderModificationType, getCurrentUserId(), true);
       return Response.ok(perkStoreService.getOrderById(order.getId())).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Error saving order status");

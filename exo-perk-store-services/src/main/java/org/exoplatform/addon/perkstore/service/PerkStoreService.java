@@ -328,7 +328,8 @@ public class PerkStoreService implements Startable {
 
   public ProductOrder saveOrder(ProductOrder order,
                                 ProductOrderModificationType modificationType,
-                                String username) throws Exception {
+                                String username,
+                                boolean checkUsername) throws Exception {
     if (order == null) {
       throw new IllegalArgumentException("Order is null");
     }
@@ -349,7 +350,7 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(ORDER_NOT_EXISTS, orderId);
     }
 
-    if (!canEditProduct(order.getProductId(), username)) {
+    if (checkUsername && !canEditProduct(order.getProductId(), username)) {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
     }
 
@@ -459,7 +460,7 @@ public class PerkStoreService implements Startable {
       order.setTransactionStatus(transactionSuccess ? SUCCESS.name() : FAILED.name());
       modificationType = TX_STATUS;
     }
-    saveOrder(order, modificationType, null);
+    saveOrder(order, modificationType, null, false);
   }
 
   public ProductOrder getOrderById(long orderId) {
