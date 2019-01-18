@@ -29,6 +29,8 @@
 }
 
 #PerkStoreApp {
+  min-height: ~"calc( 100vh - 60px)";
+
   textarea {
     margin-bottom: 0;
   }
@@ -276,18 +278,22 @@
   }
 
   .productOrderFilter {
+    height: ~"calc(100% - 90px)" !important;
     margin-top: 1px !important;
     margin-left: 10px;
     border-left: 1px solid #4d5466;
     min-width: 340px;
     top: 81px;
+    overflow: hidden;
+    max-width: ~"calc(100vw - 20px)";
   }
 
   .productOrderFilterHeader {
     border: 1px solid #e1e8ee !important;
   }
   .productOrderFilterContent {
-    max-height: calc(100vh - 190px)!important;
+    min-height: ~"calc(100vh - 200px)" !important;
+    max-height: ~"calc(100vh - 200px)" !important;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 0 0 30px;
@@ -367,12 +373,12 @@
 /* Override uiPopup !important attributes */
 @media (max-width : 1024px) {
   .uiPopup.v-dialog:not(.v-dialog--fullscreen) .v-card__text {
-    max-height: calc(100vh - 235px);
+    max-height: ~"calc(100vh - 235px)";
     overflow-y: auto;
     overflow-x: hidden;
 
     > .container {
-      max-width: calc(100% - 32px);
+      max-width: ~"calc(100% - 32px)";
     }
   }
 
