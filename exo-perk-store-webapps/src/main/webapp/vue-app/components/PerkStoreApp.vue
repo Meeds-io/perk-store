@@ -256,7 +256,7 @@ export default {
       let products = this.products.slice();
       if(this.search && this.search.trim().length) {
         const searchTerm = this.search.trim().toLowerCase();
-        products.slice().filter(product => (product.title && product.title.toLowerCase().indexOf(searchTerm)) >= 0 || (product.description && product.description.toLowerCase().indexOf(searchTerm) >= 0));
+        products = products.slice().filter(product => (product.title && product.title.toLowerCase().indexOf(searchTerm)) >= 0 || (product.description && product.description.toLowerCase().indexOf(searchTerm) >= 0));
       }
       products = products.filter(product => product.enabled || (product.userData && product.userData.canEdit));
       return products;
