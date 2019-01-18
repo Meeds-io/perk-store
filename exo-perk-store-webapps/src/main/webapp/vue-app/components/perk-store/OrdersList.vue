@@ -9,7 +9,7 @@
       fluid
       grid-list-md>
       <v-card
-        v-if="displayFilterDetails && filterDescriptionLabels && filterDescriptionLabels.length"
+        v-if="!selectedOrderId && displayFilterDetails && filterDescriptionLabels && filterDescriptionLabels.length"
         class="transparent mb-0 mt-0 pt-0"
         flat>
         <v-card-title class="mt-0 pt-0">
@@ -196,19 +196,26 @@ export default {
         this.displayFilterDetails = false;
         return;
       }
-      const selectedOrdersFilter = Object.assign(this.selectedOrdersFilter);
-      if(!selectedOrdersFilter.notProcessed) {
-        delete selectedOrdersFilter.notProcessed;
+      if(this.selectedOrdersFilter.notProcessed) {
+        this.displayFilterDetails = true;
+        return;
       }
-      if(!selectedOrdersFilter.searchInDates || !selectedOrdersFilter.selectedDate) {
-        delete selectedOrdersFilter.searchInDates;
-        delete selectedOrdersFilter.selectedDate;
+      if(this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
+        this.displayFilterDetails = true;
+        return;
       }
-      if(!selectedOrdersFilter.productId) {
-        delete selectedOrdersFilter.productId;
-      }
+
+      const selectedOrdersFilter = {
+        ordered: this.selectedOrdersFilter.ordered,
+        canceled: this.selectedOrdersFilter.canceled,
+        paid: this.selectedOrdersFilter.paid,
+        partial: this.selectedOrdersFilter.partial,
+        delivered: this.selectedOrdersFilter.delivered,
+        refunded: this.selectedOrdersFilter.refunded,
+      };
+
       // Check if all details are checked by default
-      this.displayFilterDetails = selectedOrdersFilter.notProcessed || !Object.values(selectedOrdersFilter).every(value => value);
+      this.displayFilterDetails = !Object.values(selectedOrdersFilter).every(value => value);
     },
     computeDescriptionLabels() {
       this.filterDescriptionLabels = [];
