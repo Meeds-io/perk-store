@@ -2,8 +2,11 @@ package org.exoplatform.addon.perkstore.service;
 
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.addon.perkstore.dao.PerkStoreOrderDAO;
 import org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO;
@@ -105,11 +108,26 @@ public class PerkStoreStorage {
   }
 
   public List<ProductOrder> getOrders(String username, OrderFilter filter) {
-    if (filter.getLimit() == 0) {
-      filter.setLimit(DEFAULT_QUERY_LIMIT);
+    long selectedOrderId = filter.getSelectedOrderId();
+    if (selectedOrderId > 0) {
+      ProductOrder order = getOrderById(selectedOrderId);
+      if (order == null) {
+        return Collections.emptyList();
+      } else if (StringUtils.isBlank(username)
+          || (order.getSender() != null && StringUtils.equals(order.getSender().getId(), username))) {
+        return Collections.singletonList(order);
+      } else {
+        return Collections.emptyList();
+      }
+    } else {
+      if (filter.getLimit() == 0) {
+        filter.setLimit(DEFAULT_QUERY_LIMIT);
+      }
+      List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter);
+      return entities.stream()
+                     .map(orderEntity -> getOrderById(orderEntity.getId()))
+                     .collect(Collectors.toList());
     }
-    List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter);
-    return entities.stream().map(orderEntity -> getOrderById(orderEntity.getId())).collect(Collectors.toList());
   }
 
   public ProductOrder getOrderById(long orderId) {

@@ -139,11 +139,12 @@ export default {
     }
   },
   watch: {
-    product(value) {
-      if(value) {
+    product(value, oldValue) {
+      if(value && (!oldValue || value.id !== oldValue.id)) {
+        this.limit = 12;
+        this.limitReached = false;
+        this.newAddedOrders = [];
         this.init();
-      } else {
-        this.orders = [];
       }
     }
   },
@@ -154,8 +155,12 @@ export default {
     init() {
       this.$emit('error', null);
       this.$emit('loading', true);
+
+      this.computeDisplayFilterDetails();
+      this.computeDescriptionLabels();
+
       const initialOrdersLength = this.orders.length;
-      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.limit)
+      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.limit)
         .then((orders) => {
           this.orders = orders || [];
           this.orders.forEach(order => {
@@ -175,8 +180,6 @@ export default {
             }
           })
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
-          this.computeDisplayFilterDetails();
-          this.computeDescriptionLabels();
         })
         .catch(e => {
           console.debug("Error while listing orders", e);
@@ -187,6 +190,8 @@ export default {
       return this.init();
     },
     computeDisplayFilterDetails() {
+      this.displayFilterDetails = false;
+
       if(!this.selectedOrdersFilter) {
         this.displayFilterDetails = false;
         return;
@@ -206,37 +211,36 @@ export default {
       this.displayFilterDetails = selectedOrdersFilter.notProcessed || !Object.values(selectedOrdersFilter).every(value => value);
     },
     computeDescriptionLabels() {
-      const filterLabels = [];
+      this.filterDescriptionLabels = [];
       if(this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
         const dateString = new Date(this.selectedOrdersFilter.selectedDate).toLocaleString().substring(0, 10);
-        filterLabels.push(`DATE: ${dateString}`);
+        this.filterDescriptionLabels.push(`DATE: ${dateString}`);
       }
       if(this.selectedOrdersFilter.notProcessed) {
-        filterLabels.push("NOT PROCESSED");
+        this.filterDescriptionLabels.push("NOT PROCESSED");
       } else {
         if (this.selectedOrdersFilter.ordered) {
-          filterLabels.push("ORDERED");
+          this.filterDescriptionLabels.push("ORDERED");
         }
         if (this.selectedOrdersFilter.canceled) {
-          filterLabels.push("CANCELED");
+          this.filterDescriptionLabels.push("CANCELED");
         }
         if (this.selectedOrdersFilter.error) {
-          filterLabels.push("ERROR");
+          this.filterDescriptionLabels.push("ERROR");
         }
         if (this.selectedOrdersFilter.paid) {
-          filterLabels.push("PAID");
+          this.filterDescriptionLabels.push("PAID");
         }
         if (this.selectedOrdersFilter.partial) {
-          filterLabels.push("PARTIAL");
+          this.filterDescriptionLabels.push("PARTIAL");
         }
         if (this.selectedOrdersFilter.delivered) {
-          filterLabels.push("DELIVERED");
+          this.filterDescriptionLabels.push("DELIVERED");
         }
         if (this.selectedOrdersFilter.refunded) {
-          filterLabels.push("REFUNDED");
+          this.filterDescriptionLabels.push("REFUNDED");
         }
       }
-      this.filterDescriptionLabels = filterLabels;
     },
     showFilters() {
       this.$refs.productOrdersFilter.showFilters();

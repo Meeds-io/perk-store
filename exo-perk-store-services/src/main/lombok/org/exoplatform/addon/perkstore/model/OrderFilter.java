@@ -16,6 +16,8 @@ public class OrderFilter {
 
   private long    selectedDate;
 
+  private long    selectedOrderId;
+
   private boolean ordered;
 
   private boolean canceled;
