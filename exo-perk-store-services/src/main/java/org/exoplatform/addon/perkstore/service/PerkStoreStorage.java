@@ -2,11 +2,8 @@ package org.exoplatform.addon.perkstore.service;
 
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.addon.perkstore.dao.PerkStoreOrderDAO;
 import org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO;
@@ -107,28 +104,12 @@ public class PerkStoreStorage {
     return orderDAO.countUserPurchasedQuantityInPeriod(productId, identityId, startDate, endDate);
   }
 
-  public List<ProductOrder> getOrders(String username, OrderFilter filter) throws PerkStoreException {
-    long selectedOrderId = filter.getSelectedOrderId();
-    if (selectedOrderId > 0) {
-      ProductOrder order = getOrderById(selectedOrderId);
-      if (order == null) {
-        return Collections.emptyList();
-      } else if (StringUtils.isBlank(username)) {
-        return Collections.singletonList(order);
-      } else if (StringUtils.equals(order.getSender().getId(), username)) {
-        return Collections.singletonList(order);
-      } else {
-        throw new PerkStoreException(PerkStoreError.ORDER_ACCESS_DENIED, order.getId(), username);
-      }
-    } else {
-      if (filter.getLimit() == 0) {
-        filter.setLimit(DEFAULT_QUERY_LIMIT);
-      }
-      List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter);
-      return entities.stream()
-                     .map(orderEntity -> getOrderById(orderEntity.getId()))
-                     .collect(Collectors.toList());
+  public List<ProductOrder> getOrders(String username, OrderFilter filter) {
+    if (filter.getLimit() == 0) {
+      filter.setLimit(DEFAULT_QUERY_LIMIT);
     }
+    List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter);
+    return entities.stream().map(orderEntity -> getOrderById(orderEntity.getId())).collect(Collectors.toList());
   }
 
   public ProductOrder getOrderById(long orderId) {

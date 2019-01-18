@@ -233,10 +233,9 @@ public class PerkStoreService implements Startable {
     Iterator<Product> productsIterator = products.iterator();
     while (productsIterator.hasNext()) {
       Product product = productsIterator.next();
-      boolean canEdit = canEditProduct(product, username);
+      boolean canEdit = isPerkstoreManager || canEditProduct(product, username);
 
-      if (canViewProduct(product, username, isPerkstoreManager)
-          && (product.isEnabled() || canEdit)) {
+      if (canEdit || (canViewProduct(product, username, isPerkstoreManager) && product.isEnabled())) {
         computeProductFields(username, product, canEdit);
       } else {
         productsIterator.remove();
@@ -256,13 +255,24 @@ public class PerkStoreService implements Startable {
       }
     }
     List<ProductOrder> orders = null;
-    if (filter.getProductId() == 0 && StringUtils.isBlank(username)) {
-      throw new IllegalAccessException("No user nor product is chosen to display commands");
+    long selectedOrderId = filter.getSelectedOrderId();
+    if (selectedOrderId > 0) {
+      // One single order is selected
+      ProductOrder order = getOrderById(selectedOrderId);
+      if (order == null
+          || (!StringUtils.equals(order.getSender().getId(), username) && !canEditProduct(order.getProductId(), username))) {
+        throw new PerkStoreException(ORDER_ACCESS_DENIED, selectedOrderId, username);
+      } else {
+        return Collections.singletonList(order);
+      }
     } else if (filter.getProductId() == 0) {
+      // If no product is chosen, then display my orders, even for a manager
       orders = perkStoreStorage.getOrders(username, filter);
     } else if (canEditProduct(filter.getProductId(), username)) {
+      // If manager, display all orders of the product
       orders = perkStoreStorage.getOrders(null, filter);
     } else {
+      // If display orders of current user on the product
       orders = perkStoreStorage.getOrders(username, filter);
     }
     if (orders != null && !orders.isEmpty()) {
@@ -739,11 +749,9 @@ public class PerkStoreService implements Startable {
     if (StringUtils.isBlank(username)) {
       return false;
     }
-    if (isUserAdmin(username)) {
-      return true;
-    }
 
-    return canEditProduct(getProductById(productId), username);
+    Product product = getProductById(productId);
+    return canEditProduct(product, username);
   }
 
   private boolean canEditProduct(Product product, String username) throws Exception {
@@ -759,7 +767,7 @@ public class PerkStoreService implements Startable {
       return canAddProduct(username);
     }
 
-    if (isUserAdmin(username)) {
+    if (isPerkStoreManager(username)) {
       return true;
     }
 

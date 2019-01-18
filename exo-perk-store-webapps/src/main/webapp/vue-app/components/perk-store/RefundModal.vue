@@ -34,38 +34,44 @@
           <i class="uiIconError"></i>
           {{ error }}
         </div>
-        <v-text-field
-          v-model.number="quantity"
-          :disabled="loading"
-          :label="quantityInputLabel"
-          append-icon="fa-plus"
-          prepend-inner-icon="fa-minus"
-          class="text-xs-center"
-          name="quantity"
-          placeholder="Select a quantity to refund"
-          required
-          @click:prepend-inner="decrementQuantity"
-          @click:append="incrementQuantity" />
-        <v-text-field
-          v-model.number="amount"
-          :disabled="loading"
-          :label="amountInputLabel"
-          name="amount"
-          class="text-xs-center"
-          placeholder="Enter the amount to refund"
-          required />
-        <v-text-field
-          v-if="needPassword"
-          v-model="walletPassword"
-          :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
-          :type="walletPasswordShow ? 'text' : 'password'"
-          :disabled="loading"
-          name="walletPassword"
-          label="Wallet password"
-          placeholder="Enter your wallet password"
-          counter
-          autocomplete="current-passord"
-          @click:append="walletPasswordShow = !walletPasswordShow" />
+        <v-form ref="form">
+          <v-text-field
+            v-model.number="quantity"
+            :disabled="loading"
+            :label="quantityInputLabel"
+            :rules="requiredNumberRule"
+            append-icon="fa-plus"
+            prepend-inner-icon="fa-minus"
+            class="text-xs-center"
+            name="quantity"
+            placeholder="Select a quantity to refund"
+            required
+            @click:prepend-inner="decrementQuantity"
+            @click:append="incrementQuantity" />
+          <v-text-field
+            v-model.number="amount"
+            :disabled="loading"
+            :label="amountInputLabel"
+            :rules="requiredAmountRule"
+            name="amount"
+            class="text-xs-center"
+            placeholder="Enter the amount to refund"
+            required />
+          <v-text-field
+            v-if="needPassword"
+            v-model="walletPassword"
+            :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
+            :type="walletPasswordShow ? 'text' : 'password'"
+            :disabled="loading"
+            :rules="requiredRule"
+            name="walletPassword"
+            label="Wallet password"
+            placeholder="Enter your wallet password"
+            counter
+            required
+            autocomplete="current-passord"
+            @click:append="walletPasswordShow = !walletPasswordShow" />
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -126,17 +132,31 @@ export default {
       walletPasswordShow: false,
       warning: null,
       error: null,
+      requiredRule: [(v) => !!v || 'Required field'],
+      requiredNumberRule: [
+        (v) => !!v || 'Required field',
+        (v) => this.isPositiveNumber(v, true) || 'Invalid positive number',
+        (v) => !this.order || this.quantity <= Number(this.order.remainingQuantityToProcess) || `Orders quantity must be less than ${this.order.remainingQuantityToProcess}`,
+      ],
+      requiredAmountRule: [
+        (v) => !!v || 'Required field',
+        (v) => this.isPositiveNumber(v) || 'Invalid positive number',
+        (v) => v <= this.maxAmount || `Amount must be less than ${this.maxAmount}`,
+      ],
     };
   },
   computed: {
     disableRefundButton() {
-      return this.walletLoading || !this.walletEnabled || !this.isPositiveNumber(this.amount) || !this.isPositiveNumber(this.quantity) || this.quantity > this.order.remainingQuantityToProcess;
+      return this.walletLoading || !this.walletEnabled || !this.isPositiveNumber(this.amount) || !this.isPositiveNumber(this.quantity, true) || this.quantity > this.order.remainingQuantityToProcess || this.amount > this.maxAmount;
     },
     amountInputLabel() {
       return `Amount in ${this.symbol}`;
     },
     quantityInputLabel() {
       return this.order && `Quantity (max: ${this.order.remainingQuantityToProcess})`;
+    },
+    maxAmount() {
+      return (this.order && this.product && this.order.remainingQuantityToProcess * this.product.price) || 0;
     },
     productTitle() {
       return (this.product && this.product.title)  || (this.order.productTitle) || '';
@@ -184,6 +204,9 @@ export default {
         this.dialog = false;
       }
     },
+    isPositiveNumber(value, isInt) {
+      return this.product && value && !isNaN(value) && value > 0 && Number.isFinite(value) && (!isInt || this.product.allowFraction || Number.isSafeInteger(value));
+    },
     walletInitialized(event) {
       this.walletLoading = false;
       const result = event && event.detail;
@@ -230,13 +253,17 @@ export default {
       this.loading = false;
       this.error = event.detail;
     },
-    isPositiveNumber(value) {
-      return value && !isNaN(value) && value > 0 && Number.isFinite(value);
-    },
-    refundProduct() {
+    refundProduct(event) {
       this.error = null;
 
-      if (!this.isPositiveNumber(this.quantity) || (!this.product.allowFraction && !Number.isSafeInteger(this.quantity))) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if(!this.$refs.form.validate()) {
+        return;
+      }
+
+      if (!this.isPositiveNumber(this.quantity, true)) {
         this.error = 'Invalid quantity';
         return;
       }
