@@ -96,7 +96,7 @@
               {{ product.price }} {{ symbol }}
             </h3>
           </v-card-title>
-          <strong v-if="!product.unlimited">{{ purchasedPercentage }}% articles sold</strong>
+          <strong v-if="!product.unlimited">{{ purchasedPercentageLabel }} articles sold</strong>
           <strong v-else>Unlimited supply</strong>
         </v-tooltip>
         <v-tooltip v-if="!product.unlimited" bottom>
@@ -106,7 +106,7 @@
             :open-delay="0"
             color="red"
             class="mb-0 mt-0" />
-          <strong>{{ purchasedPercentage }}% articles sold</strong>
+          <strong>{{ purchasedPercentageLabel }} articles sold</strong>
         </v-tooltip>
         <v-card-text class="productCardFooter">
           <div :title="product.description" class="font-weight-light title mb-2 text-xs-center truncate8 productCardFooterDescription">
@@ -185,6 +185,9 @@ export default {
     },
     disabledBuy() {
       return (!this.product.unlimited && this.available <= 0) || this.maxOrdersReached;
+    },
+    purchasedPercentageLabel() {
+      return `${Number(this.purchasedPercentage).toFixed(0)}%`;
     },
     purchasedPercentage() {
       return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;
