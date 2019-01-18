@@ -771,11 +771,6 @@ public class PerkStoreService implements Startable {
       return true;
     }
 
-    Profile creator = product.getCreator();
-    if (StringUtils.equals(username, creator.getId())) {
-      return true;
-    }
-
     List<Profile> marchands = product.getMarchands();
     if (marchands == null || marchands.isEmpty()) {
       return canAddProduct(username);

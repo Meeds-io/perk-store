@@ -16,7 +16,7 @@
             placeholder="input a product title"
             required
             counter />
-  
+
           <v-text-field
             v-model="product.illustrationURL"
             :maxlength="500"
@@ -24,7 +24,7 @@
             label="Product image"
             placeholder="input the product image URL"
             counter />
-  
+
           <v-textarea
             v-model="product.description"
             :rules="requiredRule"
@@ -36,7 +36,7 @@
             rows="5"
             flat
             counter />
-  
+
           <auto-complete
             ref="receiverMarchandAutocomplete"
             :rules="requiredRule"
@@ -47,7 +47,7 @@
             required
             @item-selected="selectRecipient"
             @clear-selection="selectRecipient()" />
-  
+
           <auto-complete
             ref="productMarchandsAutocomplete"
             :rules="requiredRule"
@@ -61,7 +61,7 @@
             required
             @item-selected="selectEditor"
             @clear-selection="selectEditor()" />
-  
+
           <auto-complete
             ref="productAccessPermissionAutocomplete"
             input-label="Product access permissions (optional)"
@@ -73,7 +73,7 @@
             @item-selected="selectAccessPermission"
             @clear-selection="selectAccessPermission()" />
         </v-flex>
-  
+
         <v-flex
           xs12
           md6>
@@ -84,6 +84,11 @@
           <v-checkbox
             v-model="product.unlimited"
             label="Unlimited supply" />
+
+          <v-checkbox
+            v-model="product.allowFraction"
+            label="Allow fractioned quantity"
+            class="hidden" />
 
           <v-text-field
             v-if="!product.unlimited"
@@ -102,10 +107,12 @@
             placeholder="input the product price"
             required />
 
-          <v-checkbox
-            v-model="product.allowFraction"
-            label="Allow fractioned quantity"
-            class="hidden" />
+          <v-text-field
+            v-model.number="product.maxOrdersPerUser"
+            :rules="integerRule"
+            :label="maxOrdersPerUserLabel"
+            name="ProductMaxOrdersPerUser"
+            placeholder="You can limit the number of user orders" />
 
           <v-combobox
             v-model="product.orderPeriodicity"
@@ -122,13 +129,6 @@
               {{ orderPeriodicityLabel }}
             </template>
           </v-combobox>
-
-          <v-text-field
-            v-model.number="product.maxOrdersPerUser"
-            :rules="integerRule"
-            :label="maxOrdersPerUserLabel"
-            name="ProductMaxOrdersPerUser"
-            placeholder="You can limit the number of user orders" />
         </v-flex>
       </v-layout>
       <v-card-actions>
@@ -282,9 +282,6 @@ export default {
       }
 
       this.$emit('error', null);
-      if(!this.product.title) {
-        this.$emit('error', 'Empty product title');
-      }
 
       return saveProduct(this.product)
         .then(() => {
