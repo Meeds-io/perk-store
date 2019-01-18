@@ -107,17 +107,18 @@ public class PerkStoreStorage {
     return orderDAO.countUserPurchasedQuantityInPeriod(productId, identityId, startDate, endDate);
   }
 
-  public List<ProductOrder> getOrders(String username, OrderFilter filter) {
+  public List<ProductOrder> getOrders(String username, OrderFilter filter) throws PerkStoreException {
     long selectedOrderId = filter.getSelectedOrderId();
     if (selectedOrderId > 0) {
       ProductOrder order = getOrderById(selectedOrderId);
       if (order == null) {
         return Collections.emptyList();
-      } else if (StringUtils.isBlank(username)
-          || (order.getSender() != null && StringUtils.equals(order.getSender().getId(), username))) {
+      } else if (StringUtils.isBlank(username)) {
+        return Collections.singletonList(order);
+      } else if (StringUtils.equals(order.getSender().getId(), username)) {
         return Collections.singletonList(order);
       } else {
-        return Collections.emptyList();
+        throw new PerkStoreException(PerkStoreError.ORDER_ACCESS_DENIED, order.getId(), username);
       }
     } else {
       if (filter.getLimit() == 0) {

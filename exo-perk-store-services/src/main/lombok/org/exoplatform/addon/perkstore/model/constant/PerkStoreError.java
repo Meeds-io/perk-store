@@ -33,7 +33,9 @@ public enum PerkStoreError {
       "Remaining quantity to process {} isn't valid for order with id {}.", 2),
   ORDER_NOT_EXISTS(ERROR_SUFFIX_ORDER_NOT_EXISTS, "Order with id {} doesn't exists", 1),
   ORDER_CREATION_EMPTY_PRODUCT(ERROR_SUFFIX_ORDER_CREATION, "Order product is mandatory"),
-  PRODUCT_IS_DISABLED(ERROR_SUFFIX_PRODUCT_IS_DISABLED, "Product with {} is disabled", 1);
+  PRODUCT_IS_DISABLED(ERROR_SUFFIX_PRODUCT_IS_DISABLED, "Product with {} is disabled", 1),
+  PRODUCT_ACCESS_DENIED(ERROR_SUFFIX_PRODUCT_ACCESS_DENIED, "Denied access to product with id {} for user {}", 2),
+  ORDER_ACCESS_DENIED(ERROR_SUFFIX_ORDER_ACCESS_DENIED, "Denied access to order with id {} for user {}", 2);
 
   private int    code;
 

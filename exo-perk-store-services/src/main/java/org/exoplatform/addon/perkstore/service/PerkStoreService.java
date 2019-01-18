@@ -30,7 +30,8 @@ import org.picocontainer.Startable;
 
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
-import org.exoplatform.addon.perkstore.model.constant.*;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderPeriodType;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -476,12 +477,13 @@ public class PerkStoreService implements Startable {
     }
     Product product = getProductById(productId);
     if (product == null) {
-      throw new PerkStoreException(PerkStoreError.PRODUCT_NOT_EXISTS, productId);
+      throw new PerkStoreException(PRODUCT_NOT_EXISTS, productId);
+    } else if (canViewProduct(product, username, isPerkStoreManager(username))) {
+      computeProductFields(username, product, canEditProduct(product, username));
+    } else {
+      product = new Product();
+      product.setId(productId);
     }
-    if (!canViewProduct(product, username, isPerkStoreManager(username))) {
-      return null;
-    }
-    computeProductFields(username, product, canEditProduct(product, username));
     return product;
   }
 
@@ -687,7 +689,7 @@ public class PerkStoreService implements Startable {
 
   private void checkCanAddProduct(String username) throws Exception {
     if (!canAddProduct(username)) {
-      throw new PerkStoreException(PerkStoreError.PRODUCT_CREATION_DENIED, username);
+      throw new PerkStoreException(PRODUCT_CREATION_DENIED, username);
     }
   }
 

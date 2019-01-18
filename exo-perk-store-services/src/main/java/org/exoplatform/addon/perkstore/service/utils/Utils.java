@@ -74,6 +74,10 @@ public class Utils {
 
   public static final String        ERROR_SUFFIX_ORDER_NOT_EXISTS             = "order.existance";
 
+  public static final String        ERROR_SUFFIX_ORDER_ACCESS_DENIED          = "order.access";
+
+  public static final String        ERROR_SUFFIX_PRODUCT_ACCESS_DENIED        = "product.access";
+
   public static final String        ERROR_SUFFIX_PRODUCT_CREATION             = "product.creation";
 
   public static final String        ERROR_SUFFIX_PRODUCT_MODIFICATION         = "product.modification";
