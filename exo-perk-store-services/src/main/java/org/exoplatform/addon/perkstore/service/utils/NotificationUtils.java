@@ -4,7 +4,7 @@ import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
 import java.util.*;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
@@ -146,6 +146,10 @@ public class NotificationUtils {
   private static final String                         TEMPLATE_VARIABLE_ORDER_MODIFICATION_TYPE      = "modificationType";
 
   private static final String                         TEMPLATE_VARIABLE_NOTIFICATION_URL             = "detailsURL";
+
+  private static final String                         TEMPLATE_VARIABLE_PREFIX_ORDER_IDENTITY        = "isOrder";
+
+  private static final String                         TEMPLATE_VARIABLE_SUFFIX_IDENTITY_ID           = "Id";
 
   private static final String                         TEMPLATE_VARIABLE_SUFFIX_IDENTITY_AVATAR       = "Avatar";
 
@@ -486,10 +490,13 @@ public class NotificationUtils {
                                                      String prefix) {
     String identityId = notification.getValueOwnerParameter(prefix.toUpperCase() + "_ID");
     if (StringUtils.isBlank(identityId)) {
+      templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_ID, "");
+      templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_ID, "");
       templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_NAME, "");
       templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_AVATAR, "");
       templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IS_SPACE_TYPE, "");
       templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_URL, "");
+      templateContext.put(TEMPLATE_VARIABLE_PREFIX_ORDER_IDENTITY + StringUtils.capitalize(prefix), "false");
       return;
     }
     Identity identity = getIdentityById(identityId);
@@ -501,9 +508,14 @@ public class NotificationUtils {
 
     templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IS_SPACE_TYPE, String.valueOf(isSpaceType));
 
+    String remoteId = identity.getRemoteId();
+    templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_ID, remoteId);
+    templateContext.put(TEMPLATE_VARIABLE_PREFIX_ORDER_IDENTITY + StringUtils.capitalize(prefix),
+                        String.valueOf(StringUtils.equals(notification.getTo(), remoteId)));
+
     String fullName = identity.getProfile().getFullName();
     if (StringUtils.isBlank(fullName) && isSpaceType) {
-      Space space = getSpace(identity.getRemoteId());
+      Space space = getSpace(remoteId);
       if (space != null) {
         fullName = space.getDisplayName();
       }
@@ -520,7 +532,7 @@ public class NotificationUtils {
     }
     templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_AVATAR, avatarURL);
 
-    templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_URL, getAbsoluteURL(identity.getRemoteId(), isSpaceType));
+    templateContext.put(prefix + TEMPLATE_VARIABLE_SUFFIX_IDENTITY_URL, getAbsoluteURL(remoteId, isSpaceType));
   }
 
   public static String getAbsoluteURL(String id, boolean isSpaceType) {

@@ -163,22 +163,6 @@ export default {
       return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.limit)
         .then((orders) => {
           this.orders = orders || [];
-          this.orders.forEach(order => {
-            if(order.transactionHash) {
-              if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
-                order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.transactionHash}&principal=true`;
-              } else if (order.receiver.type === 'space') {
-                order.transactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.transactionHash}&principal=true`;
-              }
-            }
-            if(order.refundTransactionHash) {
-              if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
-                order.refundTransactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.refundTransactionHash}&principal=true`;
-              } else if (order.receiver.type === 'space') {
-                order.refundTransactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.refundTransactionHash}&principal=true`;
-              }
-            }
-          })
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
         })
         .catch(e => {
@@ -257,20 +241,6 @@ export default {
         orders = this.orders;
       }
       Object.assign(order, newOrder);
-      if(order.transactionHash) {
-        if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
-          order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.transactionHash}&principal=true`;
-        } else if (order.receiver.type === 'space') {
-          order.transactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.transactionHash}&principal=true`;
-        }
-      }
-      if(order.refundTransactionHash) {
-        if((order.receiver.type === 'user' && order.receiver.id === eXo.env.portal.userName) || (order.sender.type === 'user' && order.sender.id === eXo.env.portal.userName)) {
-          order.refundTransactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${order.refundTransactionHash}&principal=true`;
-        } else if (order.receiver.type === 'space') {
-          order.refundTransactionLink = `${eXo.env.portal.context}/g/:spaces:${order.receiver.spaceURLId}/${order.receiver.id}/EthereumSpaceWallet?hash=${order.refundTransactionHash}&principal=true`;
-        }
-      }
     },
     loadMore() {
       this.limit += this.pageSize;

@@ -40,7 +40,7 @@
                 - Orders list of <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductOrders && selectedProduct">
-                - My orders list of <code>{{ selectedProduct.title }}</code>
+                - My orders list of <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayMyOrders">
                 - My orders

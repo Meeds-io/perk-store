@@ -97,8 +97,8 @@
                 far fa-clock
               </v-icon>
               <a
-                v-if="order.transactionLink"
-                :href="order.transactionLink"
+                v-if="order.transactionHash"
+                :href="transactionLink"
                 rel="nofollow"
                 target="_blank">
                 {{ order.amount }} {{ symbol }}
@@ -202,8 +202,8 @@
                 far fa-clock
               </v-icon>
               <a
-                v-if="order.refundTransactionLink"
-                :href="order.refundTransactionLink"
+                v-if="refundTransactionHash"
+                :href="refundTransactionLink"
                 rel="nofollow"
                 target="_blank">
                 {{ order.refundedAmount }} {{ symbol }}
@@ -272,6 +272,26 @@ export default {
     };
   },
   computed: {
+    transactionLink() {
+      if(this.order.transactionHash) {
+        if((this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
+          return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.transactionHash}&principal=true`;
+        } else if (this.order.receiver.type === 'space') {
+          return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.transactionHash}&principal=true`;
+        }
+      }
+      return '#';
+    },
+    refundTransactionLink() {
+      if(this.order.refundTransactionHash) {
+        if((this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
+          return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.refundTransactionHash}&principal=true`;
+        } else if (this.order.receiver.type === 'space') {
+          return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.refundTransactionHash}&principal=true`;
+        }
+      }
+      return '#';
+    },
     orderLink() {
       return (this.order && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.order.productId}&orderId=${this.order.id}`) || '#';
     },
