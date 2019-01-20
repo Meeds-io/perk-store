@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
     v-model="snackbar"
-    :timeout="10000"
+    :timeout="120000"
     class="notificationParent"
     color="black">
     <v-card
