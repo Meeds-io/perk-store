@@ -224,8 +224,6 @@ public class NotificationUtils {
         ignoredUsers.add(product.getLastModifier().getId()); // Avoid sending
                                                              // notification to
                                                              // modifier
-        // Always add creator to the notifications
-        recipientList.add(product.getCreator().getId());
       }
 
       List<Profile> productAccessPermissions = product.getAccessPermissions();

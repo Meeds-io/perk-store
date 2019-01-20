@@ -570,9 +570,6 @@ public class Utils {
       applicationAccessPermissions = null;
     }
 
-    // Always add creator
-    recipientUsers.add(product.getCreator().getId());
-
     boolean accessibleToAll = false;
     // Send notification to all who can get access permission to product and
     // application
