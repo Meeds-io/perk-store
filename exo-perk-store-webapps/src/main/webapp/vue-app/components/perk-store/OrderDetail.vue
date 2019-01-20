@@ -38,13 +38,15 @@
         <v-list-tile>
           <v-list-tile-content>Buyer:</v-list-tile-content>
           <v-list-tile-content class="align-end">
-            <profile-link
-              :id="order.sender.id"
-              :space-id="order.sender.spaceId"
-              :url-id="order.sender.spaceURLId"
-              :type="order.sender.type"
-              :display-name="order.sender.displayName"
-              display-avatar />
+            <div class="ellipsis orderDetailText">
+              <profile-link
+                :id="order.sender.id"
+                :space-id="order.sender.spaceId"
+                :url-id="order.sender.spaceURLId"
+                :type="order.sender.type"
+                :display-name="order.sender.displayName"
+                display-avatar />
+            </div>
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile>
@@ -61,9 +63,9 @@
             <div class="ellipsis orderDetailText">
               {{ order.quantity }} x 
               <a
+                :href="productLink"
                 :title="productTitle"
-                href="javascript:void(0);"
-                @click="$emit('display-product', order.productId)">
+                @click="openProductDetail">
                 {{ productTitle }}
               </a>
             </div>
@@ -273,6 +275,9 @@ export default {
     orderLink() {
       return (this.order && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.order.productId}&orderId=${this.order.id}`) || '#';
     },
+    productLink() {
+      return (this.order && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.order.productId}`) || '#';
+    },
     productTitle() {
       return (this.product && this.product.title) || (this.order && this.order.productTitle) || '';
     },
@@ -320,6 +325,12 @@ export default {
     },
   },
   methods: {
+    openProductDetail(event) {
+      event.stopPropagation();
+      event.preventDefault();
+
+      this.$emit('display-product', this.order.productId);
+    },
     cancelOrder() {
       this.order.status= 'CANCELED';
       return this.changeStatus('STATUS');

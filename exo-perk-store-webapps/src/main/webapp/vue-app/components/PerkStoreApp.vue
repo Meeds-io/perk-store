@@ -64,7 +64,7 @@
                 v-model="search"
                 placeholder="Search in products"
                 type="text"
-                class="searchProductsInput mr-3 mt-2">
+                class="searchProductsInput mr-3">
               <v-btn
                 id="perkStoreAppMenuRefreshButton"
                 icon
@@ -268,7 +268,7 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo.perkstore.settings.modified', this.init);
+    document.addEventListener('exo.perkstore.settings.modified', this.refreshSettings);
 
     document.addEventListener(this.createOrUpdateProductEvent, this.updateProduct);
 
@@ -294,6 +294,15 @@ export default {
     return this.init(parameters && parameters.productId, parameters && parameters.orderId);
   },
   methods: {
+    refreshSettings(event) {
+      if(!event || !event.detail || !event.detail.globalsettings) {
+        return;
+      }
+
+      const newSettings = event.detail.globalsettings;
+      this.symbol = this.settings.symbol = newSettings.symbol;
+      // refresh entire application if the access permission is changed
+    },
     init(selectedProductId, selectedOrderId) {
       this.products = [];
       this.loading = true;

@@ -85,9 +85,9 @@
           <v-card-title slot="activator" class="ellipsis no-wrap pt-0 pb-0">
             <h3 :title="product.title" class="mb-2 primary--text ellipsis">
               <a
-                href="javascript:void(0);"
+                :href="productLink"
                 class="ellipsis"
-                @click="$emit('product-details', product)">
+                @click="openProductDetail">
                 {{ product.title }}
               </a>
             </h3>
@@ -158,6 +158,9 @@ export default {
     },
   },
   computed: {
+    productLink() {
+      return (this.product && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.product.id}`) || '#';
+    },
     userData() {
       return (this.product && this.product.userData) || {};
     },
@@ -211,6 +214,12 @@ export default {
     },
   },
   methods: {
+    openProductDetail(event) {
+      event.stopPropagation();
+      event.preventDefault();
+
+      this.$emit('product-details', this.product);
+    },
     displayBuyModal() {
       if (!this.disabledBuy && this.walletEnabled) {
         this.$emit('buy', this.product);

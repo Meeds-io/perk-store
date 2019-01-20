@@ -283,8 +283,14 @@ export default {
         if(order) {
           this.updateOrder(order, wsMessage.productorder);
           this.updateOrder(order, wsMessage.productorder, this.newAddedOrders);
-        } else if(!this.newAddedOrders.find(order => order.id === wsMessage.productorder.id)) {
-          this.newAddedOrders.unshift(wsMessage.productorder);
+        } else if(wsMessage.productorder.productId === this.product.id) {
+          if (this.product.userData && this.product.userData.canEdit) {
+            if(!this.newAddedOrders.find(order => order.id === wsMessage.productorder.id)) {
+              this.newAddedOrders.unshift(wsMessage.productorder);
+            }
+          } else {
+            this.orders.unshift(wsMessage.productorder);
+          }
         }
       }
     },

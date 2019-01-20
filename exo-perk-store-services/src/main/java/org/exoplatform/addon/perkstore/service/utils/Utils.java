@@ -384,39 +384,51 @@ public class Utils {
     return 0;
   }
 
+  public static void refreshProfile(Profile profile) {
+    if (profile == null) {
+      return;
+    }
+    Identity identity = getIdentityByTypeAndId(profile.getType(), profile.getId());
+    toProfile(identity, profile);
+  }
+
   public static Profile toProfile(String type, String id) {
     if (StringUtils.isBlank(type) || StringUtils.isBlank(id)) {
       return null;
     }
     Identity identity = getIdentityByTypeAndId(type, id);
-    return toProfile(identity);
+    return toProfile(identity, null);
   }
 
   public static Profile toProfile(long identityId) {
     if (identityId > 0) {
       Identity identity = getIdentityById(identityId);
-      return toProfile(identity);
+      return toProfile(identity, null);
     }
     return null;
   }
 
-  private static Profile toProfile(Identity identity) {
-    if (identity != null) {
-      Profile profile = new Profile();
-      String fullName = identity.getProfile().getFullName();
-      if (StringUtils.isBlank(fullName) && isSpaceType(identity.getProviderId())) {
-        Space space = getSpace(identity.getRemoteId());
-        fullName = space.getDisplayName();
-        profile.setSpaceId(Long.parseLong(space.getId()));
-        profile.setSpaceURLId(space.getGroupId().replace(SPACE_GROUP_PREFIX, ""));
-      }
-      profile.setDisplayName(fullName);
-      profile.setTechnicalId(Long.parseLong(identity.getId()));
-      profile.setId(identity.getRemoteId());
-      profile.setType(getIdentityTypeByProviderId(identity.getProviderId()));
-      return profile;
+  private static Profile toProfile(Identity identity, Profile profileToRefresh) {
+    if (identity == null) {
+      return null;
     }
-    return null;
+
+    Profile profile = profileToRefresh;
+    if (profile == null) {
+      profile = new Profile();
+    }
+    String fullName = identity.getProfile().getFullName();
+    if (StringUtils.isBlank(fullName) && isSpaceType(identity.getProviderId())) {
+      Space space = getSpace(identity.getRemoteId());
+      fullName = space.getDisplayName();
+      profile.setSpaceId(Long.parseLong(space.getId()));
+      profile.setSpaceURLId(space.getGroupId().replace(SPACE_GROUP_PREFIX, ""));
+    }
+    profile.setDisplayName(fullName);
+    profile.setTechnicalId(Long.parseLong(identity.getId()));
+    profile.setId(identity.getRemoteId());
+    profile.setType(getIdentityTypeByProviderId(identity.getProviderId()));
+    return profile;
   }
 
   public static final String getCurrentUserId() {
@@ -579,6 +591,19 @@ public class Utils {
       accessibleToAll = true;
     }
     return accessibleToAll;
+  }
+
+  public static final void getProductManagersUsersList(Set<String> adminUsers,
+                                                       Product product,
+                                                       GlobalSettings globalSettings) {
+    List<Profile> productMarchands = product.getMarchands();
+    if (productMarchands != null) {
+      addIdentityMembersFromProfiles(productMarchands, adminUsers);
+    }
+    List<Profile> perkstoreManagers = globalSettings.getManagersProfiles();
+    if (perkstoreManagers != null) {
+      addIdentityMembersFromProfiles(perkstoreManagers, adminUsers);
+    }
   }
 
   public static final boolean isUserAdmin(String username) throws Exception {

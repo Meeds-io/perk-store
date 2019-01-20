@@ -7,6 +7,7 @@ import org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.Product;
 import org.exoplatform.addon.perkstore.model.ProductOrder;
+import org.exoplatform.addon.perkstore.service.utils.Utils;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -54,13 +55,28 @@ public class PerkStoreCachedStorage extends PerkStoreStorage implements Startabl
   @Override
   public ProductOrder getOrderById(long orderId) {
     ProductOrder order = this.orderFutureCache.get(null, orderId);
-    return order == null ? null : order.clone();
+    if (order == null) {
+      return null;
+    } else {
+      order = order.clone();
+      // To refresh user and space display names
+      Utils.refreshProfile(order.getSender());
+      Utils.refreshProfile(order.getReceiver());
+      return order;
+    }
   }
 
   @Override
   public Product getProductById(long productId) {
     Product product = this.productFutureCache.get(null, productId);
-    return product == null ? null : product.clone();
+    if (product == null) {
+      return null;
+    } else {
+      product = product.clone();
+      // To refresh user and space display names
+      Utils.refreshProfile(product.getReceiverMarchand());
+      return product;
+    }
   }
 
   @Override

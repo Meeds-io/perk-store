@@ -8,7 +8,7 @@ export function getOrderList(productId, filter, selectedOrderId, limit) {
   filter = Object.assign(filter || {}, {
     productId: productId,
     selectedOrderId: selectedOrderId,
-    limit: limit ? limit : 0
+    limit: limit ? limit : 0,
   });
 
   return fetch('/portal/rest/perkstore/api/order/list', {
