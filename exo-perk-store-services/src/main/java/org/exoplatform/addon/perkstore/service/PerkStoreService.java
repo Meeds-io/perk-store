@@ -299,6 +299,15 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, product.getTitle());
     }
 
+    try {
+      if (!isUserMemberOf(username, getGlobalSettings().getAccessPermissionsProfiles())
+          || !isUserMemberOf(username, product.getAccessPermissions())) {
+        throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, product.getTitle());
+      }
+    } catch (JsonException e) {
+      throw new IllegalStateException("Can't read perkstore settings");
+    }
+
     order.setSender(toProfile(USER_ACCOUNT_TYPE, username));
     checkOrderCoherence(username, product, order);
   }

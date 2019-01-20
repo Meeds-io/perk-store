@@ -642,7 +642,7 @@ public class Utils {
 
   public static final boolean isUserMemberOf(String username, List<Profile> permittedProfiles) {
     if (permittedProfiles == null || permittedProfiles.isEmpty()) {
-      throw new IllegalArgumentException("permissions field is mandatory");
+      return true;
     }
 
     for (Profile profile : permittedProfiles) {
