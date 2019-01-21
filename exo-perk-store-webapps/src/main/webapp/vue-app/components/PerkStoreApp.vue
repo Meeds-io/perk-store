@@ -58,7 +58,7 @@
                 close
               </v-icon>
             </v-btn>
-            <template v-else>
+            <template v-else-if="perkStoreEnabled">
               <input
                 v-if="products && products.length"
                 v-model="search"
@@ -115,7 +115,7 @@
           </v-toolbar>
 
           <v-toolbar
-            v-if="!selectedProduct && !loading && !walletLoading && walletWarning"
+            v-if="perkStoreEnabled && !selectedProduct && !loading && !walletLoading && walletWarning"
             color="transparent"
             flat>
             <v-spacer />
@@ -225,6 +225,7 @@ export default {
     walletAddonInstalled: false,
     walletLoading: false,
     walletEnabled: false,
+    perkStoreEnabled: false,
     walletNeedPassword: false,
     loading: false,
     selectedProduct: null,
@@ -310,6 +311,7 @@ export default {
       this.loading = true;
       return initSettings()
       .then(() => {
+        this.perkStoreEnabled = true;
         this.settings = window.perkStoreSettings;
         if(!this.settings) {
           this.settings = {};
