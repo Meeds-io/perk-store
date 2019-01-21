@@ -574,13 +574,18 @@ public class PerkStoreService implements Startable {
   private void computeRemainingQuantity(ProductOrder persistedOrder,
                                         double deliveredQuantity,
                                         double refundedQuantity) throws PerkStoreException {
-    double remainingQuantityToProcess = persistedOrder.getQuantity() - refundedQuantity - deliveredQuantity;
-    if (remainingQuantityToProcess < 0) {
-      throw new PerkStoreException(ORDER_MODIFICATION_QUANTITY_INVALID_REMAINING,
-                                   remainingQuantityToProcess,
-                                   persistedOrder.getId());
+    if (StringUtils.equalsIgnoreCase(persistedOrder.getStatus(), CANCELED.name())
+        || StringUtils.equalsIgnoreCase(persistedOrder.getStatus(), ERROR.name())) {
+      persistedOrder.setRemainingQuantityToProcess(0);
+    } else {
+      double remainingQuantityToProcess = persistedOrder.getQuantity() - refundedQuantity - deliveredQuantity;
+      if (remainingQuantityToProcess < 0) {
+        throw new PerkStoreException(ORDER_MODIFICATION_QUANTITY_INVALID_REMAINING,
+                                     remainingQuantityToProcess,
+                                     persistedOrder.getId());
+      }
+      persistedOrder.setRemainingQuantityToProcess(remainingQuantityToProcess);
     }
-    persistedOrder.setRemainingQuantityToProcess(remainingQuantityToProcess);
   }
 
   private void computeProductFields(String username, Product product, boolean canEdit) {

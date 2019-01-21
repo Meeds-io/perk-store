@@ -275,7 +275,7 @@ public class Utils {
     entity.setRefundTransactionStatus(order.getRefundTransactionStatus() == null ? ProductOrderTransactionStatus.NONE
                                                                                  : ProductOrderTransactionStatus.valueOf(order.getRefundTransactionStatus()));
     entity.setStatus(ProductOrderStatus.valueOf(order.getStatus()));
-    entity.setRemainingQuantity(order.getQuantity() - order.getDeliveredQuantity() - order.getRefundedQuantity());
+    entity.setRemainingQuantity(order.getRemainingQuantityToProcess());
     return entity;
   }
 
