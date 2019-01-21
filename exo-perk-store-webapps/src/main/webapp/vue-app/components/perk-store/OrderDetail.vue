@@ -98,12 +98,15 @@
                 far fa-clock
               </v-icon>
               <a
-                v-if="order.transactionHash"
+                v-if="transactionLink"
                 :href="transactionLink"
                 rel="nofollow"
                 target="_blank">
                 {{ order.amount }} {{ symbol }}
               </a>
+              <template v-else>
+                {{ order.amount }} {{ symbol }}
+              </template>
               to
               <profile-link
                 :id="order.receiver.id"
@@ -204,7 +207,7 @@
                 far fa-clock
               </v-icon>
               <a
-                v-if="order.refundTransactionHash"
+                v-if="refundTransactionLink"
                 :href="refundTransactionLink"
                 rel="nofollow"
                 target="_blank">
@@ -285,7 +288,7 @@ export default {
           return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.transactionHash}&principal=true`;
         }
       }
-      return '#';
+      return null;
     },
     refundTransactionLink() {
       if(this.order.refundTransactionHash) {
@@ -295,7 +298,7 @@ export default {
           return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.refundTransactionHash}&principal=true`;
         }
       }
-      return '#';
+      return null;
     },
     orderLink() {
       return (this.order && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.order.productId}&orderId=${this.order.id}`) || '#';
