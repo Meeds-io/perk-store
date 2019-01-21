@@ -25,9 +25,9 @@
       </v-card>
       <v-data-iterator
         :items="filteredOrders"
+        :no-data-text="loading ? '': 'No orders'"
         content-tag="v-layout"
         content-class="mt-0 mb-0"
-        no-data-text="No orders"
         hide-actions
         row
         wrap>
@@ -47,21 +47,29 @@
             @init-wallet="$emit('init-wallet')"
             @display-product="$emit('display-product', $event)"
             @changed="updateOrder(props.item, $event)"
-            @loading="$emit('loading', $event)"
+            @loading="loading = true"
             @error="$emit('error', $event)" />
         </v-flex>
         <v-flex
-          v-if="displayLoadMoreButton"
+          v-if="loading || displayLoadMoreButton"
           slot="footer"
           class="mt-2 text-xs-center"
           dense
           flat>
           <v-btn
+            v-if="displayLoadMoreButton"
             class="primary--text"
             flat
+            :loading="loading"
+            :disabled="loading"
             @click="loadMore">
             Load more
           </v-btn>
+          <v-progress-circular
+            v-else-if="loading"
+            color="primary"
+            class="mb-2"
+            indeterminate />
         </v-flex>
       </v-data-iterator>
       <order-notification
@@ -113,6 +121,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       pageSize: 12,
       limit: 12,
       limitReached: false,
@@ -154,12 +163,14 @@ export default {
   methods: {
     init() {
       this.$emit('error', null);
-      this.$emit('loading', true);
 
       this.computeDisplayFilterDetails();
       this.computeDescriptionLabels();
 
       const initialOrdersLength = this.orders.length;
+
+      this.loading = true;
+
       return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.limit)
         .then((orders) => {
           this.orders = orders || [];
@@ -168,7 +179,9 @@ export default {
         .catch(e => {
           console.debug("Error while listing orders", e);
           this.$emit('error', e && e.message ? e.message : String(e));
-        }).finally(() => this.$emit('loading', false));
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     searchOrders() {
       return this.init();
