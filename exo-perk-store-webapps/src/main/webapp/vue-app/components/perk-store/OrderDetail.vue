@@ -122,7 +122,7 @@
           <v-list-tile-content>Processing:</v-list-tile-content>
           <v-list-tile-content class="align-end orderProcessingActions">
             <div>
-              <div v-if="!order.remainingQuantityToProcess || isError">
+              <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
                 <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>DONE
               </div>
               <template v-else-if="userData && userData.canEdit">
@@ -131,10 +131,11 @@
                   :product="product"
                   :order="order" />
                 <refund-modal
-                  v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
+                  v-if="refunding || (order.remainingQuantityToProcess && (isPaid || isPartial))"
                   :product="product"
                   :order="order"
                   :symbol="symbol"
+                  @refunding="refunding = true"
                   @refunded="refunded"
                   @closed="refundDialogClosed" />
                 <button
@@ -260,6 +261,9 @@ export default {
   },
   data() {
     return {
+      // Attention: Used to close modal only when refunding process
+      // is finished
+      refunding: false,
       statusList: [
         'ORDERED',
         'CANCELED',
@@ -356,15 +360,14 @@ export default {
       return this.changeStatus('STATUS');
     },
     refunded(order) {
-      Object.assign(this.order, order);
+      // Nothing to do, the update will be made by Websocket
     },
     refundDialogClosed() {
       // We have to re-init wallet settings to the current user instead of wallet of Order receiver
       this.$emit('init-wallet');
+      this.refunding = false;
     },
     changeStatus(modificationType) {
-      console.log("this.order", this.order);
-
       this.$emit('loading', true);
       return saveOrderStatus(this.order, modificationType)
         .then(order => {

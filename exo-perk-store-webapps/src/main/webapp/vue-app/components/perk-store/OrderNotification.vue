@@ -73,9 +73,7 @@ export default {
       }
     },
     orders() {
-      console.log("this.filteredOrders", this.filteredOrders);
       this.snackbar = !!this.orders.filter(order => this.snackbarDisplayed.indexOf(order.id) < 0).length;
-      console.log("this.snackbar", this.snackbar);
     },
   },
   methods: {

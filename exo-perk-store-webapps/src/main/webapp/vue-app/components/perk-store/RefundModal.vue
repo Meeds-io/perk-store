@@ -228,8 +228,11 @@ export default {
     },
     pendingTransaction(event) {
       const pendingTransaction = event.detail;
+
       // Check if the event is triggered for current window
       if(this.dialog && this.loading) {
+        this.$emit('refunding');
+
         return saveOrderStatus({
           id: this.order.id,
           productId: this.order.productId,
@@ -238,9 +241,9 @@ export default {
           refundedAmount: Number(this.amount),
         }, 'REFUNDED_QUANTITY')
           .then((order) => {
+            this.$emit('refunded', order);
             this.dialog = false;
             this.loading = false;
-            this.$emit('refunded', order);
           })
           .catch(e => {
             console.debug("Error saving refund order", e);
