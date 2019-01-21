@@ -60,9 +60,9 @@
         <v-text-field
           v-model="settingsToSave.symbol"
           :disabled="loading"
-          label="Currency symbol"
+          :label="symbolInputLabel"
           name="symbol"
-          placeholder="Select the used currency symbol" />
+          placeholder="Select the used currency symbol (default wallet pricipal contract symbol)" />
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -94,6 +94,14 @@ export default {
   components: {
     AutoComplete,
   },
+  props: {
+    walletSymbol: {
+      type: String,
+      default: function() {
+        return null;
+      },
+    },
+  },
   data() {
     return {
       dialog: false,
@@ -103,6 +111,9 @@ export default {
     };
   },
   computed: {
+    symbolInputLabel() {
+      return (this.walletSymbol && `Currency symbol (Wallet principal currency symbol: ${this.walletSymbol})`) || 'Currency symbol';
+    },
   },
   watch: {
     error() {

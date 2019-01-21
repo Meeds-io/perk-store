@@ -187,6 +187,7 @@
 
           <settings-modal
             ref="settingsModal"
+            :wallet-symbol="walletSymbol"
             @saved="init()" />
 
           <product-notification
@@ -236,6 +237,7 @@ export default {
     ordersFilter: {},
     settings: {},
     symbol: null,
+    walletSymbol: null,
     userSettings: {},
     createOrUpdateOrderEvent: 'exo.addons.perkstore.order.createOrModify',
     createOrUpdateProductEvent: 'exo.addons.perkstore.product.createOrModify',
@@ -359,7 +361,8 @@ export default {
     walletInitialized(event) {
       this.walletLoading = false;
       const result = event && event.detail;
-      this.settings.symbol = this.symbol = this.symbol || (result && result.symbol) || '';
+      this.walletSymbol = result && result.symbol;
+      this.settings.symbol = this.symbol = this.symbol || this.walletSymbol || '';
       if(!result || result.error) {
         this.walletWarning = `${result && result.error ? (`${  result.error}`) : 'Wallet seems not configured properly'}`;
         this.walletEnabled = false;

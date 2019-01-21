@@ -202,7 +202,7 @@
                 far fa-clock
               </v-icon>
               <a
-                v-if="refundTransactionHash"
+                v-if="order.refundTransactionHash"
                 :href="refundTransactionLink"
                 rel="nofollow"
                 target="_blank">
@@ -357,20 +357,6 @@ export default {
     },
     refunded(order) {
       Object.assign(this.order, order);
-      if(this.order.transactionHash) {
-        if((this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
-          this.order.transactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.transactionHash}&principal=true`;
-        } else if (this.order.receiver.type === 'space') {
-          this.order.transactionLink = `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.transactionHash}&principal=true`;
-        }
-      }
-      if(this.order.refundTransactionHash) {
-        if((this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
-          this.order.refundTransactionLink = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.refundTransactionHash}&principal=true`;
-        } else if (this.order.receiver.type === 'space') {
-          this.order.refundTransactionLink = `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.refundTransactionHash}&principal=true`;
-        }
-      }
     },
     refundDialogClosed() {
       // We have to re-init wallet settings to the current user instead of wallet of Order receiver
