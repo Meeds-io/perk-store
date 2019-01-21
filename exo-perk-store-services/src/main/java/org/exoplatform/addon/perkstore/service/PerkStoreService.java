@@ -177,20 +177,20 @@ public class PerkStoreService implements Startable {
     }
 
     boolean isNew = product.getId() == 0;
-    if (isNew) {
-      checkCanAddProduct(username);
-    }
-
-    if (!canEditProduct(product, username)) {
-      throw new PerkStoreException(PRODUCT_MODIFICATION_DENIED, username, product.getTitle());
-    }
 
     // Make sure to store only allowed fields to change
     Product productToStore = null;
     if (isNew) {
+      checkCanAddProduct(username);
       productToStore = new Product();
     } else {
       productToStore = perkStoreStorage.getProductById(product.getId());
+      if (productToStore == null) {
+        throw new PerkStoreException(PRODUCT_NOT_EXISTS, product.getId());
+      }
+      if (!canEditProduct(productToStore, username)) {
+        throw new PerkStoreException(PRODUCT_MODIFICATION_DENIED, username, productToStore.getTitle());
+      }
     }
 
     productToStore.setTitle(product.getTitle().trim());
@@ -250,8 +250,12 @@ public class PerkStoreService implements Startable {
     }
     if (StringUtils.isBlank(username)) {
       String currentUserId = getCurrentUserId();
-      if (StringUtils.isBlank(currentUserId) || !canAddProduct(currentUserId)) {
+      if (StringUtils.isNotBlank(currentUserId) && !canAddProduct(currentUserId)) {
         throw new IllegalAccessException(currentUserId + " is attempting to access orders list with filter: " + filter);
+      } else if (StringUtils.isNotBlank(currentUserId) && filter.getProductId() > 0
+          && !canEditProduct(filter.getProductId(), currentUserId)) {
+        throw new IllegalAccessException(currentUserId + " is attempting to access orders list of product with id "
+            + filter.getProductId() + " with filter: " + filter);
       }
     }
     List<ProductOrder> orders = null;
@@ -782,7 +786,7 @@ public class PerkStoreService implements Startable {
 
     List<Profile> marchands = product.getMarchands();
     if (marchands == null || marchands.isEmpty()) {
-      return canAddProduct(username);
+      return false;
     }
 
     return isUserMemberOf(username, marchands);

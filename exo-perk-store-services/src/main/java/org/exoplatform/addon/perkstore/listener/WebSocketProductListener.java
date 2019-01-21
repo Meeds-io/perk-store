@@ -30,6 +30,9 @@ public class WebSocketProductListener extends Listener<Product, Boolean> {
 
     Set<String> recipientUsers = new HashSet<>();
     boolean sendToAll = getProductAccessUsersList(recipientUsers, product, globalSettings);
+    if (!sendToAll && product.getLastModifier() != null) {
+      recipientUsers.add(product.getLastModifier().getId());
+    }
     getWebSocketService().sendMessage(event.getEventName(), recipientUsers, sendToAll, product);
   }
 
