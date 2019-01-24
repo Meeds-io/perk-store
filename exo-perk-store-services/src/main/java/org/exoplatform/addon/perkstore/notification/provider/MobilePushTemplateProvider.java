@@ -47,13 +47,13 @@ public class MobilePushTemplateProvider extends TemplateProvider {
                                                            container,
                                                            ORDER_ADDED_KEY,
                                                            true,
-                                                           false));
+                                                           true));
     this.templateBuilders.put(ORDER_MODIFIED_KEY,
                               new PerkStoreTemplateBuilder(this,
                                                            container,
                                                            ORDER_MODIFIED_KEY,
                                                            true,
-                                                           false));
+                                                           true));
   }
 
 }

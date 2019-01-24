@@ -5,5 +5,4 @@
   } else {
    message = _ctx.appRes("Notification.perkstore.product.modifiedWithTitle", senderName, productTitle);
   }
-%>
-<%= message %>
+%><%= message %>

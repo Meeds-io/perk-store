@@ -45,7 +45,7 @@ public class PerkStoreTemplateBuilder extends AbstractTemplateBuilder {
                                   ExoContainer container,
                                   PluginKey key,
                                   boolean pushNotification) {
-    this(templateProvider, container, key, pushNotification, false);
+    this(templateProvider, container, key, false, pushNotification);
   }
 
   public PerkStoreTemplateBuilder(TemplateProvider templateProvider,
@@ -64,10 +64,10 @@ public class PerkStoreTemplateBuilder extends AbstractTemplateBuilder {
 
   @Override
   protected MessageInfo makeMessage(NotificationContext ctx) {
+    NotificationInfo notification = ctx.getNotificationInfo();
+
     RequestLifeCycle.begin(container);
     try {
-      NotificationInfo notification = ctx.getNotificationInfo();
-
       Product product = getProduct(notification);
       ProductOrder order = getProductOrder(notification, isOrderNotification);
 
@@ -76,13 +76,26 @@ public class PerkStoreTemplateBuilder extends AbstractTemplateBuilder {
 
       TemplateContext templateContext = buildTemplateParameters(templateProvider, notification, notificationURL);
       MessageInfo messageInfo = buildMessageSubjectAndBody(templateContext, notification, pushNotificationURL);
-      ctx.setException(templateContext.getException());
+      Throwable exception = templateContext.getException();
+      logException(notification, exception);
+      ctx.setException(exception);
       return messageInfo;
     } catch (Throwable e) {
       ctx.setException(e);
-      throw e;
+      logException(notification, e);
+      return null;
     } finally {
       RequestLifeCycle.end();
+    }
+  }
+
+  private void logException(NotificationInfo notification, Throwable e) {
+    if (e != null) {
+      if (LOG.isDebugEnabled()) {
+        LOG.warn("Error building notification content: {}", notification, e);
+      } else {
+        LOG.warn("Error building notification content: {}, error: {}", notification, e.getMessage());
+      }
     }
   }
 
