@@ -106,7 +106,7 @@ public class PerkStoreService implements Startable {
     // Delete useless data for storage
     settings.setUserSettings(null);
     settings.setAccessPermissionsProfiles(null);
-    settings.setManagers(null);
+    settings.setManagersProfiles(null);
     settings.setProductCreationPermissionsProfiles(null);
 
     getSettingService().set(PERKSTORE_CONTEXT,
