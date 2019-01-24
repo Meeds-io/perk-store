@@ -93,11 +93,9 @@
           <v-text-field
             v-if="!product.unlimited"
             v-model.number="product.totalSupply"
-            :rules="requiredIntegerRule"
             name="ProductTotalSupply"
             label="Total supply"
-            placeholder="input the product total supply"
-            required />
+            placeholder="input the product total supply" />
 
           <v-text-field
             v-model.number="product.price"

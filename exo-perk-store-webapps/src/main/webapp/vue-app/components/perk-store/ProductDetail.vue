@@ -193,7 +193,7 @@ export default {
       return `${Number(this.purchasedPercentage).toFixed(0)}%`;
     },
     purchasedPercentage() {
-      return !this.product.unlimited ? ((this.product.purchased * 100) /this.product.totalSupply) : 0;
+      return !this.product.unlimited ? this.product.totalSupply ? ((this.product.purchased * 100) /this.product.totalSupply) : 100 : 0;
     },
     maxOrdersCurrentPeriodReached() {
       return this.userData && this.product.orderPeriodicity && this.userData.purchasedInCurrentPeriod && this.userData.purchasedInCurrentPeriod >= this.product.maxOrdersPerUser;
