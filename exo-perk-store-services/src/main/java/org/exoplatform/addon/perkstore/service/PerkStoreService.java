@@ -32,6 +32,7 @@ import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
 import org.exoplatform.addon.perkstore.model.constant.ProductOrderPeriodType;
+import org.exoplatform.addon.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
 import org.exoplatform.commons.utils.CommonsUtils;

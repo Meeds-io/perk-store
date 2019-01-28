@@ -1,4 +1,4 @@
-package org.exoplatform.addon.perkstore.service;
+package org.exoplatform.addon.perkstore.storage;
 
 import org.picocontainer.Startable;
 
