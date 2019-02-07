@@ -49,6 +49,7 @@
             @click:prepend-inner="decrementQuantity"
             @click:append="incrementQuantity" />
           <v-text-field
+            v-if="dialog"
             v-model.number="amount"
             :disabled="loading"
             :label="amountInputLabel"
@@ -56,6 +57,7 @@
             name="amount"
             class="text-xs-center"
             placeholder="Enter the amount to refund"
+            autofocus
             required />
           <v-text-field
             v-if="needPassword"
@@ -263,7 +265,7 @@ export default {
       event.stopPropagation();
 
       if(!this.$refs.form.validate()) {
-        return;
+        return false;
       }
 
       if (!this.isPositiveNumber(this.quantity, true)) {

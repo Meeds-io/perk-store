@@ -15,6 +15,7 @@
             label="Product title"
             placeholder="input a product title"
             required
+            autofocus
             counter />
 
           <v-text-field
@@ -276,7 +277,7 @@ export default {
       event.stopPropagation();
 
       if(!this.$refs.form.validate()) {
-        return;
+        return false;
       }
 
       this.$emit('error', null);

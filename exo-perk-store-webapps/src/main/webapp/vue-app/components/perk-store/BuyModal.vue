@@ -37,7 +37,7 @@
             @click:append="incrementQuantity" />
           <div>Amount: {{ amountLabel }} </div>
           <v-text-field
-            v-if="needPassword"
+            v-if="needPassword && dialog"
             v-model="walletPassword"
             :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
             :type="walletPasswordShow ? 'text' : 'password'"
@@ -49,6 +49,7 @@
             autocomplete="current-passord"
             counter
             required
+            autofocus
             @click:append="walletPasswordShow = !walletPasswordShow" />
         </v-form>
       </v-card-text>
@@ -115,7 +116,7 @@ export default {
   },
   computed: {
     disablePayButton() {
-      return !this.product || !this.quantity || (this.maxOrdersReached && !this.product.unlimited) || !this.isPositiveNumber(this.quantity) || (!this.product.unlimited && this.quantity > this.maxQuantity);
+      return !this.product || !this.quantity || (this.needPassword && !this.walletPassword) || (this.maxOrdersReached && !this.product.unlimited) || !this.isPositiveNumber(this.quantity) || (!this.product.unlimited && this.quantity > this.maxQuantity);
     },
     amount() {
       return (this.quantity && this.product && this.product.price && (this.product.price * this.quantity)) || 0;
@@ -231,13 +232,13 @@ export default {
       this.error = event.detail;
     },
     payProduct(event) {
-      this.error = null;
-
       event.preventDefault();
       event.stopPropagation();
 
+      this.error = null;
+
       if(!this.$refs.form.validate()) {
-        return;
+        return false;
       }
 
       this.loading = true;

@@ -362,6 +362,7 @@ export default {
     },
     walletInitialized(event) {
       this.walletLoading = false;
+      this.walletNeedPassword = false;
       const result = event && event.detail;
       this.walletSymbol = result && result.symbol;
       this.settings.symbol = this.symbol = this.symbol || this.walletSymbol || '';
