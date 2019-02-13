@@ -418,7 +418,7 @@ public class Utils {
       profile = new Profile();
     }
     String fullName = identity.getProfile().getFullName();
-    if (StringUtils.isBlank(fullName) && isSpaceType(identity.getProviderId())) {
+    if (isSpaceType(identity.getProviderId())) {
       Space space = getSpace(identity.getRemoteId());
       fullName = space.getDisplayName();
       profile.setSpaceId(Long.parseLong(space.getId()));
