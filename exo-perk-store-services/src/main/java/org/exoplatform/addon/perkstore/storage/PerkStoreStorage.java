@@ -12,6 +12,7 @@ import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.model.constant.PerkStoreError;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreStorage {
@@ -69,11 +70,12 @@ public class PerkStoreStorage {
     return productEntities.stream().map(productEntity -> getProductById(productEntity.getId())).collect(Collectors.toList());
   }
 
-  public double countOrderedQuantity(long id) {
-    if (id == 0) {
+  public double countOrderedQuantity(long productId) {
+    if (productId == 0) {
       return 0;
     }
-    return orderDAO.countOrderedQuantityByProductId(id);
+    return orderDAO.countOrderedQuantityByProductId(productId) - orderDAO.countRefundedQuantityByProductId(productId)
+        - orderDAO.countOrderedQuantityByProductIdAndStatus(productId, ProductOrderStatus.CANCELED);
   }
 
   public long countRemainingOrdersToProcess(long id) {

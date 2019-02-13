@@ -8,7 +8,6 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,15 +15,22 @@ import org.apache.commons.lang.StringUtils;
 import org.exoplatform.addon.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.addon.perkstore.model.OrderFilter;
 import org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus;
+import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Long> {
+  private static final Log    LOG                   = ExoLogger.getLogger(PerkStoreService.class);
+
   private static final String IDENTITY_ID_PARAMETER = "identityId";
 
   private static final String AND_OPERATOR          = " AND ";
 
   private static final String PRODUCT_ID_PARAMETER  = "productId";
+
+  private static final String STATUS_PARAMETER      = "status";
 
   @Override
   public void deleteAll() {
@@ -43,6 +49,22 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
 
   public double countOrderedQuantityByProductId(long productId) {
     TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countOrderedQuantityByProductId", Double.class);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    Double result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+
+  public double countOrderedQuantityByProductIdAndStatus(long productId, ProductOrderStatus status) {
+    TypedQuery<Double> query =
+                             getEntityManager().createNamedQuery("Order.countOrderedQuantityByProductIdAndStatus", Double.class);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    query.setParameter(STATUS_PARAMETER, status);
+    Double result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+
+  public double countRefundedQuantityByProductId(long productId) {
+    TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countRefundedQuantityByProductId", Double.class);
     query.setParameter(PRODUCT_ID_PARAMETER, productId);
     Double result = query.getSingleResult();
     return result == null ? 0 : result;
@@ -95,10 +117,14 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
                                                                                ProductOrderEntity.class);
 
     query.setParameter("hash", hash);
-    try {
-      return query.getSingleResult();
-    } catch (NoResultException e) {
+    List<ProductOrderEntity> results = query.getResultList();
+    if (results == null || results.isEmpty()) {
       return null;
+    } else if (results.size() == 1) {
+      return results.get(0);
+    } else {
+      LOG.warn("More than one order was found with transaction hash {}", hash);
+      return results.get(0);
     }
   }
 
@@ -107,10 +133,15 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
                                                                                ProductOrderEntity.class);
 
     query.setParameter("hash", hash);
-    try {
-      return query.getSingleResult();
-    } catch (NoResultException e) {
+
+    List<ProductOrderEntity> results = query.getResultList();
+    if (results == null || results.isEmpty()) {
       return null;
+    } else if (results.size() == 1) {
+      return results.get(0);
+    } else {
+      LOG.warn("More than one order was found with refund transaction hash {}", hash);
+      return results.get(0);
     }
   }
 

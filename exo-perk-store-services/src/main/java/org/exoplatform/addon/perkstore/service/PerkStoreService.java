@@ -30,8 +30,7 @@ import org.picocontainer.Startable;
 
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
-import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
-import org.exoplatform.addon.perkstore.model.constant.ProductOrderPeriodType;
+import org.exoplatform.addon.perkstore.model.constant.*;
 import org.exoplatform.addon.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
@@ -47,9 +46,9 @@ import org.exoplatform.ws.frameworks.json.impl.JsonException;
  */
 public class PerkStoreService implements Startable {
 
-  private static final String       USERNAME_IS_MANDATORY_ERROR = "Username is mandatory";
-
   private static final Log          LOG                         = ExoLogger.getLogger(PerkStoreService.class);
+
+  private static final String       USERNAME_IS_MANDATORY_ERROR = "Username is mandatory";
 
   private PerkStoreWebSocketService webSocketService;
 
@@ -313,6 +312,8 @@ public class PerkStoreService implements Startable {
       throw new IllegalStateException("Can't read perkstore settings");
     }
 
+    checkTransactionHashNotExists(product, order, username);
+
     order.setSender(toProfile(USER_ACCOUNT_TYPE, username));
     checkOrderCoherence(username, product, order);
   }
@@ -421,6 +422,8 @@ public class PerkStoreService implements Startable {
       if (StringUtils.isBlank(username)) {
         throw new IllegalArgumentException(USERNAME_IS_MANDATORY_ERROR);
       }
+      checkTransactionRefundHashNotExists(product, order, username);
+
       orderToUpdate.setRefundTransactionHash(order.getRefundTransactionHash());
       orderToUpdate.setRefundTransactionStatus(PENDING.name());
       orderToUpdate.setRefundedQuantity(refundedQuantity);
@@ -645,6 +648,36 @@ public class PerkStoreService implements Startable {
       }
     } else {
       persistedOrder.setStatus(ERROR.name());
+    }
+  }
+
+  private void checkTransactionHashNotExists(Product product, ProductOrder order, String username) throws PerkStoreException {
+    String transactionHash = order.getTransactionHash();
+    if (StringUtils.isNotBlank(transactionHash)) {
+      ProductOrder orderWithSameTransactionHash = perkStoreStorage.findOrderByTransactionHash(transactionHash);
+      if (orderWithSameTransactionHash != null) {
+        LOG.warn(username + " is attempting to recreate an order with the same transaction hash twice "
+            + transactionHash);
+        throw new PerkStoreException(PerkStoreError.ORDER_CREATION_DENIED,
+                                     username,
+                                     product.getTitle());
+      }
+    }
+  }
+
+  private void checkTransactionRefundHashNotExists(Product product,
+                                                   ProductOrder order,
+                                                   String username) throws PerkStoreException {
+    String transactionHash = order.getRefundTransactionHash();
+    if (StringUtils.isNotBlank(transactionHash)) {
+      ProductOrder orderWithSameRefundTransactionHash = perkStoreStorage.findOrderByRefundTransactionHash(transactionHash);
+      if (orderWithSameRefundTransactionHash != null && orderWithSameRefundTransactionHash.getId() != order.getId()) {
+        LOG.warn(username + " is attempting to refund an order with another order refund transaction hash "
+            + transactionHash);
+        throw new PerkStoreException(PerkStoreError.ORDER_CREATION_DENIED,
+                                     username,
+                                     product.getTitle());
+      }
     }
   }
 
