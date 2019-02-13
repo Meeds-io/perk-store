@@ -6,8 +6,8 @@
     <v-list-tile v-if="!product.enabled">
       <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
     </v-list-tile>
-    <v-list-tile v-else-if="!product.unlimited && !available" class="soldOutBlock white">
-      <v-list-tile-content class="align-center"><strong class="red--text"><strong class="red--text">Sold out</strong></strong></v-list-tile-content>
+    <v-list-tile v-else-if="!product.unlimited && !available" class="soldOutBlock red">
+      <v-list-tile-content class="align-center"><strong class="white--text">Sold out</strong></v-list-tile-content>
     </v-list-tile>
     <v-list-tile v-else-if="maxOrdersReached">
       <v-list-tile-content class="align-center">
