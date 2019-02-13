@@ -167,11 +167,13 @@ public class PerkStoreStorage {
   }
 
   public ProductOrder findOrderByTransactionHash(String hash) {
+    hash = formatTransactionHash(hash);
     ProductOrderEntity orderEntity = orderDAO.findOrderByTransactionHash(hash);
     return orderEntity == null ? null : fromEntity(orderEntity);
   }
 
   public ProductOrder findOrderByRefundTransactionHash(String hash) {
+    hash = formatTransactionHash(hash);
     ProductOrderEntity orderEntity = orderDAO.findOrderByRefundTransactionHash(hash);
     return orderEntity == null ? null : fromEntity(orderEntity);
   }

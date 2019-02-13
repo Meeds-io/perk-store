@@ -340,7 +340,7 @@ public class PerkStoreService implements Startable {
     productOrder.setAmount(quantity * product.getPrice());
     productOrder.setReceiver(order.getReceiver());
     productOrder.setSender(sender);
-    productOrder.setTransactionHash(order.getTransactionHash());
+    productOrder.setTransactionHash(formatTransactionHash(order.getTransactionHash()));
     productOrder.setTransactionStatus(StringUtils.isBlank(order.getTransactionHash()) ? NONE.name() : PENDING.name());
     productOrder.setRefundTransactionStatus(NONE.name());
     productOrder.setQuantity(quantity);
@@ -424,7 +424,7 @@ public class PerkStoreService implements Startable {
       }
       checkTransactionRefundHashNotExists(product, order, username);
 
-      orderToUpdate.setRefundTransactionHash(order.getRefundTransactionHash());
+      orderToUpdate.setRefundTransactionHash(formatTransactionHash(order.getRefundTransactionHash()));
       orderToUpdate.setRefundTransactionStatus(PENDING.name());
       orderToUpdate.setRefundedQuantity(refundedQuantity);
       orderToUpdate.setRefundedAmount(order.getRefundedAmount());

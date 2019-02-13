@@ -258,8 +258,8 @@ public class Utils {
 
     entity.setId(order.getId());
     entity.setProduct(productEntity);
-    entity.setTransactionHash(order.getTransactionHash());
-    entity.setRefundTransactionHash(order.getRefundTransactionHash());
+    entity.setTransactionHash(formatTransactionHash(order.getTransactionHash()));
+    entity.setRefundTransactionHash(formatTransactionHash(order.getRefundTransactionHash()));
     entity.setQuantity(order.getQuantity());
     entity.setAmount(order.getAmount());
     entity.setRefundedAmount(order.getRefundedAmount());
@@ -277,6 +277,23 @@ public class Utils {
     entity.setStatus(ProductOrderStatus.valueOf(order.getStatus()));
     entity.setRemainingQuantity(order.getRemainingQuantityToProcess());
     return entity;
+  }
+
+  public static final String formatTransactionHash(String transactionHash) {
+    if (transactionHash == null) {
+      return null;
+    }
+    transactionHash = transactionHash.trim().toLowerCase();
+    if (transactionHash.length() == 64 && !transactionHash.startsWith("0x")) {
+      transactionHash = "0x" + transactionHash;
+    }
+    if (transactionHash.length() != 66) {
+      throw new IllegalStateException("Transaction hash " + transactionHash + " isn't well formatted. It should be of length 66");
+    }
+    if (!transactionHash.startsWith("0x")) {
+      throw new IllegalStateException("Transaction hash " + transactionHash + " isn't well formatted. It should starts with 0x");
+    }
+    return transactionHash;
   }
 
   public static Product fromEntity(ProductEntity entity) {
