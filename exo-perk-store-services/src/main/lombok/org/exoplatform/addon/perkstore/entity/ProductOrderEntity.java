@@ -19,7 +19,11 @@ import org.exoplatform.commons.api.persistence.ExoEntity;
     @NamedQuery(name = "Order.countRemainingOrdersByProductId", query = "SELECT COUNT(o) FROM Order o WHERE o.product.id = :productId AND o.remainingQuantity > 0"),
     @NamedQuery(name = "Order.countRemainingOrdersByIdentityIdAndProductId", query = "SELECT COUNT(o) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.remainingQuantity > 0"),
     @NamedQuery(name = "Order.countUserTotalPurchasedQuantity", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId"),
+    @NamedQuery(name = "Order.countUserTotalRefundedQuantity", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId"),
+    @NamedQuery(name = "Order.countUserTotalOrderedQuantityByStatus", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.status = :status"),
     @NamedQuery(name = "Order.countUserPurchasedQuantityInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to"),
+    @NamedQuery(name = "Order.countUserRefundedQuantityInPeriod", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to"),
+    @NamedQuery(name = "Order.countUserOrderedQuantityByStatusInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.status = :status AND o.createdDate > :from AND o.createdDate < :to"),
     @NamedQuery(name = "Order.findOrderByTransactionHash", query = "SELECT distinct(o) FROM Order o WHERE o.transactionHash = :hash"),
     @NamedQuery(name = "Order.findOrderByRefundTransactionHash", query = "SELECT distinct(o) FROM Order o WHERE o.refundTransactionHash = :hash"),
 })

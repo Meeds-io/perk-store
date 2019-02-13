@@ -74,8 +74,13 @@ public class PerkStoreStorage {
     if (productId == 0) {
       return 0;
     }
-    return orderDAO.countOrderedQuantityByProductId(productId) - orderDAO.countRefundedQuantityByProductId(productId)
-        - orderDAO.countOrderedQuantityByProductIdAndStatus(productId, ProductOrderStatus.CANCELED);
+    double countOrderedQuantities = orderDAO.countOrderedQuantityByProductId(productId);
+    if (countOrderedQuantities > 0) {
+      return countOrderedQuantities - orderDAO.countRefundedQuantityByProductId(productId)
+          - orderDAO.countOrderedQuantityByProductIdAndStatus(productId, ProductOrderStatus.CANCELED);
+    } else {
+      return 0;
+    }
   }
 
   public long countRemainingOrdersToProcess(long id) {
@@ -96,14 +101,30 @@ public class PerkStoreStorage {
     if (productId == 0) {
       return 0;
     }
-    return orderDAO.countUserTotalPurchasedQuantity(productId, identityId);
+    double userTotalPurchasedQuantity = orderDAO.countUserTotalPurchasedQuantity(productId, identityId);
+    if (userTotalPurchasedQuantity > 0) {
+      return userTotalPurchasedQuantity - orderDAO.countUserTotalRefundedQuantity(productId, identityId)
+          - orderDAO.countUserTotalOrderedQuantityByStatus(productId, identityId, ProductOrderStatus.CANCELED);
+    } else {
+      return 0;
+    }
   }
 
   public double countUserPurchasedQuantityInPeriod(long productId, long identityId, long startDate, long endDate) {
     if (productId == 0) {
       return 0;
     }
-    return orderDAO.countUserPurchasedQuantityInPeriod(productId, identityId, startDate, endDate);
+    double userTotalPurchasedQuantity = orderDAO.countUserPurchasedQuantityInPeriod(productId, identityId, startDate, endDate);
+    if (userTotalPurchasedQuantity > 0) {
+      return userTotalPurchasedQuantity - orderDAO.countUserRefundedQuantityInPeriod(productId, identityId, startDate, endDate)
+          - orderDAO.countUserOrderedQuantityByStatusInPeriod(productId,
+                                                              identityId,
+                                                              startDate,
+                                                              endDate,
+                                                              ProductOrderStatus.CANCELED);
+    } else {
+      return 0;
+    }
   }
 
   public List<ProductOrder> getOrders(String username, OrderFilter filter) {

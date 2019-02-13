@@ -22,6 +22,10 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
 
 public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Long> {
+  private static final String TO_DATE_PARAMETER     = "to";
+
+  private static final String FROM_DATE_PARAMETER   = "from";
+
   private static final Log    LOG                   = ExoLogger.getLogger(PerkStoreService.class);
 
   private static final String IDENTITY_ID_PARAMETER = "identityId";
@@ -94,12 +98,57 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     return result == null ? 0 : result;
   }
 
+  public double countUserTotalRefundedQuantity(long productId, long identityId) {
+    TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countUserTotalRefundedQuantity", Double.class);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    query.setParameter(IDENTITY_ID_PARAMETER, identityId);
+    Double result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+
+  public double countUserTotalOrderedQuantityByStatus(long productId, long identityId, ProductOrderStatus status) {
+    TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countUserTotalOrderedQuantityByStatus", Double.class);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    query.setParameter(IDENTITY_ID_PARAMETER, identityId);
+    query.setParameter(STATUS_PARAMETER, status);
+
+    Double result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+
   public double countUserPurchasedQuantityInPeriod(long productId, long identityId, long startDate, long endDate) {
     TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countUserPurchasedQuantityInPeriod", Double.class);
     query.setParameter(PRODUCT_ID_PARAMETER, productId);
     query.setParameter(IDENTITY_ID_PARAMETER, identityId);
-    query.setParameter("from", startDate);
-    query.setParameter("to", endDate);
+    query.setParameter(FROM_DATE_PARAMETER, startDate);
+    query.setParameter(TO_DATE_PARAMETER, endDate);
+    Double result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+
+  public double countUserRefundedQuantityInPeriod(long productId, long identityId, long startDate, long endDate) {
+    TypedQuery<Double> query = getEntityManager().createNamedQuery("Order.countUserRefundedQuantityInPeriod", Double.class);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    query.setParameter(IDENTITY_ID_PARAMETER, identityId);
+    query.setParameter(FROM_DATE_PARAMETER, startDate);
+    query.setParameter(TO_DATE_PARAMETER, endDate);
+    Double result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+
+  public double countUserOrderedQuantityByStatusInPeriod(long productId,
+                                                         long identityId,
+                                                         long startDate,
+                                                         long endDate,
+                                                         ProductOrderStatus status) {
+    TypedQuery<Double> query =
+                             getEntityManager().createNamedQuery("Order.countUserOrderedQuantityByStatusInPeriod", Double.class);
+    query.setParameter(PRODUCT_ID_PARAMETER, productId);
+    query.setParameter(IDENTITY_ID_PARAMETER, identityId);
+    query.setParameter(FROM_DATE_PARAMETER, startDate);
+    query.setParameter(TO_DATE_PARAMETER, endDate);
+    query.setParameter(STATUS_PARAMETER, status);
+
     Double result = query.getSingleResult();
     return result == null ? 0 : result;
   }
