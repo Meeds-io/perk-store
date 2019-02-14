@@ -12,7 +12,8 @@
   </component>
 
   <component>
-    <type>org.exoplatform.addon.perkstore.storage.PerkStoreCachedStorage</type>
+    <key>org.exoplatform.addon.perkstore.storage.PerkStoreStorage</key>
+    <type>org.exoplatform.addon.perkstore.storage.cached.PerkStoreCachedStorage</type>
   </component>
 
   <component>

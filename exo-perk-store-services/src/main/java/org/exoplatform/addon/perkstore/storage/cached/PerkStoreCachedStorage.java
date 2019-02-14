@@ -1,6 +1,4 @@
-package org.exoplatform.addon.perkstore.storage;
-
-import org.picocontainer.Startable;
+package org.exoplatform.addon.perkstore.storage.cached;
 
 import org.exoplatform.addon.perkstore.dao.PerkStoreOrderDAO;
 import org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO;
@@ -8,29 +6,25 @@ import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.Product;
 import org.exoplatform.addon.perkstore.model.ProductOrder;
 import org.exoplatform.addon.perkstore.service.utils.Utils;
+import org.exoplatform.addon.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.cache.ExoCache;
 
-public class PerkStoreCachedStorage extends PerkStoreStorage implements Startable {
-
-  private CacheService                               cacheService;
+public class PerkStoreCachedStorage extends PerkStoreStorage {
 
   private FutureExoCache<Long, Product, Object>      productFutureCache = null;
 
   private FutureExoCache<Long, ProductOrder, Object> orderFutureCache   = null;
 
-  public PerkStoreCachedStorage(PerkStoreProductDAO perkStoreProductDAO, PerkStoreOrderDAO perkStoreOrderDAO) {
+  public PerkStoreCachedStorage(PerkStoreProductDAO perkStoreProductDAO,
+                                PerkStoreOrderDAO perkStoreOrderDAO,
+                                CacheService cacheService) {
     super(perkStoreProductDAO, perkStoreOrderDAO);
-  }
 
-  @Override
-  public void start() {
-    ExoCache<Long, Product> productCache = getCacheService().getCacheInstance("perkstore.product");
-    ExoCache<Long, ProductOrder> orderCache = getCacheService().getCacheInstance("perkstore.order");
-
+    // Product cache
+    ExoCache<Long, Product> productCache = cacheService.getCacheInstance("perkstore.product");
     Loader<Long, Product, Object> productLoader = new Loader<Long, Product, Object>() {
       @Override
       public Product retrieve(Object context, Long productId) throws Exception {
@@ -38,6 +32,9 @@ public class PerkStoreCachedStorage extends PerkStoreStorage implements Startabl
       }
     };
     this.productFutureCache = new FutureExoCache<>(productLoader, productCache);
+
+    // Product order cache
+    ExoCache<Long, ProductOrder> orderCache = cacheService.getCacheInstance("perkstore.order");
     Loader<Long, ProductOrder, Object> orderLoader = new Loader<Long, ProductOrder, Object>() {
       @Override
       public ProductOrder retrieve(Object context, Long orderId) throws Exception {
@@ -45,11 +42,6 @@ public class PerkStoreCachedStorage extends PerkStoreStorage implements Startabl
       }
     };
     this.orderFutureCache = new FutureExoCache<>(orderLoader, orderCache);
-  }
-
-  @Override
-  public void stop() {
-    // Not task whan stopping
   }
 
   @Override
@@ -100,12 +92,5 @@ public class PerkStoreCachedStorage extends PerkStoreStorage implements Startabl
     } finally {
       this.productFutureCache.remove(productId);
     }
-  }
-
-  private CacheService getCacheService() {
-    if (cacheService == null) {
-      cacheService = CommonsUtils.getService(CacheService.class);
-    }
-    return cacheService;
   }
 }
