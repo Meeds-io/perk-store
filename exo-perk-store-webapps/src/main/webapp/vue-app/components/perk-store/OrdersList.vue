@@ -23,6 +23,7 @@
           <v-spacer />
         </v-card-title>
       </v-card>
+      <a id="downloadOrders" class="hidden">download</a>
       <v-data-iterator
         :items="filteredOrders"
         :no-data-text="loading ? '': 'No orders'"
@@ -85,7 +86,7 @@ import OrdersFilter from './OrdersFilter.vue';
 import OrderNotification from './OrderNotification.vue';
 
 import {getOrderList} from '../../js/PerkStoreProductOrder.js';
-import {getDefaultOrderFilter} from '../../js/PerkStoreSettings.js';
+import {getDefaultOrderFilter, formatDate, formatDateTime} from '../../js/PerkStoreSettings.js';
 
 export default {
   components: {
@@ -217,7 +218,7 @@ export default {
     computeDescriptionLabels() {
       this.filterDescriptionLabels = [];
       if(this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
-        const dateString = new Date(this.selectedOrdersFilter.selectedDate).toLocaleString().substring(0, 10);
+        const dateString = formatDate(this.selectedOrdersFilter.selectedDate);
         this.filterDescriptionLabels.push(`DATE: ${dateString}`);
       }
       if(this.selectedOrdersFilter.notProcessed) {
@@ -284,6 +285,55 @@ export default {
         }
       });
       this.newAddedOrders.splice(0, this.newAddedOrders.length);
+    },
+    exportOrders() {
+      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, 0)
+        .then((ordersToExport) => {
+          if(!ordersToExport || !ordersToExport.length) {
+            return;
+          }
+          ordersToExport.reverse();
+          const csvHeader = {
+            id: 'Id',
+            sender: {
+              displayName: 'Buyer',
+            },
+            receiver: {
+              displayName: 'Seller',
+            },
+            status: 'Status',
+            quantity: 'Quantity',
+            deliveredQuantity: 'Delivered quantity',
+            refundedQuantity: 'Refunded quantity',
+            amount: 'Amount',
+            refundedAmount: 'Refunded amount',
+            createdDate: 'Order date',
+            deliveredDate: 'Delivered date',
+            refundedDate: 'Refunded date',
+          };
+
+          ordersToExport.unshift(csvHeader);
+          ordersToExport = ordersToExport.map(order =>
+            [
+              order.id,
+              order.sender && order.sender.displayName,
+              order.receiver && order.receiver.displayName,
+              order.status,
+              order.quantity,
+              order.deliveredQuantity,
+              order.refundedQuantity,
+              `${order.amount} ${this.symbol}`,
+              `${order.refundedAmount} ${this.symbol}`,
+              order.createdDate && order.createdDate !== csvHeader.createdDate ? formatDateTime(order.createdDate) : (order.createdDate || '-'),
+              order.deliveredDate && order.deliveredDate !== csvHeader.deliveredDate ? formatDateTime(order.deliveredDate) : (order.deliveredDate || '-'),
+              order.refundedDate && order.refundedDate !== csvHeader.refundedDate ? formatDateTime(order.refundedDate) : (order.refundedDate || '-'),
+            ]).map(e=>e.join(",")).join("\n");
+          const csvContent = `data:text/csv;charset=utf-8,${ordersToExport}`;
+          const downloadLink = document.getElementById('downloadOrders');
+          downloadLink.setAttribute("href", csvContent);
+          downloadLink.setAttribute("download", `orders.csv`);
+          downloadLink.click();
+        })
     },
   },
 }

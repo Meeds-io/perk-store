@@ -19,7 +19,7 @@
                 flat
                 title="Display filters"
                 @click="showFilters">
-                <v-icon size="20px" color="primary">
+                <v-icon small color="primary">
                   fa-filter
                 </v-icon>
               </v-btn>
@@ -48,13 +48,24 @@
             </v-toolbar-title>
             <v-spacer />
             <v-btn
+              v-if="displayProductOrders"
+              id="perkStoreAppMenuCloseButton"
+              icon
+              flat
+              title="Export as CSV"
+              @click="exportOrders">
+              <v-icon small>
+                fa-download
+              </v-icon>
+            </v-btn>
+            <v-btn
               v-if="displayCloseIcon"
               id="perkStoreAppMenuCloseButton"
               icon
               flat
               title="Close"
               @click="closeDetails">
-              <v-icon size="20px">
+              <v-icon small>
                 close
               </v-icon>
             </v-btn>
@@ -100,7 +111,7 @@
                 title="Refresh store"
                 class="mr-0"
                 @click="init()">
-                <v-icon size="20px">
+                <v-icon small>
                   refresh
                 </v-icon>
               </v-btn>
@@ -111,7 +122,7 @@
                 title="My orders"
                 class="mr-0"
                 @click="displayMyOrdersList">
-                <v-icon size="20px">
+                <v-icon small>
                   fa-file-invoice-dollar
                 </v-icon>
               </v-btn>
@@ -123,7 +134,7 @@
                 title="Add product"
                 class="mr-0"
                 @click="newProduct()">
-                <v-icon size="20px">
+                <v-icon small>
                   add
                 </v-icon>
               </v-btn>
@@ -437,6 +448,9 @@ export default {
       this.selectedOrderId = orderId;
       this.displayProductOrders = true;
       return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init());
+    },
+    exportOrders() {
+      return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.exportOrders());
     },
     displayMyOrdersList() {
       this.closeDetails();

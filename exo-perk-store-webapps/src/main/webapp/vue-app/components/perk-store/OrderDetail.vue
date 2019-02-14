@@ -235,6 +235,7 @@ import DeliverModal from './DeliverModal.vue';
 import ProfileLink from '../ProfileLink.vue';
 
 import {saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
+import {formatDateTime} from '../../js/PerkStoreSettings.js';
 
 export default {
   components: {
@@ -312,13 +313,13 @@ export default {
       return (this.product && this.product.userData) || {};
     },
     createdDateLabel() {
-      return this.order.createdDate ? new Date(this.order.createdDate).toLocaleString() : '-';
+      return formatDateTime(this.order.createdDate);
     },
     deliveredDateLabel() {
-      return this.order.deliveredDate ? new Date(this.order.deliveredDate).toLocaleString() : '-';
+      return formatDateTime(this.order.deliveredDate);
     },
     refundedDateLabel() {
-      return this.order.refundedDate ? new Date(this.order.refundedDate).toLocaleString() : '-';
+      return formatDateTime(this.order.refundedDate);
     },
     statusLabel() {
       return this.order.status;
