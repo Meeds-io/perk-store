@@ -41,7 +41,7 @@
           <auto-complete
             ref="receiverMarchandAutocomplete"
             :rules="requiredRule"
-            input-label="Funds receiver account"
+            input-label="Marchand wallet"
             input-placeholder="Select the wallet of marchand"
             no-data-label="Search for a user or a space"
             big-field
@@ -65,8 +65,8 @@
 
           <auto-complete
             ref="productAccessPermissionAutocomplete"
-            input-label="Product access permissions (optional)"
-            input-placeholder="Select product access permissions"
+            input-label="Product allowed buyers (optional)"
+            input-placeholder="Select product allowed buyers"
             no-data-label="Search for a user or a space"
             multiple
             no-address
