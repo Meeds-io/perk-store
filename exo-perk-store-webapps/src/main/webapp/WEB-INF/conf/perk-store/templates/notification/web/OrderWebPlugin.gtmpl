@@ -25,9 +25,10 @@
                // Is sender modification
                key += ".you";
              }
-             message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, orderDeliveredQuantity);
+             String orderLink = "<a class=\"text-bold\" target=\"_blank\" href=\"" + detailsURL + "\">#" + orderId + "</a>";
+             message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, orderDeliveredQuantity, orderLink);
             }
-          %> 
+          %>
           <%= message %>
         </div>
         <div class="lastUpdatedTime"><%= LAST_UPDATED_TIME %></div>
