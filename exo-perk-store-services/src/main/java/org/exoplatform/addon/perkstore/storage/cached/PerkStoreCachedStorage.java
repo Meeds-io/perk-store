@@ -1,5 +1,9 @@
 package org.exoplatform.addon.perkstore.storage.cached;
 
+import java.io.Serializable;
+
+import org.apache.commons.lang3.StringUtils;
+
 import org.exoplatform.addon.perkstore.dao.PerkStoreOrderDAO;
 import org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
@@ -14,9 +18,15 @@ import org.exoplatform.services.cache.ExoCache;
 
 public class PerkStoreCachedStorage extends PerkStoreStorage {
 
-  private FutureExoCache<Long, Product, Object>      productFutureCache = null;
+  private static final int                                    ORDER_ID_CONTEXT       = 0;
 
-  private FutureExoCache<Long, ProductOrder, Object> orderFutureCache   = null;
+  private static final int                                    ORDER_TX_HASH_CONTEXT  = 1;
+
+  private static final int                                    REFUND_TX_HASH_CONTEXT = 2;
+
+  private FutureExoCache<Long, Product, Object>               productFutureCache     = null;
+
+  private FutureExoCache<Serializable, ProductOrder, Integer> orderFutureCache       = null;
 
   public PerkStoreCachedStorage(PerkStoreProductDAO perkStoreProductDAO,
                                 PerkStoreOrderDAO perkStoreOrderDAO,
@@ -34,11 +44,19 @@ public class PerkStoreCachedStorage extends PerkStoreStorage {
     this.productFutureCache = new FutureExoCache<>(productLoader, productCache);
 
     // Product order cache
-    ExoCache<Long, ProductOrder> orderCache = cacheService.getCacheInstance("perkstore.order");
-    Loader<Long, ProductOrder, Object> orderLoader = new Loader<Long, ProductOrder, Object>() {
+    ExoCache<Serializable, ProductOrder> orderCache = cacheService.getCacheInstance("perkstore.order");
+    Loader<Serializable, ProductOrder, Integer> orderLoader = new Loader<Serializable, ProductOrder, Integer>() {
       @Override
-      public ProductOrder retrieve(Object context, Long orderId) throws Exception {
-        return PerkStoreCachedStorage.super.getOrderById(orderId);
+      public ProductOrder retrieve(Integer context, Serializable key) throws Exception {
+        if (context == ORDER_ID_CONTEXT) {
+          return PerkStoreCachedStorage.super.getOrderById((Long) key);
+        } else if (context == ORDER_TX_HASH_CONTEXT) {
+          return PerkStoreCachedStorage.super.findOrderByTransactionHash((String) key);
+        } else if (context == REFUND_TX_HASH_CONTEXT) {
+          return PerkStoreCachedStorage.super.findOrderByRefundTransactionHash((String) key);
+        } else {
+          throw new IllegalStateException("Unkown context id " + context);
+        }
       }
     };
     this.orderFutureCache = new FutureExoCache<>(orderLoader, orderCache);
@@ -46,16 +64,20 @@ public class PerkStoreCachedStorage extends PerkStoreStorage {
 
   @Override
   public ProductOrder getOrderById(long orderId) {
-    ProductOrder order = this.orderFutureCache.get(null, orderId);
-    if (order == null) {
-      return null;
-    } else {
-      order = order.clone();
-      // To refresh user and space display names
-      Utils.refreshProfile(order.getSender());
-      Utils.refreshProfile(order.getReceiver());
-      return order;
-    }
+    ProductOrder order = this.orderFutureCache.get(ORDER_ID_CONTEXT, orderId);
+    return cloneOrder(order);
+  }
+
+  @Override
+  public ProductOrder findOrderByTransactionHash(String hash) {
+    ProductOrder order = this.orderFutureCache.get(ORDER_TX_HASH_CONTEXT, hash);
+    return cloneOrder(order);
+  }
+
+  @Override
+  public ProductOrder findOrderByRefundTransactionHash(String hash) {
+    ProductOrder order = this.orderFutureCache.get(REFUND_TX_HASH_CONTEXT, hash);
+    return cloneOrder(order);
   }
 
   @Override
@@ -81,6 +103,12 @@ public class PerkStoreCachedStorage extends PerkStoreStorage {
     } finally {
       this.orderFutureCache.remove(orderId);
       this.productFutureCache.remove(productId);
+      if (StringUtils.isNotBlank(order.getTransactionHash())) {
+        this.orderFutureCache.remove(order.getTransactionHash());
+      }
+      if (StringUtils.isNotBlank(order.getRefundTransactionHash())) {
+        this.orderFutureCache.remove(order.getRefundTransactionHash());
+      }
     }
   }
 
@@ -91,6 +119,18 @@ public class PerkStoreCachedStorage extends PerkStoreStorage {
       return super.saveProduct(product, username);
     } finally {
       this.productFutureCache.remove(productId);
+    }
+  }
+
+  private ProductOrder cloneOrder(ProductOrder order) {
+    if (order == null) {
+      return null;
+    } else {
+      order = order.clone();
+      // To refresh user and space display names
+      Utils.refreshProfile(order.getSender());
+      Utils.refreshProfile(order.getReceiver());
+      return order;
     }
   }
 }
