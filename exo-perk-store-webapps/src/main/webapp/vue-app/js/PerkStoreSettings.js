@@ -63,3 +63,35 @@ export function getOrderFilter() {
 export function saveOrderFilter(filter) {
   localStorage.setItem('exo-perkstore-order-filter', JSON.stringify(filter));
 }
+
+export function getProductFilter() {
+  const filter = localStorage.getItem('exo-perkstore-product-filter');
+  if (filter) {
+    return JSON.parse(filter);
+  } else {
+    return {
+      disabled: false,
+      soldOut: false,
+    };
+  }
+}
+
+export function storeProductFilter(filter) {
+  localStorage.setItem('exo-perkstore-product-filter', JSON.stringify(filter));
+}
+
+export function formatDateTime(dateString) {
+  if (!dateString) {
+    return '-';
+  }
+  const date = new Date(dateString);
+  return `${date.toLocaleDateString(eXo.env.portal.language, {year: 'numeric', month: 'long', day: 'numeric'})} - ${date.toLocaleTimeString()}`;
+}
+
+export function formatDate(dateString) {
+  if (!dateString) {
+    return '-';
+  }
+  const date = new Date(dateString);
+  return `${date.toLocaleDateString(eXo.env.portal.language, {year: 'numeric', month: 'long', day: 'numeric'})}`;
+}

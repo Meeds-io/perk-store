@@ -19,7 +19,7 @@
                 flat
                 title="Display filters"
                 @click="showFilters">
-                <v-icon color="primary">
+                <v-icon size="20px" color="primary">
                   fa-filter
                 </v-icon>
               </v-btn>
@@ -65,6 +65,34 @@
                 placeholder="Search in products"
                 type="text"
                 class="searchProductsInput mr-3">
+              <v-menu offset-y>
+                <v-btn
+                  slot="activator"
+                  icon
+                  small>
+                  <v-icon :color="productsFilterIconClass" small>
+                    fa-filter
+                  </v-icon>
+                </v-btn>
+                <v-list dense class="pt-0 pb-0">
+                  <v-list-tile @click="filterProducts">
+                    <v-list-tile-title>
+                      <v-checkbox
+                        v-model="productsFilters.disabled"
+                        label="Disabled Products"
+                        class="pt-0 pb-0" />
+                    </v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile @click="filterProducts">
+                    <v-list-tile-title>
+                      <v-checkbox
+                        v-model="productsFilters.soldOut"
+                        label="Sold out Products"
+                        class="pt-0 pb-0" />
+                    </v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
               <v-btn
                 id="perkStoreAppMenuRefreshButton"
                 icon
@@ -207,7 +235,7 @@ import ProductForm from './perk-store/ProductForm.vue';
 import BuyModal from './perk-store/BuyModal.vue';
 import ProductNotification from './perk-store/ProductNotification.vue';
 
-import {initSettings, getOrderFilter} from '../js/PerkStoreSettings.js';
+import {initSettings, getOrderFilter, getProductFilter, storeProductFilter} from '../js/PerkStoreSettings.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 
 export default {
@@ -236,6 +264,7 @@ export default {
     displayProductOrders: false,
     search: null,
     ordersFilter: {},
+    productsFilters: {},
     settings: {},
     symbol: null,
     walletSymbol: null,
@@ -246,6 +275,9 @@ export default {
     modifiedProducts: [],
   }),
   computed: {
+    productsFilterIconClass() {
+      return (!this.productsFilters || !this.productsFilters.disabled || !this.productsFilters.soldOut) ? 'primary' : '';
+    },
     canEditSelectedProduct() {
       return  this.selectedProduct && this.selectedProduct.userData && this.selectedProduct.userData.canEdit;
     },
@@ -308,6 +340,7 @@ export default {
     },
     init(selectedProductId, selectedOrderId) {
       this.products = [];
+      this.productsFilters = getProductFilter() || {};
       this.loading = true;
       return initSettings()
       .then(() => {
@@ -320,21 +353,7 @@ export default {
         this.userSettings = this.settings.userSettings;
         this.ordersFilter = getOrderFilter();
       })
-      .then(() => getProductList())
-      .then((products) => {
-        this.products = products || [];
-
-        if (this.products.length && selectedProductId) {
-          const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
-          if(selectedProduct) {
-            if(selectedOrderId) {
-              this.displayProductOrdersList(selectedProduct, Number(selectedOrderId));
-            } else {
-              this.displayProduct(selectedProduct);
-            }
-          }
-        }
-      })
+      .then(() => this.refreshProductList(selectedProductId, selectedOrderId))
       .catch(e => {
         console.debug("Error initializing application", e);
         this.error = e && e.message ? e.message : String(e);
@@ -349,6 +368,33 @@ export default {
         }, 2000);
         this.loading = false;
       });
+    },
+    filterProducts(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        storeProductFilter(this.productsFilters);
+      }
+      this.loading = true;
+      return this.refreshProductList().finally(() => this.loading = false);
+    },
+    refreshProductList(selectedProductId, selectedOrderId) {
+      return getProductList()
+        .then((products) => {
+          this.products = (products && products.filter(product => (product.enabled || this.productsFilters.disabled) && (product.unlimited || product.totalSupply > product.purchased  || this.productsFilters.soldOut))) || [];
+
+          if (this.products.length && selectedProductId) {
+            const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
+            if(selectedProduct) {
+              if(selectedOrderId) {
+                this.displayProductOrdersList(selectedProduct, Number(selectedOrderId));
+              } else {
+                this.displayProduct(selectedProduct);
+              }
+            }
+          }
+        });
     },
     walletIsLoading() {
       this.walletAddonInstalled = true;
