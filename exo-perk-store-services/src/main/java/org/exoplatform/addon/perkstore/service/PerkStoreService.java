@@ -565,16 +565,6 @@ public class PerkStoreService implements Startable {
     return order;
   }
 
-  private void computeOrderDeliverStatus(ProductOrder order, double refundedQuantity, double deliveredQuantity) {
-    if (order.getQuantity() == refundedQuantity) {
-      order.setStatus(REFUNDED.name());
-    } else if (order.getQuantity() == refundedQuantity + deliveredQuantity) {
-      order.setStatus(DELIVERED.name());
-    } else {
-      order.setStatus(PARTIAL.name());
-    }
-  }
-
   private void computeRemainingQuantity(ProductOrder persistedOrder,
                                         double deliveredQuantity,
                                         double refundedQuantity) throws PerkStoreException {
@@ -635,20 +625,6 @@ public class PerkStoreService implements Startable {
                                                                identityId,
                                                                period.getStartDate(),
                                                                period.getEndDate());
-  }
-
-  private void computeOrderPaymentStatus(ProductOrder persistedOrder, boolean transactionSuccess) {
-    if (transactionSuccess) {
-      // Change status of order to PAID only if the the status was ERROR,
-      // CANCELED, ORDERED
-      String oldStatus = persistedOrder.getStatus();
-      if (StringUtils.equals(ORDERED.name(), oldStatus) || StringUtils.equals(CANCELED.name(), oldStatus)
-          || StringUtils.equals(ERROR.name(), oldStatus)) {
-        persistedOrder.setStatus(PAID.name());
-      }
-    } else {
-      persistedOrder.setStatus(ERROR.name());
-    }
   }
 
   private void checkTransactionHashNotExists(Product product, ProductOrder order, String username) throws PerkStoreException {

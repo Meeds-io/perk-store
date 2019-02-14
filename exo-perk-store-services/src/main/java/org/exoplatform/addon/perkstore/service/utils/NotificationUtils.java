@@ -1,5 +1,7 @@
 package org.exoplatform.addon.perkstore.service.utils;
 
+import static org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus.*;
+import static org.exoplatform.addon.perkstore.model.constant.ProductOrderTransactionStatus.SUCCESS;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
 import java.util.*;
@@ -26,140 +28,176 @@ import org.exoplatform.webui.utils.TimeConvertUtils;
 
 public class NotificationUtils {
 
-  public static final ArgumentLiteral<GlobalSettings> SETTINGS_PARAMETER                             =
-                                                                         new ArgumentLiteral<>(GlobalSettings.class, "settings");
+  public static final ArgumentLiteral<GlobalSettings>               SETTINGS_PARAMETER                             =
+                                                                                       new ArgumentLiteral<>(GlobalSettings.class,
+                                                                                                             "settings");
 
-  public static final ArgumentLiteral<Product>        PRODUCT_PARAMETER                              =
-                                                                        new ArgumentLiteral<>(Product.class, "product");
+  public static final ArgumentLiteral<Product>                      PRODUCT_PARAMETER                              =
+                                                                                      new ArgumentLiteral<>(Product.class,
+                                                                                                            "product");
 
-  public static final ArgumentLiteral<Boolean>        PRODUCT_IS_NEW_PARAMETER                       =
-                                                                               new ArgumentLiteral<>(Boolean.class,
-                                                                                                     "product.new");
+  public static final ArgumentLiteral<Boolean>                      PRODUCT_IS_NEW_PARAMETER                       =
+                                                                                             new ArgumentLiteral<>(Boolean.class,
+                                                                                                                   "product.new");
 
-  public static final ArgumentLiteral<ProductOrder>   ORDER_PARAMETER                                =
-                                                                      new ArgumentLiteral<>(ProductOrder.class, "order");
+  public static final ArgumentLiteral<ProductOrder>                 ORDER_PARAMETER                                =
+                                                                                    new ArgumentLiteral<>(ProductOrder.class,
+                                                                                                          "order");
 
-  public static final ArgumentLiteral<Boolean>        ORDER_IS_NEW_PARAMETER                         =
-                                                                             new ArgumentLiteral<>(Boolean.class, "order.new");
+  public static final ArgumentLiteral<ProductOrderModificationType> ORDER_MODIFICATION_TYPE_PARAMETER              =
+                                                                                                      new ArgumentLiteral<>(ProductOrderModificationType.class,
+                                                                                                                            "orderModificationType");
+
+  public static final ArgumentLiteral<Boolean>                      ORDER_IS_NEW_PARAMETER                         =
+                                                                                           new ArgumentLiteral<>(Boolean.class,
+                                                                                                                 "order.new");
 
   // Notification plugins ids
 
-  public static final String                          PERKSTORE_PRODUCT_ADDED_NOTIFICATION_PLUGIN    =
-                                                                                                  "ProductAddedNotificationPlugin";
+  public static final String                                        PERKSTORE_PRODUCT_ADDED_NOTIFICATION_PLUGIN    =
+                                                                                                                "ProductAddedNotificationPlugin";
 
-  public static final String                          PERKSTORE_PRODUCT_MODIFIED_NOTIFICATION_PLUGIN =
-                                                                                                     "ProductModifiedNotificationPlugin";
+  public static final String                                        PERKSTORE_PRODUCT_MODIFIED_NOTIFICATION_PLUGIN =
+                                                                                                                   "ProductModifiedNotificationPlugin";
 
-  public static final String                          PERKSTORE_ORDER_ADDED_NOTIFICATION_PLUGIN      =
-                                                                                                "OrderAddedNotificationPlugin";
+  public static final String                                        PERKSTORE_ORDER_ADDED_NOTIFICATION_PLUGIN      =
+                                                                                                              "OrderAddedNotificationPlugin";
 
-  public static final String                          PERKSTORE_ORDER_MODIFIED_NOTIFICATION_PLUGIN   =
-                                                                                                   "OrderModifiedNotificationPlugin";
+  public static final String                                        PERKSTORE_ORDER_MODIFIED_NOTIFICATION_PLUGIN   =
+                                                                                                                 "OrderModifiedNotificationPlugin";
 
-  public static final PluginKey                       ORDER_MODIFIED_KEY                             =
-                                                                         PluginKey.key(PERKSTORE_ORDER_MODIFIED_NOTIFICATION_PLUGIN);
+  public static final PluginKey                                     ORDER_MODIFIED_KEY                             =
+                                                                                       PluginKey.key(PERKSTORE_ORDER_MODIFIED_NOTIFICATION_PLUGIN);
 
-  public static final PluginKey                       ORDER_ADDED_KEY                                =
-                                                                      PluginKey.key(PERKSTORE_ORDER_ADDED_NOTIFICATION_PLUGIN);
+  public static final PluginKey                                     ORDER_ADDED_KEY                                =
+                                                                                    PluginKey.key(PERKSTORE_ORDER_ADDED_NOTIFICATION_PLUGIN);
 
-  public static final PluginKey                       PRODUCT_MODIFIED_KEY                           =
-                                                                           PluginKey.key(PERKSTORE_PRODUCT_MODIFIED_NOTIFICATION_PLUGIN);
+  public static final PluginKey                                     PRODUCT_MODIFIED_KEY                           =
+                                                                                         PluginKey.key(PERKSTORE_PRODUCT_MODIFIED_NOTIFICATION_PLUGIN);
 
-  public static final PluginKey                       PRODUCT_ADDED_KEY                              =
-                                                                        PluginKey.key(PERKSTORE_PRODUCT_ADDED_NOTIFICATION_PLUGIN);
+  public static final PluginKey                                     PRODUCT_ADDED_KEY                              =
+                                                                                      PluginKey.key(PERKSTORE_PRODUCT_ADDED_NOTIFICATION_PLUGIN);
 
   // Stored parameters
 
-  private static final String                         STORED_PARAMETER_SETTINGS_SYMBOL               = "SYMBOL";
+  private static final String                                       STORED_PARAMETER_SETTINGS_SYMBOL               = "SYMBOL";
 
-  private static final String                         STORED_PARAMETER_PRODUCT_ID                    = "PRODUCT_ID";
+  private static final String                                       STORED_PARAMETER_PRODUCT_ID                    = "PRODUCT_ID";
 
-  private static final String                         STORED_PARAMETER_PRODUCT_TITLE                 = "PRODUCT_TITLE";
+  private static final String                                       STORED_PARAMETER_PRODUCT_TITLE                 =
+                                                                                                   "PRODUCT_TITLE";
 
-  private static final String                         STORED_PARAMETER_PRODUCT_SUPPLY                = "PRODUCT_SUPPLY";
+  private static final String                                       STORED_PARAMETER_PRODUCT_SUPPLY                =
+                                                                                                    "PRODUCT_SUPPLY";
 
-  private static final String                         STORED_PARAMETER_PRODUCT_PRICE                 = "PRODUCT_PRICE";
+  private static final String                                       STORED_PARAMETER_PRODUCT_PRICE                 =
+                                                                                                   "PRODUCT_PRICE";
 
-  private static final String                         STORED_PARAMETER_PRODUCT_IS_NEW                = "PRODUCT_IS_NEW";
+  private static final String                                       STORED_PARAMETER_PRODUCT_IS_NEW                =
+                                                                                                    "PRODUCT_IS_NEW";
 
-  private static final String                         STORED_PARAMETER_ORDER_ID                      = "ORDER_ID";
+  private static final String                                       STORED_PARAMETER_ORDER_ID                      = "ORDER_ID";
 
-  private static final String                         STORED_PARAMETER_ORDER_STATUS                  = "ORDER_STATUS";
+  private static final String                                       STORED_PARAMETER_ORDER_STATUS                  =
+                                                                                                  "ORDER_STATUS";
 
-  private static final String                         STORED_PARAMETER_QUANTITY_ORDER                = "ORDER_QUANTITY";
+  private static final String                                       STORED_PARAMETER_QUANTITY_ORDER                =
+                                                                                                    "ORDER_QUANTITY";
 
-  private static final String                         STORED_PARAMETER_ORDER_DELIVERED_QUANTITY      = "ORDER_DELIVERED_QUANTITY";
+  private static final String                                       STORED_PARAMETER_ORDER_DELIVERED_QUANTITY      =
+                                                                                                              "ORDER_DELIVERED_QUANTITY";
 
-  private static final String                         STORED_PARAMETER_ORDER_REFUND_TX_STATUS        = "ORDER_REFUNDED_TX_STATUS";
+  private static final String                                       STORED_PARAMETER_ORDER_REFUND_TX_STATUS        =
+                                                                                                            "ORDER_REFUNDED_TX_STATUS";
 
-  private static final String                         STORED_PARAMETER_ORDER_REFUNDED_QUANTITY       = "ORDER_REFUNDED_QUANTITY";
+  private static final String                                       STORED_PARAMETER_ORDER_REFUNDED_QUANTITY       =
+                                                                                                             "ORDER_REFUNDED_QUANTITY";
 
-  private static final String                         STORED_PARAMETER_ORDER_REFUNDED_AMOUNT         = "ORDER_REFUNDED_AMOUNT";
+  private static final String                                       STORED_PARAMETER_ORDER_REFUNDED_AMOUNT         =
+                                                                                                           "ORDER_REFUNDED_AMOUNT";
 
-  private static final String                         STORED_PARAMETER_ORDER_REMAINING_QUANTITY      = "ORDER_REMAINING_QUANTITY";
+  private static final String                                       STORED_PARAMETER_ORDER_REMAINING_QUANTITY      =
+                                                                                                              "ORDER_REMAINING_QUANTITY";
 
-  private static final String                         STORED_PARAMETER_ORDER_IS_NEW                  = "ORDER_IS_NEW";
+  private static final String                                       STORED_PARAMETER_ORDER_IS_NEW                  =
+                                                                                                  "ORDER_IS_NEW";
 
-  private static final String                         STORED_PARAMETER_ORDER_MODIFICATION_TYPE       = "ORDER_MODIFICATION_TYPE";
+  private static final String                                       STORED_PARAMETER_ORDER_MODIFICATION_TYPE       =
+                                                                                                             "ORDER_MODIFICATION_TYPE";
 
-  private static final String                         STORED_PARAMETER_MODIFIER_IDENTITY_ID          = "MODIFIER_ID";
+  private static final String                                       STORED_PARAMETER_MODIFIER_IDENTITY_ID          =
+                                                                                                          "MODIFIER_ID";
 
-  private static final String                         STORED_PARAMETER_SENDER_IDENTITY_ID            = "SENDER_ID";
+  private static final String                                       STORED_PARAMETER_SENDER_IDENTITY_ID            = "SENDER_ID";
 
-  private static final String                         STORED_PARAMETER_RECEIVER_IDENTITY_ID          = "RECEIVER_ID";
+  private static final String                                       STORED_PARAMETER_RECEIVER_IDENTITY_ID          =
+                                                                                                          "RECEIVER_ID";
 
   // Template variables
 
-  private static final String                         TEMPLATE_VARIABLE_SETTINGS_SYMBOL              = "symbol";
+  private static final String                                       TEMPLATE_VARIABLE_SETTINGS_SYMBOL              = "symbol";
 
-  private static final String                         TEMPLATE_VARIABLE_PRODUCT_ID                   = "productId";
+  private static final String                                       TEMPLATE_VARIABLE_PRODUCT_ID                   = "productId";
 
-  private static final String                         TEMPLATE_VARIABLE_PRODUCT_TITLE                = "productTitle";
+  private static final String                                       TEMPLATE_VARIABLE_PRODUCT_TITLE                =
+                                                                                                    "productTitle";
 
-  private static final String                         TEMPLATE_VARIABLE_PRODUCT_SUPPLY               = "productSupply";
+  private static final String                                       TEMPLATE_VARIABLE_PRODUCT_SUPPLY               =
+                                                                                                     "productSupply";
 
-  private static final String                         TEMPLATE_VARIABLE_PRODUCT_PRICE                = "productPrice";
+  private static final String                                       TEMPLATE_VARIABLE_PRODUCT_PRICE                =
+                                                                                                    "productPrice";
 
-  private static final String                         TEMPLATE_VARIABLE_PRODUCT_IS_NEW               = "isNewProduct";
+  private static final String                                       TEMPLATE_VARIABLE_PRODUCT_IS_NEW               =
+                                                                                                     "isNewProduct";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_ID                     = "orderId";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_ID                     = "orderId";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_STATUS                 = "orderStatus";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_STATUS                 =
+                                                                                                   "orderStatus";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_LABEL_STATUS           = "orderStatusLabel";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_LABEL_STATUS           =
+                                                                                                         "orderStatusLabel";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_QUANTITY               = "orderQuantity";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_QUANTITY               =
+                                                                                                     "orderQuantity";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_DELIVERED_QUANTITY     = "orderDeliveredQuantity";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_DELIVERED_QUANTITY     =
+                                                                                                               "orderDeliveredQuantity";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_REFUNDED_QUANTITY      = "orderRefundedQuantity";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_REFUNDED_QUANTITY      =
+                                                                                                              "orderRefundedQuantity";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_REFUND_TX_STATUS       =
-                                                                                               "orderRefundTransactionStatus";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_REFUND_TX_STATUS       =
+                                                                                                             "orderRefundTransactionStatus";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_REFUNDED_AMOUNT        = "orderRefundedAmount";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_REFUNDED_AMOUNT        =
+                                                                                                            "orderRefundedAmount";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_REMAINING_QUANTITY     = "orderRemainingQuantity";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_REMAINING_QUANTITY     =
+                                                                                                               "orderRemainingQuantity";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_IS_NEW                 = "isNewOrder";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_IS_NEW                 = "isNewOrder";
 
-  private static final String                         TEMPLATE_VARIABLE_ORDER_MODIFICATION_TYPE      = "modificationType";
+  private static final String                                       TEMPLATE_VARIABLE_ORDER_MODIFICATION_TYPE      =
+                                                                                                              "modificationType";
 
-  private static final String                         TEMPLATE_VARIABLE_NOTIFICATION_URL             = "detailsURL";
+  private static final String                                       TEMPLATE_VARIABLE_NOTIFICATION_URL             = "detailsURL";
 
-  private static final String                         TEMPLATE_VARIABLE_PREFIX_ORDER_IDENTITY        = "isOrder";
+  private static final String                                       TEMPLATE_VARIABLE_PREFIX_ORDER_IDENTITY        = "isOrder";
 
-  private static final String                         TEMPLATE_VARIABLE_SUFFIX_IDENTITY_ID           = "Id";
+  private static final String                                       TEMPLATE_VARIABLE_SUFFIX_IDENTITY_ID           = "Id";
 
-  private static final String                         TEMPLATE_VARIABLE_SUFFIX_IDENTITY_AVATAR       = "Avatar";
+  private static final String                                       TEMPLATE_VARIABLE_SUFFIX_IDENTITY_AVATAR       = "Avatar";
 
-  private static final String                         TEMPLATE_VARIABLE_SUFFIX_IDENTITY_NAME         = "Name";
+  private static final String                                       TEMPLATE_VARIABLE_SUFFIX_IDENTITY_NAME         = "Name";
 
-  private static final String                         TEMPLATE_VARIABLE_SUFFIX_IDENTITY_URL          = "Url";
+  private static final String                                       TEMPLATE_VARIABLE_SUFFIX_IDENTITY_URL          = "Url";
 
-  private static final String                         TEMPLATE_VARIABLE_SUFFIX_IS_SPACE_TYPE         = "IsSpaceType";
+  private static final String                                       TEMPLATE_VARIABLE_SUFFIX_IS_SPACE_TYPE         =
+                                                                                                           "IsSpaceType";
 
-  private static String                               defaultSite;
+  private static String                                             defaultSite;
 
   private NotificationUtils() {
   }
@@ -174,6 +212,10 @@ public class NotificationUtils {
 
   public static final ProductOrder getOrderParameter(NotificationContext ctx) {
     return ctx.value(ORDER_PARAMETER);
+  }
+
+  public static final ProductOrderModificationType getOrderModificationTypeParameter(NotificationContext ctx) {
+    return ctx.value(ORDER_MODIFICATION_TYPE_PARAMETER);
   }
 
   public static final boolean isNewProductParameter(NotificationContext ctx) {
@@ -270,7 +312,10 @@ public class NotificationUtils {
     notification.to(new ArrayList<>(recipientList));
   }
 
-  public static final void storeOrderParameters(NotificationInfo notification, ProductOrder order, boolean isNew) {
+  public static final void storeOrderParameters(NotificationInfo notification,
+                                                ProductOrder order,
+                                                ProductOrderModificationType orderModificationType,
+                                                boolean isNew) {
     if (order.getReceiver() == null || order.getReceiver().getTechnicalId() == 0) {
       throw new IllegalStateException("receiver is null");
     }
@@ -284,10 +329,21 @@ public class NotificationUtils {
       notification.with(STORED_PARAMETER_MODIFIER_IDENTITY_ID, String.valueOf(order.getLastModifier().getTechnicalId()));
     }
 
+    String status = order.getStatus();
+    if (orderModificationType == ProductOrderModificationType.TX_STATUS) {
+      if (StringUtils.equals(SUCCESS.name(), order.getTransactionStatus())) {
+        status = PAID.name();
+      } else {
+        status = ERROR.name();
+      }
+    } else if (orderModificationType == ProductOrderModificationType.REFUND_TX_STATUS) {
+      status = REFUNDED.name();
+    }
+
     notification.with(STORED_PARAMETER_ORDER_ID, String.valueOf(order.getId()))
                 .with(STORED_PARAMETER_RECEIVER_IDENTITY_ID, String.valueOf(order.getReceiver().getTechnicalId()))
                 .with(STORED_PARAMETER_SENDER_IDENTITY_ID, String.valueOf(order.getSender().getTechnicalId()))
-                .with(STORED_PARAMETER_ORDER_STATUS, order.getStatus())
+                .with(STORED_PARAMETER_ORDER_STATUS, status)
                 .with(STORED_PARAMETER_QUANTITY_ORDER, stringifyDouble(order.getQuantity()))
                 .with(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY, stringifyDouble(order.getDeliveredQuantity()))
                 .with(STORED_PARAMETER_ORDER_REFUND_TX_STATUS, order.getRefundTransactionStatus())

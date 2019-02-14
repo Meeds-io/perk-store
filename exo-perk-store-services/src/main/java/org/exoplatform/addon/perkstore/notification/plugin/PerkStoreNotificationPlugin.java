@@ -21,6 +21,7 @@ import static org.exoplatform.addon.perkstore.service.utils.NotificationUtils.*;
 import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.addon.perkstore.model.*;
+import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.model.NotificationInfo;
 import org.exoplatform.commons.api.notification.plugin.BaseNotificationPlugin;
@@ -107,6 +108,7 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
     GlobalSettings globalSettings = getSettingsParameter(ctx);
     Product product = getProductParameter(ctx);
     ProductOrder order = getOrderParameter(ctx);
+    ProductOrderModificationType orderModificationType = getOrderModificationTypeParameter(ctx);
 
     NotificationInfo notification = NotificationInfo.instance();
     notification.key(getId());
@@ -118,12 +120,12 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
     } else {
       storeSettingsParameters(globalSettings, notification);
 
-      // This is made to avoid a special case: a product is created and never modified
-      // and it receives orders
+      // This is made to avoid a special case: a product is created and never
+      // modified and it receives orders
       boolean isNew = newProduct || (order != null && product.getLastModifier() == null);
       storeProductParameters(notification, product, isNew);
       if (order != null) {
-        storeOrderParameters(notification, order, newOrder);
+        storeOrderParameters(notification, order, orderModificationType, newOrder);
       }
       return notification.end();
     }

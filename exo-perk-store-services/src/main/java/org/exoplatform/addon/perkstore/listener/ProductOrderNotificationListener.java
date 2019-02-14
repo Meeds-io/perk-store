@@ -39,6 +39,7 @@ public class ProductOrderNotificationListener extends Listener<Product, ProductO
       ctx.append(SETTINGS_PARAMETER, getPerkStoreService().getGlobalSettings());
       ctx.append(PRODUCT_PARAMETER, event.getSource());
       ctx.append(ORDER_PARAMETER, order);
+      ctx.append(ORDER_MODIFICATION_TYPE_PARAMETER, modificationType);
       ctx.append(ORDER_IS_NEW_PARAMETER, isNew);
 
       String pluginId = isNew ? PERKSTORE_ORDER_ADDED_NOTIFICATION_PLUGIN : PERKSTORE_ORDER_MODIFIED_NOTIFICATION_PLUGIN;

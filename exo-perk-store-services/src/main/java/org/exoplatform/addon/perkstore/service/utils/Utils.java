@@ -1,5 +1,7 @@
 package org.exoplatform.addon.perkstore.service.utils;
 
+import static org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus.*;
+
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -506,6 +508,30 @@ public class Utils {
       return LocaleUtils.toLocale(lang);
     }
     return null;
+  }
+
+  public static final void computeOrderDeliverStatus(ProductOrder order, double refundedQuantity, double deliveredQuantity) {
+    if (order.getQuantity() == refundedQuantity) {
+      order.setStatus(REFUNDED.name());
+    } else if (order.getQuantity() == refundedQuantity + deliveredQuantity) {
+      order.setStatus(DELIVERED.name());
+    } else {
+      order.setStatus(PARTIAL.name());
+    }
+  }
+
+  public static final void computeOrderPaymentStatus(ProductOrder order, boolean transactionSuccess) {
+    if (transactionSuccess) {
+      // Change status of order to PAID only if the the status was ERROR,
+      // CANCELED, ORDERED
+      String oldStatus = order.getStatus();
+      if (StringUtils.equals(ORDERED.name(), oldStatus) || StringUtils.equals(CANCELED.name(), oldStatus)
+          || StringUtils.equals(ERROR.name(), oldStatus)) {
+        order.setStatus(PAID.name());
+      }
+    } else {
+      order.setStatus(ERROR.name());
+    }
   }
 
   public static final Response computeErrorResponse(Log log,
