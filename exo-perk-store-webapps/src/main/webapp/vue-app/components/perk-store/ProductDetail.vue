@@ -109,8 +109,10 @@
           <strong>{{ purchasedPercentageLabel }} articles sold</strong>
         </v-tooltip>
         <v-card-text class="productCardFooter">
-          <div :title="product.description" class="font-weight-light title mb-2 text-xs-center truncate8 productCardFooterDescription">
-            {{ product.description }}
+          <div
+            :title="product.description"
+            class="font-weight-light title mb-2 truncate8 productCardFooterDescription"
+            v-text="product.description && product.description.trim()">
           </div>
         </v-card-text>
       </v-card>
