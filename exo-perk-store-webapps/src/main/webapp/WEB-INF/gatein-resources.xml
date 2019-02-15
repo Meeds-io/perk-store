@@ -25,6 +25,9 @@
         <path>/js/perkstore.bundle.js</path>
       </script>
       <depends>
+        <module>perkstoreVuetify</module>
+      </depends>
+      <depends>
         <module>jquery</module>
         <as>$</as>
       </depends>
@@ -38,21 +41,13 @@
         <module>iePolyfills</module>
       </depends>
       <depends>
-        <module>perkstoreVuetify</module>
-      </depends>
-      <depends>
         <module>userPopupPlugin</module>
       </depends>
       <depends>
         <module>spacePopupPlugin</module>
       </depends>
       <depends>
-        <module>social-ui-activities-loader</module>
-        <as>UIActivityLoader</as>
-      </depends>
-      <depends>
-        <module>social-ui-activity</module>
-        <as>UIActivity</as>
+          <module>filedrop</module>
       </depends>
       <depends>
         <module>commons-cometd3</module>

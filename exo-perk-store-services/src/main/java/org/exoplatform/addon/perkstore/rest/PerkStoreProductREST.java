@@ -19,16 +19,18 @@ package org.exoplatform.addon.perkstore.rest;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.computeErrorResponse;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.getCurrentUserId;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 
 import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
+import org.exoplatform.addon.perkstore.model.FileDetail;
 import org.exoplatform.addon.perkstore.model.Product;
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.services.log.ExoLogger;
@@ -130,6 +132,50 @@ public class PerkStoreProductREST implements ResourceContainer {
     } catch (Exception e) {
       LOG.error("Error getting products list", e);
       return Response.status(500).build();
+    }
+  }
+
+  /**
+   * Get product illustration
+   * 
+   * @param request
+   * @param productId
+   * @param imageId
+   * @return
+   */
+  @GET
+  @Path("{productId}/{imageId}")
+  @RolesAllowed("users")
+  public Response getProductImage(@Context Request request,
+                                  @PathParam("productId") long productId,
+                                  @PathParam("imageId") long imageId) {
+    String currentUserId = getCurrentUserId();
+    try {
+      FileDetail fileDetail = perkStoreService.getFileDetail(productId, imageId, false, currentUserId);
+      if (fileDetail == null) {
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+      }
+
+      //
+      long lastUpdated = fileDetail.getLastUpdated();
+      EntityTag eTag = new EntityTag(String.valueOf(lastUpdated));
+      //
+      Response.ResponseBuilder builder = request.evaluatePreconditions(eTag);
+      if (builder == null) {
+        fileDetail = perkStoreService.getFileDetail(productId, imageId, true, currentUserId);
+        InputStream stream = new ByteArrayInputStream(fileDetail.getData());
+        builder = Response.ok(stream, "image/png");
+        builder.tag(eTag);
+      }
+      CacheControl cc = new CacheControl();
+      cc.setMaxAge(86400);
+      builder.cacheControl(cc);
+      return builder.cacheControl(cc).build();
+    } catch (PerkStoreException e) {
+      return computeErrorResponse(LOG, e, "Getting products list", currentUserId, null);
+    } catch (Exception e) {
+      LOG.warn("Error getting image {} on product {}", imageId, productId, e);
+      return Response.serverError().build();
     }
   }
 

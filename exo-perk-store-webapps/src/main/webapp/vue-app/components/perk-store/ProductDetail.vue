@@ -6,26 +6,33 @@
         :class="`elevation-${hover ? 9 : 3}`"
         color="grey lighten-4"
         max-width="600">
-        <v-img
-          :aspect-ratio="16/9"
-          :src="product.illustrationURL || ''"
-          class="productCardHeader"
-          referrerpolicy="no-referrer"
-          contain>
+        <v-carousel
+          hide-controls
+          hide-delimiters
+          class="carousselParent">
+          <template v-if="product.imageFiles">
+            <v-carousel-item
+              v-for="(imageFile,i) in product.imageFiles"
+              :key="i"
+              :src="imageFile.src"
+              max="300"
+              class="carousselImage">
+            </v-carousel-item>
+          </template>
           <v-expand-transition>
             <div
-              v-if="hover || !product || !product.enabled || !product.illustrationURL || !available || maxOrdersReached"
+              v-if="hover || !product || !product.enabled || !product.imageFiles || !product.imageFiles.length || !available || maxOrdersReached"
               class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
               style="height: 100%;">
               <product-detail-content
                 :product="product"
                 :symbol="symbol"
                 :max-orders-reached="maxOrdersReached"
-                :hover="hover || !product.illustrationURL"
+                :hover="hover || !product.imageFiles || !product.imageFiles.length"
                 :available="available" />
             </div>
           </v-expand-transition>
-        </v-img>
+        </v-carousel>
         <v-card-text
           :class="product.unlimited && 'mt-2'"
           class="pt-2"

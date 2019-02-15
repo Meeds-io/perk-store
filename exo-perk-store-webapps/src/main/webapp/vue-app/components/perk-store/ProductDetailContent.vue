@@ -1,9 +1,10 @@
 <template>
   <v-list
-    class="pt-0 pb-0"
+    class="grey lighten-4 pt-0 pb-0"
     dense
+    light
     transparent>
-    <v-list-tile v-if="!product.enabled">
+    <v-list-tile v-if="!product.enabled" light>
       <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
     </v-list-tile>
     <v-list-tile v-else-if="!product.unlimited && !available" class="soldOutBlock red">

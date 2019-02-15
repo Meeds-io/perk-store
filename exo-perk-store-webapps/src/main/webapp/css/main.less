@@ -192,7 +192,6 @@
     align-items: center;
     bottom: 0;
     justify-content: center;
-    opacity: .8;
     position: absolute;
     width: 100%;
   }
@@ -379,6 +378,58 @@
       height: 30px;
       line-height: 30px;
       padding: 0 17px;
+    }
+  }
+
+  .fileDrop{
+    &, [class^="uiIcon"] {
+      color: #2f5e92;
+    }
+    .dropZone {
+      border-radius: 5px;
+      border: 3px dashed #e6e6e6;
+      font-size: 14px;
+      height: 50px;
+      align-items: center;
+      justify-content: center;
+      display: flex;
+
+      &:hover, &:hover .attachFileIcon, &.hover, &.hover .attachFileIcon {
+        background: #578dc9;
+        opacity: 0.7;
+        color: #fff !important;
+      }
+    }
+    .attachFileIcon:before {
+      content: "\e780";
+      font-weight: bold;
+    }
+    .uploadContainer .fileNameLabel {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 345px;
+    }
+    .uploadContainer .file {
+      margin-top: 10px;
+    }
+    .uploadContainer .file .fileSize {
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+    .uploadContainer > .uploadError {
+      text-align: center;
+    }
+    .uploadContainer .uploadError {
+      color: red;
+    }
+  }
+  .carousselParent, .carousselImage {
+    max-height: 250px;
+    max-width: 100%;
+
+    .v-image__image {
+      background-size: contain;
     }
   }
 }

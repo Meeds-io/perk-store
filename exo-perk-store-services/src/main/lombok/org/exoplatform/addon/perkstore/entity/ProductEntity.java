@@ -2,6 +2,7 @@ package org.exoplatform.addon.perkstore.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -76,6 +77,11 @@ public class ProductEntity implements Serializable {
   @CollectionTable(name = "ADDONS_PERKSTORE_PRODUCT_PERMISSION", joinColumns = @JoinColumn(name = "PRODUCT_ID"))
   @Column(name = "PERMISSION_IDENTITY_ID")
   private List<Long>             accessPermissions;
+
+  @ElementCollection
+  @CollectionTable(name = "ADDONS_PERKSTORE_IMAGE", joinColumns = @JoinColumn(name = "PRODUCT_ID"))
+  @Column(name = "IMAGE_FILE_ID")
+  private Set<Long>              images;
 
   public Long getId() {
     return id;
@@ -219,6 +225,14 @@ public class ProductEntity implements Serializable {
 
   public void setLastModifier(long lastModifier) {
     this.lastModifier = lastModifier;
+  }
+
+  public Set<Long> getImages() {
+    return images;
+  }
+
+  public void setImages(Set<Long> images) {
+    this.images = images;
   }
 
 }

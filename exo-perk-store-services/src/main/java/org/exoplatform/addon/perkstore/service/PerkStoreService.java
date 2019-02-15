@@ -212,6 +212,7 @@ public class PerkStoreService implements Startable {
     productToStore.setAllowFraction(product.isAllowFraction());
     productToStore.setPrice(product.getPrice());
     productToStore.setMaxOrdersPerUser(product.getMaxOrdersPerUser());
+    productToStore.setImageFiles(product.getImageFiles());
     if (product.getOrderPeriodicity() != null) {
       productToStore.setOrderPeriodicity(product.getOrderPeriodicity().trim());
     } else {
@@ -516,6 +517,13 @@ public class PerkStoreService implements Startable {
 
   public Product getProductById(long productId) {
     return perkStoreStorage.getProductById(productId);
+  }
+
+  public FileDetail getFileDetail(long productId, long imageId, boolean retrieveData, String username) throws Exception {
+    if (!canViewProduct(getProductById(productId), username, isPerkStoreManager(username))) {
+      return null;
+    }
+    return perkStoreStorage.getFileDetail(productId, imageId, retrieveData);
   }
 
   private GlobalSettings loadGlobalSettings() throws JsonException {

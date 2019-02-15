@@ -375,6 +375,13 @@ public class Utils {
                                          .collect(Collectors.toList()));
     }
 
+    entity.setImages(product.getImageFiles() == null ? Collections.emptySet()
+                                                     : product.getImageFiles()
+                                                              .stream()
+                                                              .filter(image -> image.getId() > 0)
+                                                              .map(image -> image.getId())
+                                                              .collect(Collectors.toSet()));
+
     entity.setOrderPeriodicity(getOrderPeriodicity(product.getOrderPeriodicity()));
 
     return entity;

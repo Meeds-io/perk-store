@@ -18,13 +18,10 @@
             autofocus
             counter />
 
-          <v-text-field
-            v-model="product.illustrationURL"
-            :maxlength="500"
-            name="ProductImage"
-            label="Product image"
-            placeholder="input the product image URL"
-            counter />
+          <upload-input
+            :max-files="5"
+            :max-uploads-size-in-mb="5"
+            :files="product.imageFiles" />
 
           <v-textarea
             v-model="product.description"
@@ -149,12 +146,14 @@
 </template>
 
 <script>
+import UploadInput from './FileMultiUploadInput.vue';
 import AutoComplete from '../AutoComplete.vue';
 
 import {saveProduct} from '../../js/PerkStoreProduct.js';
 
 export default {
   components: {
+    UploadInput,
     AutoComplete,
   },
   props: {
@@ -168,6 +167,7 @@ export default {
   data() {
     return {
       orderPeriodicity: null,
+      productEditionId: null,
       requiredRule: [(v) => !!v || 'Required field'],
       integerRule: [
         (v) => !v || this.isPositiveNumber(v, true) || 'Invalid positive integer',
@@ -223,9 +223,17 @@ export default {
       return label;
     }
   },
+  watch: {
+    product(value, oldValue) {
+      if(value && value !== oldValue) {
+        this.productEditionId = `FileMultiUploadComponent${parseInt(Math.random() * this.MAX_RANDOM_NUMBER)}`;
+      }
+    }
+  },
   methods: {
     init() {
       if(this.product) {
+        this.product.imageFiles = this.product.imageFiles || [];
         if(this.product.receiverMarchand) {
           this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
         }
@@ -281,6 +289,16 @@ export default {
       }
 
       this.$emit('error', null);
+
+      if (this.product && this.product.imageFiles) {
+        this.product.imageFiles.forEach(imageFile => {
+          delete imageFile.src;
+          delete imageFile.data;
+          delete imageFile.file;
+          delete imageFile.progress;
+          delete imageFile.finished;
+        });
+      }
 
       return saveProduct(this.product)
         .then(() => {
