@@ -9,15 +9,25 @@
         row
         wrap
         class="productsListParent">
-        <template v-for="product in products">
+        <product-detail-maximized
+          v-if="selectedProduct"
+          :key="selectedProduct.id"
+          :product="selectedProduct"
+          :symbol="symbol"
+          :wallet-loading="walletLoading"
+          :wallet-enabled="walletEnabled"
+          class="border-box-sizing xs12 sm6 md4 lg3 xl2"
+          @product-details="$emit('product-details', $event)"
+          @orders-list="$emit('orders-list', $event)"
+          @edit="$emit('edit', $event)"
+          @buy="$emit('buy', $event)" />
+        <template v-for="product in products" v-else>
           <product-detail
-            v-show="!selectedProduct || selectedProduct.id === product.id"
             :key="product.id"
             :product="product"
             :symbol="symbol"
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled"
-            :maximized="selectedProduct && selectedProduct.id === product.id"
             class="border-box-sizing xs12 sm6 md4 lg3 xl2"
             @product-details="$emit('product-details', $event)"
             @orders-list="$emit('orders-list', $event)"
@@ -37,10 +47,12 @@
 
 <script>
 import ProductDetail from './ProductDetail.vue';
+import ProductDetailMaximized from './ProductDetailMaximized.vue';
 
 export default {
   components: {
-    ProductDetail
+    ProductDetail,
+    ProductDetailMaximized,
   },
   props: {
     products: {
