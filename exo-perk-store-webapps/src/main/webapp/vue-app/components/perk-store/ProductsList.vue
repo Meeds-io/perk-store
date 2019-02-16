@@ -1,47 +1,49 @@
 <template>
   <v-card flat class="transparent">
-    <v-container
-      v-if="products && products.length"
-      class="border-box-sizing productsListParentContainer"
-      fluid
-      grid-list-md>
-      <v-layout
-        row
-        wrap
-        class="productsListParent">
+    <v-expand-transition name="fade" appear>
+      <v-flex v-show="selectedProduct" class="productDetailContainer">
         <product-detail-maximized
-          v-if="selectedProduct"
-          :key="selectedProduct.id"
-          :product="selectedProduct"
+          :product="selectedProduct || {}"
           :symbol="symbol"
+          :need-password="needPassword"
           :wallet-loading="walletLoading"
           :wallet-enabled="walletEnabled"
-          class="border-box-sizing xs12 sm6 md4 lg3 xl2"
-          @product-details="$emit('product-details', $event)"
-          @orders-list="$emit('orders-list', $event)"
-          @edit="$emit('edit', $event)"
-          @buy="$emit('buy', $event)" />
-        <template v-for="product in products" v-else>
-          <product-detail
-            :key="product.id"
-            :product="product"
-            :symbol="symbol"
-            :wallet-loading="walletLoading"
-            :wallet-enabled="walletEnabled"
-            class="border-box-sizing xs12 sm6 md4 lg3 xl2"
-            @product-details="$emit('product-details', $event)"
-            @orders-list="$emit('orders-list', $event)"
-            @edit="$emit('edit', $event)"
-            @buy="$emit('buy', $event)" />
-        </template>
-      </v-layout>
-    </v-container>
-    <v-container v-else-if="!loading" class="text-xs-center">
-      <div class="alert alert-info" style="display: inline-block">
-        <i class="uiIconInfo"></i>
-        No available products
-      </div>
-    </v-container>
+          class="border-box-sizing"
+          @ordered="$emit('ordered', $event)" />
+      </v-flex>
+    </v-expand-transition>
+    <template v-if="!selectedProduct">
+      <v-container
+        v-if="products && products.length"
+        class="border-box-sizing productsListParentContainer"
+        fluid
+        grid-list-md>
+        <v-layout
+          row
+          wrap
+          class="productsListParent">
+          <template v-for="product in products">
+            <product-detail
+              :key="product.id"
+              :product="product"
+              :symbol="symbol"
+              :wallet-loading="walletLoading"
+              :wallet-enabled="walletEnabled"
+              class="border-box-sizing xs12 sm6 md4 lg3 xl2"
+              @product-details="$emit('product-details', $event)"
+              @orders-list="$emit('orders-list', $event)"
+              @edit="$emit('edit', $event)"
+              @buy="$emit('buy', $event)" />
+          </template>
+        </v-layout>
+      </v-container>
+      <v-container v-else-if="!loading" class="text-xs-center">
+        <div class="alert alert-info" style="display: inline-block">
+          <i class="uiIconInfo"></i>
+          No available products
+        </div>
+      </v-container>
+    </template>
   </v-card>
 </template>
 
@@ -74,6 +76,12 @@ export default {
       },
     },
     loading: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    needPassword: {
       type: Boolean,
       default: function() {
         return false;

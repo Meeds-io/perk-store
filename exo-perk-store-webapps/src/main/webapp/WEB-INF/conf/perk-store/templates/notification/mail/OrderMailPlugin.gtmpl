@@ -29,8 +29,9 @@
                                       <%
                                         String senderLink = "<a class=\"user-name text-bold\" href=\"" + senderUrl + "\">" + senderName + "</a>";
                                         String message = null;
+                                        String orderLink = "<a class=\"text-bold\" target=\"_blank\" href=\"" + detailsURL + "\">#" + orderId + "</a>";
                                         if("true".equals(isNewOrder)) {
-                                         message = _ctx.appRes("Notification.perkstore.order.created", senderLink, orderQuantity, productTitle);
+                                         message = _ctx.appRes("Notification.perkstore.order.created", senderLink, orderQuantity, productTitle, orderLink);
                                         } else {
                                          String modifierLink = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + modifierName + "</a>";
                                          String key = "Notification.perkstore.order.modified." + orderStatusLabel;
@@ -42,7 +43,6 @@
                                            // Is sender modification
                                            key += ".you";
                                          }
-                                         String orderLink = "<a class=\"text-bold\" target=\"_blank\" href=\"" + detailsURL + "\">#" + orderId + "</a>";
                                          message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, orderDeliveredQuantity, orderLink);
                                         }
                                       %> 

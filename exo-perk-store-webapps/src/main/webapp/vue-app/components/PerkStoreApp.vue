@@ -25,10 +25,9 @@
               </v-btn>
               Perk store
               <template v-if="displayProductDetails && selectedProduct">
-                - Details of <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductForm && selectedProduct && selectedProduct.id">
-                - edit product
+                - <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductForm && selectedProduct">
                 - Add new product
@@ -59,10 +58,23 @@
               </v-icon>
             </v-btn>
             <v-btn
-              v-if="displayCloseIcon"
+              v-if="displayProductDetails && selectedProduct && selectedProduct.userData && selectedProduct.userData.canEdit"
               id="perkStoreAppMenuCloseButton"
+              class="primary"
               icon
               flat
+              title="Edit"
+              dark
+              @click="editProduct(selectedProduct)">
+              <v-icon small>fa-pen</v-icon>
+            </v-btn>
+            <v-btn
+              v-if="displayCloseIcon"
+              id="perkStoreAppMenuCloseButton"
+              class="secondary"
+              icon
+              flat
+              dark
               title="Close"
               @click="closeDetails">
               <v-icon small>
@@ -211,6 +223,7 @@
             :selected-product="displayProductDetails && selectedProduct"
             :symbol="symbol"
             :loading="loading"
+            :need-password="walletNeedPassword"
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled && walletAddonInstalled"
             @product-details="displayProduct"
@@ -222,7 +235,9 @@
             ref="buyModal"
             :product="selectedProduct"
             :symbol="symbol"
-            :need-password="walletNeedPassword" />
+            :need-password="walletNeedPassword"
+            :wallet-loading="walletLoading"
+            :wallet-enabled="walletEnabled" />
 
           <settings-modal
             ref="settingsModal"
@@ -503,6 +518,10 @@ export default {
             if(freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
               // Additional check for user data target
               Object.assign(product, freshProduct);
+
+              if (this.selectedProduct && this.selectedProduct.id === freshProduct.id) {
+                Object.assign(this.selectedProduct, freshProduct);
+              }
 
               // Add notification to non last modifier
               /*

@@ -1,6 +1,9 @@
 <template>
   <div class="fileDrop mt-4">
-    <label v-show="files && files.length < maxFiles" class="dropZone clickable" for="perk-store-attach-file">
+    <label
+      v-show="files && files.length < maxFiles"
+      class="dropZone clickable"
+      for="perk-store-attach-file">
       <span class="dropMsg">
         <i class="uiIcon attachFileIcon"></i> Drop files
       </span>
@@ -16,7 +19,10 @@
       <div v-if="error" class="alert alert-error v-content">
         <i class="uiIconError"></i>{{ error }}
       </div>
-      <v-list two-line dense class="pt-0">
+      <v-list
+        two-line
+        dense
+        class="pt-0">
         <template v-for="fileDetail in files">
           <v-list-tile
             :key="fileDetail.uploadId || fileDetail.id"

@@ -267,7 +267,7 @@ export default {
         if(order) {
           this.updateOrder(order, wsMessage.productorder);
           this.updateOrder(order, wsMessage.productorder, this.newAddedOrders);
-        } else if(wsMessage.productorder.productId === this.product.id) {
+        } else if(this.product && wsMessage.productorder.productId === this.product.id) {
           if (this.product.userData && this.product.userData.canEdit) {
             if(wsMessage.productorder.status.toUpperCase() === 'ORDERED' && !this.newAddedOrders.find(order => order.id === wsMessage.productorder.id)) {
               this.newAddedOrders.unshift(wsMessage.productorder);

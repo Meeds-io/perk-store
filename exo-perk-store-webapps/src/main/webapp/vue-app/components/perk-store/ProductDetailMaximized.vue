@@ -1,131 +1,70 @@
 <template>
-  <v-flex class="productDetailContent">
-    <v-hover>
-      <v-card
-        slot-scope="{ hover }"
-        :class="`elevation-${hover ? 9 : 3}`"
-        color="grey lighten-4"
-        max-width="600">
-        <v-img
-          :aspect-ratio="16/9"
-          :src="product.illustrationURL || ''"
-          class="productCardHeader"
-          referrerpolicy="no-referrer"
-          contain>
-          <v-expand-transition>
-            <div
-              v-if="hover || !product || !product.enabled || !product.illustrationURL || !available || maxOrdersReached"
-              class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
-              style="height: 100%;">
-              <product-detail-content
-                :product="product"
-                :symbol="symbol"
-                :max-orders-reached="maxOrdersReached"
-                :hover="hover || !product.illustrationURL"
-                :available="available" />
-            </div>
-          </v-expand-transition>
-        </v-img>
-        <v-card-text
-          :class="product.unlimited && 'mt-2'"
-          class="pt-2"
-          style="position: relative;">
-          <v-btn
-            :class="ordersListBtnClass"
-            :title="userData.canEdit ? 'Orders list' : 'My orders'"
-            absolute
-            color="secondary"
-            class="white--text orderListButton"
-            fab
-            right
-            top
-            @click="$emit('orders-list', product)">
-            <v-badge
-              :color="userData.canEdit ? 'red' : 'orange'"
-              right
-              overlap>
-              <span
-                v-if="product.notProcessedOrders"
-                slot="badge"
-                class="orderListBadge">
-                {{ product.notProcessedOrders }}
-              </span>
-              <v-icon v-if="userData.canEdit">fa-list-ul</v-icon>
-              <v-icon v-else>fa-file-invoice-dollar</v-icon>
-            </v-badge>
-          </v-btn>
-          <v-btn
-            v-if="userData.canEdit"
-            :class="editBtnClass"
-            title="Edit product"
-            absolute
-            color="secondary"
-            class="white--text editButton"
-            fab
-            right
-            top
-            @click="$emit('edit', product)">
-            <v-icon>fa-pen</v-icon>
-          </v-btn>
-          <v-btn
-            v-if="displayBuyButton"
-            title="Buy"
-            absolute
-            class="white--text primary"
-            :disabled="disabledBuy || !walletEnabled || walletLoading"
-            :loading="!disabledBuy && walletLoading"
-            fab
-            right
-            top
-            @click="displayBuyModal">
-            <v-icon>fa-shopping-cart</v-icon>
-          </v-btn>
-        </v-card-text>
-        <v-tooltip bottom>
-          <v-card-title slot="activator" class="ellipsis no-wrap pt-0 pb-0">
-            <h3 :title="product.title" class="mb-2 primary--text ellipsis">
-              <a
-                :href="productLink"
-                class="ellipsis"
-                @click="openProductDetail">
-                {{ product.title }}
-              </a>
-            </h3>
-            <v-spacer />
-            <h3 class="mb-2">
-              {{ product.price }} {{ symbol }}
-            </h3>
-          </v-card-title>
-          <strong v-if="!product.unlimited">{{ purchasedPercentageLabel }} articles sold</strong>
-          <strong v-else>Unlimited supply</strong>
-        </v-tooltip>
-        <v-tooltip v-if="!product.unlimited" bottom>
-          <v-progress-linear
-            slot="activator"
-            v-model="purchasedPercentage"
-            :open-delay="0"
-            color="red"
-            class="mb-0 mt-0" />
-          <strong>{{ purchasedPercentageLabel }} articles sold</strong>
-        </v-tooltip>
-        <v-card-text class="productCardFooter">
-          <div
-            :title="product.description"
-            class="font-weight-light title mb-2 truncate8 productCardFooterDescription"
-            v-text="product.description && product.description.trim()">
+  <v-card>
+    <v-card-actions class="pa-3">
+      <div class="headline">{{ product.title }}</div>
+      <v-spacer />
+      <!-- 
+      <v-icon>star_border</v-icon>
+      <v-icon>star_border</v-icon>
+      <v-icon>star_border</v-icon>
+      <v-icon>star_border</v-icon>
+      <v-icon>star_border</v-icon>
+       -->
+    </v-card-actions>
+    <v-divider light />
+    <v-layout wrap>
+      <v-flex
+        v-if="product.imageFiles && product.imageFiles.length"
+        md5
+        xs12>
+        <image-attachment-selector
+          :images="product.imageFiles" />
+      </v-flex>
+      <v-flex
+        :class="product.imageFiles && product.imageFiles.length ? 'md7': md12"
+        xs12>
+        <product-detail-content
+          :product="product"
+          :symbol="symbol"
+          :max-orders-reached="maxOrdersReached"
+          :available="available"
+          hover />
+        <v-divider />
+        <v-card-title class="productDetailRightParent pt-0">
+          <div v-if="ordered" class="alert alert-success v-content">
+            <i class="uiIconSuccess"></i>
+            Your order has been submitted successfully. <a href="javascript:void(0);" @click="ordered = false">Close</a>
           </div>
-        </v-card-text>
-      </v-card>
-    </v-hover>
-  </v-flex>
+          <buy-form
+            v-else
+            ref="buyForm"
+            :product="product"
+            :symbol="symbol"
+            :need-password="needPassword"
+            :wallet-loading="walletLoading"
+            :wallet-enabled="walletEnabled"
+            opened
+            integrated-form
+            class="productBuyForm"
+            @ordered="ordered =true; $emit('ordered', $event)" />
+          <v-divider vertical />
+          <div class="pl-2 pr-1 pt-2 pb-1 productDescription">{{ product.description }}</div>
+        </v-card-title>
+      </v-flex>
+    </v-layout>
+  </v-card>
 </template>
 
 <script>
 import ProductDetailContent from './ProductDetailContent.vue';
+import ImageAttachmentSelector from './ImageAttachmentSelector.vue';
+import BuyForm from './BuyForm.vue';
 
 export default {
   components: {
-    ProductDetailContent
+    ProductDetailContent,
+    ImageAttachmentSelector,
+    BuyForm,
   },
   props: {
     product: {
@@ -138,6 +77,12 @@ export default {
       type: String,
       default: function() {
         return '';
+      },
+    },
+    needPassword: {
+      type: Boolean,
+      default: function() {
+        return false;
       },
     },
     walletLoading: {
@@ -153,6 +98,9 @@ export default {
       },
     },
   },
+  data: () => ({
+    ordered: false,
+  }),
   computed: {
     productLink() {
       return (this.product && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.product.id}`) || '#';
@@ -208,6 +156,11 @@ export default {
         return available > 0 ? available : 0;
       }
     },
+  },
+  watch: {
+    product() {
+      this.ordered = false;
+    }
   },
   methods: {
     openProductDetail(event) {

@@ -16,8 +16,7 @@
               :key="i"
               :src="imageFile.src"
               max="300"
-              class="carousselImage">
-            </v-carousel-item>
+              class="carousselImage" />
           </template>
           <v-expand-transition>
             <div
