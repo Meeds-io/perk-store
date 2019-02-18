@@ -54,7 +54,7 @@ const config = {
     jquery: '$',
   },
   plugins: [
-    new ExtractTextWebpackPlugin('css/perkstore-v1.0.0-M01.css')
+    new ExtractTextWebpackPlugin('css/perkstore-v1.0.0-M04.css')
   ]
 };
 

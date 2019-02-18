@@ -92,7 +92,8 @@
                 <v-btn
                   slot="activator"
                   icon
-                  small>
+                  small
+                  title="Product filters">
                   <v-icon :color="productsFilterIconClass" small>
                     fa-filter
                   </v-icon>
@@ -166,7 +167,7 @@
           </v-toolbar>
 
           <v-toolbar
-            v-if="perkStoreEnabled && !selectedProduct && !loading && !walletLoading && walletWarning"
+            v-if="perkStoreEnabled && !loading && !walletLoading && walletWarning"
             color="transparent"
             flat>
             <v-spacer />
