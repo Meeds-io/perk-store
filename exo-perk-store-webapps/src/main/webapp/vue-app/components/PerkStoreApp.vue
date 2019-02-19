@@ -477,13 +477,16 @@ export default {
     newProduct() {
       this.closeDetails();
       this.displayProductForm = true;
-      this.selectedProduct = {};
+      this.selectedProduct = {
+        imageFiles: []
+      };
       return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
     },
     editProduct(product) {
       this.closeDetails();
       this.displayProductForm = true;
       this.selectedProduct = Object.assign({}, product);
+      this.selectedProduct.imageFiles = this.selectedProduct.imageFiles || [];
       return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
     },
     displayProduct(product) {

@@ -233,7 +233,6 @@ export default {
   methods: {
     init() {
       if(this.product) {
-        this.product.imageFiles = this.product.imageFiles || [];
         if(this.product.receiverMarchand) {
           this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
         }

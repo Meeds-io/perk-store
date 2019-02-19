@@ -36,7 +36,7 @@
               <v-list-tile-sub-title v-if="fileDetail.file && (fileDetail.progress < 100 || !fileDetail.finished)">
                 <v-progress-linear
                   v-model="fileDetail.progress"
-                  :indeterminate="!fileDetail.finished && (fileDetail.progress === 100 || fileDetail.progress < 10)"
+                  :indeterminate="!fileDetail.finished && fileDetail.progress <= 1"
                   query />
               </v-list-tile-sub-title>
               <v-list-tile-sub-title v-else>{{ getFileSize(fileDetail.size) }}</v-list-tile-sub-title>
@@ -86,7 +86,7 @@ export default {
     },
     files: {
       type: Array,
-      default: () => []
+      default: () => null
     }
   },
   data() {
@@ -99,7 +99,7 @@ export default {
       if (this.error) {
         setTimeout(() => this.error = null, 3000);
       }
-    }
+    },
   },
   mounted() {
     const MAX_RANDOM_NUMBER = 100000;
@@ -157,15 +157,6 @@ export default {
       dragLeave: function() {
         $('.dropZone').removeClass('hover');
       },
-      docOver: function() {
-        // user dragging files anywhere inside the browser document window
-      },
-      docLeave: function() {
-        // user dragging files out of the browser document window
-      },
-      drop: function() {
-        // user drops file
-      },
       uploadStarted: (i, file) => {
         // Reinit error when upload action started
         if (i === 0) {
@@ -221,7 +212,7 @@ export default {
       }
       const fileDetails = this.files[idx];
       if (fileDetails.uploadId) {
-        fetch(`${eXo.env.portal.context}/upload?uploadId=${fileDetails.uploadId}&action=delete`, {
+        fetch(`${eXo.env.portal.context}/upload?uploadId=${fileDetails.uploadId}&action=${fileDetails.progress && fileDetails.progress < 100 ? 'abort' : 'delete'}`, {
           method: 'post',
           credentials: 'include'
         }).then(() => {
