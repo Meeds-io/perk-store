@@ -97,7 +97,7 @@ export default {
   watch: {
     error() {
       if (this.error) {
-        setTimeout(() => this.error = null, 3000);
+        setTimeout(() => this.error = null, 5000);
       }
     },
   },
