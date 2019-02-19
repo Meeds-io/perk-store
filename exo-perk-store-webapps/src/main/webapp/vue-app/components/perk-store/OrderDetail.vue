@@ -14,6 +14,7 @@
         <template v-if="userData && userData.canEdit">
           <select
             v-model="order.status"
+            :disabled="true"
             class="orderStatusSelectBox small mt-1 mb-1 mr-2"
             @change="changeStatus('STATUS')">
             <option v-for="option in statusList" :key="option">

@@ -98,7 +98,8 @@ public class PerkStoreStorage {
     double countOrderedQuantities = orderDAO.countOrderedQuantityByProductId(productId);
     if (countOrderedQuantities > 0) {
       return countOrderedQuantities - orderDAO.countRefundedQuantityByProductId(productId)
-          - orderDAO.countOrderedQuantityByProductIdAndStatus(productId, ProductOrderStatus.CANCELED);
+          - orderDAO.countOrderedQuantityByProductIdAndStatus(productId, ProductOrderStatus.CANCELED)
+          - orderDAO.countOrderedQuantityByProductIdAndStatus(productId, ProductOrderStatus.ERROR);
     } else {
       return 0;
     }
