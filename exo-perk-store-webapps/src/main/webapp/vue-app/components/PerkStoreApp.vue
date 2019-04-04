@@ -46,17 +46,42 @@
               </template>
             </v-toolbar-title>
             <v-spacer />
-            <v-btn
-              v-if="displayProductOrders"
-              id="perkStoreAppMenuCloseButton"
-              icon
-              flat
-              title="Export as CSV"
-              @click="exportOrders">
-              <v-icon small>
-                fa-download
-              </v-icon>
-            </v-btn>
+            <template v-if="displayProductOrders">
+              <template v-if="barcodeReader">
+                <v-btn
+                  id="perkStoreAppMenuOrdersListButton"
+                  icon
+                  flat
+                  title="Show orders list"
+                  @click="$refs.ordersList.closeBarcodeReader()">
+                  <v-icon small>
+                    fa-list
+                  </v-icon>
+                </v-btn>
+              </template>
+              <template v-else>
+                <v-btn
+                  id="perkStoreAppMenuBarcodeButton"
+                  icon
+                  flat
+                  title="Switch to barcode reader"
+                  @click="$refs.ordersList.openBarcodeReader()">
+                  <v-icon small>
+                    fa-barcode
+                  </v-icon>
+                </v-btn>
+                <v-btn
+                  id="perkStoreAppMenuCloseButton"
+                  icon
+                  flat
+                  title="Export as CSV"
+                  @click="exportOrders">
+                  <v-icon small>
+                    fa-download
+                  </v-icon>
+                </v-btn>
+              </template>
+            </template>
             <v-btn
               v-if="displayProductDetails && selectedProduct && selectedProduct.userData && selectedProduct.userData.canEdit"
               id="perkStoreAppMenuCloseButton"
@@ -81,7 +106,7 @@
                 close
               </v-icon>
             </v-btn>
-            <template v-else-if="perkStoreEnabled">
+            <template v-else-if="perkStoreEnabled && !barcodeReader">
               <input
                 v-if="products && products.length"
                 v-model="search"
@@ -209,7 +234,9 @@
             @display-product="displayProduct($event)"
             @loading="loading = $event"
             @error="error = $event"
-            @close="closeDetails" />
+            @close="closeDetails"
+            @reader-closed="barcodeReader = false"
+            @reader-opened="barcodeReader = true" />
           <product-form
             v-else-if="displayProductForm"
             ref="productForm"
@@ -280,6 +307,7 @@ export default {
     walletAddonInstalled: false,
     walletLoading: false,
     walletEnabled: false,
+    barcodeReader: false,
     perkStoreEnabled: false,
     walletNeedPassword: false,
     loading: false,
@@ -309,10 +337,10 @@ export default {
       return  this.selectedProduct && this.selectedProduct.userData && this.selectedProduct.userData.canEdit;
     },
     displayFilterButton() {
-      return (this.displayProductOrders && !this.selectedOrderId) || this.displayMyOrders;
+      return (this.displayProductOrders && !this.barcodeReader && !this.selectedOrderId) || this.displayMyOrders;
     },
     displayCloseIcon() {
-      return this.displayProductForm || this.displayProductOrders || this.displayProductDetails || this.displayMyOrders;
+      return !this.barcodeReader && (this.displayProductForm || this.displayProductOrders || this.displayProductDetails || this.displayMyOrders);
     },
     filteredProducts() {
       let products = this.products.slice();

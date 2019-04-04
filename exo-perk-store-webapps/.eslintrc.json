@@ -18,7 +18,9 @@
         "eXo": true,
         "Vue": true,
         "Vuetify": true,
-        "cCometd": true
+        "cCometd": true,
+        "Quagga": true,
+        "JsBarcode": true
     },
     "parserOptions": {
         "sourceType": "module",

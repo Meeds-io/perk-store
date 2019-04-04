@@ -1,10 +1,18 @@
 <template>
-  <v-layout row class="border-box-sizing mr-0 ml-0">
+  <v-layout
+    row
+    class="border-box-sizing mr-0 ml-0">
+    <div
+      v-show="barcodeReader"
+      id="interactive"
+      class="viewport"
+      style="width: 100%;"></div>
     <orders-filter
       ref="productOrdersFilter"
       :filter="ordersFilter"
       @search="searchOrders" />
     <v-container
+      v-show="!barcodeReader"
       class="productOrdersParent border-box-sizing mt-0"
       fluid
       grid-list-md>
@@ -42,6 +50,7 @@
           lg3
           xl2>
           <order-detail
+            :ref="`orderDetail${props.item.id}`"
             :order="props.item"
             :product="product"
             :symbol="symbol"
@@ -123,6 +132,7 @@ export default {
   data() {
     return {
       loading: false,
+      barcodeReader: false,
       pageSize: 12,
       limit: 12,
       limitReached: false,
@@ -156,6 +166,9 @@ export default {
         this.newAddedOrders = [];
         this.init();
       }
+    },
+    barcodeReader() {
+      this.initBarcodeReader();
     }
   },
   created() {
@@ -334,6 +347,64 @@ export default {
           downloadLink.setAttribute("download", `orders.csv`);
           downloadLink.click();
         })
+    },
+    openBarcodeReader() {
+      this.barcodeReader = true;
+      this.$emit('reader-opened');
+    },
+    closeBarcodeReader() {
+      this.barcodeReader = false;
+      this.$emit('reader-closed');
+    },
+    initBarcodeReader() {
+      const thiss = this;
+      if (this.barcodeReader) {
+        Quagga.init({
+          inputStream: {
+            type : "LiveStream",
+            constraints: {
+                facingMode: "environment"
+            }
+          },
+          locator: {
+              patchSize: "medium",
+              halfSample: true
+          },
+          numOfWorkers: 4,
+          frequency: 5,
+          decoder: {
+              readers : [{
+                  format: "code_128_reader",
+                  config: {}
+              }]
+          },
+          locate: true
+        }, function(err) {
+            if (err) {
+                console.log(err);
+                return
+            }
+            Quagga.start();
+            Quagga.onDetected((data) => {
+              if (data && data.codeResult && data.codeResult.code) {
+                const barcodeText = data.codeResult.code;
+                const barcodeTextParts = barcodeText.split('@');
+                if (barcodeTextParts.length === 5) {
+                  const productId = barcodeTextParts[1];
+                  const orderId = barcodeTextParts[2];
+                  const userId = barcodeTextParts[3];
+
+                  if (thiss.$refs && thiss.$refs[`orderDetail${orderId}`]) {
+                    thiss.$refs[`orderDetail${orderId}`].openDeliverWindow(productId, orderId, userId);
+                  }
+                }
+              }
+            });
+        });
+      } else {
+        Quagga.stop();
+        $('#interactive').html('');
+      }
     },
   },
 }

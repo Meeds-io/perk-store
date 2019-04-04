@@ -73,7 +73,35 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile>
-          <v-list-tile-content>Payment:</v-list-tile-content>
+          <v-list-tile-content>
+            <v-dialog
+              v-if="order.transactionHash"
+              v-model="barcodeModal"
+              content-class="barcodeModal"
+              width="500px"
+              flat>
+              <v-btn
+                slot="activator"
+                class="blue-grey white--text mr-0 mb-0 mr-0 mt-0"
+                small
+                @click="displayBarcode">
+                Payment
+                <v-icon
+                  right
+                  dark
+                  size="20">
+                  fa-barcode
+                </v-icon>
+              </v-btn>
+              <v-card-title class="barcodeParent white pl-0 pr-0 pt-0" @click="barcodeModal = false">
+                <v-spacer />
+                <div class="barcodeContent">
+                  <svg :id="barcodeContainerId"></svg>
+                </div>
+                <v-spacer />
+              </v-card-title>
+            </v-dialog>
+          </v-list-tile-content>
           <v-list-tile-content class="align-end">
             <div class="no-wrap ellipsis orderDetailText">
               <v-icon
@@ -132,6 +160,7 @@
               <template v-else-if="userData && userData.canEdit">
                 <deliver-modal
                   v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
+                  ref="deliverModal"
                   :product="product"
                   :order="order" />
                 <refund-modal
@@ -237,6 +266,7 @@ import ProfileLink from '../ProfileLink.vue';
 
 import {saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 import {formatDateTime} from '../../js/PerkStoreSettings.js';
+import {generateBarCode} from '../../js/QRCode.js';
 
 export default {
   components: {
@@ -268,6 +298,7 @@ export default {
     return {
       // Attention: Used to close modal only when refunding process
       // is finished
+      barcodeModal: false,
       refunding: false,
       statusList: [
         'ORDERED',
@@ -281,6 +312,9 @@ export default {
     };
   },
   computed: {
+    barcodeContainerId() {
+      return `barcode${this.order.id}`;
+    },
     transactionLink() {
       if(this.order.transactionHash) {
         if((this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
@@ -383,6 +417,14 @@ export default {
           console.debug("Error saving status", e);
           this.$emit('error', e && e.message ? e.message : String(e));
         }).finally(() => this.$emit('loading', false));
+    },
+    displayBarcode() {
+      generateBarCode(this.barcodeContainerId, this.product.id, this.order.id, eXo.env.portal.userName);
+    },
+    openDeliverWindow(productId, orderId, userId) {
+      if (this.$refs && this.$refs.deliverModal) {
+        this.$refs.deliverModal.open();
+      }
     },
   }
 }

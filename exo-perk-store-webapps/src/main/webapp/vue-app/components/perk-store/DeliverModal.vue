@@ -116,6 +116,12 @@ export default {
     },
   },
   methods: {
+    open() {
+      this.dialog = true;
+    },
+    close() {
+      this.dialog = false;
+    },
     incrementQuantity() {
       this.quantity = this.quantity && (this.quantity + 1) > 0 ? this.quantity + 1 : 1;
       this.quantity = Math.floor(this.quantity);
