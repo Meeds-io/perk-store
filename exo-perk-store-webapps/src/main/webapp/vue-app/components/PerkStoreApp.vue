@@ -61,6 +61,7 @@
               </template>
               <template v-else>
                 <v-btn
+                  v-if="canEditSelectedProduct"
                   id="perkStoreAppMenuBarcodeButton"
                   icon
                   flat

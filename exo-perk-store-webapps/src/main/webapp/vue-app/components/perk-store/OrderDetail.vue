@@ -154,6 +154,11 @@
           <v-list-tile-content>Processing:</v-list-tile-content>
           <v-list-tile-content class="align-end orderProcessingActions">
             <div>
+              <add-to-delivered-modal
+                ref="addToDeliveredModal"
+                :product="product"
+                :order="order" />
+
               <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
                 <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>DONE
               </div>
@@ -262,6 +267,7 @@
 <script>
 import RefundModal from './RefundModal.vue';
 import DeliverModal from './DeliverModal.vue';
+import AddToDeliveredModal from './AddToDeliveredModal.vue';
 import ProfileLink from '../ProfileLink.vue';
 
 import {saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
@@ -273,6 +279,7 @@ export default {
     DeliverModal,
     RefundModal,
     ProfileLink,
+    AddToDeliveredModal,
   },
   props: {
     product: {
@@ -422,8 +429,9 @@ export default {
       generateBarCode(this.barcodeContainerId, this.product.id, this.order.id, eXo.env.portal.userName);
     },
     openDeliverWindow(productId, orderId, userId) {
-      if (this.$refs && this.$refs.deliverModal) {
-        this.$refs.deliverModal.open();
+      console.debug('Detected barcode', productId, orderId, userId, this.$refs);
+      if (this.$refs && this.$refs.addToDeliveredModal) {
+        this.$refs.addToDeliveredModal.open(productId, orderId, userId);
       }
     },
   }
