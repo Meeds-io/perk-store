@@ -18,7 +18,10 @@
         </span>
       </div>
       <v-list dense>
-        <v-list-tile v-if="error && !loading" class="mb-3 mt-2" dense>
+        <v-list-tile
+          v-if="error && !loading"
+          class="mb-3 mt-2"
+          dense>
           <v-list-tile-content>
             <div class="alert alert-error v-content">
               <i class="uiIconError"></i>
