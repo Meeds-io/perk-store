@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.exoplatform.addons.perk-store</groupId>
     <artifactId>exo-perk-store</artifactId>
-    <version>1.0.x-SNAPSHOT</version>
+    <version>1.1.x-SNAPSHOT</version>
   </parent>
   <artifactId>exo-perk-store-packaging</artifactId>
   <packaging>pom</packaging>
