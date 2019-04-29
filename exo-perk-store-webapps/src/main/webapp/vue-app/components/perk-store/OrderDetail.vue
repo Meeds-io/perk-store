@@ -75,14 +75,14 @@
         <v-list-tile>
           <v-list-tile-content>
             <v-dialog
-              v-if="order.transactionHash"
+              v-if="isBuyer && order.transactionHash && order.remainingQuantityToProcess && (isPaid || isPartial)"
               v-model="barcodeModal"
               content-class="barcodeModal"
               width="500px"
               flat>
               <v-btn
                 slot="activator"
-                class="blue-grey white--text mr-0 mb-0 mr-0 mt-0"
+                class="blue-grey white--text ml-0 mr-0 mb-0 mr-0 mt-0"
                 small
                 @click="displayBarcode">
                 Payment
@@ -101,6 +101,7 @@
                 <v-spacer />
               </v-card-title>
             </v-dialog>
+            <span v-else>Payment:</span>
           </v-list-tile-content>
           <v-list-tile-content class="align-end">
             <div class="no-wrap ellipsis orderDetailText">
@@ -392,6 +393,9 @@ export default {
     },
     isPartial() {
       return this.statusLowerCase === 'partial';
+    },
+    isBuyer() {
+      return this.order && this.order.sender.id === eXo.env.portal.userName;
     },
   },
   methods: {
