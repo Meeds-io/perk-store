@@ -20,7 +20,7 @@
             <field name="dependencies">
               <collection type="java.util.ArrayList">
                 <value>
-                  <string>exo-perk-store</string>
+                  <string>perk-store</string>
                 </value>
               </collection>
             </field>

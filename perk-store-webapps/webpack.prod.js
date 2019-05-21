@@ -11,7 +11,7 @@ const config = merge(webpackCommonConfig, {
         use: {
           loader: "file-loader",
           options: {
-            name: "/exo-perk-store/fonts/[name].[ext]",
+            name: "/perk-store/fonts/[name].[ext]",
             emitFile: false
           }
         }
@@ -22,7 +22,7 @@ const config = merge(webpackCommonConfig, {
     perkstore: './src/main/webapp/vue-app/perk-store.js',
   },
   output: {
-    path: path.join(__dirname, 'target/exo-perk-store/'),
+    path: path.join(__dirname, 'target/perk-store/'),
     filename: 'js/[name].bundle.js'
   },
   externals: {

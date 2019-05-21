@@ -1,10 +1,10 @@
 {
-  "name": "exo-perk-store",
+  "name": "perk-store",
   "version": "1.0.0",
   "description": "eXo Perk Store",
   "repository": {
     "type": "git",
-    "url": "https://github.com/exo-addons/exo-perk-store"
+    "url": "https://github.com/exoplatform/perk-store"
   },
   "scripts": {
     "watch": "webpack --config webpack.watch.js --progress --colors --watch -d",

@@ -39,7 +39,7 @@
         <access-permissions>*:/platform/users</access-permissions>
         <portlet-application>
           <portlet>
-            <application-ref>exo-perk-store</application-ref>
+            <application-ref>perk-store</application-ref>
             <portlet-ref>PerkStore</portlet-ref>
           </portlet>
           <title>Perk store</title>

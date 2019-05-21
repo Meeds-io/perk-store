@@ -5,29 +5,29 @@
   <parent>
     <artifactId>addons-parent-pom</artifactId>
     <groupId>org.exoplatform.addons</groupId>
-    <version>9</version>
+    <version>10</version>
     <relativePath/>
   </parent>
   <groupId>org.exoplatform.addons.perk-store</groupId>
-  <artifactId>exo-perk-store</artifactId>
+  <artifactId>perk-store</artifactId>
   <version>1.1.x-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>eXo Add-on:: eXo Perk Store - Parent POM</name>
-  <description>eXo Perk Store Addon</description>
+  <name>eXo Add-on:: Perk Store - Parent POM</name>
+  <description>Perk Store Addon</description>
   <modules>
-    <module>exo-perk-store-services</module>
-    <module>exo-perk-store-webapps</module>
-    <module>exo-perk-store-packaging</module>
+    <module>perk-store-services</module>
+    <module>perk-store-webapps</module>
+    <module>perk-store-packaging</module>
   </modules>
   <scm>
-    <connection>scm:git:git://github.com/exo-addons/perk-store.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/exo-addons/perk-store.git</developerConnection>
-    <url>https://github.com/exo-addons/perk-store</url>
+    <connection>scm:git:git://github.com/exoplatform/perk-store.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/exoplatform/perk-store.git</developerConnection>
+    <url>https://github.com/exoplatform/perk-store</url>
     <tag>HEAD</tag>
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.platform.version>5.2.0-M11</org.exoplatform.platform.version>
+    <org.exoplatform.platform.version>5.3.x-SNAPSHOT</org.exoplatform.platform.version>
 
     <org.jackson.version>2.4.0</org.jackson.version>
 
@@ -56,14 +56,14 @@
       <!-- Current project artifacts -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>exo-perk-store-services</artifactId>
+        <artifactId>perk-store-services</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>exo-perk-store-webapps</artifactId>
+        <artifactId>perk-store-webapps</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>
         <type>war</type>

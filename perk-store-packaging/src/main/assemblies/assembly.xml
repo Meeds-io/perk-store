@@ -11,20 +11,20 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>/webapps</outputDirectory>
       <includes>
-        <include>${project.groupId}:exo-perk-store-webapps:war</include>
+        <include>${project.groupId}:perk-store-webapps:war</include>
       </includes>
       <scope>provided</scope>
-      <outputFileNameMapping>exo-perk-store.war</outputFileNameMapping>
+      <outputFileNameMapping>perk-store.war</outputFileNameMapping>
     </dependencySet>
     <!-- Libraries -->
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>/lib</outputDirectory>
       <includes>
-        <include>${project.groupId}:exo-perk-store-services:jar</include>
+        <include>${project.groupId}:perk-store-services:jar</include>
       </includes>
       <scope>provided</scope>
-      <outputFileNameMapping>exo-perk-store-services.jar</outputFileNameMapping>
+      <outputFileNameMapping>perk-store-services.jar</outputFileNameMapping>
     </dependencySet>
   </dependencySets>
 </assembly>
