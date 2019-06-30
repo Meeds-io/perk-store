@@ -29,8 +29,7 @@
     <page-nodes>
         <node>
             <name>perkstore</name>
-            <label>Perk store</label>
-            <visibility>SYSTEM</visibility>
+            <label>#{addon.perkstore.navigation.node.label}</label>
             <page-reference>portal::intranet::perkstore</page-reference>
         </node>
     </page-nodes>
