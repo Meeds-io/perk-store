@@ -28,11 +28,13 @@
           v-model.number="quantity"
           :disabled="loading"
           :label="quantityInputLabel"
+          :rules="requiredNumberRule"
           append-icon="fa-plus"
           prepend-inner-icon="fa-minus"
           class="text-xs-center"
           name="quantity"
           placeholder="Set delivered quantity"
+          readonly
           required
           @click:prepend-inner="decrementQuantity"
           @click:append="incrementQuantity" />
@@ -82,9 +84,17 @@ export default {
       loading: false,
       quantity: null,
       error: null,
+      requiredNumberRule: [
+        (v) => !!v || 'Required field',
+        (v) => !v || this.isPositiveNumber(v) || 'Invalid positive number',
+        (v) => !v || this.quantity <= this.order.remainingQuantityToProcess || `Orders quantity must be less than ${this.order.remainingQuantityToProcess}`,
+      ],
     };
   },
   computed: {
+    totalDeliveredQuantity() {
+      return Number(this.quantity) + Number(this.order.deliveredQuantity);
+    },
     disableDeliverButton() {
       return !this.order || !this.isPositiveNumber(this.quantity) || this.quantity > this.order.remainingQuantityToProcess;
     },
@@ -100,7 +110,7 @@ export default {
     },
     dialog() {
       if (this.dialog) {
-        this.quantity = this.order && this.order.remainingQuantityToProcess;
+        this.quantity = 1;
         this.warning = null;
         this.error = null;
         this.loading = false;
@@ -150,7 +160,7 @@ export default {
       return saveOrderStatus({
         id: this.order.id,
         productId: this.order.productId,
-        deliveredQuantity: Number(this.quantity),
+        deliveredQuantity: this.totalDeliveredQuantity,
       }, 'DELIVERED_QUANTITY')
         .then((order) => {
           this.dialog = false;

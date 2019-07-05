@@ -37,6 +37,15 @@
   </component>
 
   <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.settings.ExoFeatureService</target-component>
+    <component-plugin>
+      <name>perkstore</name>
+      <set-method>addFeaturePlugin</set-method>
+      <type>org.exoplatform.addon.perkstore.plugin.PerkStoreFeaturePlugin</type>
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
     <target-component>org.exoplatform.services.listener.ListenerService</target-component>
     <component-plugin>
       <name>exo.addon.wallet.transaction.mined</name>
