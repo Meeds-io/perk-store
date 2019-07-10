@@ -37,7 +37,7 @@
 
         <auto-complete
           ref="applicationManagersAutocomplete"
-          input-label="Application managers (Optional)"
+          input-label="Store managers (Optional)"
           input-placeholder="Select one or multiple entries"
           no-data-label="Search for a user or a space"
           multiple
