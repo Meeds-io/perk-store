@@ -41,6 +41,7 @@
           <v-list-tile-content class="align-end">
             <div class="ellipsis orderDetailText">
               <profile-link
+                v-if="order.sender"
                 :id="order.sender.id"
                 :space-id="order.sender.spaceId"
                 :url-id="order.sender.spaceURLId"
@@ -138,6 +139,7 @@
               </template>
               to
               <profile-link
+                v-if="order.receiver"
                 :id="order.receiver.id"
                 :space-id="order.receiver.spaceId"
                 :url-id="order.receiver.spaceURLId"
@@ -324,20 +326,20 @@ export default {
       return `barcode${this.order.id}`;
     },
     transactionLink() {
-      if(this.order.transactionHash) {
-        if((this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
+      if(this.order.transactionHash && this.order) {
+        if((this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName) || (this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName)) {
           return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.transactionHash}&principal=true`;
-        } else if (this.order.receiver.type === 'space') {
+        } else if (this.order.receiver && this.order.receiver.type === 'space') {
           return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.transactionHash}&principal=true`;
         }
       }
       return null;
     },
     refundTransactionLink() {
-      if(this.order.refundTransactionHash) {
-        if((this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
+      if(this.order && this.order.refundTransactionHash) {
+        if((this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
           return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.refundTransactionHash}&principal=true`;
-        } else if (this.order.receiver.type === 'space') {
+        } else if (this.order.receiver && this.order.receiver.type === 'space') {
           return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.refundTransactionHash}&principal=true`;
         }
       }
@@ -395,7 +397,7 @@ export default {
       return this.statusLowerCase === 'partial';
     },
     isBuyer() {
-      return this.order && this.order.sender.id === eXo.env.portal.userName;
+      return this.order && this.order.sender && this.order.sender.id === eXo.env.portal.userName;
     },
   },
   methods: {
@@ -430,7 +432,7 @@ export default {
         }).finally(() => this.$emit('loading', false));
     },
     displayBarcode() {
-      generateBarCode(this.barcodeContainerId, this.product.id, this.order.id, eXo.env.portal.userName);
+      generateBarCode(this.barcodeContainerId, this.order.productId, this.order.id, eXo.env.portal.userName);
     },
     openDeliverWindow(productId, orderId, userId) {
       console.debug('Detected barcode', productId, orderId, userId, this.$refs);

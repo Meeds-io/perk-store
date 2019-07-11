@@ -62,7 +62,7 @@ public class Utils {
 
   public static final Context       PERKSTORE_CONTEXT                         = Context.GLOBAL;
 
-  public static final String        ADMINISTRATORS_GROUP                      = "/platform/administrators";
+  public static final String        REWARDING_GROUP                           = "/platform/rewarding";
 
   public static final Scope         PERKSTORE_SCOPE                           = Scope.APPLICATION.id(SCOPE_NAME);
 
@@ -654,7 +654,7 @@ public class Utils {
   }
 
   public static final boolean isUserAdmin(String username) throws Exception {
-    return isUserMemberOf(username, ADMINISTRATORS_GROUP);
+    return isUserMemberOf(username, REWARDING_GROUP);
   }
 
   public static final boolean hasPermission(String username, List<Long> identityIds) throws Exception {

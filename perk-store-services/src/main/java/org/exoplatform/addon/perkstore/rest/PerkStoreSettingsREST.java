@@ -68,13 +68,17 @@ public class PerkStoreSettingsREST implements ResourceContainer {
    * 
    * @param settings
    * @return
+   * @throws Exception
    */
   @Path("save")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed("administrators")
-  public Response saveSettings(GlobalSettings settings) {
+  @RolesAllowed("users")
+  public Response saveSettings(GlobalSettings settings) throws Exception {
     String currentUserId = getCurrentUserId();
+    if (!perkStoreService.isPerkStoreManager(currentUserId)) {
+      return Response.status(403).build();
+    }
     try {
       perkStoreService.saveGlobalSettings(settings, currentUserId);
       return Response.ok().build();
