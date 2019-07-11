@@ -526,6 +526,18 @@ public class PerkStoreService implements Startable {
     return perkStoreStorage.getFileDetail(productId, imageId, retrieveData);
   }
 
+  public boolean isPerkStoreManager(String username) throws Exception {
+    if (isUserAdmin(username)) {
+      return true;
+    }
+
+    GlobalSettings globalSettings = getGlobalSettings();
+    if (globalSettings != null && globalSettings.getManagers() != null && !globalSettings.getManagers().isEmpty()) {
+      return hasPermission(username, globalSettings.getManagers());
+    }
+    return false;
+  }
+
   private GlobalSettings loadGlobalSettings() throws JsonException {
     SettingValue<?> globalSettingsValue = getSettingService().get(PERKSTORE_CONTEXT, PERKSTORE_SCOPE, SETTINGS_KEY_NAME);
     if (globalSettingsValue == null || StringUtils.isBlank(globalSettingsValue.getValue().toString())) {
@@ -737,18 +749,6 @@ public class PerkStoreService implements Startable {
     if (!canAddProduct(username)) {
       throw new PerkStoreException(PRODUCT_CREATION_DENIED, username);
     }
-  }
-
-  private boolean isPerkStoreManager(String username) throws Exception {
-    if (isUserAdmin(username)) {
-      return true;
-    }
-
-    GlobalSettings globalSettings = getGlobalSettings();
-    if (globalSettings != null && globalSettings.getManagers() != null && !globalSettings.getManagers().isEmpty()) {
-      return hasPermission(username, globalSettings.getManagers());
-    }
-    return false;
   }
 
   private boolean canAccessApplication(GlobalSettings globalSettings, String username) throws Exception {
