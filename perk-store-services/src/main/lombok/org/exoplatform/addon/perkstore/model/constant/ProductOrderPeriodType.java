@@ -7,8 +7,12 @@ import java.time.*;
 import org.exoplatform.addon.perkstore.model.ProductOrderPeriod;
 
 public enum ProductOrderPeriodType {
-  WEEK("Week", "week"), MONTH("Month", "month"), QUARTER("Quarter", "quarter"), SEMESTER("Semester", "semester"), YEAR("Year",
-      "year");
+  WEEK("Week", "week"),
+  MONTH("Month", "month"),
+  QUARTER("Quarter", "quarter"),
+  SEMESTER("Semester", "semester"),
+  YEAR("Year", "year"),
+  NONE("None", "none");
 
   private String name;
 
@@ -63,6 +67,7 @@ public enum ProductOrderPeriodType {
       productPeriod.setStartDate(timeToMilliseconds(Year.from(localDateTime).atDay(1).atStartOfDay()));
       productPeriod.setEndDate(timeToMilliseconds(Year.from(localDateTime).plusYears(1).atDay(1).atStartOfDay()));
       break;
+    default:
     }
     return productPeriod;
   }

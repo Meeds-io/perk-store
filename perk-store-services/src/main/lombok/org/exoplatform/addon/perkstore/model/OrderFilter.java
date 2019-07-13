@@ -1,34 +1,45 @@
 package org.exoplatform.addon.perkstore.model;
 
-import lombok.Data;
-import lombok.ToString;
+import java.io.Serializable;
+
+import lombok.*;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class OrderFilter {
-  private long    productId;
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderFilter extends PerkStoreCloneable implements Serializable {
+  private static final long serialVersionUID = -5111358721086199308L;
 
-  private int     limit;
+  private long              productId;
 
-  private boolean notProcessed;
+  private int               limit;
 
-  private boolean searchInDates;
+  private boolean           notProcessed;
 
-  private long    selectedDate;
+  private boolean           searchInDates;
 
-  private long    selectedOrderId;
+  private long              selectedDate;
 
-  private boolean ordered;
+  private long              selectedOrderId;
 
-  private boolean canceled;
+  private boolean           ordered;
 
-  private boolean partial;
+  private boolean           canceled;
 
-  private boolean paid;
+  private boolean           partial;
 
-  private boolean error;
+  private boolean           paid;
 
-  private boolean delivered;
+  private boolean           error;
 
-  private boolean refunded;
+  private boolean           delivered;
+
+  private boolean           refunded;
+
+  @Override
+  public OrderFilter clone() { // NOSONAR
+    return (OrderFilter) super.clone();
+  }
 }

@@ -6,11 +6,13 @@ import java.util.Set;
 
 import groovy.transform.ToString;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Exclude;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class Product implements Serializable, Cloneable {
+public class Product extends PerkStoreCloneable implements Serializable {
   private static final long serialVersionUID = 3182323147042158001L;
 
   private long              id;
@@ -86,10 +88,6 @@ public class Product implements Serializable, Cloneable {
 
   @SuppressWarnings("all")
   public Product clone() {
-    try {
-      return (Product) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException("Error while cloning Product object");
-    }
+    return (Product) super.clone();
   }
 }

@@ -50,7 +50,7 @@ public class ProductEntity implements Serializable {
   @Column(name = "RECEIVER_ID", nullable = false)
   private long                   receiverId;
 
-  @Column(name = "PERIODICITY", nullable = false)
+  @Column(name = "PERIODICITY")
   private ProductOrderPeriodType orderPeriodicity;
 
   @Column(name = "MAX_ORDERS_PER_USER", nullable = false)

@@ -133,4 +133,9 @@ public class PerkStoreCachedStorage extends PerkStoreStorage {
       return order;
     }
   }
+
+  public void clearCache() {
+    orderFutureCache.clear();
+    productFutureCache.clear();
+  }
 }

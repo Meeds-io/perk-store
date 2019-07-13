@@ -6,15 +6,19 @@ import org.exoplatform.addon.perkstore.service.utils.Utils;
 
 import groovy.transform.ToString;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Exclude;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class UserSettings implements Serializable, Cloneable {
+public class UserSettings extends PerkStoreCloneable implements Serializable {
 
   private static final long serialVersionUID = 4866936020505632226L;
 
   private String            cometdChannel    = Utils.COMETD_CHANNEL;
 
+  @Exclude
   private String            cometdToken;
 
   private String            cometdContext;
@@ -24,8 +28,7 @@ public class UserSettings implements Serializable, Cloneable {
   private boolean           canAddProduct;
 
   @Override
-  @SuppressWarnings("all")
-  protected Object clone() throws CloneNotSupportedException {
+  public UserSettings clone() { // NOSONAR
     return new UserSettings();
   }
 

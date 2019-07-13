@@ -146,7 +146,8 @@ public class Utils {
   public static void addIdentityIdsFromProfiles(List<Profile> permissionsProfiles, List<Long> permissions) {
     if (permissionsProfiles != null) {
       for (Profile profile : permissionsProfiles) {
-        if (profile == null || StringUtils.isBlank(profile.getId()) || StringUtils.isBlank(profile.getType())) {
+        if (profile == null || (profile.getTechnicalId() == 0
+            && (StringUtils.isBlank(profile.getId()) || StringUtils.isBlank(profile.getType())))) {
           continue;
         }
         long identityId = profile.getTechnicalId();
@@ -331,7 +332,9 @@ public class Utils {
     }
 
     ProductOrderPeriodType orderPeriodicity = entity.getOrderPeriodicity();
-    if (orderPeriodicity != null) {
+    if (orderPeriodicity == null || orderPeriodicity == ProductOrderPeriodType.NONE) {
+      product.setOrderPeriodicity(null);
+    } else {
       product.setOrderPeriodicity(orderPeriodicity.getName());
       product.setOrderPeriodicityLabel(orderPeriodicity.getLabel());
     }
@@ -374,14 +377,7 @@ public class Utils {
                                          .map(Utils::getTechnicalId)
                                          .collect(Collectors.toList()));
     }
-
-    entity.setImages(product.getImageFiles() == null ? Collections.emptySet()
-                                                     : product.getImageFiles()
-                                                              .stream()
-                                                              .filter(image -> image.getId() > 0)
-                                                              .map(image -> image.getId())
-                                                              .collect(Collectors.toSet()));
-
+    entity.setImages(getImageIds(product));
     entity.setOrderPeriodicity(getOrderPeriodicity(product.getOrderPeriodicity()));
 
     return entity;
@@ -389,8 +385,11 @@ public class Utils {
 
   public static ProductOrderPeriodType getOrderPeriodicity(String orderPeriodicity) {
     ProductOrderPeriodType productOrderPeriodType = null;
-    if (StringUtils.isNoneBlank(orderPeriodicity)) {
+    if (StringUtils.isNotBlank(orderPeriodicity)) {
       productOrderPeriodType = ProductOrderPeriodType.valueOf(orderPeriodicity.toUpperCase());
+    }
+    if (productOrderPeriodType == null) {
+      productOrderPeriodType = ProductOrderPeriodType.NONE;
     }
     return productOrderPeriodType;
   }
@@ -661,6 +660,10 @@ public class Utils {
     if (identityIds == null || identityIds.isEmpty()) {
       return true;
     }
+    Identity userIdentity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
+    if (userIdentity == null) {
+      return false;
+    }
     for (Long identityId : identityIds) {
       Identity identity = getIdentityById(identityId);
       if (identity == null) {
@@ -748,6 +751,19 @@ public class Utils {
     } else {
       return StringUtils.equals(username, permissionExpression);
     }
+  }
+
+  private static Set<Long> getImageIds(Product product) {
+    Set<FileDetail> imageFiles = product.getImageFiles();
+    Set<Long> imageIds = new HashSet<>();
+    if (imageFiles != null && !imageFiles.isEmpty()) {
+      for (FileDetail fileDetail : imageFiles) {
+        if (fileDetail != null && fileDetail.getId() > 0) {
+          imageIds.add(fileDetail.getId());
+        }
+      }
+    }
+    return imageIds;
   }
 
 }

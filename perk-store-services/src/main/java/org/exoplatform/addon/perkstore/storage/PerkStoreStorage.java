@@ -6,6 +6,8 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.exoplatform.addon.perkstore.dao.PerkStoreOrderDAO;
 import org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO;
 import org.exoplatform.addon.perkstore.entity.ProductEntity;
@@ -291,7 +293,20 @@ public class PerkStoreStorage {
         if (fileItemId > 0 || fileDetail == null || fileDetail.getUploadId() == null) {
           continue;
         }
-        try (InputStream inputStream = getUploadDataAsStream(fileDetail.getUploadId())) {
+        UploadResource uploadResource = getUploadService().getUploadResource(fileDetail.getUploadId());
+        if (uploadResource == null) {
+          LOG.warn("Can't find uploaded resource with id {} for file with name {}",
+                   fileDetail.getUploadId(),
+                   fileDetail.getName());
+          continue;
+        }
+        if (StringUtils.isBlank(fileDetail.getName())) {
+          fileDetail.setName(uploadResource.getFileName());
+        }
+        if (fileDetail.getSize() == 0) {
+          fileDetail.setSize((long) uploadResource.getEstimatedSize());
+        }
+        try (InputStream inputStream = getUploadDataAsStream(uploadResource)) {
           if (inputStream == null) {
             continue;
           }
@@ -327,15 +342,14 @@ public class PerkStoreStorage {
     return uploadService;
   }
 
-  private InputStream getUploadDataAsStream(String uploadId) throws FileNotFoundException {
-    UploadResource uploadResource = getUploadService().getUploadResource(uploadId);
+  private InputStream getUploadDataAsStream(UploadResource uploadResource) throws FileNotFoundException {
     if (uploadResource == null) {
       return null;
     } else {
       try { // NOSONAR
         return new FileInputStream(new File(uploadResource.getStoreLocation()));
       } finally {
-        getUploadService().removeUploadResource(uploadId);
+        getUploadService().removeUploadResource(uploadResource.getUploadId());
       }
     }
   }
