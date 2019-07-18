@@ -2,31 +2,38 @@ package org.exoplatform.addon.perkstore.model;
 
 import java.io.Serializable;
 
-import lombok.Data;
+import lombok.*;
 import lombok.EqualsAndHashCode.Exclude;
 
 @Data
-public class FileDetail implements Serializable {
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
+public class FileDetail extends PerkStoreCloneable implements Serializable {
 
   private static final long serialVersionUID = 3118275951807957785L;
 
-  private long              id;
+  public FileDetail(long id) {
+    this.id = id;
+  }
 
-  private String            uploadId;
+  private long   id;
 
-  @Exclude
-  private String            name;
-
-  @Exclude
-  private long              size;
+  private String uploadId;
 
   @Exclude
-  private String            src;
+  private String name;
 
   @Exclude
-  private byte[]            data;
+  private long   size;
 
   @Exclude
-  private long              lastUpdated;
+  private String src;
+
+  @Exclude
+  private byte[] data;
+
+  @Exclude
+  private long   lastUpdated;
 
 }

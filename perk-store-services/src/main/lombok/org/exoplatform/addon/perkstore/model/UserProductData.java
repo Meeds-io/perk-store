@@ -3,25 +3,36 @@ package org.exoplatform.addon.perkstore.model;
 import java.io.Serializable;
 
 import groovy.transform.ToString;
-import lombok.Data;
+import lombok.*;
+import lombok.EqualsAndHashCode.Exclude;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class UserProductData implements Serializable, Cloneable {
+@NoArgsConstructor
+public class UserProductData extends PerkStoreCloneable implements Serializable {
   private static final long serialVersionUID = -7144496703478026420L;
 
-  private String            username;
+  public UserProductData(String username) {
+    this.username = username;
+  }
 
-  private boolean           canEdit;
+  private String  username;
 
-  private boolean           canOrder;
+  @Exclude
+  private boolean canEdit;
 
-  private double            purchasedInCurrentPeriod;
+  @Exclude
+  private boolean canOrder;
 
-  private double            totalPurchased;
+  @Exclude
+  private double  purchasedInCurrentPeriod;
+
+  @Exclude
+  private double  totalPurchased;
 
   @SuppressWarnings("all")
   public Object clone() {
-    return new UserProductData();
+    return new UserProductData(username);
   }
 }

@@ -42,11 +42,6 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
   }
 
   @Override
-  public void delete(ProductOrderEntity entity) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public void deleteAll(List<ProductOrderEntity> entities) {
     throw new UnsupportedOperationException();
   }
@@ -195,7 +190,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
   }
 
   private String getFilterQueryString(String username, OrderFilter filter) {
-    StringBuilder query = new StringBuilder("Select o from Order o WHERE ");
+    StringBuilder query = new StringBuilder();
 
     boolean firstConditionAdded = false;
     if (filter.getProductId() != 0) {
@@ -206,13 +201,15 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
 
     if (StringUtils.isNotBlank(username)) {
       Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
-      if (firstConditionAdded) {
-        query.append(AND_OPERATOR);
-      } else {
-        firstConditionAdded = true;
+      if (identity != null) {
+        if (firstConditionAdded) {
+          query.append(AND_OPERATOR);
+        } else {
+          firstConditionAdded = true;
+        }
+        query.append(" o.senderId = ");
+        query.append(identity.getId());
       }
-      query.append(" o.senderId = ");
-      query.append(identity.getId());
     }
 
     if (filter.isNotProcessed()) {
@@ -248,6 +245,11 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
       query.append(getEndOfDayMillis(selectedDate));
     }
 
+    if (StringUtils.isEmpty(query.toString().trim())) {
+      query.insert(0, "Select o from Order o ");
+    } else {
+      query.insert(0, "Select o from Order o WHERE ");
+    }
     query.append(" ORDER BY createdDate DESC");
     return query.toString();
   }
@@ -263,7 +265,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     if (filter.isCanceled()) {
       statuses.add(ProductOrderStatus.CANCELED.ordinal());
     }
-    if (filter.isCanceled()) {
+    if (filter.isPartial()) {
       statuses.add(ProductOrderStatus.PARTIAL.ordinal());
     }
     if (filter.isError()) {

@@ -6,10 +6,13 @@ import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationTy
 
 import groovy.transform.ToString;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Exclude;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class ProductOrder implements Serializable, Cloneable {
+public class ProductOrder extends PerkStoreCloneable implements Serializable {
   private static final long            serialVersionUID = 1315929554209305549L;
 
   private long                         id;
@@ -56,15 +59,12 @@ public class ProductOrder implements Serializable, Cloneable {
 
   // Not stored, used in notification only to identity modification type for
   // listeners
+  @Exclude
   private ProductOrderModificationType modificationType;
 
   @SuppressWarnings("all")
   @Override
   public ProductOrder clone() {
-    try {
-      return (ProductOrder) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException("Error while cloning Order object");
-    }
+    return (ProductOrder) super.clone();
   }
 }

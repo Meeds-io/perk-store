@@ -3,11 +3,14 @@ package org.exoplatform.addon.perkstore.model;
 import java.io.Serializable;
 
 import groovy.transform.ToString;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class ProductOrderPeriod implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductOrderPeriod extends PerkStoreCloneable implements Serializable {
 
   private static final long serialVersionUID = -9185889239496825058L;
 
@@ -15,4 +18,8 @@ public class ProductOrderPeriod implements Serializable {
 
   private long              endDate;
 
+  @Override
+  public Object clone() { // NOSONAR
+    return super.clone();
+  }
 }

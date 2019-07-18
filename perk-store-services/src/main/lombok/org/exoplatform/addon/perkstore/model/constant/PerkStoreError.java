@@ -28,13 +28,13 @@ public enum PerkStoreError {
   ORDER_CREATION_QUANTITY_EXCEEDS_SUPPLY(ERROR_SUFFIX_ORDER_CREATION, "Ordered quantity by user {} exceeds available supply.", 1),
   ORDER_CREATION_QUANTITY_EXCEEDS_ALLOWED(ERROR_SUFFIX_ORDER_CREATION,
       "Ordered quantity by user {} exceeds allowed quantity per user.", 1),
-  ORDER_MODIFICATION_DENIED(ERROR_SUFFIX_ORDER_MODIFICATION, "User {} isn't allowed to changed order on product with id {}", 2),
+  ORDER_MODIFICATION_DENIED(ERROR_SUFFIX_ORDER_MODIFICATION, "User {} isn't allowed to changed order on product '{}'", 2),
   ORDER_MODIFICATION_QUANTITY_INVALID_REMAINING(ERROR_SUFFIX_ORDER_MODIFICATION,
       "Remaining quantity to process {} isn't valid for order with id {}.", 2),
   ORDER_NOT_EXISTS(ERROR_SUFFIX_ORDER_NOT_EXISTS, "Order with id {} doesn't exists", 1),
   ORDER_CREATION_EMPTY_PRODUCT(ERROR_SUFFIX_ORDER_CREATION, "Order product is mandatory"),
   PRODUCT_IS_DISABLED(ERROR_SUFFIX_PRODUCT_IS_DISABLED, "Product with {} is disabled", 1),
-  PRODUCT_ACCESS_DENIED(ERROR_SUFFIX_PRODUCT_ACCESS_DENIED, "Denied access to product with id {} for user {}", 2),
+  PRODUCT_ACCESS_DENIED(ERROR_SUFFIX_PRODUCT_ACCESS_DENIED, "Denied access to product '{}' for user {}", 2),
   ORDER_ACCESS_DENIED(ERROR_SUFFIX_ORDER_ACCESS_DENIED, "Denied access to order with id {} for user {}", 2);
 
   private int    code;

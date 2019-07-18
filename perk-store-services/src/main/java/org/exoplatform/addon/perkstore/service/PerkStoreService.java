@@ -60,17 +60,20 @@ public class PerkStoreService implements Startable {
 
   private GlobalSettings            storedGlobalSettings;
 
-  public PerkStoreService(PerkStoreWebSocketService webSocketService, PerkStoreStorage perkStoreStorage) {
+  public PerkStoreService(PerkStoreWebSocketService webSocketService,
+                          PerkStoreStorage perkStoreStorage,
+                          SettingService settingService) {
     this.perkStoreStorage = perkStoreStorage;
     this.webSocketService = webSocketService;
+    this.settingService = settingService;
   }
 
   @Override
   public void start() {
     try {
       this.storedGlobalSettings = loadGlobalSettings();
-    } catch (JsonException e) {
-      LOG.error("Error when loading global settings", e);
+    } catch (Exception e) {
+      LOG.error("Error loading perk store global settings", e);
     }
   }
 
@@ -80,8 +83,7 @@ public class PerkStoreService implements Startable {
   }
 
   public void saveGlobalSettings(GlobalSettings settings, String username) throws Exception {
-    GlobalSettings globalSettings = getGlobalSettings();
-    if (globalSettings == null || globalSettings.getAccessPermissions() == null && !isPerkStoreManager(username)) {
+    if (!isPerkStoreManager(username)) {
       throw new PerkStoreException(GLOBAL_SETTINGS_MODIFICATION_DENIED, username);
     }
 
@@ -115,32 +117,23 @@ public class PerkStoreService implements Startable {
                             SettingValue.create(transformToString(settings)));
     this.storedGlobalSettings = null;
 
-    try {
-      getListenerService().broadcast(SETTINGS_MODIFIED_EVENT, this, getGlobalSettings());
-    } catch (Exception e) {
-      LOG.warn("Error while braodcasting event {}", SETTINGS_MODIFIED_EVENT, e);
-    }
+    getListenerService().broadcast(SETTINGS_MODIFIED_EVENT, this, getGlobalSettings());
   }
 
-  public GlobalSettings getGlobalSettings() throws JsonException {
+  public GlobalSettings getGlobalSettings() {
     if (this.storedGlobalSettings == null) {
       this.storedGlobalSettings = loadGlobalSettings();
-      if (this.storedGlobalSettings == null) {
-        this.storedGlobalSettings = new GlobalSettings();
-      }
     }
-    return this.storedGlobalSettings.clone();
+    return this.storedGlobalSettings.clone(); // NOSONAR
   }
 
   public GlobalSettings getGlobalSettings(String username) throws Exception {
     if (StringUtils.isBlank(username)) {
-      throw new IllegalStateException("username is null");
+      throw new IllegalArgumentException("username is null");
     }
 
     GlobalSettings globalSettings = getGlobalSettings();
-    if (globalSettings == null) {
-      globalSettings = new GlobalSettings();
-    } else if (!canAccessApplication(globalSettings, username)) {
+    if (!canAccessApplication(globalSettings, username)) {
       throw new PerkStoreException(GLOBAL_SETTINGS_ACCESS_DENIED, username);
     }
 
@@ -168,7 +161,7 @@ public class PerkStoreService implements Startable {
     return globalSettings;
   }
 
-  public void saveProduct(Product product, String username) throws Exception {
+  public Product saveProduct(Product product, String username) throws Exception {
     if (product == null) {
       throw new IllegalArgumentException("Product is mandatory");
     }
@@ -223,6 +216,7 @@ public class PerkStoreService implements Startable {
     product = perkStoreStorage.saveProduct(productToStore, username);
 
     getListenerService().broadcast(PRODUCT_CREATE_OR_MODIFY_EVENT, product, isNew);
+    return product;
   }
 
   public List<Product> getProducts(String username) throws Exception {
@@ -250,13 +244,20 @@ public class PerkStoreService implements Startable {
       throw new IllegalArgumentException("Filter is mandatory");
     }
     if (StringUtils.isBlank(username)) {
-      String currentUserId = getCurrentUserId();
-      if (StringUtils.isNotBlank(currentUserId) && !canAddProduct(currentUserId)) {
-        throw new IllegalAccessException(currentUserId + " is attempting to access orders list with filter: " + filter);
-      } else if (StringUtils.isNotBlank(currentUserId) && filter.getProductId() > 0
-          && !canEditProduct(filter.getProductId(), currentUserId)) {
-        throw new IllegalAccessException(currentUserId + " is attempting to access orders list of product with id "
-            + filter.getProductId() + " with filter: " + filter);
+      throw new IllegalArgumentException("username is mandatory");
+    }
+
+    if (!canAccessApplication(getGlobalSettings(), username)) {
+      throw new PerkStoreException(GLOBAL_SETTINGS_ACCESS_DENIED, username);
+    } else {
+      if (filter.getProductId() > 0) {
+        Product product = getProductById(filter.getProductId());
+        if (product == null) {
+          throw new PerkStoreException(PRODUCT_NOT_EXISTS, filter.getProductId());
+        }
+        if (!canViewProduct(product, username, isPerkStoreManager(username))) {
+          throw new PerkStoreException(PRODUCT_ACCESS_DENIED, product.getTitle(), username);
+        }
       }
     }
     List<ProductOrder> orders = null;
@@ -290,6 +291,9 @@ public class PerkStoreService implements Startable {
     if (order == null) {
       throw new IllegalArgumentException("Order is mandatory");
     }
+    if (StringUtils.isBlank(username)) {
+      throw new IllegalArgumentException("Username is mandatory");
+    }
     if (order.getProductId() == 0) {
       throw new PerkStoreException(PRODUCT_NOT_EXISTS, order.getProductId());
     }
@@ -304,13 +308,9 @@ public class PerkStoreService implements Startable {
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, product.getTitle());
     }
 
-    try {
-      if (!isUserMemberOf(username, getGlobalSettings().getAccessPermissionsProfiles())
-          || !isUserMemberOf(username, product.getAccessPermissions())) {
-        throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, product.getTitle());
-      }
-    } catch (JsonException e) {
-      throw new IllegalStateException("Can't read perkstore settings");
+    if (!isUserMemberOf(username, getGlobalSettings().getAccessPermissionsProfiles())
+        || !isUserMemberOf(username, product.getAccessPermissions())) {
+      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, product.getTitle());
     }
 
     checkTransactionHashNotExists(product, order, username);
@@ -319,7 +319,7 @@ public class PerkStoreService implements Startable {
     checkOrderCoherence(username, product, order);
   }
 
-  public void createOrder(ProductOrder order, String username) throws Exception {
+  public ProductOrder createOrder(ProductOrder order, String username) throws Exception {
     checkCanCreateOrder(order, username);
 
     Product product = getProductById(order.getProductId());
@@ -354,6 +354,7 @@ public class PerkStoreService implements Startable {
     computeOrderFields(product, productOrder);
 
     getListenerService().broadcast(ORDER_CREATE_OR_MODIFY_EVENT, product, productOrder);
+    return productOrder;
   }
 
   public ProductOrder saveOrder(ProductOrder order,
@@ -366,7 +367,6 @@ public class PerkStoreService implements Startable {
     if (modificationType == null) {
       throw new IllegalArgumentException("Order modification type is null");
     }
-
     if (order.getProductId() == 0) {
       throw new PerkStoreException(ORDER_CREATION_EMPTY_PRODUCT);
     }
@@ -483,6 +483,7 @@ public class PerkStoreService implements Startable {
       if (order == null) {
         // Nor order was found with hash corresponding to payment or refund
         // Transaction
+        LOG.debug("No order found for mined transaction with hash {}", hash);
         return;
       } else {
         order.setRefundTransactionStatus(transactionSuccess ? SUCCESS.name() : FAILED.name());
@@ -538,12 +539,17 @@ public class PerkStoreService implements Startable {
     return false;
   }
 
-  private GlobalSettings loadGlobalSettings() throws JsonException {
+  private GlobalSettings loadGlobalSettings() {
     SettingValue<?> globalSettingsValue = getSettingService().get(PERKSTORE_CONTEXT, PERKSTORE_SCOPE, SETTINGS_KEY_NAME);
     if (globalSettingsValue == null || StringUtils.isBlank(globalSettingsValue.getValue().toString())) {
       return new GlobalSettings();
     } else {
-      GlobalSettings globalSettings = fromString(GlobalSettings.class, globalSettingsValue.getValue().toString());
+      GlobalSettings globalSettings;
+      try {
+        globalSettings = fromString(GlobalSettings.class, globalSettingsValue.getValue().toString());
+      } catch (JsonException e) {
+        throw new IllegalStateException("Can't read perkstore settings");
+      }
       if (globalSettings != null) {
         List<Long> accessPermissions = globalSettings.getAccessPermissions();
         if (accessPermissions != null && !accessPermissions.isEmpty()) {
@@ -756,8 +762,9 @@ public class PerkStoreService implements Startable {
       return false;
     }
 
-    if (globalSettings == null) {
-      return true;
+    Identity userIdentity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
+    if (userIdentity == null) {
+      return false;
     }
 
     if (isPerkStoreManager(username)) {
@@ -773,9 +780,6 @@ public class PerkStoreService implements Startable {
     }
 
     GlobalSettings globalSettings = getGlobalSettings();
-    if (globalSettings == null) {
-      return true;
-    }
 
     return isUserAdmin(username) || (hasPermission(username, globalSettings.getProductCreationPermissions())
         && hasPermission(username, globalSettings.getAccessPermissions()));
@@ -821,6 +825,10 @@ public class PerkStoreService implements Startable {
     }
 
     if (StringUtils.isBlank(username)) {
+      return false;
+    }
+
+    if (product == null) {
       return false;
     }
 

@@ -5,10 +5,13 @@ import java.util.List;
 
 import groovy.transform.ToString;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Exclude;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class GlobalSettings implements Serializable, Cloneable {
+public class GlobalSettings extends PerkStoreCloneable implements Serializable {
 
   private static final long serialVersionUID = 6313043752170656574L;
 
@@ -22,22 +25,22 @@ public class GlobalSettings implements Serializable, Cloneable {
   private String            symbol;
 
   // Computed attributes for display
+  // and input fields to store settings
+  @Exclude
   private List<Profile>     productCreationPermissionsProfiles;
 
+  @Exclude
   private List<Profile>     accessPermissionsProfiles;
 
+  @Exclude
   private List<Profile>     managersProfiles;
 
   // Computed
-  private UserSettings      userSettings     = new UserSettings();
+  private UserSettings      userSettings     = null;
 
   @SuppressWarnings("all")
   public GlobalSettings clone() {
-    try {
-      return (GlobalSettings) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException("Error while cloning object");
-    }
+    return (GlobalSettings) super.clone();
   }
 
 }

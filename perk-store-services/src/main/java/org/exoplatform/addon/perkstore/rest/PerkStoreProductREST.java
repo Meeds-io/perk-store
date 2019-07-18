@@ -37,11 +37,10 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
-/**
- * This class provide a REST endpoint to retrieve detailed information about
- * perk store product
- */
+import io.swagger.annotations.*;
+
 @Path("/perkstore/api/product")
+@Api(value = "/perkstore/api/product", description = "Manages perk store products") // NOSONAR
 @RolesAllowed("users")
 public class PerkStoreProductREST implements ResourceContainer {
 
@@ -53,17 +52,18 @@ public class PerkStoreProductREST implements ResourceContainer {
     this.perkStoreService = perkStoreService;
   }
 
-  /**
-   * Save product
-   * 
-   * @param product
-   * @return
-   */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
   @Path("save")
   @RolesAllowed("users")
-  public Response saveProduct(Product product) {
+  @ApiOperation(value = "Creates or modifies a product", httpMethod = "POST", response = Response.class, consumes = "application/json", produces = "application/json", notes = "returns saved product")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 500, message = "Internal server error") })
+  public Response saveProduct(@ApiParam(value = "Product object", required = true) Product product) {
     if (product == null) {
       LOG.warn("Bad request sent to server with empty product");
       return Response.status(400).build();
@@ -71,40 +71,35 @@ public class PerkStoreProductREST implements ResourceContainer {
 
     String currentUserId = getCurrentUserId();
     try {
-      perkStoreService.saveProduct(product, currentUserId);
+      product = perkStoreService.saveProduct(product, currentUserId);
+      return Response.ok(product).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Saving product", currentUserId, product);
     } catch (Exception e) {
       LOG.error("Error saving product", e);
       return Response.status(500).build();
     }
-    return Response.ok().build();
   }
 
-  /**
-   * Get product details
-   * 
-   * @param productId
-   * @return
-   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("get")
   @RolesAllowed("users")
-  public Response getProduct(@QueryParam("productId") String productId, @QueryParam("username") String username) {
+  @ApiOperation(value = "Retrieves a product by its id", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns selected product if exists")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 500, message = "Internal server error") })
+  public Response getProduct(@ApiParam(value = "Product technical id", required = true) @QueryParam("productId") String productId) {
     if (StringUtils.isBlank(productId)) {
       LOG.warn("Bad request sent to server with empty productId");
       return Response.status(400).build();
     }
     String currentUserId = getCurrentUserId();
     try {
-      if (StringUtils.equals(currentUserId, username)) {
-        Product product = perkStoreService.getProductById(Long.parseLong(productId), currentUserId);
-        return Response.ok(product).build();
-      } else {
-        LOG.warn("User '{}' is attempting to access user '{}' data", currentUserId, username);
-        return Response.status(403).build();
-      }
+      Product product = perkStoreService.getProductById(Long.parseLong(productId), currentUserId);
+      return Response.ok(product).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Getting product details", currentUserId, productId);
     } catch (Exception e) {
@@ -113,15 +108,15 @@ public class PerkStoreProductREST implements ResourceContainer {
     }
   }
 
-  /**
-   * Retrieve products
-   * 
-   * @return
-   */
   @Path("list")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
+  @ApiOperation(value = "Get the list of product accessible by current user", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns list of products")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 500, message = "Internal server error") })
   public Response listProducts() {
     String currentUserId = getCurrentUserId();
     try {
@@ -135,20 +130,18 @@ public class PerkStoreProductREST implements ResourceContainer {
     }
   }
 
-  /**
-   * Get product illustration
-   * 
-   * @param request
-   * @param productId
-   * @param imageId
-   * @return
-   */
   @GET
   @Path("{productId}/{imageId}")
   @RolesAllowed("users")
+  @ApiOperation(value = "Get product image by its id", httpMethod = "GET", response = Response.class, notes = "returns image content")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 304, message = "Image not modified"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 500, message = "Internal server error") })
   public Response getProductImage(@Context Request request,
-                                  @PathParam("productId") long productId,
-                                  @PathParam("imageId") long imageId) {
+                                  @ApiParam(value = "Product technical id", required = true) @PathParam("productId") long productId,
+                                  @ApiParam(value = "Image file technical id", required = true) @PathParam("imageId") long imageId) {
     String currentUserId = getCurrentUserId();
     try {
       FileDetail fileDetail = perkStoreService.getFileDetail(productId, imageId, false, currentUserId);
@@ -156,10 +149,8 @@ public class PerkStoreProductREST implements ResourceContainer {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
 
-      //
       long lastUpdated = fileDetail.getLastUpdated();
       EntityTag eTag = new EntityTag(String.valueOf(lastUpdated));
-      //
       Response.ResponseBuilder builder = request.evaluatePreconditions(eTag);
       if (builder == null) {
         fileDetail = perkStoreService.getFileDetail(productId, imageId, true, currentUserId);

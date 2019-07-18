@@ -16,6 +16,19 @@
     <css-path>/css/perkstore.css</css-path>
   </portlet-skin>
 -->
+  <portal-skin>
+    <skin-name>Default</skin-name>
+    <skin-module>wallet</skin-module>
+    <css-path>/css/platform.css</css-path>
+    <css-priority>0</css-priority>
+  </portal-skin>
+
+  <portal-skin>
+    <skin-name>Enterprise</skin-name>
+    <skin-module>wallet</skin-module>
+    <css-path>/css/platform.css</css-path>
+    <css-priority>0</css-priority>
+  </portal-skin>
 
   <portlet>
     <name>PerkStore</name>
@@ -25,7 +38,7 @@
         <path>/js/perkstore.bundle.js</path>
       </script>
       <depends>
-        <module>perkstoreVuetify</module>
+        <module>vuetify</module>
       </depends>
       <depends>
         <module>jquery</module>
@@ -61,17 +74,6 @@
       </depends>
     </module>
   </portlet>
-
-  <module>
-    <name>perkstoreVuetify</name>
-    <script>
-      <minify>false</minify>
-      <path>/js/lib/vuetify.min.js</path>
-    </script>
-    <depends>
-      <module>vue</module>
-    </depends>
-  </module>
 
   <module>
     <name>Quagga</name>

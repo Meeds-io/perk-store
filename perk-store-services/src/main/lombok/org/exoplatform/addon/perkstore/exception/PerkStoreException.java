@@ -54,6 +54,7 @@ public class PerkStoreException extends Exception {
       LOG.warn("Error getting message for code: {}", errorCode, e);
       return this.getMessage();
     } catch (Exception e) {
+      LOG.debug("Error getting message for code: {}", errorCode, e);
       return this.getMessage();
     }
   }

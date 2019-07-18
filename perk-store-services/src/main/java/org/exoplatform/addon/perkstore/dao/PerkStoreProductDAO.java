@@ -14,11 +14,6 @@ public class PerkStoreProductDAO extends GenericDAOJPAImpl<ProductEntity, Long> 
   }
 
   @Override
-  public void delete(ProductEntity entity) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public void deleteAll(List<ProductEntity> entities) {
     throw new UnsupportedOperationException();
   }
