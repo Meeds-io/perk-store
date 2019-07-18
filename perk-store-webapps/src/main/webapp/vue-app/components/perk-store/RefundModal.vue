@@ -12,7 +12,7 @@
       slot="activator"
       :disabled="!walletAddonInstalled"
       class="btn orderProcessingBtn ml-1">
-      Refund
+      {{ $t('exoplatform.perkstore.button.refund') }}
     </button>
 
     <v-card class="elevation-12">
@@ -22,7 +22,7 @@
           aria-hidden="true"
           @click="close"></a>
         <span class="PopupTitle popupTitle ellipsis">
-          Refund order #{{ order && order.id }}
+          {{ $t('exoplatform.perkstore.title.refundOrderModal', {0: order && order.id}) }}
         </span>
       </div>
       <v-card-text>
@@ -39,12 +39,12 @@
             v-model.number="quantity"
             :disabled="loading"
             :label="quantityInputLabel"
+            :placeholder="$t('exoplatform.perkstore.label.refundQuantityPlaceholder')"
             :rules="requiredNumberRule"
             append-icon="fa-plus"
             prepend-inner-icon="fa-minus"
             class="text-xs-center"
             name="quantity"
-            placeholder="Select a quantity to refund"
             required
             @click:prepend-inner="decrementQuantity"
             @click:append="incrementQuantity" />
@@ -52,11 +52,11 @@
             v-if="dialog"
             v-model.number="amount"
             :disabled="loading"
-            :label="amountInputLabel"
+            :label="$t('exoplatform.perkstore.label.amount')"
+            :placeholder="$t('exoplatform.perkstore.label.refundAmountPlaceholder')"
             :rules="requiredAmountRule"
             name="amount"
             class="text-xs-center"
-            placeholder="Enter the amount to refund"
             autofocus
             required />
           <v-text-field
@@ -66,9 +66,9 @@
             :type="walletPasswordShow ? 'text' : 'password'"
             :disabled="loading"
             :rules="requiredRule"
+            :label="$t('exoplatform.perkstore.label.walletPassword')"
+            :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
             name="walletPassword"
-            label="Wallet password"
-            placeholder="Enter your wallet password"
             counter
             required
             autocomplete="current-passord"
@@ -82,13 +82,13 @@
           :loading="loading || walletLoading"
           class="primary mr-1"
           @click="refundProduct">
-          Refund
+          {{ $t('exoplatform.perkstore.button.refund') }}
         </v-btn>
         <button
           class="btn"
           :disabled="loading || walletLoading"
           @click="close">
-          Close
+          {{ $t('exoplatform.perkstore.button.close') }}
         </button>
         <v-spacer />
       </v-card-actions>
@@ -134,16 +134,16 @@ export default {
       walletPasswordShow: false,
       warning: null,
       error: null,
-      requiredRule: [(v) => !!v || 'Required field'],
+      requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
       requiredNumberRule: [
-        (v) => !!v || 'Required field',
-        (v) => this.isPositiveNumber(v, true) || 'Invalid positive number',
-        (v) => !this.order || this.quantity <= Number(this.order.remainingQuantityToProcess) || `Orders quantity must be less than ${this.order.remainingQuantityToProcess}`,
+        (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
+        (v) => this.isPositiveNumber(v, true) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        (v) => !this.order || this.quantity <= Number(this.order.remainingQuantityToProcess) || this.$t('exoplatform.perkstore.warning.maxQuantityReached', {0: this.remainingQuantityToProcess}),
       ],
       requiredAmountRule: [
-        (v) => !!v || 'Required field',
-        (v) => this.isPositiveNumber(v) || 'Invalid positive number',
-        (v) => v <= this.maxAmount || `Amount must be less than ${this.maxAmount}`,
+        (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
+        (v) => this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        (v) => v <= this.maxAmount || this.$t('exoplatform.perkstore.warning.maxAmountReached', {0: this.maxAmount}),
       ],
     };
   },
@@ -152,10 +152,10 @@ export default {
       return this.walletLoading || !this.walletEnabled || !this.isPositiveNumber(this.amount) || !this.isPositiveNumber(this.quantity, true) || this.quantity > this.order.remainingQuantityToProcess || this.amount > this.maxAmount;
     },
     amountInputLabel() {
-      return `Amount in ${this.symbol}`;
+      return this.order && this.$t('exoplatform.perkstore.label.amountWithMax', {0: this.maxAmount});
     },
     quantityInputLabel() {
-      return this.order && `Quantity (max: ${this.order.remainingQuantityToProcess})`;
+      return this.order && this.$t('exoplatform.perkstore.label.quantityWithMax', {0: this.order.remainingQuantityToProcess});
     },
     maxAmount() {
       return (this.order && this.product && this.order.remainingQuantityToProcess * this.product.price) || 0;
@@ -213,7 +213,7 @@ export default {
       this.walletLoading = false;
       const result = event && event.detail;
       if(!result || result.error) {
-        this.warning = `${result && result.error ? (`${  result.error}`) : 'Wallet seems not configured properly'}`;
+        this.warning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
@@ -269,33 +269,38 @@ export default {
       }
 
       if (!this.isPositiveNumber(this.quantity, true)) {
-        this.error = 'Invalid quantity';
+        this.error = this.$t('exoplatform.perkstore.warning.invalidQuantity');
         return;
       }
 
       if (!this.isPositiveNumber(this.amount)) {
-        this.error = 'Invalid amount';
+        this.error = this.$t('exoplatform.perkstore.warning.invalidAmount');
         return;
       }
 
       if (this.quantity > this.order.remainingQuantityToProcess) {
-        this.error = `You can't refund more than ${this.order.remainingQuantityToProcess} as quantity`;
+        this.error = this.$t('exoplatform.perkstore.warning.cantRefundMoreThanQuantity', {0: this.order.remainingQuantityToProcess});
         return;
       }
 
       if (this.amount > (this.quantity * this.product.price)) {
-        this.error = 'Amount to send is greater than quantity * price';
+        this.error = this.$t('exoplatform.perkstore.warning.amountGreaterThanRealPrice');
         return;
       }
 
       if (!this.order.sender) {
-        this.error = `Order doesn't have a sender wallet`;
+        this.error = this.$t('exoplatform.perkstore.warning.orderWithoutSenderWallet');
         return;
       }
 
       this.loading = true;
 
-      const message = `Refunded "${this.product.title}": ${this.quantity} x ${this.product.price} ${this.symbol ? this.symbol : ''}`;
+      const message = this.$t('exoplatform.perkstore.info.refundedQuantityAndAmount', {
+        0: this.product.title,
+        1: this.quantity,
+        2: this.product.price,
+        3: this.symbol || '',
+      });
 
       // simulate saving order before sending transaction to blockchain
       document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail' : {

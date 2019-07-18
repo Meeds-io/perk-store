@@ -5,7 +5,7 @@
       class="dropZone clickable"
       for="perk-store-attach-file">
       <span class="dropMsg">
-        <i class="uiIcon attachFileIcon"></i> Drop files
+        <i class="uiIcon attachFileIcon"></i> {{ $t('exoplatform.perkstore.label.dropFilesAreaLabel') }}
       </span>
       <input
         id="perk-store-attach-file"
@@ -45,7 +45,7 @@
               <v-list-tile-action-text class="pb-3">
                 <v-btn
                   v-if="fileDetail.progress === 100"
-                  title="Delete"
+                  :title="$t('exoplatform.perkstore.button.delete')"
                   icon
                   ripple
                   @click="deleteFile(fileDetail.file || fileDetail.id)">
@@ -53,7 +53,7 @@
                 </v-btn>
                 <v-btn
                   v-else
-                  title="Cancel"
+                  :title="$t('exoplatform.perkstore.button.cancel')"
                   icon
                   ripple
                   @click="abortUpload(fileDetail.file || fileDetail.id)">
@@ -122,22 +122,22 @@ export default {
         switch (err) {
         case 'ErrorTooManyFiles':
         case 'TooManyFiles':
-          thiss.error = `Error processing files ${file && file.name || ''}: max files reached (${thiss.maxFiles})`;
+          thiss.error = thiss.$t('exoplatform.perkstore.error.uploadMaxFileCountReached', {0: file && file.name || '', 1: thiss.maxFiles});
           break;
         case 'ErrorFileTooLarge':
         case 'FileTooLarge':
-          thiss.error = `Error processing file ${file && file.name || ''}: size exceeds maximum allowed size ${thiss.maxUploadsSizeInMb} MB`;
+          thiss.error = thiss.$t('exoplatform.perkstore.error.uploadMaxFileSizeExceeded', {0: file && file.name || '', 1: thiss.maxUploadsSizeInMb});
           break;
         case 'ErrorFileTypeNotAllowed':
         case 'FileTypeNotAllowed':
-          thiss.error = `Error processing file ${file && file.name || ''}: File type not allowed`;
+          thiss.error = thiss.$t('exoplatform.perkstore.error.uploadUnsupportedFileType', {0: file && file.name || ''});
           break;
         }
         if (file) {
           thiss.deleteFile(file);
         }
         if(!thiss.error) {
-          thiss.error = `Error processing file ${file && file.name || ''}: this could happen when max files reached (${thiss.maxFiles})`;
+          thiss.error = thiss.$t('exoplatform.perkstore.error.uploadGenericError', {0: file && file.name || '', 1: thiss.maxFiles});
         }
       },
       allowedfiletypes: ['image/jpeg','image/png','image/gif'],
@@ -148,7 +148,7 @@ export default {
       beforeEach: (file) => {
         const remainingMaxFiles = thiss.maxFiles - thiss.files.length;
         if (remainingMaxFiles <= 0) {
-          throw new Error(`Error processing files ${file && file.name || ''}: max files reached (${thiss.maxFiles})`);
+          throw new Error(thiss.$t('exoplatform.perkstore.error.uploadMaxFileCountReached', {0: file && file.name || '', 1: thiss.maxFiles}));
         }
       },
       dragOver: function() {
@@ -233,10 +233,10 @@ export default {
       const fixed = 2;
       if (size < kilobyte * kilobyte / hundred) {
         size = Number(size / kilobyte).toFixed(fixed);
-        return `${size} KB`;
+        return this.$t('exoplatform.perkstore.label.sizeInKB', {0: size});
       } else {
         size = Number(size / (kilobyte * kilobyte)).toFixed(fixed);
-        return `${size} MB`;
+        return this.$t('exoplatform.perkstore.label.sizeInMB', {0: size});
       }
     },
     getFileName(name) {

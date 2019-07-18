@@ -18,26 +18,26 @@
             class="orderStatusSelectBox small mt-1 mb-1 mr-2"
             @change="changeStatus('STATUS')">
             <option v-for="option in statusList" :key="option">
-              {{ option }}
+              {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
             </option>
           </select>
           <div
             v-if="order.remainingQuantityToProcess"
-            :title="`${order.remainingQuantityToProcess} to deliver`"
+            :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
             class="orderQuantityBadgeParent">
             <div class="orderQuantityBadge red">
               {{ order.remainingQuantityToProcess }}
             </div>
           </div>
         </template>
-        <span v-else>{{ statusLabel }}</span>
+        <span v-else>{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</span>
       </v-card-title>
-  
+
       <v-divider />
-  
+
       <v-list dense>
         <v-list-tile>
-          <v-list-tile-content>Buyer:</v-list-tile-content>
+          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-tile-content>
           <v-list-tile-content class="align-end">
             <div class="ellipsis orderDetailText">
               <profile-link
@@ -52,7 +52,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile>
-          <v-list-tile-content>Date:</v-list-tile-content>
+          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.date') }}:</v-list-tile-content>
           <v-list-tile-content class="align-end">
             <div :title="createdDateLabel" class="orderCreatedDate ellipsis">
               {{ createdDateLabel }}
@@ -60,7 +60,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile>
-          <v-list-tile-content>Items:</v-list-tile-content>
+          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.items') }}:</v-list-tile-content>
           <v-list-tile-content class="align-end">
             <div class="ellipsis orderDetailText">
               {{ order.quantity }} x 
@@ -86,7 +86,7 @@
                 class="blue-grey white--text ml-0 mr-0 mb-0 mr-0 mt-0"
                 small
                 @click="displayBarcode">
-                Payment
+                {{ $t('exoplatform.perkstore.label.payment') }}
                 <v-icon
                   right
                   dark
@@ -102,7 +102,7 @@
                 <v-spacer />
               </v-card-title>
             </v-dialog>
-            <span v-else>Payment:</span>
+            <span v-else>{{ $t('exoplatform.perkstore.label.payment') }}:</span>
           </v-list-tile-content>
           <v-list-tile-content class="align-end">
             <div class="no-wrap ellipsis orderDetailText">
@@ -130,6 +130,7 @@
               <a
                 v-if="transactionLink"
                 :href="transactionLink"
+                :title="$t('exoplatform.perkstore.label.openInWallet')"
                 rel="nofollow"
                 target="_blank">
                 {{ order.amount }} {{ symbol }}
@@ -137,7 +138,7 @@
               <template v-else>
                 {{ order.amount }} {{ symbol }}
               </template>
-              to
+              {{ $t('exoplatform.perkstore.label.sentTo') }}
               <profile-link
                 v-if="order.receiver"
                 :id="order.receiver.id"
@@ -154,25 +155,20 @@
   
       <v-list dense class="orderProcessingDetails">
         <v-list-tile class="orderProcessingContent">
-          <v-list-tile-content>Processing:</v-list-tile-content>
+          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-tile-content>
           <v-list-tile-content class="align-end orderProcessingActions">
             <div>
-              <add-to-delivered-modal
-                ref="addToDeliveredModal"
-                :product="product"
-                :order="order" />
-
               <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
-                <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>DONE
+                <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
               </div>
               <template v-else-if="userData && userData.canEdit">
                 <deliver-modal
-                  v-if="order.remainingQuantityToProcess && (isPaid || isPartial)"
                   ref="deliverModal"
+                  :visible-button="order.remainingQuantityToProcess && order.remainingQuantityToProcess > 0 && (isPaid || isPartial)"
                   :product="product"
                   :order="order" />
                 <refund-modal
-                  v-if="refunding || (order.remainingQuantityToProcess && (isPaid || isPartial))"
+                  v-if="refunding || (order.remainingQuantityToProcess && order.remainingQuantityToProcess > 0 && (isPaid || isPartial))"
                   :product="product"
                   :order="order"
                   :symbol="symbol"
@@ -183,11 +179,11 @@
                   v-if="isOrdered"
                   class="btn orderProcessingBtn"
                   @click="cancelOrder">
-                  Cancel
+                  {{ $t('exoplatform.perkstore.button.cancel') }}
                 </button>
               </template>
               <div v-else-if="isCanceled">
-                CANCELED
+                {{ $t('exoplatform.perkstore.label.status.canceled') }}
               </div>
               <div v-else>
                 <v-icon class="orange--text mr-1" size="16px">far fa-clock</v-icon>PENDING
@@ -198,7 +194,7 @@
         <v-list-tile class="mt-1">
           <v-list-tile-content class="orderDeliveredLabel">
             <div class="no-wrap">
-              Delivered:
+              {{ $t('exoplatform.perkstore.label.deliveredQuantity') }}:
               <v-progress-circular
                 :rotate="360"
                 :size="40"
@@ -221,24 +217,24 @@
         <v-list-tile v-if="order.refundedAmount && order.refundTransactionHash" class="mt-1">
           <v-list-tile-content class="orderRefundedLabel">
             <div class="no-wrap">
-              Refunded:
+              {{ $t('exoplatform.perkstore.label.refundedQuantity') }}:
               <v-icon
                 v-if="order.refundTransactionStatus === 'SUCCESS'"
-                title="Transaction succeeded"
+                :title="$t('exoplatform.perkstore.label.transactionSuceess')"
                 class="green--text"
                 size="16">
                 fa-check-circle
               </v-icon>
               <v-icon
                 v-if="order.refundTransactionStatus === 'FAILED'"
-                title="Transaction failed"
+                :title="$t('exoplatform.perkstore.label.transactionFailed')"
                 class="red--text"
                 size="16">
                 fa-exclamation-circle
               </v-icon>
               <v-icon
                 v-if="order.refundTransactionStatus === 'PENDING'"
-                title="Transaction in progress"
+                :title="$t('exoplatform.perkstore.label.transactionPending')"
                 class="orange--text"
                 size="16">
                 far fa-clock
@@ -246,6 +242,7 @@
               <a
                 v-if="refundTransactionLink"
                 :href="refundTransactionLink"
+                :title="$t('exoplatform.perkstore.label.openInWallet')"
                 rel="nofollow"
                 target="_blank">
                 {{ order.refundedAmount }} {{ symbol }}
@@ -270,7 +267,6 @@
 <script>
 import RefundModal from './RefundModal.vue';
 import DeliverModal from './DeliverModal.vue';
-import AddToDeliveredModal from './AddToDeliveredModal.vue';
 import ProfileLink from '../ProfileLink.vue';
 
 import {saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
@@ -282,7 +278,6 @@ export default {
     DeliverModal,
     RefundModal,
     ProfileLink,
-    AddToDeliveredModal,
   },
   props: {
     product: {
@@ -366,9 +361,6 @@ export default {
     refundedDateLabel() {
       return formatDateTime(this.order.refundedDate);
     },
-    statusLabel() {
-      return this.order.status;
-    },
     deliveredPercentage() {
       return parseInt(((this.order.deliveredQuantity + this.order.refundedQuantity) * 100) / this.order.quantity);
     },
@@ -436,8 +428,8 @@ export default {
     },
     openDeliverWindow(productId, orderId, userId) {
       console.debug('Detected barcode', productId, orderId, userId, this.$refs);
-      if (this.$refs && this.$refs.addToDeliveredModal) {
-        this.$refs.addToDeliveredModal.open(productId, orderId, userId);
+      if (this.$refs && this.$refs.deliverModal && this.order && this.order.productId === productId && this.order.id === orderId) {
+        this.$refs.deliverModal.open(productId, orderId, userId);
       }
     },
   }

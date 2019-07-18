@@ -15,7 +15,7 @@
           @click="close">
         </a>
         <span class="PopupTitle popupTitle ellipsis">
-          Perk store settings
+          {{ $t('exoplatform.perkstore.title.settingsModal') }}
         </span>
       </div>
       <v-card-text>
@@ -26,9 +26,9 @@
 
         <auto-complete
           ref="applicationAccessPermissionAutocomplete"
-          input-label="Application access permissions (Optional)"
-          input-placeholder="Select one or multiple entries"
-          no-data-label="Search for a user or a space"
+          :input-label="$t('exoplatform.perkstore.label.applicationAccessPermissions')"
+          :input-placeholder="$t('exoplatform.perkstore.label.applicationAccessPermissionsPlaceholder')"
+          :no-data-label="$t('exoplatform.perkstore.label.applicationAccessPermissionsSearchPlaceholder')"
           multiple
           no-address
           big-field
@@ -37,9 +37,9 @@
 
         <auto-complete
           ref="applicationManagersAutocomplete"
-          input-label="Store managers (Optional)"
-          input-placeholder="Select one or multiple entries"
-          no-data-label="Search for a user or a space"
+          :input-label="$t('exoplatform.perkstore.label.applicationManagersPermissions')"
+          :input-placeholder="$t('exoplatform.perkstore.label.applicationManagersPermissionsPlaceholder')"
+          :no-data-label="$t('exoplatform.perkstore.label.applicationManagersPermissionsSearchPlaceholder')"
           multiple
           no-address
           big-field
@@ -48,21 +48,14 @@
 
         <auto-complete
           ref="applicationProductCreationPermissionAutocomplete"
-          input-label="Product creation permissions (Optional)"
-          input-placeholder="Select one or multiple entries"
-          no-data-label="Search for a user or a space"
+          :input-label="$t('exoplatform.perkstore.label.applicationCreationPermissions')"
+          :input-placeholder="$t('exoplatform.perkstore.label.applicationCreationPermissionsPlaceholder')"
+          :no-data-label="$t('exoplatform.perkstore.label.applicationCreationPermissionsSearchPlaceholder')"
           multiple
           no-address
           big-field
           @item-selected="selectValue('productCreationPermissionsProfiles', $event)"
           @clear-selection="selectValue('productCreationPermissionsProfiles')" />
-
-        <v-text-field
-          v-model="settingsToSave.symbol"
-          :disabled="loading"
-          :label="symbolInputLabel"
-          name="symbol"
-          placeholder="Select the used currency symbol (default wallet pricipal contract symbol)" />
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -71,13 +64,13 @@
           :loading="loading"
           class="primary mr-1"
           @click="saveSettings">
-          Save
+          {{ $t('exoplatform.perkstore.button.save') }}
         </v-btn>
         <button
           class="btn"
           :disabled="loading"
           @click="close">
-          Close
+          {{ $t('exoplatform.perkstore.button.close') }}
         </button>
         <v-spacer />
       </v-card-actions>
@@ -94,14 +87,6 @@ export default {
   components: {
     AutoComplete,
   },
-  props: {
-    walletSymbol: {
-      type: String,
-      default: function() {
-        return null;
-      },
-    },
-  },
   data() {
     return {
       dialog: false,
@@ -109,11 +94,6 @@ export default {
       settingsToSave: {},
       error: null,
     };
-  },
-  computed: {
-    symbolInputLabel() {
-      return (this.walletSymbol && `Currency symbol (Wallet principal currency symbol: ${this.walletSymbol})`) || 'Currency symbol';
-    },
   },
   watch: {
     error() {

@@ -13,7 +13,7 @@
           :key="order.id"
           class="ellipsis notificationContent"
           dark>
-          New order #{{ order.id }} from {{ order.sender.displayName }}
+          {{ $t('exoplatform.perkstore.label.newOrderFrom', {0: order.id, 1: order.sender.displayName}) }}
         </v-card-text>
         <v-divider
           v-if="displayDivider"
@@ -23,11 +23,11 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
+          :title="$t('exoplatform.perkstore.button.refresh')"
           dark
           flat
-          title="Refresh"
           @click="refreshList">
-          Refresh
+          {{ $t('exoplatform.perkstore.button.refresh') }}
         </v-btn>
         <v-spacer />
       </v-card-actions>

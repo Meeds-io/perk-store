@@ -18,6 +18,7 @@
         "eXo": true,
         "Vue": true,
         "Vuetify": true,
+        "exoi18n": true,
         "cCometd": true,
         "Quagga": true,
         "JsBarcode": true

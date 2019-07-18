@@ -11,9 +11,9 @@
             v-model="product.title"
             :rules="requiredRule"
             :maxlength="200"
+            :label="$t('exoplatform.perkstore.label.productTitle')"
+            :placeholder="$t('exoplatform.perkstore.label.productTitlePlaceholder')"
             name="ProductTitle"
-            label="Product title"
-            placeholder="input a product title"
             required
             autofocus
             counter />
@@ -27,9 +27,9 @@
             v-model="product.description"
             :rules="requiredRule"
             :maxlength="maxTextAreaSize"
+            :label="$t('exoplatform.perkstore.label.productDescription')"
+            :placeholder="$t('exoplatform.perkstore.label.productDescriptionPlaceholder')"
             name="ProductDescription"
-            label="Product description"
-            placeholder="Input a product description"
             class="mt-4"
             rows="5"
             flat
@@ -38,9 +38,9 @@
           <auto-complete
             ref="receiverMarchandAutocomplete"
             :rules="requiredRule"
-            input-label="Marchand wallet"
-            input-placeholder="Select the wallet of marchand"
-            no-data-label="Search for a user or a space"
+            :input-label="$t('exoplatform.perkstore.label.marchandWallet')"
+            :input-placeholder="$t('exoplatform.perkstore.label.marchandWalletPlaceholder')"
+            :no-data-label="$t('exoplatform.perkstore.label.marchandWalletSearchPlaceholder')"
             big-field
             required
             @item-selected="selectRecipient"
@@ -49,9 +49,9 @@
           <auto-complete
             ref="productMarchandsAutocomplete"
             :rules="requiredRule"
-            input-label="Product editors"
-            input-placeholder="Select product editors"
-            no-data-label="Search for a user"
+            :input-label="$t('exoplatform.perkstore.label.productEditors')"
+            :input-placeholder="$t('exoplatform.perkstore.label.productEditorsPlaceholder')"
+            :no-data-label="$t('exoplatform.perkstore.label.productEditorsSearchPlaceholder')"
             multiple
             only-users
             no-address
@@ -62,9 +62,9 @@
 
           <auto-complete
             ref="productAccessPermissionAutocomplete"
-            input-label="Product allowed buyers (optional)"
-            input-placeholder="Select product allowed buyers"
-            no-data-label="Search for a user or a space"
+            :input-label="$t('exoplatform.perkstore.label.productAllowedBuyers')"
+            :input-placeholder="$t('exoplatform.perkstore.label.productAllowedBuyersPlaceholder')"
+            :no-data-label="$t('exoplatform.perkstore.label.productAllowedBuyersSearchPlaceholder')"
             multiple
             no-address
             big-field
@@ -77,52 +77,52 @@
           md6>
           <v-checkbox
             v-model="product.enabled"
-            label="Enabled product" />
+            :label="$t('exoplatform.perkstore.label.enabledProduct')" />
 
           <v-checkbox
             v-model="product.unlimited"
-            label="Unlimited supply" />
+            :label="$t('exoplatform.perkstore.label.unlimitedSupply')" />
 
           <v-checkbox
             v-model="product.allowFraction"
-            label="Allow fractioned quantity"
+            :label="$t('exoplatform.perkstore.label.fractionedQuantity')"
             class="hidden" />
 
           <v-text-field
             v-if="!product.unlimited"
             v-model.number="product.totalSupply"
             name="ProductTotalSupply"
-            label="Total supply"
-            placeholder="input the product total supply" />
+            :label="$t('exoplatform.perkstore.label.totalSupply')"
+            :placeholder="$t('exoplatform.perkstore.label.totalSupplyPlaceholder')" />
 
           <v-text-field
             v-model.number="product.price"
             :rules="requiredNumberRule"
+            :label="$t('exoplatform.perkstore.label.price')"
+            :placeholder="$t('exoplatform.perkstore.label.pricePlaceholder')"
             name="ProductPrice"
-            label="Price"
-            placeholder="input the product price"
             required />
 
           <v-text-field
             v-model.number="product.maxOrdersPerUser"
             :rules="integerRule"
-            :label="maxOrdersPerUserLabel"
-            name="ProductMaxOrdersPerUser"
-            placeholder="You can limit the number of user orders" />
+            :label="$t(`exoplatform.perkstore.label.maxOrdersPerUser${orderPeriodicitySuffix}`)"
+            :placeholder="$t('exoplatform.perkstore.label.maxOrdersPerUserPlaceholder')"
+            name="ProductMaxOrdersPerUser" />
 
           <v-combobox
             v-model="product.orderPeriodicity"
             :items="periodsValues"
             :return-object="false"
-            label="User orders limitation periodicity"
-            placeholder="Periodicity used to limit user orders"
+            :label="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicity')"
+            :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
             hide-no-data
             hide-selected
             small-chips>
             <!-- Without slot-scope, the template isn't displayed -->
             <!-- eslint-disable-next-line vue/no-unused-vars -->
             <template slot="selection" slot-scope="data">
-              {{ orderPeriodicityLabel }}
+              {{ product && product.orderPeriodicity && $t(`exoplatform.perkstore.label.${product.orderPeriodicity.toLowerCase()}`) || '' }}
             </template>
           </v-combobox>
         </v-flex>
@@ -132,12 +132,12 @@
         <button
           class="btn btn-primary mr-1"
           @click="saveProduct">
-          Save
+          {{ $t('exoplatform.perkstore.button.save') }}
         </button>
         <button
           class="btn"
           @click="$event.preventDefault();$event.stopPropagation();$emit('close')">
-          Cancel
+          {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
         <v-spacer />
       </v-card-actions>
@@ -166,19 +166,18 @@ export default {
   },
   data() {
     return {
-      orderPeriodicity: null,
       productEditionId: null,
-      requiredRule: [(v) => !!v || 'Required field'],
+      requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
       integerRule: [
-        (v) => !v || this.isPositiveNumber(v, true) || 'Invalid positive integer',
+        (v) => !v || this.isPositiveNumber(v, true) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
       ],
       requiredIntegerRule: [
-        (v) => !!v || 'Required field',
-        (v) => !v || this.isPositiveNumber(v, true) || 'Invalid positive integer',
+        (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
+        (v) => !v || this.isPositiveNumber(v, true) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
       ],
       requiredNumberRule: [
-        (v) => !!v || 'Required field',
-        (v) => !v || this.isPositiveNumber(v) || 'Invalid positive number',
+        (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
+        (v) => !v || this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
       ],
       maxTextAreaSize: 2000,
       periodsValues: ['Week', 'Month', 'Quarter', 'Semester', 'Year'],
@@ -207,21 +206,12 @@ export default {
     };
   },
   computed: {
-    maxOrdersPerUserLabel() {
-      return this.orderPeriodicityLabel ? `Max orders per user per ${this.orderPeriodicityLabel}` : 'Max orders per user'
+    orderPeriodicity() {
+      return (this.product && this.product.orderPeriodicity) || '';
     },
-    orderPeriodicityLabel() {
-      let label = null;
-      if(this.product.orderPeriodicity) {
-        const selectedValue = this.product.orderPeriodicity.toUpperCase();
-        this.periods.forEach(period => {
-          if(selectedValue === period.value) {
-            label = period.text;
-          }
-        });
-      }
-      return label;
-    }
+    orderPeriodicitySuffix() {
+      return (this.orderPeriodicity && `Per${this.orderPeriodicity}`) || '';
+    },
   },
   watch: {
     product(value, oldValue) {

@@ -31,7 +31,7 @@
             {{ noDataLabel }}
           </v-list-tile-title>
           <v-list-tile-title v-else>
-            Search for a space or user
+            {{ $t('exoplatform.perkstore.label.autocompletePlaceholder') }}
           </v-list-tile-title>
         </v-list-tile>
       </template>
@@ -40,7 +40,7 @@
         <v-chip
           v-if="item.avatar"
           :selected="selected"
-          :title="addressLoad === 'error' ? 'the recipient doesn\'t have a valid wallet account yet' : ''"
+          :title="addressLoad === 'error' ? $t('exoplatform.perkstore.warning.recipientDoesntHaveWallet') : ''"
           class="autocompleteSelectedItem"
           @input="selectSingleItem(item)">
           <v-progress-circular
@@ -60,6 +60,7 @@
             {{ item.name }}
             <a
               href="#"
+              :title="$t('exoplatform.perkstore.button.delete')"
               class="remove"
               @click="remove(item)">
               <i class="uiIconClose uiIconLightGray"></i>

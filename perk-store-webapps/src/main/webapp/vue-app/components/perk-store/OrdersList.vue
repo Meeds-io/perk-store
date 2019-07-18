@@ -23,18 +23,18 @@
         <v-card-title class="mt-0 pt-0">
           <v-spacer />
           <div class="no-wrap ellipsis">
-            Selected filter:
+            {{ $t('exoplatform.perkstore.label.selectedFilter') }}:
             <v-chip v-for="filterDescription in filterDescriptionLabels" :key="filterDescription">
-              {{ filterDescription }}
+              {{ $t(`exoplatform.perkstore.label.status.${filterDescription}`) }}
             </v-chip>
           </div>
           <v-spacer />
         </v-card-title>
       </v-card>
-      <a id="downloadOrders" class="hidden">download</a>
+      <a id="downloadOrders" class="hidden">{{ $t('exoplatform.perkstore.button.download') }}</a>
       <v-data-iterator
         :items="filteredOrders"
-        :no-data-text="loading ? '': 'No orders'"
+        :no-data-text="loading ? '': $t('exoplatform.perkstore.label.noOrders')"
         content-tag="v-layout"
         content-class="mt-0 mb-0"
         hide-actions
@@ -73,7 +73,7 @@
             :loading="loading"
             :disabled="loading"
             @click="loadMore">
-            Load more
+            {{ $t('exoplatform.perkstore.button.loadMore') }}
           </v-btn>
           <v-progress-circular
             v-else-if="loading"
@@ -235,28 +235,28 @@ export default {
         this.filterDescriptionLabels.push(`DATE: ${dateString}`);
       }
       if(this.selectedOrdersFilter.notProcessed) {
-        this.filterDescriptionLabels.push("NOT PROCESSED");
+        this.filterDescriptionLabels.push("notProcessed");
       } else {
         if (this.selectedOrdersFilter.ordered) {
-          this.filterDescriptionLabels.push("ORDERED");
+          this.filterDescriptionLabels.push("ordered");
         }
         if (this.selectedOrdersFilter.canceled) {
-          this.filterDescriptionLabels.push("CANCELED");
+          this.filterDescriptionLabels.push("canceled");
         }
         if (this.selectedOrdersFilter.error) {
-          this.filterDescriptionLabels.push("ERROR");
+          this.filterDescriptionLabels.push("error");
         }
         if (this.selectedOrdersFilter.paid) {
-          this.filterDescriptionLabels.push("PAID");
+          this.filterDescriptionLabels.push("paid");
         }
         if (this.selectedOrdersFilter.partial) {
-          this.filterDescriptionLabels.push("PARTIAL");
+          this.filterDescriptionLabels.push("partial");
         }
         if (this.selectedOrdersFilter.delivered) {
-          this.filterDescriptionLabels.push("DELIVERED");
+          this.filterDescriptionLabels.push("delivered");
         }
         if (this.selectedOrdersFilter.refunded) {
-          this.filterDescriptionLabels.push("REFUNDED");
+          this.filterDescriptionLabels.push("refunded");
         }
       }
     },
@@ -307,22 +307,22 @@ export default {
           }
           ordersToExport.reverse();
           const csvHeader = {
-            id: 'Id',
+            id: this.$t('exoplatform.perkstore.label.orderId'),
             sender: {
-              displayName: 'Buyer',
+              displayName: this.$t('exoplatform.perkstore.label.buyer'),
             },
             receiver: {
-              displayName: 'Seller',
+              displayName: this.$t('exoplatform.perkstore.label.seller'),
             },
-            status: 'Status',
-            quantity: 'Quantity',
-            deliveredQuantity: 'Delivered quantity',
-            refundedQuantity: 'Refunded quantity',
-            amount: 'Amount',
-            refundedAmount: 'Refunded amount',
-            createdDate: 'Order date',
-            deliveredDate: 'Delivered date',
-            refundedDate: 'Refunded date',
+            status: this.$t('exoplatform.perkstore.label.status'),
+            quantity: this.$t('exoplatform.perkstore.label.quantity'),
+            deliveredQuantity: this.$t('exoplatform.perkstore.label.deliveredQuantity'),
+            refundedQuantity: this.$t('exoplatform.perkstore.label.refundedQuantity'),
+            amount: this.$t('exoplatform.perkstore.label.amount'),
+            refundedAmount: this.$t('exoplatform.perkstore.label.refundedAmount'),
+            createdDate: this.$t('exoplatform.perkstore.label.orderDate'),
+            deliveredDate: this.$t('exoplatform.perkstore.label.deliveredDate'),
+            refundedDate: this.$t('exoplatform.perkstore.label.refundedDate'),
           };
 
           ordersToExport.unshift(csvHeader);

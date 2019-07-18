@@ -18,14 +18,14 @@
 -->
   <portal-skin>
     <skin-name>Default</skin-name>
-    <skin-module>wallet</skin-module>
+    <skin-module>perkstore</skin-module>
     <css-path>/css/platform.css</css-path>
     <css-priority>0</css-priority>
   </portal-skin>
 
   <portal-skin>
     <skin-name>Enterprise</skin-name>
-    <skin-module>wallet</skin-module>
+    <skin-module>perkstore</skin-module>
     <css-path>/css/platform.css</css-path>
     <css-priority>0</css-priority>
   </portal-skin>
@@ -38,7 +38,13 @@
         <path>/js/perkstore.bundle.js</path>
       </script>
       <depends>
+        <module>vue</module>
+      </depends>
+      <depends>
         <module>vuetify</module>
+      </depends>
+      <depends>
+        <module>eXoVueI18n</module>
       </depends>
       <depends>
         <module>jquery</module>

@@ -11,20 +11,20 @@
       dense
       class="productOrderFilterHeader">
       <v-toolbar-title>
-        <h3>Filter orders</h3>
+        <h3>{{ $t('exoplatform.perkstore.label.filterOrders') }}</h3>
       </v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
         <v-btn
+          :title="$t('exoplatform.perkstore.button.search')"
           class="mr-1 primary"
           icon
-          title="Search"
           @click="$emit('search')">
           <v-icon>search</v-icon>
         </v-btn>
         <v-btn
+          :title="$t('exoplatform.perkstore.button.save')"
           class="mr-1 secondary"
-          title="Save"
           icon
           @click="saveOrderFilter">
           <v-icon>fa-save</v-icon>
@@ -33,42 +33,37 @@
     </v-toolbar>
     <v-container grid-list-xl class="border-box-sizing pr-1 productOrderFilterContent">
       <v-layout wrap column>
-        <h4><v-checkbox v-model="filter.searchInDates" label="Search in dates" /></h4>
+        <h4><v-checkbox v-model="filter.searchInDates" :label="$t('exoplatform.perkstore.label.searchInDates')" /></h4>
         <template v-if="filter.searchInDates">
           <v-divider />
           <v-date-picker
             v-model="selectedDate"
             type="date" />
         </template>
-        <v-checkbox v-model="filter.notProcessed" label="Not completely processed" />
-        <v-checkbox
-          v-if="!filter.notProcessed"
-          v-model="filter.ordered"
-          label="Ordered" />
-        <v-checkbox
-          v-if="!filter.notProcessed"
-          v-model="filter.canceled"
-          label="Canceled" />
-        <v-checkbox
-          v-if="!filter.notProcessed"
-          v-model="filter.error"
-          label="Order went wrong" />
-        <v-checkbox
-          v-if="!filter.notProcessed"
-          v-model="filter.paid"
-          label="Paid" />
-        <v-checkbox
-          v-if="!filter.notProcessed"
-          v-model="filter.partial"
-          label="Partial" />
-        <v-checkbox
-          v-if="!filter.notProcessed"
-          v-model="filter.delivered"
-          label="Delivered" />
-        <v-checkbox
-          v-if="!filter.notProcessed"
-          v-model="filter.refunded"
-          label="Refunded" />
+        <v-checkbox v-model="filter.notProcessed" :label="$t('exoplatform.perkstore.label.notCompletelyProcessed')" />
+        <template v-if="!filter.notProcessed">
+          <v-checkbox
+            v-model="filter.ordered"
+            :label="$t('exoplatform.perkstore.label.status.ordered')" />
+          <v-checkbox
+            v-model="filter.canceled"
+            :label="$t('exoplatform.perkstore.label.status.canceled')" />
+          <v-checkbox
+            v-model="filter.error"
+            :label="$t('exoplatform.perkstore.label.status.error')" />
+          <v-checkbox
+            v-model="filter.paid"
+            :label="$t('exoplatform.perkstore.label.status.paid')" />
+          <v-checkbox
+            v-model="filter.partial"
+            :label="$t('exoplatform.perkstore.label.status.partial')" />
+          <v-checkbox
+            v-model="filter.delivered"
+            :label="$t('exoplatform.perkstore.label.status.delivered')" />
+          <v-checkbox
+            v-model="filter.refunded"
+            :label="$t('exoplatform.perkstore.label.status.refunded')" />
+        </template>
       </v-layout>
     </v-container>
   </v-navigation-drawer>

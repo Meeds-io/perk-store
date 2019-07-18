@@ -13,14 +13,14 @@
     <v-list-tile v-else-if="maxOrdersReached">
       <v-list-tile-content class="align-center">
         <strong class="red--text">
-          Maximum {{ product.maxOrdersPerUser }} orders{{ periodicityLabelContext1 }} has been reached
+          {{ $t('exoplatform.perkstore.label.maxOrdersIsReached', {0: product.maxOrdersPerUser, }) }}
         </strong>
       </v-list-tile-content>
     </v-list-tile>
     <v-expand-transition>
       <div v-if="hover">
         <v-list-tile v-if="product.receiverMarchand">
-          <v-list-tile-content><strong>Offered By:</strong></v-list-tile-content>
+          <v-list-tile-content><strong>{{ $t('exoplatform.perkstore.label.offeredBy') }}:</strong></v-list-tile-content>
           <v-list-tile-content class="productDetailText align-end">
             <div class="ellipsis">
               <profile-link
@@ -34,27 +34,36 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile v-if="product.unlimited && userData.canEdit">
-          <v-list-tile-content><strong>Sold:</strong></v-list-tile-content>
+          <v-list-tile-content><strong>{{ $t('exoplatform.perkstore.label.sold') }}:</strong></v-list-tile-content>
           <v-list-tile-content class="align-end">{{ product.purchased }}</v-list-tile-content>
         </v-list-tile>
         <v-list-tile v-else-if="!product.unlimited">
-          <v-list-tile-content><strong>Available:</strong></v-list-tile-content>
+          <v-list-tile-content><strong>{{ $t('exoplatform.perkstore.label.available') }}:</strong></v-list-tile-content>
           <v-list-tile-content v-if="userData.canEdit" class="align-end">{{ available }} / {{ product.totalSupply }}</v-list-tile-content>
           <v-list-tile-content v-else class="align-end">{{ available }}</v-list-tile-content>
         </v-list-tile>
         <template v-if="!maxOrdersReached && product.maxOrdersPerUser">
           <v-divider />
-          <v-list-tile v-if="product.orderPeriodicity && product.userData.purchasedInCurrentPeriod">
-            <v-list-tile-content><strong>My orders:</strong></v-list-tile-content>
-            <v-list-tile-content class="align-end">{{ product.userData.purchasedInCurrentPeriod }}/{{ product.maxOrdersPerUser }}{{ periodicityLabelContext2 }}</v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile v-else-if="!product.orderPeriodicity && product.userData.totalPurchased">
-            <v-list-tile-content><strong>My orders:</strong></v-list-tile-content>
-            <v-list-tile-content class="align-end">{{ product.userData.totalPurchased }}/{{ product.maxOrdersPerUser }}</v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile v-else>
-            <v-list-tile-content><strong>Max orders:</strong></v-list-tile-content>
-            <v-list-tile-content class="align-end">{{ maxOrdersLabel }}</v-list-tile-content>
+          <v-list-tile>
+            <v-list-tile-content>
+              <strong>{{ $t('exoplatform.perkstore.label.myOrders') }}:</strong>
+            </v-list-tile-content>
+            <template v-if="product.orderPeriodicity">
+              <v-list-tile-content v-if="userData.purchasedInCurrentPeriod" class="align-end">
+                {{ $t(`exoplatform.perkstore.label.ordersInThis${product.orderPeriodicity}`, {0: userData.purchasedInCurrentPeriod, 1: product.maxOrdersPerUser}) }}
+              </v-list-tile-content>
+              <v-list-tile-content v-else class="align-end">
+                {{ $t(`exoplatform.perkstore.label.ordersPerUserPer${product.orderPeriodicity}`, {0: product.maxOrdersPerUser}) }}
+              </v-list-tile-content>
+            </template>
+            <template v-else>
+              <v-list-tile-content v-if="userData.totalPurchased" class="align-end">
+                {{ userData.totalPurchased }}/{{ product.maxOrdersPerUser }}
+              </v-list-tile-content>
+              <v-list-tile-content v-else class="align-end">
+                {{ $t('exoplatform.perkstore.label.ordersPerUser', {0: product.maxOrdersPerUser}) }}
+              </v-list-tile-content>
+            </template>
           </v-list-tile>
         </template>
       </div>
@@ -105,30 +114,6 @@ export default {
     userData() {
       return (this.product && this.product.userData) || {};
     },
-    periodicityLabelContext1() {
-      if(this.product.orderPeriodicity) {
-        return ` per ${this.product.orderPeriodicityLabel}`;
-      } else {
-        return '';
-      }
-    },
-    periodicityLabelContext2() {
-      if(this.product.orderPeriodicity) {
-        return ` this ${this.product.orderPeriodicityLabel}`;
-      } else {
-        return '';
-      }
-    },
-    maxOrdersLabel() {
-      if(!this.product.maxOrdersPerUser) {
-        return '';
-      }
-      if(this.product.orderPeriodicity) {
-        return `${this.product.maxOrdersPerUser} per user per ${this.product.orderPeriodicityLabel}`;
-      } else {
-        return `${this.product.maxOrdersPerUser} per user`;
-      }
-    }
   }
 }
 </script>

@@ -15,34 +15,34 @@
               <v-btn
                 v-show="displayFilterButton"
                 id="perkStoreAppMenuDisplayFilterButton"
+                :title="$t('exoplatform.perkstore.button.displayFilters')"
                 icon
                 flat
-                title="Display filters"
                 @click="showFilters">
                 <v-icon small color="primary">
                   fa-filter
                 </v-icon>
               </v-btn>
-              Perk store
+              {{ $t('exoplatform.perkstore.title.perkStoreApplication') }}
               <template v-if="displayProductDetails && selectedProduct">
               </template>
               <template v-else-if="displayProductForm && selectedProduct && selectedProduct.id">
                 - <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductForm && selectedProduct">
-                - Add new product
+                - {{ $t('exoplatform.perkstore.title.createNewProduct') }}
               </template>
               <template v-else-if="displayProductOrders && selectedProduct && selectedOrderId">
-                - Order <span class="primary--text">#{{ selectedOrderId }}</span> of <span class="primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.order') }} <span class="primary--text">#{{ selectedOrderId }}</span> : <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductOrders && canEditSelectedProduct">
-                - Orders list of <span class="primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.ordersListOf') }} <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductOrders && selectedProduct">
-                - My orders list of <span class="primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.myOrdersListOf') }} <span class="primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayMyOrders">
-                - My orders
+                - {{ $t('exoplatform.perkstore.title.myOrders') }}
               </template>
             </v-toolbar-title>
             <v-spacer />
@@ -50,9 +50,9 @@
               <template v-if="barcodeReader">
                 <v-btn
                   id="perkStoreAppMenuOrdersListButton"
+                  :title="$t('exoplatform.perkstore.button.showOrderList')"
                   icon
                   flat
-                  title="Show orders list"
                   @click="$refs.ordersList.closeBarcodeReader()">
                   <v-icon small>
                     fa-list
@@ -63,19 +63,19 @@
                 <v-btn
                   v-if="canEditSelectedProduct"
                   id="perkStoreAppMenuBarcodeButton"
+                  :title="$t('exoplatform.perkstore.button.switchToBarCodeReader')"
                   icon
                   flat
-                  title="Switch to barcode reader"
                   @click="$refs.ordersList.openBarcodeReader()">
                   <v-icon small>
                     fa-barcode
                   </v-icon>
                 </v-btn>
                 <v-btn
-                  id="perkStoreAppMenuCloseButton"
+                  id="perkStoreAppMenuDownloadButton"
+                  :title="$t('exoplatform.perkstore.button.exportAsCSV')"
                   icon
                   flat
-                  title="Export as CSV"
                   @click="exportOrders">
                   <v-icon small>
                     fa-download
@@ -85,11 +85,11 @@
             </template>
             <v-btn
               v-if="displayProductDetails && selectedProduct && selectedProduct.userData && selectedProduct.userData.canEdit"
-              id="perkStoreAppMenuCloseButton"
+              id="perkStoreAppMenuEditButton"
+              :title="$t('exoplatform.perkstore.button.edit')"
               class="primary"
               icon
               flat
-              title="Edit"
               dark
               @click="editProduct(selectedProduct)">
               <v-icon small>fa-pen</v-icon>
@@ -97,11 +97,11 @@
             <v-btn
               v-if="displayCloseIcon"
               id="perkStoreAppMenuCloseButton"
+              :title="$t('exoplatform.perkstore.button.close')"
               class="secondary"
               icon
               flat
               dark
-              title="Close"
               @click="closeDetails">
               <v-icon small>
                 close
@@ -111,15 +111,15 @@
               <input
                 v-if="products && products.length"
                 v-model="search"
-                placeholder="Search in products"
+                :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
                 type="text"
                 class="searchProductsInput mr-3">
               <v-menu offset-y>
                 <v-btn
                   slot="activator"
+                  :title="$t('exoplatform.perkstore.label.productFilters')"
                   icon
-                  small
-                  title="Product filters">
+                  small>
                   <v-icon :color="productsFilterIconClass" small>
                     fa-filter
                   </v-icon>
@@ -129,7 +129,7 @@
                     <v-list-tile-title>
                       <v-checkbox
                         v-model="productsFilters.disabled"
-                        label="Disabled Products"
+                        :label="$t('exoplatform.perkstore.label.productFiltersDisabledProducts')"
                         class="pt-0 pb-0" />
                     </v-list-tile-title>
                   </v-list-tile>
@@ -137,7 +137,7 @@
                     <v-list-tile-title>
                       <v-checkbox
                         v-model="productsFilters.soldOut"
-                        label="Sold out Products"
+                        :label="$t('exoplatform.perkstore.label.productFiltersSoldOutProducts')"
                         class="pt-0 pb-0" />
                     </v-list-tile-title>
                   </v-list-tile>
@@ -145,9 +145,9 @@
               </v-menu>
               <v-btn
                 id="perkStoreAppMenuRefreshButton"
+                :title="$t('exoplatform.perkstore.button.refreshStore')"
                 icon
                 flat
-                title="Refresh store"
                 class="mr-0"
                 @click="init()">
                 <v-icon small>
@@ -156,9 +156,9 @@
               </v-btn>
               <v-btn
                 id="perkStoreAppMyOrdersButton"
+                :title="$t('exoplatform.perkstore.button.myOrders')"
                 icon
                 flat
-                title="My orders"
                 class="mr-0"
                 @click="displayMyOrdersList">
                 <v-icon small>
@@ -168,9 +168,9 @@
               <v-btn
                 v-if="userSettings.canAddProduct"
                 id="perkStoreAppMenuAddButton"
+                :title="$t('exoplatform.perkstore.button.addProduct')"
                 icon
                 flat
-                title="Add product"
                 class="mr-0"
                 @click="newProduct()">
                 <v-icon small>
@@ -180,10 +180,10 @@
               <v-btn
                 v-if="userSettings.administrator"
                 id="perkStoreAppMenuSettingsButton"
+                :title="$t('exoplatform.perkstore.button.settings')"
                 class="mr-0 ml-0"
                 icon
                 flat
-                title="Settings"
                 @click="displaySettingsModal">
                 <v-icon size="17px">
                   fa-cog
@@ -270,7 +270,6 @@
 
           <settings-modal
             ref="settingsModal"
-            :wallet-symbol="walletSymbol"
             @saved="init()" />
 
           <product-notification
@@ -323,7 +322,6 @@ export default {
     productsFilters: {},
     settings: {},
     symbol: null,
-    walletSymbol: null,
     userSettings: {},
     createOrUpdateOrderEvent: 'exo.addons.perkstore.order.createOrModify',
     createOrUpdateProductEvent: 'exo.addons.perkstore.product.createOrModify',
@@ -365,6 +363,7 @@ export default {
 
     document.addEventListener(this.createOrUpdateOrderEvent, this.updateProduct);
 
+    document.addEventListener('exo-wallet-settings-loaded', this.walletSettingsLoaded);
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
     document.addEventListener('exo-wallet-init-loading', this.walletIsLoading);
     if(window.walletAddonInstalled) {
@@ -390,8 +389,7 @@ export default {
         return;
       }
 
-      const newSettings = event.detail.globalsettings;
-      this.symbol = this.settings.symbol = newSettings.symbol;
+      this.init();
       // refresh entire application if the access permission is changed
     },
     init(selectedProductId, selectedOrderId) {
@@ -405,7 +403,6 @@ export default {
         if(!this.settings) {
           this.settings = {};
         }
-        this.settings.symbol = this.symbol = this.settings.symbol || this.symbol;
         this.userSettings = this.settings.userSettings;
         this.ordersFilter = getOrderFilter();
       })
@@ -419,7 +416,7 @@ export default {
           if(window.walletAddonInstalled) {
             this.initWalletAPI();
           } else {
-            this.walletWarning = 'Ethereum wallet addon isn\'t installed, thus no payment is possible.';
+            this.walletWarning = this.$t('exoplatform.perkstore.warning.walletNotInstalled');
           }
         }, 2000);
         this.loading = false;
@@ -462,14 +459,15 @@ export default {
         document.dispatchEvent(new CustomEvent('exo-wallet-init'));
       }
     },
+    walletSettingsLoaded(event) {
+      this.symbol = event && event.detail && event.detail.contractDetail && event.detail.contractDetail.symbol;
+    },
     walletInitialized(event) {
       this.walletLoading = false;
       this.walletNeedPassword = false;
       const result = event && event.detail;
-      this.walletSymbol = result && result.symbol;
-      this.settings.symbol = this.symbol = this.symbol || this.walletSymbol || '';
       if(!result || result.error) {
-        this.walletWarning = `${result && result.error ? (`${  result.error}`) : 'Wallet seems not configured properly'}`;
+        this.walletWarning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
@@ -555,15 +553,6 @@ export default {
               if (this.selectedProduct && this.selectedProduct.id === freshProduct.id) {
                 Object.assign(this.selectedProduct, freshProduct);
               }
-
-              // Add notification to non last modifier
-              /*
-              Disabled to not add notification about product modification
-
-              if(event.type === this.createOrUpdateProductEvent && (product.lastModifier && product.lastModifier.id !== eXo.env.portal.userName) || (!product.lastModifier && product.creator && product.creator.id !== eXo.env.portal.userName)) {
-                this.modifiedProducts.unshift(product);
-              }
-              */
             }
           });
         } else {

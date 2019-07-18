@@ -14,10 +14,10 @@
           class="ellipsis notificationContent"
           dark>
           <template v-if="product.lastModifiedDate">
-            Product modified: {{ product.title }}
+            {{ $t('exoplatform.perkstore.info.productModified', {0: product.title}) }}
           </template>
           <template v-else>
-            Product added: {{ product.title }}
+            {{ $t('exoplatform.perkstore.info.productCreated', {0: product.title}) }}
           </template>
         </v-card-text>
         <v-divider
@@ -30,14 +30,15 @@
         <v-btn
           dark
           flat
-          title="Refresh"
+          :title="$t('exoplatform.perkstore.button.refresh')"
           @click="refreshList">
-          Refresh
+          {{ $t('exoplatform.perkstore.button.refresh') }}
         </v-btn>
         <v-spacer />
       </v-card-actions>
     </v-card>
     <v-btn
+      :title="$t('exoplatform.perkstore.button.close')"
       dark
       flat
       icon

@@ -3,13 +3,6 @@
     <v-card-actions class="pa-3">
       <div class="headline">{{ product.title }}</div>
       <v-spacer />
-      <!-- 
-      <v-icon>star_border</v-icon>
-      <v-icon>star_border</v-icon>
-      <v-icon>star_border</v-icon>
-      <v-icon>star_border</v-icon>
-      <v-icon>star_border</v-icon>
-       -->
     </v-card-actions>
     <v-divider light />
     <v-layout wrap>
@@ -17,8 +10,7 @@
         v-if="product.imageFiles && product.imageFiles.length"
         md5
         xs12>
-        <image-attachment-selector
-          :images="product.imageFiles" />
+        <image-attachment-selector :images="product.imageFiles" />
       </v-flex>
       <v-flex
         :class="product.imageFiles && product.imageFiles.length ? 'md7': md12"
@@ -33,7 +25,8 @@
         <v-card-title class="productDetailRightParent pt-0">
           <div v-if="ordered" class="alert alert-success v-content">
             <i class="uiIconSuccess"></i>
-            Your order has been submitted successfully. <a href="javascript:void(0);" @click="ordered = false">Close</a>
+            {{ $t('exoplatform.perkstore.info.orderSubmittedSuccessfully') }}.
+            <a href="javascript:void(0);" @click="ordered = false">{{ $t('exoplatform.perkstore.button.close') }}</a>
           </div>
           <buy-form
             v-else
