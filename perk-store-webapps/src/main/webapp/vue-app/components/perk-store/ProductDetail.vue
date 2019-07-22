@@ -38,7 +38,7 @@
           style="position: relative;">
           <v-btn
             :class="ordersListBtnClass"
-            :title="userData.canEdit ? 'Orders list' : 'My orders'"
+            :title="userData.canEdit ? $t('exoplatform.perkstore.label.ordersList') : $t('exoplatform.perkstore.label.myOrders')"
             absolute
             color="secondary"
             class="white--text orderListButton"
@@ -63,7 +63,7 @@
           <v-btn
             v-if="userData.canEdit"
             :class="editBtnClass"
-            title="Edit product"
+            :title="$t('exoplatform.perkstore.button.editProduct')"
             absolute
             color="secondary"
             class="white--text editButton"
@@ -75,11 +75,11 @@
           </v-btn>
           <v-btn
             v-if="displayBuyButton"
-            title="Buy"
-            absolute
-            class="white--text primary"
             :disabled="disabledBuy || !walletEnabled || walletLoading"
             :loading="!disabledBuy && walletLoading"
+            :title="$t('exoplatform.perkstore.button.buy')"
+            absolute
+            class="white--text primary"
             fab
             right
             top
@@ -102,8 +102,8 @@
               {{ product.price }} {{ symbol }}
             </h3>
           </v-card-title>
-          <strong v-if="!product.unlimited">{{ purchasedPercentageLabel }} articles sold</strong>
-          <strong v-else>Unlimited supply</strong>
+          <strong v-if="!product.unlimited">{{ $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel}) }}</strong>
+          <strong v-else>{{ $t('exoplatform.perkstore.label.unlimitedSupply') }}</strong>
         </v-tooltip>
         <v-tooltip v-if="!product.unlimited" bottom>
           <v-progress-linear
@@ -112,7 +112,7 @@
             :open-delay="0"
             color="red"
             class="mb-0 mt-0" />
-          <strong>{{ purchasedPercentageLabel }} articles sold</strong>
+          <strong>{{ $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel}) }}</strong>
         </v-tooltip>
         <v-card-text class="productCardFooter">
           <div

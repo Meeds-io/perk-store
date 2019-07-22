@@ -15,7 +15,7 @@
           @click="close">
         </a>
         <span class="PopupTitle popupTitle ellipsis">
-          Buy {{ product && product.title }}
+          {{ $t('exoplatform.perkstore.title.buyProductModal', {0: product && product.title}) }}
         </span>
       </div>
       <buy-form

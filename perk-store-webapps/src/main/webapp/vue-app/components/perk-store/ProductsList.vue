@@ -40,7 +40,7 @@
       <v-container v-else-if="!loading" class="text-xs-center">
         <div class="alert alert-info" style="display: inline-block">
           <i class="uiIconInfo"></i>
-          No available products
+          {{ $t('exoplatform.perkstore.info.noAvailableProduct') }}
         </div>
       </v-container>
     </template>

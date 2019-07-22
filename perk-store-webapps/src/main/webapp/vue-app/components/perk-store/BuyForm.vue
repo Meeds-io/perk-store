@@ -9,17 +9,17 @@
         <v-text-field
           v-model.number="quantity"
           :disabled="loading"
-          :label="quantityInputLabel"
           :rules="requiredNumberRule"
+          :label="quantityInputLabel"
+          :placeholder="$t('exoplatform.perkstore.label.quantityPlaceholder')"
           append-icon="fa-plus"
           prepend-inner-icon="fa-minus"
           class="text-xs-center"
           name="quantity"
-          placeholder="Select a quantity to buy"
           required
           @click:prepend-inner="decrementQuantity"
           @click:append="incrementQuantity" />
-        <div>Amount: {{ amountLabel }} </div>
+        <div>{{ $t('exoplatform.perkstore.label.purchasePrice', {0: amountLabel}) }} </div>
         <v-text-field
           v-if="needPassword && opened"
           v-model="walletPassword"
@@ -27,9 +27,9 @@
           :type="walletPasswordShow ? 'text' : 'password'"
           :disabled="loading"
           :rules="requiredRule"
+          :label="$t('exoplatform.perkstore.label.walletPassword')"
+          :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
           name="walletPassword"
-          label="Wallet password"
-          placeholder="Enter your wallet password"
           autocomplete="current-passord"
           counter
           required
@@ -44,14 +44,14 @@
         :loading="loading || walletLoading"
         class="primary mr-1"
         @click="payProduct">
-        Buy
+        {{ $t('exoplatform.perkstore.button.buy') }}
       </v-btn>
       <button
         v-if="!integratedForm"
         class="btn"
         :disabled="loading || walletLoading"
         @click="$emit('close')">
-        Close
+        {{ $t('exoplatform.perkstore.button.close') }}
       </button>
       <v-spacer />
     </v-card-actions>
@@ -113,11 +113,11 @@ export default {
       walletPassword: '',
       walletPasswordShow: false,
       error: null,
-      requiredRule: [(v) => !!v || 'Required field'],
+      requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
       requiredNumberRule: [
-        (v) => !!v || 'Required field',
-        (v) => !v || this.isPositiveNumber(v) || 'Invalid positive number',
-        (v) => !v || !this.limitedQuantity || this.quantity <= this.maxQuantity || `Orders quantity must be less than ${this.maxQuantity}`,
+        (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
+        (v) => !v || this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        (v) => !v || !this.limitedQuantity || this.quantity <= this.maxQuantity || this.$t('exoplatform.perkstore.warning.maxQuantityReached', {0: this.maxQuantity}),
       ],
     };
   },
@@ -158,9 +158,9 @@ export default {
     },
     quantityInputLabel() {
       if(this.limitedQuantity) {
-        return `Quantity (max: ${this.maxQuantity})`;
+        return this.$t('exoplatform.perkstore.label.quantityWithMax', {0: this.maxQuantity});
       } else {
-        return `Quantity`;
+        return this.$t('exoplatform.perkstore.label.quantity');
       }
     },
     productTitle() {
@@ -245,33 +245,33 @@ export default {
       }
 
       if (!qty || isNaN(qty) || qty <= 0 || !Number.isFinite(qty) || (!this.product.allowFraction && !Number.isSafeInteger(this.quantity))) {
-        this.error = 'Invalid quantity';
+        this.error = this.$t('exoplatform.perkstore.warning.invalidQuantity');
         return;
       }
 
       this.quantity = qty;
 
       if (!this.product.unlimited && this.quantity > this.maxQuantity) {
-        this.error = `You can't buy more than ${this.maxQuantity} as quantity`;
+        this.error = this.$t('exoplatform.perkstore.warning.invalidQuantityWithMax', {0: this.maxQuantity});
         return;
       }
 
       if (!this.product.receiverMarchand) {
-        this.error = `Product doesn't have a receiver wallet yet`;
+        this.error = this.$t('exoplatform.perkstore.warning.noProductMarchand');
         return;
       }
 
       if (!this.product.price) {
-        this.error = `Product doesn't have a price yet`;
+        this.error = this.$t('exoplatform.perkstore.warning.noProductPrice');
         return;
       }
 
       if (!this.amount) {
-        this.error = `Empty amount`;
+        this.error = this.$t('exoplatform.perkstore.warning.noAmountToSend');
         return;
       }
 
-      const message = `Purchased "${this.product.title}": ${this.quantity} x ${this.product.price}${this.symbol ? this.symbol : ''}`;
+      const message = `${this.product.title}: ${this.quantity} x ${this.product.price}${this.symbol ? this.symbol : ''}`;
 
       // simulate saving order before sending transaction to blockchain
       return createOrder({
