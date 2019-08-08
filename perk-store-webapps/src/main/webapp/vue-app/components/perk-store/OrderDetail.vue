@@ -200,7 +200,7 @@
                 :size="40"
                 :width="5"
                 :value="deliveredPercentage"
-                color="teal"
+                :color="deliveredPercentageColor"
                 class="ml-2">
                 <span class="no-wrap">
                   {{ order.deliveredQuantity }}/{{ order.quantity }}
@@ -361,8 +361,11 @@ export default {
     refundedDateLabel() {
       return formatDateTime(this.order.refundedDate);
     },
+    deliveredPercentageColor() {
+      return (!this.order.deliveredQuantity && 'grey') || (this.order.refundedQuantity && 'orange') || 'teal';
+    },
     deliveredPercentage() {
-      return parseInt(((this.order.deliveredQuantity + this.order.refundedQuantity) * 100) / this.order.quantity);
+      return parseInt((this.order.deliveredQuantity * 100) / this.order.quantity);
     },
     statusLowerCase() {
       return this.order.status && this.order.status.toLowerCase();
