@@ -25,7 +25,6 @@
 
           <v-textarea
             v-model="product.description"
-            :rules="requiredRule"
             :maxlength="maxTextAreaSize"
             :label="$t('exoplatform.perkstore.label.productDescription')"
             :placeholder="$t('exoplatform.perkstore.label.productDescriptionPlaceholder')"
