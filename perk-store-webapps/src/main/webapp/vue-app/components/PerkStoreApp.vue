@@ -1,7 +1,7 @@
 <template>
   <v-app 
     id="PerkStoreApp"
-    class="transparent"
+    class="transparent VuetifyApp"
     flat>
     <main>
       <v-layout justify-center>
