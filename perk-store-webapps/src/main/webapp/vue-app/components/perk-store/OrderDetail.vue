@@ -12,15 +12,7 @@
         </h4>
         <v-spacer />
         <template v-if="userData && userData.canEdit">
-          <select
-            v-model="order.status"
-            :disabled="true"
-            class="orderStatusSelectBox small mt-1 mb-1 mr-2"
-            @change="changeStatus('STATUS')">
-            <option v-for="option in statusList" :key="option">
-              {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
-            </option>
-          </select>
+          <div class="orderStatus small mt-1 mb-1 mr-2">{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</div>
           <div
             v-if="order.remainingQuantityToProcess"
             :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"

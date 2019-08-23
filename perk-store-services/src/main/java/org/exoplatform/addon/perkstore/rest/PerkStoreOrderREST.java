@@ -16,7 +16,8 @@
  */
 package org.exoplatform.addon.perkstore.rest;
 
-import static org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType.*;
+import static org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType.DELIVERED_QUANTITY;
+import static org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType.REFUNDED_QUANTITY;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
 
 import java.util.Arrays;
@@ -49,8 +50,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
                                                               ExoLogger.getLogger(PerkStoreOrderREST.class);
 
   private static final List<ProductOrderModificationType> ALLOWED_ORDER_MODIFICATIONS = Arrays.asList(DELIVERED_QUANTITY,
-                                                                                                      REFUNDED_QUANTITY,
-                                                                                                      STATUS);
+                                                                                                      REFUNDED_QUANTITY);
 
   private PerkStoreService                                perkStoreService;
 
