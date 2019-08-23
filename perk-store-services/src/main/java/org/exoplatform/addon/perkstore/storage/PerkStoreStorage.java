@@ -289,6 +289,9 @@ public class PerkStoreStorage {
         imagesToStore.removeAll(storedImageFiles);
       }
       for (FileDetail fileDetail : imagesToStore) {
+        if (fileDetail == null) {
+          continue;
+        }
         long fileItemId = fileDetail.getId();
         if (fileItemId > 0 || fileDetail == null || fileDetail.getUploadId() == null) {
           continue;

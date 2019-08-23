@@ -88,7 +88,7 @@ public class Utils {
 
   public static final String        ERROR_SUFFIX_PRODUCT_IS_DISABLED          = "product.disabled";
 
-  public static final String        SPACE_ACCOUNT_TYPE                        = "space";
+  public static final String        SPACE_ACCOUNT_TYPE                        = SpaceIdentityProvider.NAME;
 
   public static final String        USER_ACCOUNT_TYPE                         = "user";
 
@@ -188,7 +188,7 @@ public class Utils {
   }
 
   public static boolean isSpaceType(String type) {
-    return SPACE_ACCOUNT_TYPE.equals(type) || SpaceIdentityProvider.NAME.equals(type);
+    return SPACE_ACCOUNT_TYPE.equals(type);
   }
 
   public static String getIdentityTypeByProviderId(String providerId) {
