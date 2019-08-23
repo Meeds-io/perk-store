@@ -8,7 +8,7 @@
   <artifactId>perk-store-services</artifactId>
   <name>eXo Add-on:: Perk Store - Services</name>
   <properties>
-    <exo.test.coverage.ratio>0.61</exo.test.coverage.ratio>
+    <exo.test.coverage.ratio>0.60</exo.test.coverage.ratio>
   </properties>
   <dependencies>
     <dependency>

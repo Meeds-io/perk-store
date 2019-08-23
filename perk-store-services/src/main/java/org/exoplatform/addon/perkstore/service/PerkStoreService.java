@@ -21,6 +21,7 @@ import static org.exoplatform.addon.perkstore.model.constant.ProductOrderModific
 import static org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus.*;
 import static org.exoplatform.addon.perkstore.model.constant.ProductOrderTransactionStatus.*;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
+import static org.exoplatform.addon.perkstore.statistic.StatisticUtils.OPERATION;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -31,6 +32,8 @@ import org.picocontainer.Startable;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.model.constant.*;
+import org.exoplatform.addon.perkstore.statistic.ExoPerkStoreStatistic;
+import org.exoplatform.addon.perkstore.statistic.ExoPerkStoreStatisticService;
 import org.exoplatform.addon.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
@@ -39,16 +42,35 @@ import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.ws.frameworks.json.impl.JsonException;
 
 /**
  * A service to manage perkstore entities
  */
-public class PerkStoreService implements Startable {
+public class PerkStoreService implements ExoPerkStoreStatisticService, Startable {
 
-  private static final Log          LOG                         = ExoLogger.getLogger(PerkStoreService.class);
+  private static final Log          LOG                                  = ExoLogger.getLogger(PerkStoreService.class);
 
-  private static final String       USERNAME_IS_MANDATORY_ERROR = "Username is mandatory";
+  private static final String       USERNAME_IS_MANDATORY_ERROR          = "Username is mandatory";
+
+  private static final String       STATISTIC_OPERATION_SAVE_PRODUCT     = "product_save";
+
+  private static final String       STATISTIC_OPERATION_SAVE_ORDER       = "order_save";
+
+  private static final String       STATISTIC_OPERATION_CREATE_PRODUCT   = "create_product";
+
+  private static final String       STATISTIC_OPERATION_MODIFY_PRODUCT   = "modify_product";
+
+  private static final String       STATISTIC_OPERATION_CREATE_ORDER     = "create_order";
+
+  private static final String       STATISTIC_OPERATION_PAY_ORDER        = "pay_order";
+
+  private static final String       STATISTIC_OPERATION_DELIVER_ORDER    = "deliver_order";
+
+  private static final String       STATISTIC_OPERATION_REFUND_ORDER     = "refund_order";
+
+  private static final String       STATISTIC_OPERATION_REFUND_PAY_ORDER = "refund_pay_order";
 
   private PerkStoreWebSocketService webSocketService;
 
@@ -161,6 +183,7 @@ public class PerkStoreService implements Startable {
     return globalSettings;
   }
 
+  @ExoPerkStoreStatistic(local = true, service = "perkstore", operation = STATISTIC_OPERATION_SAVE_PRODUCT)
   public Product saveProduct(Product product, String username) throws Exception {
     if (product == null) {
       throw new IllegalArgumentException("Product is mandatory");
@@ -319,6 +342,7 @@ public class PerkStoreService implements Startable {
     checkOrderCoherence(username, product, order);
   }
 
+  @ExoPerkStoreStatistic(local = true, service = "perkstore", operation = STATISTIC_OPERATION_CREATE_ORDER)
   public ProductOrder createOrder(ProductOrder order, String username) throws Exception {
     checkCanCreateOrder(order, username);
 
@@ -357,6 +381,7 @@ public class PerkStoreService implements Startable {
     return productOrder;
   }
 
+  @ExoPerkStoreStatistic(local = true, service = "perkstore", operation = STATISTIC_OPERATION_SAVE_ORDER)
   public ProductOrder saveOrder(ProductOrder order,
                                 ProductOrderModificationType modificationType,
                                 String username,
@@ -395,12 +420,6 @@ public class PerkStoreService implements Startable {
 
     boolean broadcastOrderEvent = true;
     switch (modificationType) {
-    case STATUS:
-      if (StringUtils.isBlank(username)) {
-        throw new IllegalArgumentException(USERNAME_IS_MANDATORY_ERROR);
-      }
-      orderToUpdate.setStatus(order.getStatus());
-      break;
     case DELIVERED_QUANTITY:
       // get fresh value from method parameter
       deliveredQuantity = order.getDeliveredQuantity();
@@ -451,7 +470,7 @@ public class PerkStoreService implements Startable {
       orderToUpdate.setRefundTransactionStatus(order.getRefundTransactionStatus());
       break;
     default:
-      throw new UnsupportedOperationException("Order modification type is not supported");
+      throw new UnsupportedOperationException("Order modification type '" + modificationType + "' is not supported");
     }
 
     // Always compute it because it's store and MUST be consistent all the time
@@ -537,6 +556,118 @@ public class PerkStoreService implements Startable {
       return hasPermission(username, globalSettings.getManagers());
     }
     return false;
+  }
+
+  @Override
+  public Map<String, Object> getStatisticParameters(String operation, Object result, Object... methodArgs) {
+    Map<String, Object> parameters = new HashMap<>();
+    String issuer = null;
+    if (StringUtils.equals(STATISTIC_OPERATION_SAVE_PRODUCT, operation)) {
+      Product savedProduct = (Product) result;
+      if (savedProduct == null) {
+        return null;
+      }
+
+      Product product = (Product) methodArgs[0];
+      operation = product.getId() <= 0 ? STATISTIC_OPERATION_CREATE_PRODUCT : STATISTIC_OPERATION_MODIFY_PRODUCT;
+      parameters.put(OPERATION, operation);
+      parameters.put("product_id", savedProduct.getId());
+      parameters.put("total_supply", savedProduct.getTotalSupply());
+      parameters.put("marchand_identity_id", savedProduct.getReceiverMarchand().getTechnicalId());
+      parameters.put("price", savedProduct.getPrice());
+      parameters.put("enabled", savedProduct.isEnabled());
+
+      issuer = (String) methodArgs[methodArgs.length - 1];
+    } else if (StringUtils.equals(STATISTIC_OPERATION_CREATE_ORDER, operation)) {
+      ProductOrder savedOrder = (ProductOrder) result;
+      if (savedOrder == null) {
+        return null;
+      }
+
+      parameters.put("order_id", savedOrder.getId());
+      parameters.put("product_id", savedOrder.getProductId());
+      parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+      parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+      parameters.put("order_quantity", savedOrder.getQuantity());
+      parameters.put("order_amount", savedOrder.getAmount());
+      parameters.put("transaction_hash", savedOrder.getTransactionHash());
+
+      issuer = (String) methodArgs[methodArgs.length - 1];
+    } else if (StringUtils.equals(STATISTIC_OPERATION_SAVE_ORDER, operation)) {
+      ProductOrder savedOrder = (ProductOrder) result;
+      if (savedOrder == null) {
+        return null;
+      }
+
+      ProductOrderModificationType modificationType = (ProductOrderModificationType) methodArgs[1];
+      switch (modificationType) {
+      case NEW:
+      case STATUS:
+        return null;
+      case TX_STATUS:
+        parameters.put(OPERATION, STATISTIC_OPERATION_PAY_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+        parameters.put("transaction_hash", savedOrder.getTransactionHash());
+        parameters.put("transaction_status", savedOrder.getTransactionStatus());
+        break;
+      case DELIVERED_QUANTITY:
+        parameters.put(OPERATION, STATISTIC_OPERATION_DELIVER_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("order_quantity", savedOrder.getQuantity());
+        parameters.put("delivered_order_quantity", savedOrder.getDeliveredQuantity());
+        parameters.put("refunded_order_quantity", savedOrder.getRefundedQuantity());
+        parameters.put("remaining_order_quantity", savedOrder.getRemainingQuantityToProcess());
+        break;
+      case REFUNDED_QUANTITY:
+        parameters.put(OPERATION, STATISTIC_OPERATION_REFUND_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+        parameters.put("order_quantity", savedOrder.getQuantity());
+        parameters.put("delivered_order_quantity", savedOrder.getDeliveredQuantity());
+        parameters.put("refunded_order_quantity", savedOrder.getRefundedQuantity());
+        parameters.put("remaining_order_quantity", savedOrder.getRemainingQuantityToProcess());
+        parameters.put("order_refund_amount", savedOrder.getRefundedAmount());
+        parameters.put("refund_transaction_hash", savedOrder.getRefundTransactionHash());
+        break;
+      case REFUND_TX_STATUS:
+        parameters.put(OPERATION, STATISTIC_OPERATION_REFUND_PAY_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+        parameters.put("refund_transaction_hash", savedOrder.getRefundTransactionHash());
+        parameters.put("refund_transaction_status", savedOrder.getRefundTransactionStatus());
+        break;
+      default:
+        break;
+      }
+
+      issuer = (String) methodArgs[methodArgs.length - 2];
+    } else {
+      LOG.warn("Statistic operation type '{}' not handled", operation);
+      return null;
+    }
+
+    if (StringUtils.isNotBlank(issuer)) {
+      Identity identity = getIdentityByTypeAndId(OrganizationIdentityProvider.NAME, issuer);
+      if (identity == null) {
+        LOG.debug("Can't find identity with remote id: {}" + issuer);
+      } else {
+        parameters.put("user_social_id", identity.getId());
+      }
+    }
+    return parameters;
   }
 
   private GlobalSettings loadGlobalSettings() {
