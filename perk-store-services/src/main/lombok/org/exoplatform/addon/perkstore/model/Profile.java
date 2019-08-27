@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import groovy.transform.ToString;
 import lombok.*;
+import lombok.EqualsAndHashCode.Exclude;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -31,8 +32,10 @@ public class Profile extends PerkStoreCloneable implements Serializable {
 
   private long   spaceId;
 
+  @Exclude
   private String spaceURLId;
 
+  @Exclude
   private String displayName;
 
   @SuppressWarnings("all")

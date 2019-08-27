@@ -32,8 +32,7 @@ import org.picocontainer.Startable;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.model.constant.*;
-import org.exoplatform.addon.perkstore.statistic.ExoPerkStoreStatistic;
-import org.exoplatform.addon.perkstore.statistic.ExoPerkStoreStatisticService;
+import org.exoplatform.addon.perkstore.statistic.*;
 import org.exoplatform.addon.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
@@ -355,22 +354,46 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     }
 
     Profile sender = toProfile(USER_ACCOUNT_TYPE, username);
-    if (sender != null) {
-      order.setSender(sender);
+    if (sender == null) {
+      throw new IllegalStateException("Social identity not found for user " + username);
     }
+    order.setSender(sender);
 
     // Create new instance to avoid injecting values from front end
     ProductOrder productOrder = new ProductOrder();
+    if (quantity <= 0) {
+      throw new IllegalStateException("Wrong order quantity: " + quantity);
+    }
+    productOrder.setQuantity(quantity);
     productOrder.setProductId(order.getProductId());
-    productOrder.setAmount(quantity * product.getPrice());
-    productOrder.setReceiver(order.getReceiver());
+    double amount = quantity * product.getPrice();
+    productOrder.setAmount(amount);
     productOrder.setSender(sender);
+
+    if (Math.abs(amount - order.getAmount()) > 0.001) {
+      productOrder.setError(PerkStoreError.ORDER_FRAUD_WRONG_AMOUNT);
+      LOG.warn("Amount '{}' sent by '{}' to buy product '{}' is wrong. It must be '{}'",
+               productOrder.getAmount(),
+               username,
+               product.getTitle(),
+               amount);
+    }
+
+    if (order.getReceiver() != null && order.getReceiver().getTechnicalId() != product.getReceiverMarchand().getTechnicalId()) {
+      productOrder.setError(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER);
+      LOG.warn("Transaction receiver '{}' sent by '{}' to buy product '{}' is wrong. It must be '{}'",
+               order.getReceiver(),
+               username,
+               product.getTitle(),
+               product.getReceiverMarchand());
+    }
+    productOrder.setReceiver(product.getReceiverMarchand());
+
     productOrder.setTransactionHash(formatTransactionHash(order.getTransactionHash()));
     productOrder.setTransactionStatus(StringUtils.isBlank(order.getTransactionHash()) ? NONE.name() : PENDING.name());
     productOrder.setRefundTransactionStatus(NONE.name());
-    productOrder.setQuantity(quantity);
-    productOrder.setStatus(ORDERED.name());
-    productOrder.setRemainingQuantityToProcess(quantity);
+    productOrder.setStatus(StringUtils.isBlank(order.getTransactionHash()) ? CANCELED.name() : ORDERED.name());
+    productOrder.setRemainingQuantityToProcess(StringUtils.isBlank(order.getTransactionHash()) ? 0 : quantity);
 
     productOrder = perkStoreStorage.saveOrder(productOrder);
 
@@ -461,6 +484,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
       computeOrderPaymentStatus(orderToUpdate, StringUtils.equals(SUCCESS.name(), order.getTransactionStatus()));
       orderToUpdate.setTransactionStatus(order.getTransactionStatus());
+      orderToUpdate.setError(order.getError());
       break;
     case REFUND_TX_STATUS:
       // DO NOT CHANGE THIS line location !!!
@@ -468,6 +492,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
       computeOrderDeliverStatus(orderToUpdate, refundedQuantity, deliveredQuantity);
       orderToUpdate.setRefundTransactionStatus(order.getRefundTransactionStatus());
+      orderToUpdate.setError(order.getError());
       break;
     default:
       throw new UnsupportedOperationException("Order modification type '" + modificationType + "' is not supported");
@@ -490,10 +515,17 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     return orderToUpdate;
   }
 
-  public void saveOrderTransactionStatus(String hash, boolean transactionSuccess) throws Exception {
-    if (StringUtils.isBlank(hash)) {
-      throw new IllegalArgumentException("Transaction hash is mandatory");
+  public void saveOrderTransactionStatus(Map<String, Object> transactionDetails) throws Exception {
+    if (transactionDetails == null) {
+      throw new IllegalArgumentException("Transaction detail is mandatory");
     }
+    // Add some verifications
+    String hash = (String) transactionDetails.get("hash");
+    if (StringUtils.isBlank(hash)) {
+      throw new IllegalArgumentException("Transaction hash is empty");
+    }
+
+    boolean succeeded = (boolean) transactionDetails.get("status");
 
     ProductOrderModificationType modificationType = null;
     ProductOrder order = perkStoreStorage.findOrderByTransactionHash(hash);
@@ -502,16 +534,58 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       if (order == null) {
         // Nor order was found with hash corresponding to payment or refund
         // Transaction
-        LOG.debug("No order found for mined transaction with hash {}", hash);
         return;
       } else {
-        order.setRefundTransactionStatus(transactionSuccess ? SUCCESS.name() : FAILED.name());
+        order.setRefundTransactionStatus(succeeded ? SUCCESS.name() : FAILED.name());
         modificationType = REFUND_TX_STATUS;
       }
     } else {
-      order.setTransactionStatus(transactionSuccess ? SUCCESS.name() : FAILED.name());
+      order.setTransactionStatus(succeeded ? SUCCESS.name() : FAILED.name());
       modificationType = TX_STATUS;
     }
+
+    String contractAddress = (String) transactionDetails.get("contractAddress");
+    String contractMethodName = (String) transactionDetails.get("contractMethodName");
+    double contractAmount = (double) transactionDetails.get("contractAmount");
+    long fromIdentityId = (long) transactionDetails.get("from");
+    long toIdentityId = (long) transactionDetails.get("to");
+    long issuerId = (long) transactionDetails.get("issuerId");
+
+    // Do some coherence checks on mined transaction
+    if (succeeded) {
+      Profile sender = modificationType == TX_STATUS ? order.getSender() : order.getReceiver();
+      Profile receiver = modificationType == TX_STATUS ? order.getReceiver() : order.getSender();
+
+      if (StringUtils.isBlank(contractAddress)) {
+        order.setError(PerkStoreError.ORDER_FRAUD_NOT_TOKEN_TRANSACTION);
+      } else if (!StringUtils.equals("transfer", contractMethodName)) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_TOKEN_TRANSFER_METHOD);
+      } else if (sender != null && sender.getTechnicalId() != fromIdentityId) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_SENDER);
+      } else if (receiver != null && receiver.getTechnicalId() != toIdentityId) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER);
+      } else if (modificationType == TX_STATUS && Math.abs(contractAmount - order.getAmount()) > 0.001) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_AMOUNT);
+      }
+
+      if (order.getError() != null) {
+        if (modificationType == TX_STATUS) {
+          order.setTransactionStatus(FAILED.name());
+        } else {
+          order.setRefundTransactionStatus(FAILED.name());
+        }
+
+        Map<String, Object> statisticParameters = new HashMap<>();
+        statisticParameters.put(StatisticUtils.LOCAL_SERVICE, "perkstore");
+        statisticParameters.put(StatisticUtils.OPERATION, "order_fraud");
+        statisticParameters.put("user_social_id", issuerId);
+        statisticParameters.put("hash", hash);
+        statisticParameters.put("error_code", order.getError().getCode());
+        statisticParameters.put("error_code_msg", order.getError().getErrorCode());
+        StatisticUtils.addStatisticEntry(statisticParameters);
+      }
+    }
+
     saveOrder(order, modificationType, null, false);
   }
 
