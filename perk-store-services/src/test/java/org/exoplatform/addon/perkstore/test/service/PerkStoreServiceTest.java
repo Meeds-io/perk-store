@@ -538,23 +538,6 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   }
 
   @Test
-  public void testCreateOrderWithWrongAmountFraud() throws Exception {
-    PerkStoreService perkStoreService = getService(PerkStoreService.class);
-    Product product = newProductInstance(new Product());
-    product.setAccessPermissions(null);
-    Product savedProduct = perkStoreService.saveProduct(product, USERNAME);
-    entitiesToClean.add(0, savedProduct);
-
-    ProductOrder productOrder = newOrderInstance(savedProduct);
-    productOrder.setAmount(savedProduct.getPrice() * productOrder.getQuantity() * 2);
-    ProductOrder savedOrder = perkStoreService.createOrder(productOrder, USERNAME);
-    entitiesToClean.add(0, savedOrder);
-
-    assertNotNull(savedOrder);
-    assertEquals(savedOrder.getError(), PerkStoreError.ORDER_FRAUD_WRONG_AMOUNT);
-  }
-
-  @Test
   public void testCreateOrderWithWrongReceiverFraud() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
     Product product = newProductInstance(new Product());
@@ -568,7 +551,8 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     entitiesToClean.add(0, savedOrder);
 
     assertNotNull(savedOrder);
-    assertEquals(savedOrder.getError(), PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
+    assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER, savedOrder.getError());
   }
 
   @Test
@@ -970,6 +954,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
 
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
     assertEquals(PerkStoreError.ORDER_FRAUD_NOT_TOKEN_TRANSACTION, savedOrder.getError());
   }
 
@@ -997,6 +982,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
 
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
     assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_TOKEN_TRANSFER_METHOD, savedOrder.getError());
   }
 
@@ -1024,6 +1010,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
 
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
     assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_SENDER, savedOrder.getError());
   }
 
@@ -1051,6 +1038,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
 
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
     assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER, savedOrder.getError());
   }
 
@@ -1078,6 +1066,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
 
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
     assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_AMOUNT, savedOrder.getError());
   }
 

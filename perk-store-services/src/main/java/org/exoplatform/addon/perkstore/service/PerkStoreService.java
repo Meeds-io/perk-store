@@ -63,6 +63,8 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
   private static final String       STATISTIC_OPERATION_CREATE_ORDER     = "create_order";
 
+  private static final String       STATISTIC_OPERATION_CHANGE_STATUS    = "change_order_status";
+
   private static final String       STATISTIC_OPERATION_PAY_ORDER        = "pay_order";
 
   private static final String       STATISTIC_OPERATION_DELIVER_ORDER    = "deliver_order";
@@ -370,15 +372,6 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     productOrder.setAmount(amount);
     productOrder.setSender(sender);
 
-    if (Math.abs(amount - order.getAmount()) > 0.001) {
-      productOrder.setError(PerkStoreError.ORDER_FRAUD_WRONG_AMOUNT);
-      LOG.warn("Amount '{}' sent by '{}' to buy product '{}' is wrong. It must be '{}'",
-               productOrder.getAmount(),
-               username,
-               product.getTitle(),
-               amount);
-    }
-
     if (order.getReceiver() != null && order.getReceiver().getTechnicalId() != product.getReceiverMarchand().getTechnicalId()) {
       productOrder.setError(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER);
       LOG.warn("Transaction receiver '{}' sent by '{}' to buy product '{}' is wrong. It must be '{}'",
@@ -394,6 +387,10 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     productOrder.setRefundTransactionStatus(NONE.name());
     productOrder.setStatus(StringUtils.isBlank(order.getTransactionHash()) ? CANCELED.name() : ORDERED.name());
     productOrder.setRemainingQuantityToProcess(StringUtils.isBlank(order.getTransactionHash()) ? 0 : quantity);
+
+    if (productOrder.getError() != null) {
+      productOrder.setStatus(FRAUD.name());
+    }
 
     productOrder = perkStoreStorage.saveOrder(productOrder);
 
@@ -443,6 +440,12 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
     boolean broadcastOrderEvent = true;
     switch (modificationType) {
+    case STATUS:
+      if (StringUtils.isBlank(username)) {
+        throw new IllegalArgumentException(USERNAME_IS_MANDATORY_ERROR);
+      }
+      orderToUpdate.setStatus(order.getStatus());
+      break;
     case DELIVERED_QUANTITY:
       // get fresh value from method parameter
       deliveredQuantity = order.getDeliveredQuantity();
@@ -501,6 +504,9 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     // Always compute it because it's store and MUST be consistent all the time
     computeRemainingQuantity(orderToUpdate, orderToUpdate.getDeliveredQuantity(), orderToUpdate.getRefundedQuantity());
 
+    if (orderToUpdate.getError() != null) {
+      orderToUpdate.setStatus(FRAUD.name());
+    }
     orderToUpdate = perkStoreStorage.saveOrder(orderToUpdate);
 
     if (broadcastOrderEvent) {
@@ -676,8 +682,14 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       ProductOrderModificationType modificationType = (ProductOrderModificationType) methodArgs[1];
       switch (modificationType) {
       case NEW:
-      case STATUS:
         return null;
+      case STATUS:
+        parameters.put(OPERATION, STATISTIC_OPERATION_CHANGE_STATUS);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("order_status", savedOrder.getStatus());
+        break;
       case TX_STATUS:
         parameters.put(OPERATION, STATISTIC_OPERATION_PAY_ORDER);
 
@@ -687,6 +699,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
         parameters.put("transaction_hash", savedOrder.getTransactionHash());
         parameters.put("transaction_status", savedOrder.getTransactionStatus());
+        parameters.put("order_status", savedOrder.getStatus());
         break;
       case DELIVERED_QUANTITY:
         parameters.put(OPERATION, STATISTIC_OPERATION_DELIVER_ORDER);
@@ -698,6 +711,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         parameters.put("delivered_order_quantity", savedOrder.getDeliveredQuantity());
         parameters.put("refunded_order_quantity", savedOrder.getRefundedQuantity());
         parameters.put("remaining_order_quantity", savedOrder.getRemainingQuantityToProcess());
+        parameters.put("order_status", savedOrder.getStatus());
         break;
       case REFUNDED_QUANTITY:
         parameters.put(OPERATION, STATISTIC_OPERATION_REFUND_ORDER);
@@ -712,6 +726,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         parameters.put("remaining_order_quantity", savedOrder.getRemainingQuantityToProcess());
         parameters.put("order_refund_amount", savedOrder.getRefundedAmount());
         parameters.put("refund_transaction_hash", savedOrder.getRefundTransactionHash());
+        parameters.put("order_status", savedOrder.getStatus());
         break;
       case REFUND_TX_STATUS:
         parameters.put(OPERATION, STATISTIC_OPERATION_REFUND_PAY_ORDER);
@@ -722,6 +737,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
         parameters.put("refund_transaction_hash", savedOrder.getRefundTransactionHash());
         parameters.put("refund_transaction_status", savedOrder.getRefundTransactionStatus());
+        parameters.put("order_status", savedOrder.getStatus());
         break;
       default:
         break;

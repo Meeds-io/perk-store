@@ -394,10 +394,6 @@ export default {
 
       this.$emit('display-product', this.order.productId);
     },
-    cancelOrder() {
-      this.order.status= 'CANCELED';
-      return this.changeStatus('STATUS');
-    },
     refunded(order) {
       // Nothing to do, the update will be made by Websocket
     },
@@ -406,9 +402,13 @@ export default {
       this.$emit('init-wallet');
       this.refunding = false;
     },
-    changeStatus(modificationType) {
+    cancelOrder() {
       this.$emit('loading', true);
-      return saveOrderStatus(this.order, modificationType)
+      return saveOrderStatus({
+        id: this.order.id,
+        productId: this.order.productId,
+        status: 'CANCELED',
+      }, 'STATUS')
         .then(order => {
           this.$emit('changed', order);
           this.$forceUpdate();
