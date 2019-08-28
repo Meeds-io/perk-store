@@ -394,6 +394,10 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
     productOrder = perkStoreStorage.saveOrder(productOrder);
 
+    if (productOrder.getError() != null) {
+      addFraudStatistic(sender.getTechnicalId(), productOrder.getTransactionHash(), productOrder);
+    }
+
     productOrder.setModificationType(NEW);
     computeOrderFields(product, productOrder);
 
@@ -581,14 +585,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
           order.setRefundTransactionStatus(FAILED.name());
         }
 
-        Map<String, Object> statisticParameters = new HashMap<>();
-        statisticParameters.put(StatisticUtils.LOCAL_SERVICE, "perkstore");
-        statisticParameters.put(StatisticUtils.OPERATION, "order_fraud");
-        statisticParameters.put("user_social_id", issuerId);
-        statisticParameters.put("hash", hash);
-        statisticParameters.put("error_code", order.getError().getCode());
-        statisticParameters.put("error_code_msg", order.getError().getErrorCode());
-        StatisticUtils.addStatisticEntry(statisticParameters);
+        addFraudStatistic(issuerId, hash, order);
       }
     }
 
@@ -1059,6 +1056,29 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     }
 
     return isUserMemberOf(username, accessPermissions);
+  }
+
+  private void addFraudStatistic(long issuerId, String hash, ProductOrder order) {
+    if (order.getError() != null) {
+      Map<String, Object> statisticParameters = new HashMap<>();
+      statisticParameters.put(StatisticUtils.LOCAL_SERVICE, "perkstore");
+      statisticParameters.put(StatisticUtils.OPERATION, "order_fraud");
+      statisticParameters.put("user_social_id", issuerId);
+      statisticParameters.put("order_id", order.getId());
+      statisticParameters.put("product_id", order.getProductId());
+      if (StringUtils.isNotBlank(hash)) {
+        statisticParameters.put("fraud_transaction_hash", hash);
+      }
+      if (StringUtils.isNotBlank(order.getTransactionHash())) {
+        statisticParameters.put("transaction_hash", order.getTransactionHash());
+      }
+      if (StringUtils.isNotBlank(order.getRefundTransactionHash())) {
+        statisticParameters.put("refund_transaction_hash", order.getRefundTransactionHash());
+      }
+      statisticParameters.put("error_code", order.getError().getCode());
+      statisticParameters.put("error_code_msg", order.getError().getErrorCode());
+      StatisticUtils.addStatisticEntry(statisticParameters);
+    }
   }
 
   private SettingService getSettingService() {
