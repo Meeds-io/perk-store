@@ -100,21 +100,21 @@
             <div class="no-wrap ellipsis orderDetailText">
               <v-icon
                 v-if="order.transactionStatus === 'SUCCESS'"
-                title="Transaction succeeded"
+                :title="$t('exoplatform.perkstore.label.transactionSuceess')"
                 class="green--text"
                 size="16">
                 fa-check-circle
               </v-icon>
               <v-icon
-                v-if="order.transactionStatus === 'FAILED'"
-                title="Transaction failed"
+                v-else-if="order.transactionStatus === 'FAILED'"
+                :title="$t('exoplatform.perkstore.label.transactionFailed')"
                 class="red--text"
                 size="16">
                 fa-exclamation-circle
               </v-icon>
               <v-icon
-                v-if="order.transactionStatus === 'PENDING'"
-                title="Transaction in progress"
+                v-else-if="order.transactionStatus === 'PENDING'"
+                :title="$t('exoplatform.perkstore.label.transactionPending')"
                 class="orange--text"
                 size="16">
                 far fa-clock
