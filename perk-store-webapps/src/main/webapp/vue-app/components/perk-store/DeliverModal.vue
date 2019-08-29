@@ -145,7 +145,6 @@ export default {
   },
   watch: {
     error() {
-      console.warn('error', this.error);
       if(this.error) {
         this.loading = false;
       }
