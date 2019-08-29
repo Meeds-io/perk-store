@@ -385,11 +385,14 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     productOrder.setTransactionHash(formatTransactionHash(order.getTransactionHash()));
     productOrder.setTransactionStatus(StringUtils.isBlank(order.getTransactionHash()) ? NONE.name() : PENDING.name());
     productOrder.setRefundTransactionStatus(NONE.name());
-    productOrder.setStatus(StringUtils.isBlank(order.getTransactionHash()) ? CANCELED.name() : ORDERED.name());
-    productOrder.setRemainingQuantityToProcess(StringUtils.isBlank(order.getTransactionHash()) ? 0 : quantity);
+    productOrder.setRemainingQuantityToProcess(quantity);
 
     if (productOrder.getError() != null) {
       productOrder.setStatus(FRAUD.name());
+    } else if (StringUtils.isBlank(order.getTransactionHash())) {
+      productOrder.setStatus(CANCELED.name());
+    } else {
+      productOrder.setStatus(ORDERED.name());
     }
 
     productOrder = perkStoreStorage.saveOrder(productOrder);

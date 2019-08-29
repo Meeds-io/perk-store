@@ -160,7 +160,7 @@
                   :product="product"
                   :order="order" />
                 <refund-modal
-                  v-if="refunding || (order.remainingQuantityToProcess && order.remainingQuantityToProcess > 0 && (isPaid || isPartial))"
+                  v-if="refunding || (order.remainingQuantityToProcess && (order.refundedQuantity == 0 || order.refundTransactionStatus === 'FAILED') && order.remainingQuantityToProcess > 0 && (isPaid || isPartial))"
                   :product="product"
                   :order="order"
                   :symbol="symbol"
