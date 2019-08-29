@@ -380,21 +380,23 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
                product.getTitle(),
                product.getReceiverMarchand());
     }
-    productOrder.setReceiver(product.getReceiverMarchand());
 
+    productOrder.setReceiver(product.getReceiverMarchand());
     productOrder.setTransactionHash(formatTransactionHash(order.getTransactionHash()));
     productOrder.setTransactionStatus(StringUtils.isBlank(order.getTransactionHash()) ? NONE.name() : PENDING.name());
     productOrder.setRefundTransactionStatus(NONE.name());
     productOrder.setRemainingQuantityToProcess(quantity);
-
     if (productOrder.getError() != null) {
       productOrder.setStatus(FRAUD.name());
+      productOrder.setRemainingQuantityToProcess(0);
     } else if (StringUtils.isBlank(order.getTransactionHash())) {
       productOrder.setStatus(CANCELED.name());
     } else {
       productOrder.setStatus(ORDERED.name());
     }
 
+    // Always compute it because it's store and MUST be consistent all the time
+    computeRemainingQuantity(productOrder, productOrder.getDeliveredQuantity(), productOrder.getRefundedQuantity());
     productOrder = perkStoreStorage.saveOrder(productOrder);
 
     if (productOrder.getError() != null) {
@@ -448,7 +450,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     boolean broadcastOrderEvent = true;
     switch (modificationType) {
     case STATUS:
-      if (StringUtils.isBlank(username)) {
+      if (checkUsername && StringUtils.isBlank(username)) {
         throw new IllegalArgumentException(USERNAME_IS_MANDATORY_ERROR);
       }
       orderToUpdate.setStatus(order.getStatus());
@@ -508,12 +510,12 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       throw new UnsupportedOperationException("Order modification type '" + modificationType + "' is not supported");
     }
 
-    // Always compute it because it's store and MUST be consistent all the time
-    computeRemainingQuantity(orderToUpdate, orderToUpdate.getDeliveredQuantity(), orderToUpdate.getRefundedQuantity());
-
     if (orderToUpdate.getError() != null) {
       orderToUpdate.setStatus(FRAUD.name());
     }
+
+    // Always compute it because it's store and MUST be consistent all the time
+    computeRemainingQuantity(orderToUpdate, orderToUpdate.getDeliveredQuantity(), orderToUpdate.getRefundedQuantity());
     orderToUpdate = perkStoreStorage.saveOrder(orderToUpdate);
 
     if (broadcastOrderEvent) {
@@ -816,7 +818,8 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
                                         double deliveredQuantity,
                                         double refundedQuantity) throws PerkStoreException {
     if (StringUtils.equalsIgnoreCase(persistedOrder.getStatus(), CANCELED.name())
-        || StringUtils.equalsIgnoreCase(persistedOrder.getStatus(), ERROR.name())) {
+        || StringUtils.equalsIgnoreCase(persistedOrder.getStatus(), ERROR.name())
+        || StringUtils.equalsIgnoreCase(persistedOrder.getStatus(), FRAUD.name())) {
       persistedOrder.setRemainingQuantityToProcess(0);
     } else {
       double remainingQuantityToProcess = persistedOrder.getQuantity() - refundedQuantity - deliveredQuantity;

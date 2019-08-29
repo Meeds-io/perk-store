@@ -205,7 +205,7 @@ export default {
         return createOrder({
           productId: this.product.id,
           transactionHash: pendingTransaction.hash,
-          amount: pendingTransaction.amount,
+          amount: this.amount,
           quantity: this.quantity,
           receiver: this.product.receiverMarchand,
         })

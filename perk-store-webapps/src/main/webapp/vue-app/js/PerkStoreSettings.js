@@ -48,6 +48,7 @@ export function getDefaultOrderFilter() {
     partial: true,
     delivered: true,
     refunded: true,
+    fraud: true,
   };
 }
 

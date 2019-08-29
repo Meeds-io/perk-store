@@ -1,5 +1,6 @@
 package org.exoplatform.addon.perkstore.test.service;
 
+import static org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus.FRAUD;
 import static org.junit.Assert.*;
 
 import java.net.URL;
@@ -845,11 +846,62 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertEquals(0, orders.size(), 0);
 
     filterTmp = filter.clone();
+    filterTmp.setNotProcessed(false);
+    filterTmp.setOrdered(false);
+    filterTmp.setFraud(true);
+    orders = perkStoreService.getOrders(filterTmp, USERNAME);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    filterTmp = filter.clone();
     filterTmp.setSearchInDates(true);
     filterTmp.setSelectedDate(System.currentTimeMillis() - 86400000l);
     orders = perkStoreService.getOrders(filterTmp, USERNAME);
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
+  }
+
+  @Test
+  public void testGetOrdersWithFraud() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+
+    OrderFilter filter = new OrderFilter();
+    filter.setLimit(10);
+
+    Product savedProduct = newProductInstance(new Product());
+    savedProduct.setAccessPermissions(Arrays.asList(Utils.toProfile(1l)));
+    savedProduct = perkStoreService.saveProduct(savedProduct, USERNAME);
+    entitiesToClean.add(savedProduct);
+
+    ProductOrder savedOrder = newOrder(savedProduct);
+
+    filter.setFraud(true);
+    List<ProductOrder> orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    savedOrder.setStatus(FRAUD.name());
+    perkStoreService.saveOrder(savedOrder, ProductOrderModificationType.STATUS, USERNAME, false);
+
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setFraud(true);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setFraud(false);
+    filter.setNotProcessed(true);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertEquals(0, orders.size(), 0);
+
+    filter.setNotProcessed(false);
+    filter.setOrdered(true);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertEquals(0, orders.size(), 0);
+
   }
 
   @Test
