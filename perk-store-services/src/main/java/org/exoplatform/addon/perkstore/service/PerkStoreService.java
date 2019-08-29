@@ -21,6 +21,7 @@ import static org.exoplatform.addon.perkstore.model.constant.ProductOrderModific
 import static org.exoplatform.addon.perkstore.model.constant.ProductOrderStatus.*;
 import static org.exoplatform.addon.perkstore.model.constant.ProductOrderTransactionStatus.*;
 import static org.exoplatform.addon.perkstore.service.utils.Utils.*;
+import static org.exoplatform.addon.perkstore.statistic.StatisticUtils.OPERATION;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -31,6 +32,7 @@ import org.picocontainer.Startable;
 import org.exoplatform.addon.perkstore.exception.PerkStoreException;
 import org.exoplatform.addon.perkstore.model.*;
 import org.exoplatform.addon.perkstore.model.constant.*;
+import org.exoplatform.addon.perkstore.statistic.*;
 import org.exoplatform.addon.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
@@ -39,16 +41,37 @@ import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.ws.frameworks.json.impl.JsonException;
 
 /**
  * A service to manage perkstore entities
  */
-public class PerkStoreService implements Startable {
+public class PerkStoreService implements ExoPerkStoreStatisticService, Startable {
 
-  private static final Log          LOG                         = ExoLogger.getLogger(PerkStoreService.class);
+  private static final Log          LOG                                  = ExoLogger.getLogger(PerkStoreService.class);
 
-  private static final String       USERNAME_IS_MANDATORY_ERROR = "Username is mandatory";
+  private static final String       USERNAME_IS_MANDATORY_ERROR          = "Username is mandatory";
+
+  private static final String       STATISTIC_OPERATION_SAVE_PRODUCT     = "product_save";
+
+  private static final String       STATISTIC_OPERATION_SAVE_ORDER       = "order_save";
+
+  private static final String       STATISTIC_OPERATION_CREATE_PRODUCT   = "create_product";
+
+  private static final String       STATISTIC_OPERATION_MODIFY_PRODUCT   = "modify_product";
+
+  private static final String       STATISTIC_OPERATION_CREATE_ORDER     = "create_order";
+
+  private static final String       STATISTIC_OPERATION_CHANGE_STATUS    = "change_order_status";
+
+  private static final String       STATISTIC_OPERATION_PAY_ORDER        = "pay_order";
+
+  private static final String       STATISTIC_OPERATION_DELIVER_ORDER    = "deliver_order";
+
+  private static final String       STATISTIC_OPERATION_REFUND_ORDER     = "refund_order";
+
+  private static final String       STATISTIC_OPERATION_REFUND_PAY_ORDER = "refund_pay_order";
 
   private PerkStoreWebSocketService webSocketService;
 
@@ -161,6 +184,7 @@ public class PerkStoreService implements Startable {
     return globalSettings;
   }
 
+  @ExoPerkStoreStatistic(local = true, service = "perkstore", operation = STATISTIC_OPERATION_SAVE_PRODUCT)
   public Product saveProduct(Product product, String username) throws Exception {
     if (product == null) {
       throw new IllegalArgumentException("Product is mandatory");
@@ -319,6 +343,7 @@ public class PerkStoreService implements Startable {
     checkOrderCoherence(username, product, order);
   }
 
+  @ExoPerkStoreStatistic(local = true, service = "perkstore", operation = STATISTIC_OPERATION_CREATE_ORDER)
   public ProductOrder createOrder(ProductOrder order, String username) throws Exception {
     checkCanCreateOrder(order, username);
 
@@ -331,24 +356,50 @@ public class PerkStoreService implements Startable {
     }
 
     Profile sender = toProfile(USER_ACCOUNT_TYPE, username);
-    if (sender != null) {
-      order.setSender(sender);
+    if (sender == null) {
+      throw new IllegalStateException("Social identity not found for user " + username);
     }
+    order.setSender(sender);
 
     // Create new instance to avoid injecting values from front end
     ProductOrder productOrder = new ProductOrder();
+    if (quantity <= 0) {
+      throw new IllegalStateException("Wrong order quantity: " + quantity);
+    }
+    productOrder.setQuantity(quantity);
     productOrder.setProductId(order.getProductId());
-    productOrder.setAmount(quantity * product.getPrice());
-    productOrder.setReceiver(order.getReceiver());
+    double amount = quantity * product.getPrice();
+    productOrder.setAmount(amount);
     productOrder.setSender(sender);
+
+    if (order.getReceiver() != null && order.getReceiver().getTechnicalId() != product.getReceiverMarchand().getTechnicalId()) {
+      productOrder.setError(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER);
+      LOG.warn("Transaction receiver '{}' sent by '{}' to buy product '{}' is wrong. It must be '{}'",
+               order.getReceiver(),
+               username,
+               product.getTitle(),
+               product.getReceiverMarchand());
+    }
+    productOrder.setReceiver(product.getReceiverMarchand());
+
     productOrder.setTransactionHash(formatTransactionHash(order.getTransactionHash()));
     productOrder.setTransactionStatus(StringUtils.isBlank(order.getTransactionHash()) ? NONE.name() : PENDING.name());
     productOrder.setRefundTransactionStatus(NONE.name());
-    productOrder.setQuantity(quantity);
-    productOrder.setStatus(ORDERED.name());
     productOrder.setRemainingQuantityToProcess(quantity);
 
+    if (productOrder.getError() != null) {
+      productOrder.setStatus(FRAUD.name());
+    } else if (StringUtils.isBlank(order.getTransactionHash())) {
+      productOrder.setStatus(CANCELED.name());
+    } else {
+      productOrder.setStatus(ORDERED.name());
+    }
+
     productOrder = perkStoreStorage.saveOrder(productOrder);
+
+    if (productOrder.getError() != null) {
+      addFraudStatistic(sender.getTechnicalId(), productOrder.getTransactionHash(), productOrder);
+    }
 
     productOrder.setModificationType(NEW);
     computeOrderFields(product, productOrder);
@@ -357,6 +408,7 @@ public class PerkStoreService implements Startable {
     return productOrder;
   }
 
+  @ExoPerkStoreStatistic(local = true, service = "perkstore", operation = STATISTIC_OPERATION_SAVE_ORDER)
   public ProductOrder saveOrder(ProductOrder order,
                                 ProductOrderModificationType modificationType,
                                 String username,
@@ -442,6 +494,7 @@ public class PerkStoreService implements Startable {
 
       computeOrderPaymentStatus(orderToUpdate, StringUtils.equals(SUCCESS.name(), order.getTransactionStatus()));
       orderToUpdate.setTransactionStatus(order.getTransactionStatus());
+      orderToUpdate.setError(order.getError());
       break;
     case REFUND_TX_STATUS:
       // DO NOT CHANGE THIS line location !!!
@@ -449,14 +502,18 @@ public class PerkStoreService implements Startable {
 
       computeOrderDeliverStatus(orderToUpdate, refundedQuantity, deliveredQuantity);
       orderToUpdate.setRefundTransactionStatus(order.getRefundTransactionStatus());
+      orderToUpdate.setError(order.getError());
       break;
     default:
-      throw new UnsupportedOperationException("Order modification type is not supported");
+      throw new UnsupportedOperationException("Order modification type '" + modificationType + "' is not supported");
     }
 
     // Always compute it because it's store and MUST be consistent all the time
     computeRemainingQuantity(orderToUpdate, orderToUpdate.getDeliveredQuantity(), orderToUpdate.getRefundedQuantity());
 
+    if (orderToUpdate.getError() != null) {
+      orderToUpdate.setStatus(FRAUD.name());
+    }
     orderToUpdate = perkStoreStorage.saveOrder(orderToUpdate);
 
     if (broadcastOrderEvent) {
@@ -471,10 +528,17 @@ public class PerkStoreService implements Startable {
     return orderToUpdate;
   }
 
-  public void saveOrderTransactionStatus(String hash, boolean transactionSuccess) throws Exception {
-    if (StringUtils.isBlank(hash)) {
-      throw new IllegalArgumentException("Transaction hash is mandatory");
+  public void saveOrderTransactionStatus(Map<String, Object> transactionDetails) throws Exception {
+    if (transactionDetails == null) {
+      throw new IllegalArgumentException("Transaction detail is mandatory");
     }
+    // Add some verifications
+    String hash = (String) transactionDetails.get("hash");
+    if (StringUtils.isBlank(hash)) {
+      throw new IllegalArgumentException("Transaction hash is empty");
+    }
+
+    boolean succeeded = (boolean) transactionDetails.get("status");
 
     ProductOrderModificationType modificationType = null;
     ProductOrder order = perkStoreStorage.findOrderByTransactionHash(hash);
@@ -483,16 +547,51 @@ public class PerkStoreService implements Startable {
       if (order == null) {
         // Nor order was found with hash corresponding to payment or refund
         // Transaction
-        LOG.debug("No order found for mined transaction with hash {}", hash);
         return;
       } else {
-        order.setRefundTransactionStatus(transactionSuccess ? SUCCESS.name() : FAILED.name());
+        order.setRefundTransactionStatus(succeeded ? SUCCESS.name() : FAILED.name());
         modificationType = REFUND_TX_STATUS;
       }
     } else {
-      order.setTransactionStatus(transactionSuccess ? SUCCESS.name() : FAILED.name());
+      order.setTransactionStatus(succeeded ? SUCCESS.name() : FAILED.name());
       modificationType = TX_STATUS;
     }
+
+    String contractAddress = (String) transactionDetails.get("contractAddress");
+    String contractMethodName = (String) transactionDetails.get("contractMethodName");
+    double contractAmount = (double) transactionDetails.get("contractAmount");
+    long fromIdentityId = (long) transactionDetails.get("from");
+    long toIdentityId = (long) transactionDetails.get("to");
+    long issuerId = (long) transactionDetails.get("issuerId");
+
+    // Do some coherence checks on mined transaction
+    if (succeeded) {
+      Profile sender = modificationType == TX_STATUS ? order.getSender() : order.getReceiver();
+      Profile receiver = modificationType == TX_STATUS ? order.getReceiver() : order.getSender();
+
+      if (StringUtils.isBlank(contractAddress)) {
+        order.setError(PerkStoreError.ORDER_FRAUD_NOT_TOKEN_TRANSACTION);
+      } else if (!StringUtils.equals("transfer", contractMethodName)) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_TOKEN_TRANSFER_METHOD);
+      } else if (sender != null && sender.getTechnicalId() != fromIdentityId) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_SENDER);
+      } else if (receiver != null && receiver.getTechnicalId() != toIdentityId) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER);
+      } else if (modificationType == TX_STATUS && Math.abs(contractAmount - order.getAmount()) > 0.001) {
+        order.setError(PerkStoreError.ORDER_FRAUD_WRONG_AMOUNT);
+      }
+
+      if (order.getError() != null) {
+        if (modificationType == TX_STATUS) {
+          order.setTransactionStatus(FAILED.name());
+        } else {
+          order.setRefundTransactionStatus(FAILED.name());
+        }
+
+        addFraudStatistic(issuerId, hash, order);
+      }
+    }
+
     saveOrder(order, modificationType, null, false);
   }
 
@@ -537,6 +636,128 @@ public class PerkStoreService implements Startable {
       return hasPermission(username, globalSettings.getManagers());
     }
     return false;
+  }
+
+  @Override
+  public Map<String, Object> getStatisticParameters(String operation, Object result, Object... methodArgs) {
+    Map<String, Object> parameters = new HashMap<>();
+    String issuer = null;
+    if (StringUtils.equals(STATISTIC_OPERATION_SAVE_PRODUCT, operation)) {
+      Product savedProduct = (Product) result;
+      if (savedProduct == null) {
+        return null;
+      }
+
+      Product product = (Product) methodArgs[0];
+      operation = product.getId() <= 0 ? STATISTIC_OPERATION_CREATE_PRODUCT : STATISTIC_OPERATION_MODIFY_PRODUCT;
+      parameters.put(OPERATION, operation);
+      parameters.put("product_id", savedProduct.getId());
+      parameters.put("total_supply", savedProduct.getTotalSupply());
+      parameters.put("marchand_identity_id", savedProduct.getReceiverMarchand().getTechnicalId());
+      parameters.put("price", savedProduct.getPrice());
+      parameters.put("enabled", savedProduct.isEnabled());
+
+      issuer = (String) methodArgs[methodArgs.length - 1];
+    } else if (StringUtils.equals(STATISTIC_OPERATION_CREATE_ORDER, operation)) {
+      ProductOrder savedOrder = (ProductOrder) result;
+      if (savedOrder == null) {
+        return null;
+      }
+
+      parameters.put("order_id", savedOrder.getId());
+      parameters.put("product_id", savedOrder.getProductId());
+      parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+      parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+      parameters.put("order_quantity", savedOrder.getQuantity());
+      parameters.put("order_amount", savedOrder.getAmount());
+      parameters.put("transaction_hash", savedOrder.getTransactionHash());
+
+      issuer = (String) methodArgs[methodArgs.length - 1];
+    } else if (StringUtils.equals(STATISTIC_OPERATION_SAVE_ORDER, operation)) {
+      ProductOrder savedOrder = (ProductOrder) result;
+      if (savedOrder == null) {
+        return null;
+      }
+
+      ProductOrderModificationType modificationType = (ProductOrderModificationType) methodArgs[1];
+      switch (modificationType) {
+      case NEW:
+        return null;
+      case STATUS:
+        parameters.put(OPERATION, STATISTIC_OPERATION_CHANGE_STATUS);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("order_status", savedOrder.getStatus());
+        break;
+      case TX_STATUS:
+        parameters.put(OPERATION, STATISTIC_OPERATION_PAY_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+        parameters.put("transaction_hash", savedOrder.getTransactionHash());
+        parameters.put("transaction_status", savedOrder.getTransactionStatus());
+        parameters.put("order_status", savedOrder.getStatus());
+        break;
+      case DELIVERED_QUANTITY:
+        parameters.put(OPERATION, STATISTIC_OPERATION_DELIVER_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("order_quantity", savedOrder.getQuantity());
+        parameters.put("delivered_order_quantity", savedOrder.getDeliveredQuantity());
+        parameters.put("refunded_order_quantity", savedOrder.getRefundedQuantity());
+        parameters.put("remaining_order_quantity", savedOrder.getRemainingQuantityToProcess());
+        parameters.put("order_status", savedOrder.getStatus());
+        break;
+      case REFUNDED_QUANTITY:
+        parameters.put(OPERATION, STATISTIC_OPERATION_REFUND_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+        parameters.put("order_quantity", savedOrder.getQuantity());
+        parameters.put("delivered_order_quantity", savedOrder.getDeliveredQuantity());
+        parameters.put("refunded_order_quantity", savedOrder.getRefundedQuantity());
+        parameters.put("remaining_order_quantity", savedOrder.getRemainingQuantityToProcess());
+        parameters.put("order_refund_amount", savedOrder.getRefundedAmount());
+        parameters.put("refund_transaction_hash", savedOrder.getRefundTransactionHash());
+        parameters.put("order_status", savedOrder.getStatus());
+        break;
+      case REFUND_TX_STATUS:
+        parameters.put(OPERATION, STATISTIC_OPERATION_REFUND_PAY_ORDER);
+
+        parameters.put("order_id", savedOrder.getId());
+        parameters.put("product_id", savedOrder.getProductId());
+        parameters.put("buyer_identity_id", savedOrder.getSender().getTechnicalId());
+        parameters.put("marchand_identity_id", savedOrder.getReceiver().getTechnicalId());
+        parameters.put("refund_transaction_hash", savedOrder.getRefundTransactionHash());
+        parameters.put("refund_transaction_status", savedOrder.getRefundTransactionStatus());
+        parameters.put("order_status", savedOrder.getStatus());
+        break;
+      default:
+        break;
+      }
+
+      issuer = (String) methodArgs[methodArgs.length - 2];
+    } else {
+      LOG.warn("Statistic operation type '{}' not handled", operation);
+      return null;
+    }
+
+    if (StringUtils.isNotBlank(issuer)) {
+      Identity identity = getIdentityByTypeAndId(OrganizationIdentityProvider.NAME, issuer);
+      if (identity == null) {
+        LOG.debug("Can't find identity with remote id: {}" + issuer);
+      } else {
+        parameters.put("user_social_id", identity.getId());
+      }
+    }
+    return parameters;
   }
 
   private GlobalSettings loadGlobalSettings() {
@@ -838,6 +1059,29 @@ public class PerkStoreService implements Startable {
     }
 
     return isUserMemberOf(username, accessPermissions);
+  }
+
+  private void addFraudStatistic(long issuerId, String hash, ProductOrder order) {
+    if (order.getError() != null) {
+      Map<String, Object> statisticParameters = new HashMap<>();
+      statisticParameters.put(StatisticUtils.LOCAL_SERVICE, "perkstore");
+      statisticParameters.put(StatisticUtils.OPERATION, "order_fraud");
+      statisticParameters.put("user_social_id", issuerId);
+      statisticParameters.put("order_id", order.getId());
+      statisticParameters.put("product_id", order.getProductId());
+      if (StringUtils.isNotBlank(hash)) {
+        statisticParameters.put("fraud_transaction_hash", hash);
+      }
+      if (StringUtils.isNotBlank(order.getTransactionHash())) {
+        statisticParameters.put("transaction_hash", order.getTransactionHash());
+      }
+      if (StringUtils.isNotBlank(order.getRefundTransactionHash())) {
+        statisticParameters.put("refund_transaction_hash", order.getRefundTransactionHash());
+      }
+      statisticParameters.put("error_code", order.getError().getCode());
+      statisticParameters.put("error_code_msg", order.getError().getErrorCode());
+      StatisticUtils.addStatisticEntry(statisticParameters);
+    }
   }
 
   private SettingService getSettingService() {

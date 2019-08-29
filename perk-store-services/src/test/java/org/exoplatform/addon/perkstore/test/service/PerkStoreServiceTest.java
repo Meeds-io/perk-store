@@ -507,6 +507,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
 
       savedOrder = newOrder(savedProduct);
       assertNotNull(savedOrder);
+      assertNull(savedOrder.getError());
 
       try {
         savedOrder = newOrder(savedProduct);
@@ -534,6 +535,24 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     } finally {
       perkStoreService.saveGlobalSettings(defaultSettings, USERNAME_ADMIN);
     }
+  }
+
+  @Test
+  public void testCreateOrderWithWrongReceiverFraud() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    Product product = newProductInstance(new Product());
+    product.setAccessPermissions(null);
+    Product savedProduct = perkStoreService.saveProduct(product, USERNAME);
+    entitiesToClean.add(0, savedProduct);
+
+    ProductOrder productOrder = newOrderInstance(savedProduct);
+    productOrder.setReceiver(Utils.toProfile(3l));
+    ProductOrder savedOrder = perkStoreService.createOrder(productOrder, USERNAME);
+    entitiesToClean.add(0, savedOrder);
+
+    assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
+    assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER, savedOrder.getError());
   }
 
   @Test
@@ -838,14 +857,18 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
 
     try {
-      perkStoreService.saveOrderTransactionStatus(null, true);
+      perkStoreService.saveOrderTransactionStatus(null);
       fail("transaction hash shoud be mandatory");
     } catch (IllegalArgumentException e) {
       // Expected
     }
 
     try {
-      perkStoreService.saveOrderTransactionStatus(generateRandomHash(), true);
+      Map<String, Object> parameters = new HashMap<>();
+      parameters.put("hash", generateRandomHash());
+      parameters.put("status", true);
+
+      perkStoreService.saveOrderTransactionStatus(parameters);
     } catch (Exception e) {
       fail("Shouldn't fail when no order corresponds to mined hash");
     }
@@ -857,13 +880,27 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     perkStoreService.saveProduct(savedProduct, USERNAME);
 
     ProductOrder savedOrder = newOrder(savedProduct);
-    perkStoreService.saveOrderTransactionStatus(savedOrder.getTransactionHash(), false);
+
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("hash", savedOrder.getTransactionHash());
+    parameters.put("from", savedOrder.getSender().getTechnicalId());
+    parameters.put("to", savedOrder.getReceiver().getTechnicalId());
+    parameters.put("contractAddress", "contractAddress");
+    parameters.put("contractMethodName", "transfer");
+    parameters.put("contractAmount", savedOrder.getAmount());
+    parameters.put("issuerId", savedOrder.getSender().getTechnicalId());
+    parameters.put("status", false);
+
+    perkStoreService.saveOrderTransactionStatus(parameters);
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertEquals(ProductOrderStatus.ERROR.name(), savedOrder.getStatus());
+    assertNull(savedOrder.getError());
 
-    perkStoreService.saveOrderTransactionStatus(savedOrder.getTransactionHash(), true);
+    parameters.put("status", true);
+    perkStoreService.saveOrderTransactionStatus(parameters);
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertEquals(ProductOrderStatus.PAID.name(), savedOrder.getStatus());
+    assertNull(savedOrder.getError());
 
     savedOrder.setRefundTransactionHash(generateRandomHash());
     savedOrder.setRefundedQuantity(1);
@@ -872,14 +909,165 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertEquals(1, savedOrder.getRefundedQuantity(), 0);
     assertEquals(ProductOrderStatus.REFUNDED.name(), savedOrder.getStatus());
     assertEquals(ProductOrderTransactionStatus.PENDING.name(), savedOrder.getRefundTransactionStatus());
+    assertNull(savedOrder.getError());
 
-    perkStoreService.saveOrderTransactionStatus(savedOrder.getRefundTransactionHash(), false);
+    parameters.put("hash", savedOrder.getRefundTransactionHash());
+    parameters.put("to", savedOrder.getSender().getTechnicalId());
+    parameters.put("from", savedOrder.getReceiver().getTechnicalId());
+    parameters.put("contractAddress", "contractAddress");
+    parameters.put("contractMethodName", "transfer");
+    parameters.put("contractAmount", savedOrder.getAmount());
+    parameters.put("issuerId", savedOrder.getReceiver().getTechnicalId());
+    parameters.put("status", false);
+    perkStoreService.saveOrderTransactionStatus(parameters);
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertEquals(ProductOrderTransactionStatus.FAILED.name(), savedOrder.getRefundTransactionStatus());
+    assertNull(savedOrder.getError());
 
-    perkStoreService.saveOrderTransactionStatus(savedOrder.getRefundTransactionHash(), true);
+    parameters.put("status", true);
+    perkStoreService.saveOrderTransactionStatus(parameters);
     savedOrder = perkStoreService.getOrderById(savedOrder.getId());
     assertEquals(ProductOrderTransactionStatus.SUCCESS.name(), savedOrder.getRefundTransactionStatus());
+    assertNull(savedOrder.getError());
+  }
+
+  @Test
+  public void testSaveOrderTransactionStatusWithEmptyTokenAddressFraud() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    Product product = newProductInstance(new Product());
+    product.setAccessPermissions(null);
+    Product savedProduct = perkStoreService.saveProduct(product, USERNAME);
+    entitiesToClean.add(0, savedProduct);
+
+    ProductOrder savedOrder = newOrder(savedProduct);
+    assertNull(savedOrder.getError());
+
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("hash", savedOrder.getTransactionHash());
+    parameters.put("from", savedOrder.getSender().getTechnicalId());
+    parameters.put("to", savedOrder.getReceiver().getTechnicalId());
+    parameters.put("contractMethodName", "transfer");
+    parameters.put("contractAmount", savedOrder.getAmount());
+    parameters.put("issuerId", savedOrder.getSender().getTechnicalId());
+    parameters.put("status", true);
+    perkStoreService.saveOrderTransactionStatus(parameters);
+
+    savedOrder = perkStoreService.getOrderById(savedOrder.getId());
+    assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
+    assertEquals(PerkStoreError.ORDER_FRAUD_NOT_TOKEN_TRANSACTION, savedOrder.getError());
+  }
+
+  @Test
+  public void testSaveOrderTransactionStatusWithWrongContractMethodFraud() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    Product product = newProductInstance(new Product());
+    product.setAccessPermissions(null);
+    Product savedProduct = perkStoreService.saveProduct(product, USERNAME);
+    entitiesToClean.add(0, savedProduct);
+
+    ProductOrder savedOrder = newOrder(savedProduct);
+    assertNull(savedOrder.getError());
+
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("hash", savedOrder.getTransactionHash());
+    parameters.put("from", savedOrder.getSender().getTechnicalId());
+    parameters.put("to", savedOrder.getReceiver().getTechnicalId());
+    parameters.put("contractAddress", "contractAddress");
+    parameters.put("contractMethodName", "reward");
+    parameters.put("contractAmount", savedOrder.getAmount());
+    parameters.put("issuerId", savedOrder.getSender().getTechnicalId());
+    parameters.put("status", true);
+    perkStoreService.saveOrderTransactionStatus(parameters);
+
+    savedOrder = perkStoreService.getOrderById(savedOrder.getId());
+    assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
+    assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_TOKEN_TRANSFER_METHOD, savedOrder.getError());
+  }
+
+  @Test
+  public void testSaveOrderTransactionStatusWithWrongSenderFraud() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    Product product = newProductInstance(new Product());
+    product.setAccessPermissions(null);
+    Product savedProduct = perkStoreService.saveProduct(product, USERNAME);
+    entitiesToClean.add(0, savedProduct);
+
+    ProductOrder savedOrder = newOrder(savedProduct);
+    assertNull(savedOrder.getError());
+
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("hash", savedOrder.getTransactionHash());
+    parameters.put("from", 9l);
+    parameters.put("to", savedOrder.getReceiver().getTechnicalId());
+    parameters.put("contractAddress", "contractAddress");
+    parameters.put("contractMethodName", "transfer");
+    parameters.put("contractAmount", savedOrder.getAmount());
+    parameters.put("issuerId", savedOrder.getSender().getTechnicalId());
+    parameters.put("status", true);
+    perkStoreService.saveOrderTransactionStatus(parameters);
+
+    savedOrder = perkStoreService.getOrderById(savedOrder.getId());
+    assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
+    assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_SENDER, savedOrder.getError());
+  }
+
+  @Test
+  public void testSaveOrderTransactionStatusWithWrongReceiverFraud() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    Product product = newProductInstance(new Product());
+    product.setAccessPermissions(null);
+    Product savedProduct = perkStoreService.saveProduct(product, USERNAME);
+    entitiesToClean.add(0, savedProduct);
+
+    ProductOrder savedOrder = newOrder(savedProduct);
+    assertNull(savedOrder.getError());
+
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("hash", savedOrder.getTransactionHash());
+    parameters.put("from", savedOrder.getSender().getTechnicalId());
+    parameters.put("to", 8l);
+    parameters.put("contractAddress", "contractAddress");
+    parameters.put("contractMethodName", "transfer");
+    parameters.put("contractAmount", savedOrder.getAmount());
+    parameters.put("issuerId", savedOrder.getSender().getTechnicalId());
+    parameters.put("status", true);
+    perkStoreService.saveOrderTransactionStatus(parameters);
+
+    savedOrder = perkStoreService.getOrderById(savedOrder.getId());
+    assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
+    assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_RECEIVER, savedOrder.getError());
+  }
+
+  @Test
+  public void testSaveOrderTransactionStatusWithWrongAmountFraud() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    Product product = newProductInstance(new Product());
+    product.setAccessPermissions(null);
+    Product savedProduct = perkStoreService.saveProduct(product, USERNAME);
+    entitiesToClean.add(0, savedProduct);
+
+    ProductOrder savedOrder = newOrder(savedProduct);
+    assertNull(savedOrder.getError());
+
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("hash", savedOrder.getTransactionHash());
+    parameters.put("from", savedOrder.getSender().getTechnicalId());
+    parameters.put("to", savedOrder.getReceiver().getTechnicalId());
+    parameters.put("contractAddress", "contractAddress");
+    parameters.put("contractMethodName", "transfer");
+    parameters.put("contractAmount", savedProduct.getPrice() * savedOrder.getQuantity() * 2);
+    parameters.put("issuerId", savedOrder.getSender().getTechnicalId());
+    parameters.put("status", true);
+    perkStoreService.saveOrderTransactionStatus(parameters);
+
+    savedOrder = perkStoreService.getOrderById(savedOrder.getId());
+    assertNotNull(savedOrder);
+    assertEquals(ProductOrderStatus.FRAUD.name(), savedOrder.getStatus());
+    assertEquals(PerkStoreError.ORDER_FRAUD_WRONG_AMOUNT, savedOrder.getError());
   }
 
   @Test

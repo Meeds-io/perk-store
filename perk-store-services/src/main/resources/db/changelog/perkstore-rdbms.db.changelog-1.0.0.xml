@@ -138,4 +138,11 @@
       <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
     </modifySql>
   </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-7">
+    <addColumn tableName="ADDONS_PERKSTORE_PRODUCT_ORDER">
+      <column name="ERROR_CODE" type="INT" defaultValueNumeric="0" />
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

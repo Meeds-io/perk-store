@@ -92,6 +92,9 @@ public class ProductOrderEntity implements Serializable {
   @JoinColumn(name = "PRODUCT_ID", referencedColumnName = "PRODUCT_ID")
   private ProductEntity                 product;
 
+  @Column(name = "ERROR_CODE")
+  private int                           errorCode;
+
   public Long getId() {
     return id;
   }
@@ -234,6 +237,14 @@ public class ProductOrderEntity implements Serializable {
 
   public void setProduct(ProductEntity product) {
     this.product = product;
+  }
+
+  public int getErrorCode() {
+    return errorCode;
+  }
+
+  public void setErrorCode(int errorCode) {
+    this.errorCode = errorCode;
   }
 
 }

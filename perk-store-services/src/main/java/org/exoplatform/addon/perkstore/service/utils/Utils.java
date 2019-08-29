@@ -74,6 +74,8 @@ public class Utils {
 
   public static final String        ERROR_SUFFIX_ORDER_MODIFICATION           = "order.modification";
 
+  public static final String        ERROR_SUFFIX_ORDER_FRAUD                  = "order.fraud";
+
   public static final String        ERROR_SUFFIX_ORDER_NOT_EXISTS             = "order.existance";
 
   public static final String        ERROR_SUFFIX_ORDER_ACCESS_DENIED          = "order.access";
@@ -88,7 +90,7 @@ public class Utils {
 
   public static final String        ERROR_SUFFIX_PRODUCT_IS_DISABLED          = "product.disabled";
 
-  public static final String        SPACE_ACCOUNT_TYPE                        = "space";
+  public static final String        SPACE_ACCOUNT_TYPE                        = SpaceIdentityProvider.NAME;
 
   public static final String        USER_ACCOUNT_TYPE                         = "user";
 
@@ -188,7 +190,7 @@ public class Utils {
   }
 
   public static boolean isSpaceType(String type) {
-    return SPACE_ACCOUNT_TYPE.equals(type) || SpaceIdentityProvider.NAME.equals(type);
+    return SPACE_ACCOUNT_TYPE.equals(type);
   }
 
   public static String getIdentityTypeByProviderId(String providerId) {
@@ -250,6 +252,7 @@ public class Utils {
     order.setRefundTransactionStatus(entity.getRefundTransactionStatus().name());
     order.setStatus(entity.getStatus().name());
     order.setRemainingQuantityToProcess(entity.getRemainingQuantity());
+    order.setError(entity.getErrorCode() > 0 ? PerkStoreError.values()[entity.getErrorCode()] : null);
     return order;
   }
 
@@ -273,11 +276,12 @@ public class Utils {
     entity.setCreatedDate(order.getCreatedDate());
     entity.setDeliveredDate(order.getDeliveredDate());
     entity.setRefundedDate(order.getRefundedDate());
+    entity.setErrorCode(order.getError() == null ? 0 : order.getError().ordinal());
     entity.setTransactionStatus(order.getTransactionStatus() == null ? ProductOrderTransactionStatus.NONE
                                                                      : ProductOrderTransactionStatus.valueOf(order.getTransactionStatus()));
     entity.setRefundTransactionStatus(order.getRefundTransactionStatus() == null ? ProductOrderTransactionStatus.NONE
                                                                                  : ProductOrderTransactionStatus.valueOf(order.getRefundTransactionStatus()));
-    entity.setStatus(ProductOrderStatus.valueOf(order.getStatus()));
+    entity.setStatus(ProductOrderStatus.valueOf(StringUtils.upperCase(order.getStatus())));
     entity.setRemainingQuantity(order.getRemainingQuantityToProcess());
     return entity;
   }

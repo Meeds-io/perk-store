@@ -2,6 +2,7 @@ package org.exoplatform.addon.perkstore.model;
 
 import java.io.Serializable;
 
+import org.exoplatform.addon.perkstore.model.constant.PerkStoreError;
 import org.exoplatform.addon.perkstore.model.constant.ProductOrderModificationType;
 
 import groovy.transform.ToString;
@@ -50,6 +51,8 @@ public class ProductOrder extends PerkStoreCloneable implements Serializable {
   private String                       transactionStatus;
 
   private String                       refundTransactionStatus;
+
+  private PerkStoreError               error;
 
   // Processed
   private String                       productTitle;

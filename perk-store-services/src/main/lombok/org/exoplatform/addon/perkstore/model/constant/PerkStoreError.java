@@ -35,7 +35,17 @@ public enum PerkStoreError {
   ORDER_CREATION_EMPTY_PRODUCT(ERROR_SUFFIX_ORDER_CREATION, "Order product is mandatory"),
   PRODUCT_IS_DISABLED(ERROR_SUFFIX_PRODUCT_IS_DISABLED, "Product with {} is disabled", 1),
   PRODUCT_ACCESS_DENIED(ERROR_SUFFIX_PRODUCT_ACCESS_DENIED, "Denied access to product '{}' for user {}", 2),
-  ORDER_ACCESS_DENIED(ERROR_SUFFIX_ORDER_ACCESS_DENIED, "Denied access to order with id {} for user {}", 2);
+  ORDER_ACCESS_DENIED(ERROR_SUFFIX_ORDER_ACCESS_DENIED, "Denied access to order with id {} for user {}", 2),
+  ORDER_FRAUD_NOT_TOKEN_TRANSACTION(ERROR_SUFFIX_ORDER_FRAUD,
+      "A non token transaction has been injected in perk store as product order",
+      0),
+  ORDER_FRAUD_WRONG_TOKEN_TRANSFER_METHOD(ERROR_SUFFIX_ORDER_FRAUD,
+      "A non 'transfer' token transaction has been injected in perk store as product order", 0),
+  ORDER_FRAUD_WRONG_AMOUNT(ERROR_SUFFIX_ORDER_FRAUD, "Product order amount sent is different from amount found on blockchain", 0),
+  ORDER_FRAUD_WRONG_SENDER(ERROR_SUFFIX_ORDER_FRAUD,
+      "Product order transaction sender is incoherent with transaction sender on blockchain", 0),
+  ORDER_FRAUD_WRONG_RECEIVER(ERROR_SUFFIX_ORDER_FRAUD,
+      "Product order transaction sender is incoherent with transaction receiver on blockchain", 0);
 
   private int    code;
 

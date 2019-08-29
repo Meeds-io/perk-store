@@ -12,15 +12,7 @@
         </h4>
         <v-spacer />
         <template v-if="userData && userData.canEdit">
-          <select
-            v-model="order.status"
-            :disabled="true"
-            class="orderStatusSelectBox small mt-1 mb-1 mr-2"
-            @change="changeStatus('STATUS')">
-            <option v-for="option in statusList" :key="option">
-              {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
-            </option>
-          </select>
+          <div class="orderStatus small mt-1 mb-1 mr-2">{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</div>
           <div
             v-if="order.remainingQuantityToProcess"
             :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
@@ -168,7 +160,7 @@
                   :product="product"
                   :order="order" />
                 <refund-modal
-                  v-if="refunding || (order.remainingQuantityToProcess && order.remainingQuantityToProcess > 0 && (isPaid || isPartial))"
+                  v-if="refunding || (order.remainingQuantityToProcess && (order.refundedQuantity == 0 || order.refundTransactionStatus === 'FAILED') && order.remainingQuantityToProcess > 0 && (isPaid || isPartial))"
                   :product="product"
                   :order="order"
                   :symbol="symbol"
@@ -402,10 +394,6 @@ export default {
 
       this.$emit('display-product', this.order.productId);
     },
-    cancelOrder() {
-      this.order.status= 'CANCELED';
-      return this.changeStatus('STATUS');
-    },
     refunded(order) {
       // Nothing to do, the update will be made by Websocket
     },
@@ -414,9 +402,13 @@ export default {
       this.$emit('init-wallet');
       this.refunding = false;
     },
-    changeStatus(modificationType) {
+    cancelOrder() {
       this.$emit('loading', true);
-      return saveOrderStatus(this.order, modificationType)
+      return saveOrderStatus({
+        id: this.order.id,
+        productId: this.order.productId,
+        status: 'CANCELED',
+      }, 'STATUS')
         .then(order => {
           this.$emit('changed', order);
           this.$forceUpdate();

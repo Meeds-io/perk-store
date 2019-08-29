@@ -157,15 +157,17 @@ public abstract class BasePerkStoreTest {
   }
 
   protected ProductOrder newOrderInstance(Product savedProduct) {
+    int quantity = 1;
+
     ProductOrder productOrder = new ProductOrder();
     productOrder.setProductId(savedProduct.getId());
-    productOrder.setAmount(1);
+    productOrder.setAmount(savedProduct.getPrice() * quantity);
     productOrder.setReceiver(savedProduct.getReceiverMarchand());
     productOrder.setSender(Utils.toProfile(1l));
     productOrder.setTransactionHash(generateRandomHash());
     productOrder.setTransactionStatus(PENDING.name());
     productOrder.setRefundTransactionStatus(NONE.name());
-    productOrder.setQuantity(1);
+    productOrder.setQuantity(quantity);
     productOrder.setRemainingQuantityToProcess(5);
     return productOrder;
   }

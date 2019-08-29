@@ -1,20 +1,17 @@
 package org.exoplatform.addon.perkstore.listener;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 
 import org.exoplatform.addon.perkstore.service.PerkStoreService;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.listener.*;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 
 @Asynchronous
-public class EthereumWalletTransactionListener extends Listener<Object, JSONObject> {
-  private static final Log LOG =
-                               ExoLogger.getLogger(EthereumWalletTransactionListener.class);
+public class EthereumWalletTransactionListener extends Listener<Object, Map<String, Object>> {
 
   private ExoContainer     container;
 
@@ -26,11 +23,11 @@ public class EthereumWalletTransactionListener extends Listener<Object, JSONObje
   }
 
   @Override
-  public void onEvent(Event<Object, JSONObject> event) throws Exception {
+  public void onEvent(Event<Object, Map<String, Object>> event) throws Exception {
     ExoContainerContext.setCurrentContainer(container);
     RequestLifeCycle.begin(container);
     try {
-      JSONObject transactionDetails = event.getData();
+      Map<String, Object> transactionDetails = event.getData();
       if (transactionDetails == null) {
         throw new IllegalStateException("Transaction details is mandatory");
       }
@@ -39,16 +36,7 @@ public class EthereumWalletTransactionListener extends Listener<Object, JSONObje
         throw new IllegalStateException("Transaction hash is mandatory");
       }
 
-      Boolean status = (Boolean) transactionDetails.get("status");
-      if (status == null) {
-        LOG.error("Transaction with hash " + hash + " status is null");
-      } else {
-        // This could be triggered three times:
-        // - when contract TX saved
-        // - sender TX saved
-        // - receiver TX saved
-        this.perkStoreService.saveOrderTransactionStatus(hash, status);
-      }
+      this.perkStoreService.saveOrderTransactionStatus(transactionDetails);
     } finally {
       RequestLifeCycle.end();
     }
