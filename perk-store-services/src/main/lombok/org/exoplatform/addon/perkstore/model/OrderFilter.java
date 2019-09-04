@@ -38,6 +38,8 @@ public class OrderFilter extends PerkStoreCloneable implements Serializable {
 
   private boolean           refunded;
 
+  private boolean           fraud;
+
   @Override
   public OrderFilter clone() { // NOSONAR
     return (OrderFilter) super.clone();

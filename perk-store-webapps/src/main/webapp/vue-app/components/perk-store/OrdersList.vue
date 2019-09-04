@@ -223,6 +223,7 @@ export default {
         partial: this.selectedOrdersFilter.partial,
         delivered: this.selectedOrdersFilter.delivered,
         refunded: this.selectedOrdersFilter.refunded,
+        fraud: this.selectedOrdersFilter.fraud,
       };
 
       // Check if all details are checked by default
@@ -257,6 +258,9 @@ export default {
         }
         if (this.selectedOrdersFilter.refunded) {
           this.filterDescriptionLabels.push("refunded");
+        }
+        if (this.selectedOrdersFilter.fraud) {
+          this.filterDescriptionLabels.push("fraud");
         }
       }
     },

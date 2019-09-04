@@ -25,6 +25,7 @@ import org.exoplatform.addon.perkstore.model.constant.*;
 import org.exoplatform.commons.api.settings.data.Context;
 import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.portal.Constants;
 import org.exoplatform.portal.localization.LocaleContextInfoUtils;
 import org.exoplatform.services.log.ExoLogger;
@@ -508,7 +509,7 @@ public class Utils {
   }
 
   public static final Locale getUserLocale(String username) throws Exception {
-    OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
+    OrganizationService organizationService = getOrganizationService();
     UserProfile profile = organizationService.getUserProfileHandler().findUserProfileByName(username);
     String lang = null;
     if (profile != null) {
@@ -645,7 +646,7 @@ public class Utils {
 
   public static final void getProductManagersUsersList(Set<String> adminUsers,
                                                        Product product,
-                                                       GlobalSettings globalSettings) {
+                                                       GlobalSettings globalSettings) throws Exception {
     List<Profile> productMarchands = product.getMarchands();
     if (productMarchands != null) {
       addIdentityMembersFromProfiles(productMarchands, adminUsers);
@@ -653,6 +654,16 @@ public class Utils {
     List<Profile> perkstoreManagers = globalSettings.getManagersProfiles();
     if (perkstoreManagers != null) {
       addIdentityMembersFromProfiles(perkstoreManagers, adminUsers);
+    } else {
+      Group rewardingGroup = getOrganizationService().getGroupHandler().findGroupById(REWARDING_GROUP);
+      if (rewardingGroup != null) {
+        ListAccess<Membership> rewardingMembers = getOrganizationService().getMembershipHandler()
+                                                                          .findAllMembershipsByGroup(rewardingGroup);
+        Membership[] members = rewardingMembers.load(0, rewardingMembers.getSize());
+        for (Membership membership : members) {
+          adminUsers.add(membership.getUserName());
+        }
+      }
     }
   }
 
@@ -738,7 +749,7 @@ public class Utils {
 
       Collection<Group> groupsOfUser;
       try {
-        groupsOfUser = CommonsUtils.getService(OrganizationService.class).getGroupHandler().findGroupsOfUser(username);
+        groupsOfUser = getOrganizationService().getGroupHandler().findGroupsOfUser(username);
       } catch (Exception e) {
         LOG.error("Error getting groups of user " + username);
         throw e;
@@ -755,6 +766,10 @@ public class Utils {
     } else {
       return StringUtils.equals(username, permissionExpression);
     }
+  }
+
+  private static OrganizationService getOrganizationService() {
+    return CommonsUtils.getService(OrganizationService.class);
   }
 
   private static Set<Long> getImageIds(Product product) {

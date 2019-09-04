@@ -277,6 +277,9 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     if (filter.isRefunded()) {
       statuses.add(ProductOrderStatus.REFUNDED.ordinal());
     }
+    if (filter.isFraud()) {
+      statuses.add(ProductOrderStatus.FRAUD.ordinal());
+    }
     return statuses;
   }
 

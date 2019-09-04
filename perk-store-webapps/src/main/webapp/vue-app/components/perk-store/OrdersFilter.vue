@@ -63,6 +63,9 @@
           <v-checkbox
             v-model="filter.refunded"
             :label="$t('exoplatform.perkstore.label.status.refunded')" />
+          <v-checkbox
+            v-model="filter.fraud"
+            :label="$t('exoplatform.perkstore.label.status.fraud')" />
         </template>
       </v-layout>
     </v-container>
