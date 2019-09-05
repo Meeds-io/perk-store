@@ -40,9 +40,17 @@ public class NotificationUtils {
                                                                                              new ArgumentLiteral<>(Boolean.class,
                                                                                                                    "product.new");
 
-  public static final ArgumentLiteral<ProductOrder>                 ORDER_PARAMETER                                =
-                                                                                    new ArgumentLiteral<>(ProductOrder.class,
-                                                                                                          "order");
+  public static final ArgumentLiteral<ProductOrder>                 NEW_ORDER_PARAMETER                            =
+                                                                                        new ArgumentLiteral<>(ProductOrder.class,
+                                                                                                              "newOrder");
+
+  public static final ArgumentLiteral<ProductOrder>                 OLD_ORDER_PARAMETER                            =
+                                                                                        new ArgumentLiteral<>(ProductOrder.class,
+                                                                                                              "oldOrder");
+
+  public static final ArgumentLiteral<Profile>                      MODIFIER_PARAMETER                             =
+                                                                                       new ArgumentLiteral<>(Profile.class,
+                                                                                                             "modifier");
 
   public static final ArgumentLiteral<ProductOrderModificationType> ORDER_MODIFICATION_TYPE_PARAMETER              =
                                                                                                       new ArgumentLiteral<>(ProductOrderModificationType.class,
@@ -107,6 +115,9 @@ public class NotificationUtils {
   private static final String                                       STORED_PARAMETER_ORDER_DELIVERED_QUANTITY      =
                                                                                                               "ORDER_DELIVERED_QUANTITY";
 
+  private static final String                                       STORED_PARAMETER_NEW_ORDER_DELIVERED_QUANTITY  =
+                                                                                                                  "NEW_ORDER_DELIVERED_QUANTITY";
+
   private static final String                                       STORED_PARAMETER_ORDER_REFUND_TX_STATUS        =
                                                                                                             "ORDER_REFUNDED_TX_STATUS";
 
@@ -165,6 +176,9 @@ public class NotificationUtils {
   private static final String                                       TEMPLATE_VARIABLE_ORDER_DELIVERED_QUANTITY     =
                                                                                                                "orderDeliveredQuantity";
 
+  private static final String                                       TEMPLATE_VARIABLE_NEW_ORDER_DELIVERED_QUANTITY =
+                                                                                                                   "newOrderDeliveredQuantity";
+
   private static final String                                       TEMPLATE_VARIABLE_ORDER_REFUNDED_QUANTITY      =
                                                                                                               "orderRefundedQuantity";
 
@@ -210,8 +224,16 @@ public class NotificationUtils {
     return ctx.value(PRODUCT_PARAMETER);
   }
 
-  public static final ProductOrder getOrderParameter(NotificationContext ctx) {
-    return ctx.value(ORDER_PARAMETER);
+  public static final ProductOrder getOldOrderParameter(NotificationContext ctx) {
+    return ctx.value(OLD_ORDER_PARAMETER);
+  }
+
+  public static final Profile getModifierParameter(NotificationContext ctx) {
+    return ctx.value(MODIFIER_PARAMETER);
+  }
+
+  public static final ProductOrder getUpdatedOrderParameter(NotificationContext ctx) {
+    return ctx.value(NEW_ORDER_PARAMETER);
   }
 
   public static final ProductOrderModificationType getOrderModificationTypeParameter(NotificationContext ctx) {
@@ -237,7 +259,7 @@ public class NotificationUtils {
   }
 
   public static final void setOrderParameter(NotificationContext ctx, ProductOrder order) {
-    ctx.append(ORDER_PARAMETER, order);
+    ctx.append(NEW_ORDER_PARAMETER, order);
   }
 
   public static final void setIsNewProductParameter(NotificationContext ctx) {
@@ -253,7 +275,8 @@ public class NotificationUtils {
                                                      Product product,
                                                      ProductOrder order,
                                                      boolean newProduct,
-                                                     boolean newOrder) {
+                                                     boolean newOrder,
+                                                     Profile modifier) {
     Set<String> ignoredUsers = new HashSet<>();
     Set<String> recipientList = new HashSet<>();
 
@@ -298,8 +321,8 @@ public class NotificationUtils {
       // Retain in recipient list only users who are member of both ACL
       addIdentityMembersFromProfiles(product.getMarchands(), recipientList);
     } else {// Modified order
-      if (order.getLastModifier() != null) {
-        ignoredUsers.add(order.getLastModifier().getId());
+      if (modifier != null) {
+        ignoredUsers.add(modifier.getId());
       }
 
       // Always send to buyer
@@ -313,25 +336,27 @@ public class NotificationUtils {
   }
 
   public static final void storeOrderParameters(NotificationInfo notification,
-                                                ProductOrder order,
+                                                ProductOrder oldOrder,
+                                                ProductOrder updatedOrder,
                                                 ProductOrderModificationType orderModificationType,
-                                                boolean isNew) {
-    if (order.getReceiver() == null || order.getReceiver().getTechnicalId() == 0) {
+                                                boolean isNew,
+                                                Profile modifier) {
+    if (updatedOrder.getReceiver() == null || updatedOrder.getReceiver().getTechnicalId() == 0) {
       throw new IllegalStateException("receiver is null");
     }
-    if (order.getSender() == null || order.getSender().getTechnicalId() == 0) {
+    if (updatedOrder.getSender() == null || updatedOrder.getSender().getTechnicalId() == 0) {
       throw new IllegalStateException("sender is null");
     }
 
     // Last modifier could be null when the order is modified on transaction
     // finish
-    if (order.getLastModifier() != null) {
-      notification.with(STORED_PARAMETER_MODIFIER_IDENTITY_ID, String.valueOf(order.getLastModifier().getTechnicalId()));
+    if (modifier != null) {
+      notification.with(STORED_PARAMETER_MODIFIER_IDENTITY_ID, String.valueOf(modifier.getTechnicalId()));
     }
 
-    String status = order.getStatus();
+    String status = updatedOrder.getStatus();
     if (orderModificationType == ProductOrderModificationType.TX_STATUS) {
-      if (StringUtils.equals(SUCCESS.name(), order.getTransactionStatus())) {
+      if (StringUtils.equals(SUCCESS.name(), updatedOrder.getTransactionStatus())) {
         status = PAID.name();
       } else {
         status = ERROR.name();
@@ -340,17 +365,21 @@ public class NotificationUtils {
       status = REFUNDED.name();
     }
 
-    notification.with(STORED_PARAMETER_ORDER_ID, String.valueOf(order.getId()))
-                .with(STORED_PARAMETER_RECEIVER_IDENTITY_ID, String.valueOf(order.getReceiver().getTechnicalId()))
-                .with(STORED_PARAMETER_SENDER_IDENTITY_ID, String.valueOf(order.getSender().getTechnicalId()))
+    double newlyDeliveredQuantity =
+                                  updatedOrder.getDeliveredQuantity() - (oldOrder == null ? 0 : oldOrder.getDeliveredQuantity());
+
+    notification.with(STORED_PARAMETER_ORDER_ID, String.valueOf(updatedOrder.getId()))
+                .with(STORED_PARAMETER_RECEIVER_IDENTITY_ID, String.valueOf(updatedOrder.getReceiver().getTechnicalId()))
+                .with(STORED_PARAMETER_SENDER_IDENTITY_ID, String.valueOf(updatedOrder.getSender().getTechnicalId()))
                 .with(STORED_PARAMETER_ORDER_STATUS, status)
-                .with(STORED_PARAMETER_QUANTITY_ORDER, stringifyDouble(order.getQuantity()))
-                .with(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY, stringifyDouble(order.getDeliveredQuantity()))
-                .with(STORED_PARAMETER_ORDER_REFUND_TX_STATUS, order.getRefundTransactionStatus())
-                .with(STORED_PARAMETER_ORDER_MODIFICATION_TYPE, order.getModificationType().name())
-                .with(STORED_PARAMETER_ORDER_REFUNDED_AMOUNT, stringifyDouble(order.getRefundedAmount()))
-                .with(STORED_PARAMETER_ORDER_REFUNDED_QUANTITY, stringifyDouble(order.getRefundedQuantity()))
-                .with(STORED_PARAMETER_ORDER_REMAINING_QUANTITY, stringifyDouble(order.getRemainingQuantityToProcess()))
+                .with(STORED_PARAMETER_QUANTITY_ORDER, stringifyDouble(updatedOrder.getQuantity()))
+                .with(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY, stringifyDouble(updatedOrder.getDeliveredQuantity()))
+                .with(STORED_PARAMETER_NEW_ORDER_DELIVERED_QUANTITY, stringifyDouble(newlyDeliveredQuantity))
+                .with(STORED_PARAMETER_ORDER_REFUND_TX_STATUS, updatedOrder.getRefundTransactionStatus())
+                .with(STORED_PARAMETER_ORDER_MODIFICATION_TYPE, orderModificationType.name())
+                .with(STORED_PARAMETER_ORDER_REFUNDED_AMOUNT, stringifyDouble(updatedOrder.getRefundedAmount()))
+                .with(STORED_PARAMETER_ORDER_REFUNDED_QUANTITY, stringifyDouble(updatedOrder.getRefundedQuantity()))
+                .with(STORED_PARAMETER_ORDER_REMAINING_QUANTITY, stringifyDouble(updatedOrder.getRemainingQuantityToProcess()))
                 .with(STORED_PARAMETER_ORDER_IS_NEW, String.valueOf(isNew));
   }
 
@@ -480,6 +509,10 @@ public class NotificationUtils {
       String modificationType = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_MODIFICATION_TYPE);
       String orderStatus = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_STATUS);
       String deliveredQuantity = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_DELIVERED_QUANTITY);
+      String newDeliveredQuantity = notification.getValueOwnerParameter(STORED_PARAMETER_NEW_ORDER_DELIVERED_QUANTITY);
+      if (StringUtils.isBlank(newDeliveredQuantity)) {
+        newDeliveredQuantity = deliveredQuantity;
+      }
       String refundedQuantity = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REFUNDED_QUANTITY);
       String remainingQuantity = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REMAINING_QUANTITY);
       String orderRefundedAmount = notification.getValueOwnerParameter(STORED_PARAMETER_ORDER_REFUNDED_AMOUNT);
@@ -511,6 +544,7 @@ public class NotificationUtils {
       templateContext.put(TEMPLATE_VARIABLE_ORDER_STATUS, orderStatus);
       templateContext.put(TEMPLATE_VARIABLE_ORDER_QUANTITY, notification.getValueOwnerParameter(STORED_PARAMETER_QUANTITY_ORDER));
       templateContext.put(TEMPLATE_VARIABLE_ORDER_DELIVERED_QUANTITY, deliveredQuantity);
+      templateContext.put(TEMPLATE_VARIABLE_NEW_ORDER_DELIVERED_QUANTITY, newDeliveredQuantity);
       templateContext.put(TEMPLATE_VARIABLE_ORDER_REFUNDED_QUANTITY, refundedQuantity);
       templateContext.put(TEMPLATE_VARIABLE_ORDER_REFUNDED_AMOUNT, orderRefundedAmount);
       templateContext.put(TEMPLATE_VARIABLE_ORDER_REFUND_TX_STATUS, orderRefundTxStatus);

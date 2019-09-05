@@ -318,9 +318,6 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     if (StringUtils.isBlank(username)) {
       throw new IllegalArgumentException("Username is mandatory");
     }
-    if (order.getProductId() == 0) {
-      throw new PerkStoreException(PRODUCT_NOT_EXISTS, order.getProductId());
-    }
     Product product = getProductById(order.getProductId());
     if (product == null) {
       throw new PerkStoreException(PRODUCT_NOT_EXISTS, order.getProductId());
@@ -337,10 +334,29 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, product.getTitle());
     }
 
+    if (StringUtils.isBlank(order.getTransactionHash())) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_TX);
+    }
+
     checkTransactionHashNotExists(product, order, username);
 
     order.setSender(toProfile(USER_ACCOUNT_TYPE, username));
-    checkOrderCoherence(username, product, order);
+    if (order.getStatus() != null) {
+      throw new PerkStoreException(ORDER_CREATION_STATUS_DENIED);
+    }
+    if (order.getQuantity() <= 0) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_QUANTITY);
+    }
+    if (order.getReceiver() == null) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_RECEIVER);
+    }
+    if (order.getSender() == null) {
+      throw new PerkStoreException(ORDER_CREATION_EMPTY_SENDER);
+    }
+    if (!canViewProduct(product, username, false)) {
+      throw new PerkStoreException(ORDER_CREATION_DENIED, username, product.getTitle());
+    }
+    checkOrderQuantity(product, order);
   }
 
   @ExoPerkStoreStatistic(local = true, service = "perkstore", operation = STATISTIC_OPERATION_CREATE_ORDER)
@@ -403,10 +419,11 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       addFraudStatistic(sender.getTechnicalId(), productOrder.getTransactionHash(), productOrder);
     }
 
-    productOrder.setModificationType(NEW);
     computeOrderFields(product, productOrder);
 
-    getListenerService().broadcast(ORDER_CREATE_OR_MODIFY_EVENT, product, productOrder);
+    getListenerService().broadcast(ORDER_CREATE_OR_MODIFY_EVENT,
+                                   product,
+                                   new ProductOrderModification(toProfile(USER_ACCOUNT_TYPE, username), NEW, null, productOrder));
     return productOrder;
   }
 
@@ -444,6 +461,10 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       throw new PerkStoreException(ORDER_NOT_EXISTS, orderId);
     }
 
+    ProductOrderModification productOrderModification = new ProductOrderModification(toProfile(USER_ACCOUNT_TYPE, username),
+                                                                                     modificationType,
+                                                                                     orderToUpdate.clone(),
+                                                                                     orderToUpdate);
     double deliveredQuantity = orderToUpdate.getDeliveredQuantity();
     double refundedQuantity = orderToUpdate.getRefundedQuantity();
 
@@ -462,6 +483,9 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       if (StringUtils.isBlank(username)) {
         throw new IllegalArgumentException(USERNAME_IS_MANDATORY_ERROR);
       }
+      if (deliveredQuantity < 0) {
+        throw new IllegalStateException("Delivered quantity can't be negative");
+      }
       orderToUpdate.setDeliveredQuantity(deliveredQuantity);
       if (deliveredQuantity == 0) {
         orderToUpdate.setDeliveredDate(0);
@@ -476,6 +500,12 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
       if (StringUtils.isBlank(username)) {
         throw new IllegalArgumentException(USERNAME_IS_MANDATORY_ERROR);
+      }
+      if (refundedQuantity < 0) {
+        throw new IllegalStateException("Refunded quantity can't be negative");
+      }
+      if (order.getRefundedAmount() < 0) {
+        throw new IllegalStateException("Refunded quantity can't be negative");
       }
       checkTransactionRefundHashNotExists(product, order, username);
 
@@ -519,12 +549,9 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     orderToUpdate = perkStoreStorage.saveOrder(orderToUpdate);
 
     if (broadcastOrderEvent) {
-      orderToUpdate.setLastModifier(toProfile(USER_ACCOUNT_TYPE, username));
-      orderToUpdate.setModificationType(modificationType);
-
       computeOrderFields(product, orderToUpdate);
 
-      getListenerService().broadcast(ORDER_CREATE_OR_MODIFY_EVENT, product, orderToUpdate);
+      getListenerService().broadcast(ORDER_CREATE_OR_MODIFY_EVENT, product, productOrderModification);
     }
 
     return orderToUpdate;
@@ -905,39 +932,6 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
                                      product.getTitle());
       }
     }
-  }
-
-  private void checkOrderCoherence(String username, Product product, ProductOrder order) throws PerkStoreException {
-    if (StringUtils.isBlank(username)) {
-      throw new PerkStoreException(ORDER_MODIFICATION_DENIED, username, order.getProductId());
-    }
-    if (order.getId() != 0) {
-      throw new PerkStoreException(ORDER_NOT_EXISTS, order.getId());
-    }
-    if (product == null || order.getProductId() == 0) {
-      throw new PerkStoreException(PRODUCT_NOT_EXISTS, order.getProductId());
-    }
-    if (order.getStatus() != null) {
-      throw new PerkStoreException(ORDER_CREATION_STATUS_DENIED);
-    }
-    if (StringUtils.isBlank(order.getTransactionHash())) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_TX);
-    }
-    if (order.getQuantity() <= 0) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_QUANTITY);
-    }
-    if (order.getReceiver() == null) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_RECEIVER);
-    }
-    if (order.getSender() == null) {
-      throw new PerkStoreException(ORDER_CREATION_EMPTY_SENDER);
-    }
-
-    if (!canViewProduct(product, username, false)) {
-      throw new PerkStoreException(ORDER_CREATION_DENIED, username, product.getTitle());
-    }
-
-    checkOrderQuantity(product, order);
   }
 
   private void checkOrderQuantity(Product product, ProductOrder productOrder) throws PerkStoreException {

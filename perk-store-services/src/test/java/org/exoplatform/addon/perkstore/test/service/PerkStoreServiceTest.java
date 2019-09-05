@@ -412,7 +412,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
       savedProduct.setAccessPermissions(Arrays.asList(Utils.toProfile(1l)));
       perkStoreService.saveProduct(savedProduct, USERNAME);
 
-      newOrder(savedProduct);
+      ProductOrder savedOrder = newOrder(savedProduct);
 
       try {
         ProductOrder order = newOrderInstance(savedProduct);
@@ -439,6 +439,16 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
       perkStoreService.saveProduct(savedProduct, USERNAME);
 
       savedProduct = perkStoreService.getProductById(savedProduct.getId());
+
+      try {
+        ProductOrder order = newOrderInstance(savedProduct);
+        order.setTransactionHash(savedOrder.getTransactionHash());
+        perkStoreService.checkCanCreateOrder(order, USERNAME);
+      } catch (PerkStoreException e) {
+        assertNotNull(e.getErrorType());
+        assertNotNull(e.getLocalizedMessage());
+        assertEquals(PerkStoreError.ORDER_CREATION_DENIED, e.getErrorType());
+      }
 
       ProductOrder order = newOrderInstance(savedProduct);
       perkStoreService.checkCanCreateOrder(order, USERNAME);

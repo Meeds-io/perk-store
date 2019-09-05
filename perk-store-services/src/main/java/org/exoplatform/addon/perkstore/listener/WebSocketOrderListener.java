@@ -13,16 +13,16 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.services.listener.*;
 
 @Asynchronous
-public class WebSocketOrderListener extends Listener<Product, ProductOrder> {
+public class WebSocketOrderListener extends Listener<Product, ProductOrderModification> {
 
   private PerkStoreService          perkStoreService;
 
   private PerkStoreWebSocketService webSocketService;
 
   @Override
-  public void onEvent(Event<Product, ProductOrder> event) throws Exception {
+  public void onEvent(Event<Product, ProductOrderModification> event) throws Exception {
     Product product = event.getSource();
-    ProductOrder order = event.getData();
+    ProductOrderModification orderModification = event.getData();
     GlobalSettings globalSettings = getPerkStoreService().getGlobalSettings();
 
     Set<String> readOnlyUsers = new HashSet<>();
@@ -31,14 +31,15 @@ public class WebSocketOrderListener extends Listener<Product, ProductOrder> {
     Set<String> orderDetailViewerUsers = new HashSet<>();
     getProductManagersUsersList(orderDetailViewerUsers, product, globalSettings);
     // Notify sender about the order changes
-    orderDetailViewerUsers.add(order.getSender().getId());
+    ProductOrder updatedOrder = orderModification.getNewValue();
+    orderDetailViewerUsers.add(updatedOrder.getSender().getId());
 
     readOnlyUsers.removeAll(orderDetailViewerUsers);
     // Send to simple users only product attributes modification
     getWebSocketService().sendMessage(event.getEventName(), readOnlyUsers, sendToAll, product);
 
     // Send to managers and order sender the order modifications
-    getWebSocketService().sendMessage(event.getEventName(), orderDetailViewerUsers, false, product, order);
+    getWebSocketService().sendMessage(event.getEventName(), orderDetailViewerUsers, false, product, updatedOrder);
   }
 
   public PerkStoreService getPerkStoreService() {
