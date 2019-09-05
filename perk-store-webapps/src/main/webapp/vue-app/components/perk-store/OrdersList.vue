@@ -22,7 +22,7 @@
         flat>
         <v-card-title class="mt-0 pt-0">
           <v-spacer />
-          <div class="no-wrap ellipsis">
+          <div class="no-wrap text-truncate">
             {{ $t('exoplatform.perkstore.label.selectedFilter') }}:
             <v-chip v-for="filterDescription in filterDescriptionLabels" :key="filterDescription">
               {{ $t(`exoplatform.perkstore.label.status.${filterDescription}`) }}
@@ -32,56 +32,48 @@
         </v-card-title>
       </v-card>
       <a id="downloadOrders" class="hidden">{{ $t('exoplatform.perkstore.button.download') }}</a>
-      <v-data-iterator
-        :items="filteredOrders"
-        :no-data-text="loading ? '': $t('exoplatform.perkstore.label.noOrders')"
-        content-tag="v-layout"
-        content-class="mt-0 mb-0"
-        hide-actions
-        row
-        wrap>
-        <v-flex
-          slot="item"
-          slot-scope="props"
-          class="border-box-sizing pt-0"
-          xs12
-          sm6
-          md4
-          lg3
-          xl2>
+      <v-row class="OrdersListParent">
+        <v-col
+          v-for="item in filteredOrders"
+          :key="item.id"
+          cols="12"
+          xs="12"
+          sm="6"
+          md="3"
+          xl="2">
           <order-detail
-            :ref="`orderDetail${props.item.id}`"
-            :order="props.item"
+            :ref="`orderDetail${item.id}`"
+            :order="item"
             :product="product"
             :symbol="symbol"
             @init-wallet="$emit('init-wallet')"
             @display-product="$emit('display-product', $event)"
-            @changed="updateOrder(props.item, $event)"
+            @changed="updateOrder(item, $event)"
             @loading="$emit('loading', $event)"
             @error="$emit('error', $event)" />
-        </v-flex>
-        <v-flex
-          v-if="loading || displayLoadMoreButton"
-          slot="footer"
-          class="mt-2 text-xs-center"
-          dense
-          flat>
-          <v-btn
-            v-if="displayLoadMoreButton"
-            class="primary--text"
-            flat
-            :loading="loading"
-            :disabled="loading"
-            @click="loadMore">
-            {{ $t('exoplatform.perkstore.button.loadMore') }}
-          </v-btn>
-          <v-progress-circular
-            v-else-if="loading"
-            color="primary"
-            class="mb-2"
-            indeterminate />
-        </v-flex>
-      </v-data-iterator>
+        </v-col>
+      </v-row>
+      <v-flex
+        v-if="loading || displayLoadMoreButton"
+        slot="footer"
+        class="mt-2 text-center"
+        dense
+        flat>
+        <v-btn
+          v-if="displayLoadMoreButton"
+          class="primary--text"
+          text
+          :loading="loading"
+          :disabled="loading"
+          @click="loadMore">
+          {{ $t('exoplatform.perkstore.button.loadMore') }}
+        </v-btn>
+        <v-progress-circular
+          v-else-if="loading"
+          color="primary"
+          class="mb-2"
+          indeterminate />
+      </v-flex>
       <order-notification
         :orders="newAddedOrders"
         @refresh-list="addNewOrdersToList" />

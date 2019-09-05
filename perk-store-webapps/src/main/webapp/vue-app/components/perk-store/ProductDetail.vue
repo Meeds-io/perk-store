@@ -7,8 +7,10 @@
         color="grey lighten-4"
         max-width="600">
         <v-carousel
-          hide-controls
+          :show-arrows="false"
+          :interval="3000"
           hide-delimiters
+          cycle
           class="carousselParent">
           <template v-if="product.imageFiles">
             <v-carousel-item
@@ -87,33 +89,32 @@
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
         </v-card-text>
-        <v-tooltip bottom>
-          <v-card-title slot="activator" class="ellipsis no-wrap pt-0 pb-0">
-            <h3 :title="product.title" class="mb-2 primary--text ellipsis">
-              <a
-                :href="productLink"
-                class="ellipsis"
-                @click="openProductDetail">
-                {{ product.title }}
-              </a>
-            </h3>
-            <v-spacer />
-            <h3 class="mb-2">
-              {{ product.price }} {{ symbol }}
-            </h3>
-          </v-card-title>
-          <strong v-if="!product.unlimited">{{ $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel}) }}</strong>
-          <strong v-else>{{ $t('exoplatform.perkstore.label.unlimitedSupply') }}</strong>
-        </v-tooltip>
-        <v-tooltip v-if="!product.unlimited" bottom>
-          <v-progress-linear
-            slot="activator"
-            v-model="purchasedPercentage"
-            :open-delay="0"
-            color="red"
-            class="mb-0 mt-0" />
-          <strong>{{ $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel}) }}</strong>
-        </v-tooltip>
+        <v-card-title
+          class="text-truncate no-wrap pt-0 pb-0"
+          :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
+          v-on="on">
+          <h3 :title="product.title" class="mb-2 primary--text text-truncate">
+            <a
+              :href="productLink"
+              class="text-truncate"
+              @click="openProductDetail">
+              {{ product.title }}
+            </a>
+          </h3>
+          <v-spacer />
+          <h3 class="mb-2">
+            {{ product.price }} {{ symbol }}
+          </h3>
+        </v-card-title>
+        <v-progress-linear
+          v-if="!product.unlimited"
+          v-model="purchasedPercentage"
+          :open-delay="0"
+          :title="$t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
+          color="red"
+          height="8"
+          class="mb-0 mt-0"
+          v-on="on" />
         <v-card-text class="productCardFooter">
           <div
             :title="product.description"

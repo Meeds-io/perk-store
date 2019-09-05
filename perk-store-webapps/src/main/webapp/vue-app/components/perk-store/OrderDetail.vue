@@ -12,7 +12,7 @@
         </h4>
         <v-spacer />
         <template v-if="userData && userData.canEdit">
-          <div class="orderStatus small mt-1 mb-1 mr-2">{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</div>
+          <div class="orderStatus subtitle-1 mt-1 mb-1 mr-2">{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</div>
           <div
             v-if="order.remainingQuantityToProcess"
             :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
@@ -28,10 +28,10 @@
       <v-divider />
 
       <v-list dense>
-        <v-list-tile>
-          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-tile-content>
-          <v-list-tile-content class="align-end">
-            <div class="ellipsis orderDetailText">
+        <v-list-item>
+          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-item-content>
+          <v-list-item-content class="align-end">
+            <div class="text-truncate orderDetailText">
               <profile-link
                 v-if="order.sender"
                 :id="order.sender.id"
@@ -41,20 +41,20 @@
                 :display-name="order.sender.displayName"
                 display-avatar />
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.date') }}:</v-list-tile-content>
-          <v-list-tile-content class="align-end">
-            <div :title="createdDateLabel" class="orderCreatedDate ellipsis">
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.date') }}:</v-list-item-content>
+          <v-list-item-content class="align-end">
+            <div :title="createdDateLabel" class="orderCreatedDate text-truncate">
               {{ createdDateLabel }}
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.items') }}:</v-list-tile-content>
-          <v-list-tile-content class="align-end">
-            <div class="ellipsis orderDetailText">
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.items') }}:</v-list-item-content>
+          <v-list-item-content class="align-end">
+            <div class="text-truncate orderDetailText">
               {{ order.quantity }} x 
               <a
                 :href="productLink"
@@ -63,41 +63,14 @@
                 {{ productTitle }}
               </a>
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-content>
-            <v-dialog
-              v-if="isBuyer && order.transactionHash && order.remainingQuantityToProcess && (isPaid || isPartial)"
-              v-model="barcodeModal"
-              content-class="barcodeModal"
-              width="500px"
-              flat>
-              <v-btn
-                slot="activator"
-                class="blue-grey white--text ml-0 mr-0 mb-0 mr-0 mt-0"
-                small
-                @click="displayBarcode">
-                {{ $t('exoplatform.perkstore.label.payment') }}
-                <v-icon
-                  right
-                  dark
-                  size="20">
-                  fa-barcode
-                </v-icon>
-              </v-btn>
-              <v-card-title class="barcodeParent white pl-0 pr-0 pt-0" @click="barcodeModal = false">
-                <v-spacer />
-                <div class="barcodeContent">
-                  <svg :id="barcodeContainerId"></svg>
-                </div>
-                <v-spacer />
-              </v-card-title>
-            </v-dialog>
-            <span v-else>{{ $t('exoplatform.perkstore.label.payment') }}:</span>
-          </v-list-tile-content>
-          <v-list-tile-content class="align-end">
-            <div class="no-wrap ellipsis orderDetailText">
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content class="align-start">
+            <span>{{ $t('exoplatform.perkstore.label.payment') }}:</span>
+          </v-list-item-content>
+          <v-list-item-content class="align-end">
+            <div class="no-wrap text-truncate orderDetailText">
               <v-icon
                 v-if="order.transactionStatus === 'SUCCESS'"
                 :title="$t('exoplatform.perkstore.label.transactionSuceess')"
@@ -139,40 +112,53 @@
                 :type="order.receiver.type"
                 :display-name="order.receiver.displayName" />
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
   
       <v-divider />
   
       <v-list dense class="orderProcessingDetails">
-        <v-list-tile class="orderProcessingContent">
-          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-tile-content>
-          <v-list-tile-content class="align-end orderProcessingActions">
+        <v-list-item class="orderProcessingContent">
+          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-item-content>
+          <v-list-item-content class="align-end orderProcessingActions">
             <div>
               <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
                 <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
               </div>
               <template v-else-if="userData && userData.canEdit">
+                <button
+                  v-if="isOrdered"
+                  class="ignore-vuetify-classes btn orderProcessingBtn"
+                  @click="cancelOrder">
+                  {{ $t('exoplatform.perkstore.button.cancel') }}
+                </button>
+                <button
+                  v-if="canDeliverOrder"
+                  class="ignore-vuetify-classes btn btn-primary orderProcessingBtn ml-1"
+                  @click="$refs.deliverModal.openNoSelection()">
+                  {{ $t('exoplatform.perkstore.button.deliver') }}
+                </button>
+                <button
+                  v-if="canRefundOrder"
+                  class="ignore-vuetify-classes btn orderProcessingBtn ml-1"
+                  @click="$refs.refundModal.open()">
+                  {{ $t('exoplatform.perkstore.button.refund') }}
+                </button>
                 <deliver-modal
+                  v-if="canDeliverOrder"
                   ref="deliverModal"
-                  :visible-button="order.remainingQuantityToProcess && order.remainingQuantityToProcess > 0 && (isPaid || isPartial)"
                   :product="product"
                   :order="order" />
                 <refund-modal
-                  v-if="refunding || (order.remainingQuantityToProcess && (order.refundedQuantity == 0 || order.refundTransactionStatus === 'FAILED') && order.remainingQuantityToProcess > 0 && (isPaid || isPartial))"
+                  v-if="canRefundOrder"
+                  ref="refundModal"
                   :product="product"
                   :order="order"
                   :symbol="symbol"
                   @refunding="refunding = true"
                   @refunded="refunded"
                   @closed="refundDialogClosed" />
-                <button
-                  v-if="isOrdered"
-                  class="btn orderProcessingBtn"
-                  @click="cancelOrder">
-                  {{ $t('exoplatform.perkstore.button.cancel') }}
-                </button>
               </template>
               <div v-else-if="isCanceled">
                 {{ $t('exoplatform.perkstore.label.status.canceled') }}
@@ -181,10 +167,10 @@
                 <v-icon class="orange--text mr-1" size="16px">far fa-clock</v-icon>PENDING
               </div>
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile class="mt-1">
-          <v-list-tile-content class="orderDeliveredLabel">
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="mt-1">
+          <v-list-item-content class="align-start orderDeliveredLabel">
             <div class="no-wrap">
               {{ $t('exoplatform.perkstore.label.deliveredQuantity') }}:
               <v-progress-circular
@@ -199,15 +185,15 @@
                 </span>
               </v-progress-circular>
             </div>
-          </v-list-tile-content>
-          <v-list-tile-content v-if="order.deliveredDate" class="align-end">
-            <div :title="deliveredDateLabel" class="orderDeliveredDate ellipsis">
+          </v-list-item-content>
+          <v-list-item-content v-if="order.deliveredDate" class="align-end">
+            <div :title="deliveredDateLabel" class="orderDeliveredDate text-truncate">
               {{ deliveredDateLabel }}
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile v-if="order.refundedAmount && order.refundTransactionHash" class="mt-1">
-          <v-list-tile-content class="orderRefundedLabel">
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="order.refundedAmount && order.refundTransactionHash" class="mt-1">
+          <v-list-item-content class="align-start orderRefundedLabel">
             <div class="no-wrap">
               {{ $t('exoplatform.perkstore.label.refundedQuantity') }}:
               <v-icon
@@ -243,13 +229,13 @@
                 {{ order.refundedAmount }} {{ symbol }}
               </template>
             </div>
-          </v-list-tile-content>
-          <v-list-tile-content v-if="order.refundedDate" class="align-end">
-            <div :title="refundedDateLabel" class="orderRefundedDate ellipsis">
+          </v-list-item-content>
+          <v-list-item-content v-if="order.refundedDate" class="align-end">
+            <div :title="refundedDateLabel" class="orderRefundedDate text-truncate">
               {{ refundedDateLabel }}
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-card>
   </v-hover>
@@ -317,7 +303,7 @@ export default {
         if((this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName) || (this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName)) {
           return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.transactionHash}&principal=true`;
         } else if (this.order.receiver && this.order.receiver.type === 'space') {
-          return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.transactionHash}&principal=true`;
+          return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/SpaceWallet?hash=${this.order.transactionHash}&principal=true`;
         }
       }
       return null;
@@ -327,7 +313,7 @@ export default {
         if((this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
           return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.refundTransactionHash}&principal=true`;
         } else if (this.order.receiver && this.order.receiver.type === 'space') {
-          return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/EthereumSpaceWallet?hash=${this.order.refundTransactionHash}&principal=true`;
+          return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/SpaceWallet?hash=${this.order.refundTransactionHash}&principal=true`;
         }
       }
       return null;
@@ -386,6 +372,12 @@ export default {
     isBuyer() {
       return this.order && this.order.sender && this.order.sender.id === eXo.env.portal.userName;
     },
+    canDeliverOrder() {
+      return this.order.remainingQuantityToProcess && this.order.remainingQuantityToProcess > 0 && (this.isPaid || this.isPartial);
+    },
+    canRefundOrder() {
+      return this.refunding || (this.order.remainingQuantityToProcess && (this.order.refundedQuantity === 0 || this.order.refundTransactionStatus === 'FAILED') && this.order.remainingQuantityToProcess > 0 && (this.isPaid || this.isPartial));
+    },
   },
   methods: {
     openProductDetail(event) {
@@ -410,7 +402,6 @@ export default {
         status: 'CANCELED',
       }, 'STATUS')
         .then(order => {
-          this.$emit('changed', order);
           this.$forceUpdate();
         })
         .catch(e => {

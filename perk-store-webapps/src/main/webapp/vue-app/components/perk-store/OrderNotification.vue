@@ -11,7 +11,7 @@
       <template v-for="order in filteredOrders">
         <v-card-text
           :key="order.id"
-          class="ellipsis notificationContent"
+          class="text-truncate notificationContent"
           dark>
           {{ $t('exoplatform.perkstore.label.newOrderFrom', {0: order.id, 1: order.sender.displayName}) }}
         </v-card-text>

@@ -24,25 +24,24 @@
         dense
         class="pt-0">
         <template v-for="fileDetail in files">
-          <v-list-tile
+          <v-list-item
             :key="fileDetail.uploadId || fileDetail.id"
-            avatar
             ripple>
-            <v-list-tile-avatar>
+            <v-list-item-avatar>
               <img :src="fileDetail.src">
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title :title="fileDetail.name">{{ fileDetail.name }}</v-list-tile-title>
-              <v-list-tile-sub-title v-if="fileDetail.file && (fileDetail.progress < 100 || !fileDetail.finished)">
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title :title="fileDetail.name">{{ fileDetail.name }}</v-list-item-title>
+              <v-list-item-subtitle v-if="fileDetail.file && (fileDetail.progress < 100 || !fileDetail.finished)">
                 <v-progress-linear
                   v-model="fileDetail.progress"
                   :indeterminate="!fileDetail.finished && fileDetail.progress <= 1"
                   query />
-              </v-list-tile-sub-title>
-              <v-list-tile-sub-title v-else>{{ getFileSize(fileDetail.size) }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-list-tile-action-text class="pb-3">
+              </v-list-item-subtitle>
+              <v-list-item-subtitle v-else>{{ getFileSize(fileDetail.size) }}</v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-list-item-action-text class="pb-3">
                 <v-btn
                   v-if="fileDetail.progress === 100"
                   :title="$t('exoplatform.perkstore.button.delete')"
@@ -59,9 +58,9 @@
                   @click="abortUpload(fileDetail.file || fileDetail.id)">
                   <i class="uiIconTrash uiIconBlue"></i>
                 </v-btn>
-              </v-list-tile-action-text>
-            </v-list-tile-action>
-          </v-list-tile>
+              </v-list-item-action-text>
+            </v-list-item-action>
+          </v-list-item>
           <v-divider :key="fileDetail.uploadId || fileDetail.id" />
         </template>
       </v-list>

@@ -3,42 +3,36 @@
     v-model="dialog"
     content-class="uiPopup with-overflow"
     class="DeliveredProductModal"
-    width="260px"
+    width="300px"
     max-width="100vw"
-    persistent
-    @keydown.esc="dialog = false">
-    <button
-      v-if="visibleButton"
-      slot="activator"
-      class="btn btn-primary orderProcessingBtn ml-1">
-      {{ $t('exoplatform.perkstore.button.deliver') }}
-    </button>
+    eager
+    attach="#perkStoreDialogsParent">
     <v-card class="elevation-12">
-      <div class="popupHeader ClearFix">
+      <div class="ignore-vuetify-classes popupHeader ClearFix">
         <a
           class="uiIconClose pull-right"
           aria-hidden="true"
           @click="dialog = false"></a>
-        <span class="PopupTitle popupTitle ellipsis">
+        <span class="ignore-vuetify-classes PopupTitle popupTitle text-truncate">
           {{ $t('exoplatform.perkstore.title.deliverOrderModal', {0: order && order.id}) }}
         </span>
       </div>
-      <v-list>
-        <v-list-tile
+      <v-list flat class="pt-0 pb-0">
+        <v-list-item
           v-if="error && !loading"
           class="mb-3 mt-2"
           dense>
-          <v-list-tile-content>
+          <v-list-item-content>
             <div class="alert alert-error v-content">
               <i class="uiIconError"></i>
               {{ error }}
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-content>{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-tile-content>
-          <v-list-tile-content class="align-end">
-            <div class="ellipsis orderDetailText">
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-item-content>
+          <v-list-item-content class="align-end">
+            <div class="text-truncate orderDetailText">
               <profile-link
                 :id="order.sender.id"
                 :space-id="order.sender.spaceId"
@@ -47,28 +41,27 @@
                 :display-name="order.sender.displayName"
                 display-avatar />
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-content>
+        </v-list-item>
         <template v-if="order && order.remainingQuantityToProcess">
           <label class="align-center">
             {{ $t('exoplatform.perkstore.label.quantityWithMax', {0: order.remainingQuantityToProcess}) }}
           </label>
-          <v-list-tile dense>
-            <v-list-tile-content class="align-center">
+          <v-list-item dense>
+            <v-list-item-content class="align-center">
               <v-text-field
                 v-model.number="quantity"
                 :disabled="loading"
                 :rules="requiredNumberRule"
                 append-icon="fa-plus"
                 prepend-inner-icon="fa-minus"
-                class="text-xs-center orderDeliverQuantity"
+                class="text-center orderDeliverQuantity"
                 name="quantity"
-                readonly
                 required
                 @click:prepend-inner="decrementQuantity"
                 @click:append="incrementQuantity" />
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-content>
+          </v-list-item>
         </template>
       </v-list>
       <v-card-actions>
@@ -82,7 +75,7 @@
           {{ $t('exoplatform.perkstore.button.save') }}
         </v-btn>
         <button
-          class="btn"
+          class="ignore-vuetify-classes btn"
           :disabled="loading"
           @click="dialog = false">
           {{ $t('exoplatform.perkstore.button.close') }}
@@ -167,6 +160,9 @@ export default {
     },
   },
   methods: {
+    openNoSelection() {
+      this.dialog = true;
+    },
     open(productId, orderId, senderId) {
       if (!productId || !orderId || !senderId) {
         return;

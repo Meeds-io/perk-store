@@ -6,15 +6,16 @@
     width="300px"
     max-width="100vw"
     persistent
+    eager
     @keydown.esc="close">
     <v-card class="elevation-12">
-      <div class="popupHeader ClearFix">
+      <div class="ignore-vuetify-classes popupHeader ClearFix">
         <a
           class="uiIconClose pull-right"
           aria-hidden="true"
           @click="close">
         </a>
-        <span class="PopupTitle popupTitle ellipsis">
+        <span class="ignore-vuetify-classes PopupTitle popupTitle text-truncate">
           {{ $t('exoplatform.perkstore.title.buyProductModal', {0: product && product.title}) }}
         </span>
       </div>

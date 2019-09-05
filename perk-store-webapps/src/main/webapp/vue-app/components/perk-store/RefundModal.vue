@@ -1,27 +1,21 @@
 <template>
   <v-dialog
     v-model="dialog"
-    :disabled="!walletAddonInstalled"
     content-class="uiPopup with-overflow"
     class="refundProductModal"
     width="300px"
     max-width="100vw"
+    attach="#perkStoreDialogsParent"
     persistent
+    eager
     @keydown.esc="close">
-    <button
-      slot="activator"
-      :disabled="!walletAddonInstalled"
-      class="btn orderProcessingBtn ml-1">
-      {{ $t('exoplatform.perkstore.button.refund') }}
-    </button>
-
     <v-card class="elevation-12">
-      <div class="popupHeader ClearFix">
+      <div class="ignore-vuetify-classes popupHeader ClearFix">
         <a
           class="uiIconClose pull-right"
           aria-hidden="true"
           @click="close"></a>
-        <span class="PopupTitle popupTitle ellipsis">
+        <span class="ignore-vuetify-classes PopupTitle popupTitle text-truncate">
           {{ $t('exoplatform.perkstore.title.refundOrderModal', {0: order && order.id}) }}
         </span>
       </div>
@@ -43,7 +37,7 @@
             :rules="requiredNumberRule"
             append-icon="fa-plus"
             prepend-inner-icon="fa-minus"
-            class="text-xs-center"
+            class="text-center"
             name="quantity"
             required
             @click:prepend-inner="decrementQuantity"
@@ -56,7 +50,7 @@
             :placeholder="$t('exoplatform.perkstore.label.refundAmountPlaceholder')"
             :rules="requiredAmountRule"
             name="amount"
-            class="text-xs-center"
+            class="text-center"
             autofocus
             required />
           <v-text-field
@@ -85,7 +79,7 @@
           {{ $t('exoplatform.perkstore.button.refund') }}
         </v-btn>
         <button
-          class="btn"
+          class="ignore-vuetify-classes btn"
           :disabled="loading || walletLoading"
           @click="close">
           {{ $t('exoplatform.perkstore.button.close') }}
@@ -201,6 +195,9 @@ export default {
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
   },
   methods: {
+    open() {
+      this.dialog = true;
+    },
     close() {
       if(!this.walletLoading) {
         this.dialog = false;

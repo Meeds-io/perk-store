@@ -26,23 +26,23 @@
       dense
       flat>
       <template slot="no-data">
-        <v-list-tile>
-          <v-list-tile-title v-if="noDataLabel">
+        <v-list-item>
+          <v-list-item-title v-if="noDataLabel">
             {{ noDataLabel }}
-          </v-list-tile-title>
-          <v-list-tile-title v-else>
+          </v-list-item-title>
+          <v-list-item-title v-else>
             {{ $t('exoplatform.perkstore.label.autocompletePlaceholder') }}
-          </v-list-tile-title>
-        </v-list-tile>
+          </v-list-item-title>
+        </v-list-item>
       </template>
 
       <template slot="selection" slot-scope="{item, selected}">
         <v-chip
           v-if="item.avatar"
-          :selected="selected"
+          :input-value="selected"
           :title="addressLoad === 'error' ? $t('exoplatform.perkstore.warning.recipientDoesntHaveWallet') : ''"
           class="autocompleteSelectedItem"
-          @input="selectSingleItem(item)">
+          @update:active="selectSingleItem(item)">
           <v-progress-circular
             v-if="addressLoad === 'loading'"
             indeterminate
@@ -82,15 +82,14 @@
 
       <template slot="item" slot-scope="data">
         <template v-if="typeof data.item !== 'object'">
-          <v-list-tile-content v-text="data.item" />
+          <v-list-item-content v-text="data.item" />
         </template>
-        <v-list-tile-avatar
+        <v-list-item-avatar
           v-else-if="data.item.avatar"
-          tile
           size="20">
           <img :src="data.item.avatar">
-        </v-list-tile-avatar>
-        <v-list-tile-title v-text="data.item.name" />
+        </v-list-item-avatar>
+        <v-list-item-title v-text="data.item.name" />
       </template>
     </v-autocomplete>
   </v-flex>

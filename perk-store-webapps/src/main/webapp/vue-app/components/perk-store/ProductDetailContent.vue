@@ -1,28 +1,28 @@
 <template>
   <v-list
-    class="grey lighten-4 pt-0 pb-0"
+    class="grey lighten-4 pt-0 pb-0 productPreviewContent"
     dense
     light
     transparent>
-    <v-list-tile v-if="!product.enabled" light>
-      <v-list-tile-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-tile-content>
-    </v-list-tile>
-    <v-list-tile v-else-if="!product.unlimited && !available" class="soldOutBlock red">
-      <v-list-tile-content class="align-center"><strong class="white--text">Sold out</strong></v-list-tile-content>
-    </v-list-tile>
-    <v-list-tile v-else-if="maxOrdersReached">
-      <v-list-tile-content class="align-center">
+    <v-list-item v-if="!product.enabled" light>
+      <v-list-item-content class="align-center"><strong class="red--text">Disabled product</strong></v-list-item-content>
+    </v-list-item>
+    <v-list-item v-else-if="!product.unlimited && !available" class="soldOutBlock red">
+      <v-list-item-content class="align-center"><strong class="white--text">Sold out</strong></v-list-item-content>
+    </v-list-item>
+    <v-list-item v-else-if="maxOrdersReached">
+      <v-list-item-content class="align-center">
         <strong class="red--text">
           {{ $t('exoplatform.perkstore.label.maxOrdersIsReached', {0: product.maxOrdersPerUser, }) }}
         </strong>
-      </v-list-tile-content>
-    </v-list-tile>
+      </v-list-item-content>
+    </v-list-item>
     <v-expand-transition>
       <div v-if="hover">
-        <v-list-tile v-if="product.receiverMarchand">
-          <v-list-tile-content><strong>{{ $t('exoplatform.perkstore.label.offeredBy') }}:</strong></v-list-tile-content>
-          <v-list-tile-content class="productDetailText align-end">
-            <div class="ellipsis">
+        <v-list-item v-if="product.receiverMarchand">
+          <v-list-item-content><strong>{{ $t('exoplatform.perkstore.label.offeredBy') }}:</strong></v-list-item-content>
+          <v-list-item-content class="productDetailText align-end">
+            <div class="text-truncate">
               <profile-link
                 :id="product.receiverMarchand.id"
                 :space-id="product.receiverMarchand.spaceId"
@@ -31,40 +31,40 @@
                 :display-name="product.receiverMarchand.displayName"
                 display-avatar />
             </div>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile v-if="product.unlimited && userData.canEdit">
-          <v-list-tile-content><strong>{{ $t('exoplatform.perkstore.label.sold') }}:</strong></v-list-tile-content>
-          <v-list-tile-content class="align-end">{{ product.purchased }}</v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile v-else-if="!product.unlimited">
-          <v-list-tile-content><strong>{{ $t('exoplatform.perkstore.label.available') }}:</strong></v-list-tile-content>
-          <v-list-tile-content v-if="userData.canEdit" class="align-end">{{ available }} / {{ product.totalSupply }}</v-list-tile-content>
-          <v-list-tile-content v-else class="align-end">{{ available }}</v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="product.unlimited && userData.canEdit">
+          <v-list-item-content><strong>{{ $t('exoplatform.perkstore.label.sold') }}:</strong></v-list-item-content>
+          <v-list-item-content class="align-end">{{ product.purchased }}</v-list-item-content>
+        </v-list-item>
+        <v-list-item v-else-if="!product.unlimited">
+          <v-list-item-content><strong>{{ $t('exoplatform.perkstore.label.available') }}:</strong></v-list-item-content>
+          <v-list-item-content v-if="userData.canEdit" class="align-end">{{ available }} / {{ product.totalSupply }}</v-list-item-content>
+          <v-list-item-content v-else class="align-end">{{ available }}</v-list-item-content>
+        </v-list-item>
         <template v-if="!maxOrdersReached && product.maxOrdersPerUser">
           <v-divider />
-          <v-list-tile>
-            <v-list-tile-content>
+          <v-list-item>
+            <v-list-item-content>
               <strong>{{ $t('exoplatform.perkstore.label.myOrders') }}:</strong>
-            </v-list-tile-content>
+            </v-list-item-content>
             <template v-if="product.orderPeriodicity">
-              <v-list-tile-content v-if="userData.purchasedInCurrentPeriod" class="align-end">
+              <v-list-item-content v-if="userData.purchasedInCurrentPeriod" class="align-end">
                 {{ $t(`exoplatform.perkstore.label.ordersInThis${product.orderPeriodicity}`, {0: userData.purchasedInCurrentPeriod, 1: product.maxOrdersPerUser}) }}
-              </v-list-tile-content>
-              <v-list-tile-content v-else class="align-end">
+              </v-list-item-content>
+              <v-list-item-content v-else class="align-end">
                 {{ $t(`exoplatform.perkstore.label.ordersPerUserPer${product.orderPeriodicity}`, {0: product.maxOrdersPerUser}) }}
-              </v-list-tile-content>
+              </v-list-item-content>
             </template>
             <template v-else>
-              <v-list-tile-content v-if="userData.totalPurchased" class="align-end">
+              <v-list-item-content v-if="userData.totalPurchased" class="align-end">
                 {{ userData.totalPurchased }}/{{ product.maxOrdersPerUser }}
-              </v-list-tile-content>
-              <v-list-tile-content v-else class="align-end">
+              </v-list-item-content>
+              <v-list-item-content v-else class="align-end">
                 {{ $t('exoplatform.perkstore.label.ordersPerUser', {0: product.maxOrdersPerUser}) }}
-              </v-list-tile-content>
+              </v-list-item-content>
             </template>
-          </v-list-tile>
+          </v-list-item>
         </template>
       </div>
     </v-expand-transition>

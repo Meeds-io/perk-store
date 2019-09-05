@@ -17,15 +17,16 @@
       <v-toolbar-items>
         <v-btn
           :title="$t('exoplatform.perkstore.button.search')"
-          class="mr-1 primary"
-          icon
+          class="mr-1 btn btn-primary primary"
+          small
+          dark
           @click="$emit('search')">
-          <v-icon>search</v-icon>
+          <v-icon dark>search</v-icon>
         </v-btn>
         <v-btn
           :title="$t('exoplatform.perkstore.button.save')"
-          class="mr-1 secondary"
-          icon
+          class="mr-1 btn"
+          small
           @click="saveOrderFilter">
           <v-icon>fa-save</v-icon>
         </v-btn>

@@ -8,13 +8,13 @@
     persistent
     @keydown.esc="close">
     <v-card class="elevation-12">
-      <div class="popupHeader ClearFix">
+      <div class="ignore-vuetify-classes popupHeader ClearFix">
         <a
           class="uiIconClose pull-right"
           aria-hidden="true"
           @click="close">
         </a>
-        <span class="PopupTitle popupTitle ellipsis">
+        <span class="ignore-vuetify-classes PopupTitle popupTitle text-truncate">
           {{ $t('exoplatform.perkstore.title.settingsModal') }}
         </span>
       </div>
@@ -67,7 +67,7 @@
           {{ $t('exoplatform.perkstore.button.save') }}
         </v-btn>
         <button
-          class="btn"
+          class="ignore-vuetify-classes btn"
           :disabled="loading"
           @click="close">
           {{ $t('exoplatform.perkstore.button.close') }}

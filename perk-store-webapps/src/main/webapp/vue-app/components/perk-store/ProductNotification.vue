@@ -11,7 +11,7 @@
       <template v-for="product in filteredProducts">
         <v-card-text
           :key="product.id"
-          class="ellipsis notificationContent"
+          class="text-truncate notificationContent"
           dark>
           <template v-if="product.lastModifiedDate">
             {{ $t('exoplatform.perkstore.info.productModified', {0: product.title}) }}
@@ -29,7 +29,7 @@
         <v-spacer />
         <v-btn
           dark
-          flat
+          text
           :title="$t('exoplatform.perkstore.button.refresh')"
           @click="refreshList">
           {{ $t('exoplatform.perkstore.button.refresh') }}
@@ -40,7 +40,7 @@
     <v-btn
       :title="$t('exoplatform.perkstore.button.close')"
       dark
-      flat
+      text
       icon
       class="ml-0"
       @click="close">

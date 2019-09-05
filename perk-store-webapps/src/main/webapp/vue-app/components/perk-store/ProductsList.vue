@@ -37,7 +37,7 @@
           </template>
         </v-layout>
       </v-container>
-      <v-container v-else-if="!loading" class="text-xs-center">
+      <v-container v-else-if="!loading" class="text-center">
         <div class="alert alert-info" style="display: inline-block">
           <i class="uiIconInfo"></i>
           {{ $t('exoplatform.perkstore.info.noAvailableProduct') }}

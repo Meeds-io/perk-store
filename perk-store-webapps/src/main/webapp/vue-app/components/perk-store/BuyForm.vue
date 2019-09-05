@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card-text>
+    <v-card-text class="py-0">
       <div v-if="error && !loading" class="alert alert-error v-content">
         <i class="uiIconError"></i>
         {{ error }}
@@ -14,7 +14,7 @@
           :placeholder="$t('exoplatform.perkstore.label.quantityPlaceholder')"
           append-icon="fa-plus"
           prepend-inner-icon="fa-minus"
-          class="text-xs-center"
+          class="text-center"
           name="quantity"
           required
           @click:prepend-inner="decrementQuantity"
@@ -48,7 +48,7 @@
       </v-btn>
       <button
         v-if="!integratedForm"
-        class="btn"
+        class="ignore-vuetify-classes btn"
         :disabled="loading || walletLoading"
         @click="$emit('close')">
         {{ $t('exoplatform.perkstore.button.close') }}

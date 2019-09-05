@@ -29,7 +29,6 @@
             :label="$t('exoplatform.perkstore.label.productDescription')"
             :placeholder="$t('exoplatform.perkstore.label.productDescriptionPlaceholder')"
             name="ProductDescription"
-            class="mt-4"
             rows="5"
             flat
             counter />
@@ -129,12 +128,12 @@
       <v-card-actions>
         <v-spacer />
         <button
-          class="btn btn-primary mr-1"
+          class="ignore-vuetify-classes btn btn-primary mr-1"
           @click="saveProduct">
           {{ $t('exoplatform.perkstore.button.save') }}
         </button>
         <button
-          class="btn"
+          class="ignore-vuetify-classes btn"
           @click="$event.preventDefault();$event.stopPropagation();$emit('close')">
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>

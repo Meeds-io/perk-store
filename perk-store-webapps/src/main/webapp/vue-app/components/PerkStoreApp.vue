@@ -17,9 +17,9 @@
                 id="perkStoreAppMenuDisplayFilterButton"
                 :title="$t('exoplatform.perkstore.button.displayFilters')"
                 icon
-                flat
+                text
                 @click="showFilters">
-                <v-icon small color="primary">
+                <v-icon color="primary">
                   fa-filter
                 </v-icon>
               </v-btn>
@@ -52,9 +52,9 @@
                   id="perkStoreAppMenuOrdersListButton"
                   :title="$t('exoplatform.perkstore.button.showOrderList')"
                   icon
-                  flat
+                  text
                   @click="$refs.ordersList.closeBarcodeReader()">
-                  <v-icon small>
+                  <v-icon>
                     fa-list
                   </v-icon>
                 </v-btn>
@@ -65,9 +65,9 @@
                   id="perkStoreAppMenuBarcodeButton"
                   :title="$t('exoplatform.perkstore.button.switchToBarCodeReader')"
                   icon
-                  flat
+                  text
                   @click="$refs.ordersList.openBarcodeReader()">
-                  <v-icon small>
+                  <v-icon>
                     fa-barcode
                   </v-icon>
                 </v-btn>
@@ -75,9 +75,9 @@
                   id="perkStoreAppMenuDownloadButton"
                   :title="$t('exoplatform.perkstore.button.exportAsCSV')"
                   icon
-                  flat
+                  text
                   @click="exportOrders">
-                  <v-icon small>
+                  <v-icon>
                     fa-download
                   </v-icon>
                 </v-btn>
@@ -89,10 +89,10 @@
               :title="$t('exoplatform.perkstore.button.edit')"
               class="primary"
               icon
-              flat
+              text
               dark
               @click="editProduct(selectedProduct)">
-              <v-icon small>fa-pen</v-icon>
+              <v-icon>fa-pen</v-icon>
             </v-btn>
             <v-btn
               v-if="displayCloseIcon"
@@ -100,10 +100,10 @@
               :title="$t('exoplatform.perkstore.button.close')"
               class="secondary"
               icon
-              flat
+              text
               dark
               @click="closeDetails">
-              <v-icon small>
+              <v-icon>
                 close
               </v-icon>
             </v-btn>
@@ -115,42 +115,43 @@
                 type="text"
                 class="searchProductsInput mr-3">
               <v-menu offset-y>
-                <v-btn
-                  slot="activator"
-                  :title="$t('exoplatform.perkstore.label.productFilters')"
-                  icon
-                  small>
-                  <v-icon :color="productsFilterIconClass" small>
-                    fa-filter
-                  </v-icon>
-                </v-btn>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    :title="$t('exoplatform.perkstore.label.productFilters')"
+                    icon
+                    v-on="on">
+                    <v-icon :color="productsFilterIconClass">
+                      fa-filter
+                    </v-icon>
+                  </v-btn>
+                </template>
                 <v-list dense class="pt-0 pb-0">
-                  <v-list-tile @click="filterProducts">
-                    <v-list-tile-title>
+                  <v-list-item @click="filterProducts">
+                    <v-list-item-title>
                       <v-checkbox
                         v-model="productsFilters.disabled"
                         :label="$t('exoplatform.perkstore.label.productFiltersDisabledProducts')"
                         class="pt-0 pb-0" />
-                    </v-list-tile-title>
-                  </v-list-tile>
-                  <v-list-tile @click="filterProducts">
-                    <v-list-tile-title>
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="filterProducts">
+                    <v-list-item-title>
                       <v-checkbox
                         v-model="productsFilters.soldOut"
                         :label="$t('exoplatform.perkstore.label.productFiltersSoldOutProducts')"
                         class="pt-0 pb-0" />
-                    </v-list-tile-title>
-                  </v-list-tile>
+                    </v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
               <v-btn
                 id="perkStoreAppMenuRefreshButton"
                 :title="$t('exoplatform.perkstore.button.refreshStore')"
                 icon
-                flat
+                text
                 class="mr-0"
                 @click="init()">
-                <v-icon small>
+                <v-icon>
                   refresh
                 </v-icon>
               </v-btn>
@@ -158,10 +159,10 @@
                 id="perkStoreAppMyOrdersButton"
                 :title="$t('exoplatform.perkstore.button.myOrders')"
                 icon
-                flat
+                text
                 class="mr-0"
                 @click="displayMyOrdersList">
-                <v-icon small>
+                <v-icon>
                   fa-file-invoice-dollar
                 </v-icon>
               </v-btn>
@@ -170,10 +171,10 @@
                 id="perkStoreAppMenuAddButton"
                 :title="$t('exoplatform.perkstore.button.addProduct')"
                 icon
-                flat
+                text
                 class="mr-0"
                 @click="newProduct()">
-                <v-icon small>
+                <v-icon>
                   add
                 </v-icon>
               </v-btn>
@@ -183,7 +184,7 @@
                 :title="$t('exoplatform.perkstore.button.settings')"
                 class="mr-0 ml-0"
                 icon
-                flat
+                text
                 @click="displaySettingsModal">
                 <v-icon size="17px">
                   fa-cog
@@ -197,7 +198,7 @@
             color="transparent"
             flat>
             <v-spacer />
-            <v-flex class="text-xs-center">
+            <v-flex class="text-center">
               <div class="alert alert-warning">
                 <i class="uiIconWarning"></i>
                 {{ walletWarning }}
@@ -216,7 +217,7 @@
               color="primary"
               class="mb-2"
               indeterminate />
-            <v-flex v-else-if="error" class="text-xs-center">
+            <v-flex v-else-if="error" class="text-center">
               <div class="alert alert-error">
                 <i class="uiIconError"></i> {{ error }}
               </div>
@@ -277,6 +278,8 @@
             @refresh-list="addNewProductsToList" />
         </v-flex>
       </v-layout>
+      <div id="perkStoreDialogsParent">
+      </div>
     </main>
   </v-app>
 </template>
