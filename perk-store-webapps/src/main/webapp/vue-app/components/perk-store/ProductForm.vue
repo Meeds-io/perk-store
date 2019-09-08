@@ -11,17 +11,12 @@
             v-model="product.title"
             :rules="requiredRule"
             :maxlength="200"
-            :label="$t('exoplatform.perkstore.label.productTitle')"
+            :label="`${$t('exoplatform.perkstore.label.productTitle')} *`"
             :placeholder="$t('exoplatform.perkstore.label.productTitlePlaceholder')"
             name="ProductTitle"
             required
             autofocus
             counter />
-
-          <upload-input
-            :max-files="5"
-            :max-uploads-size-in-mb="5"
-            :files="product.imageFiles" />
 
           <v-textarea
             v-model="product.description"
@@ -36,7 +31,7 @@
           <auto-complete
             ref="receiverMarchandAutocomplete"
             :rules="requiredRule"
-            :input-label="$t('exoplatform.perkstore.label.marchandWallet')"
+            :input-label="`${$t('exoplatform.perkstore.label.marchandWallet')} *`"
             :input-placeholder="$t('exoplatform.perkstore.label.marchandWalletPlaceholder')"
             :no-data-label="$t('exoplatform.perkstore.label.marchandWalletSearchPlaceholder')"
             big-field
@@ -47,7 +42,7 @@
           <auto-complete
             ref="productMarchandsAutocomplete"
             :rules="requiredRule"
-            :input-label="$t('exoplatform.perkstore.label.productEditors')"
+            :input-label="`${$t('exoplatform.perkstore.label.productEditors')} *`"
             :input-placeholder="$t('exoplatform.perkstore.label.productEditorsPlaceholder')"
             :no-data-label="$t('exoplatform.perkstore.label.productEditorsSearchPlaceholder')"
             multiple
@@ -73,56 +68,77 @@
         <v-flex
           xs12
           md6>
+
+          <v-text-field
+            v-model.number="product.price"
+            :rules="requiredNumberRule"
+            :label="`${$t('exoplatform.perkstore.label.price')} *`"
+            :placeholder="$t('exoplatform.perkstore.label.pricePlaceholder')"
+            name="ProductPrice"
+            required />
+
+          <upload-input
+            :max-files="5"
+            :max-uploads-size-in-mb="5"
+            :files="product.imageFiles" />
+
           <v-checkbox
             v-model="product.enabled"
             :label="$t('exoplatform.perkstore.label.enabledProduct')" />
 
           <v-checkbox
-            v-model="product.unlimited"
-            :label="$t('exoplatform.perkstore.label.unlimitedSupply')" />
+            v-model="limitedSupply"
+            :label="$t('exoplatform.perkstore.label.limitedSupply')" />
+
+          <v-layout class="sub-text" row v-if="limitedSupply">
+            <v-flex xs5>
+              <label>{{ `${$t('exoplatform.perkstore.label.totalSupply')} *` }}</label>
+            </v-flex>
+            <v-flex xs7>
+              <v-text-field
+                v-model.number="product.totalSupply"
+                name="ProductTotalSupply"
+                :placeholder="$t('exoplatform.perkstore.label.totalSupplyPlaceholder')"
+                :rules="requiredRule"
+                single-line
+                required />
+            </v-flex>
+          </v-layout>
 
           <v-checkbox
-            v-model="product.allowFraction"
-            :label="$t('exoplatform.perkstore.label.fractionedQuantity')"
-            class="hidden" />
+            v-model="limitedOrdersPerUser"
+            :label="$t('exoplatform.perkstore.label.limitedOders')" />
 
-          <v-text-field
-            v-if="!product.unlimited"
-            v-model.number="product.totalSupply"
-            name="ProductTotalSupply"
-            :label="$t('exoplatform.perkstore.label.totalSupply')"
-            :placeholder="$t('exoplatform.perkstore.label.totalSupplyPlaceholder')" />
-
-          <v-text-field
-            v-model.number="product.price"
-            :rules="requiredNumberRule"
-            :label="$t('exoplatform.perkstore.label.price')"
-            :placeholder="$t('exoplatform.perkstore.label.pricePlaceholder')"
-            name="ProductPrice"
-            required />
-
-          <v-text-field
-            v-model.number="product.maxOrdersPerUser"
-            :rules="integerRule"
-            :label="$t(`exoplatform.perkstore.label.maxOrdersPerUser${orderPeriodicitySuffix}`)"
-            :placeholder="$t('exoplatform.perkstore.label.maxOrdersPerUserPlaceholder')"
-            name="ProductMaxOrdersPerUser" />
-
-          <v-combobox
-            v-model="product.orderPeriodicity"
-            :items="periodsValues"
-            :return-object="false"
-            :label="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicity')"
-            :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
-            hide-no-data
-            hide-selected
-            small-chips>
-            <!-- Without slot-scope, the template isn't displayed -->
-            <!-- eslint-disable-next-line vue/no-unused-vars -->
-            <template slot="selection" slot-scope="data">
-              {{ product && product.orderPeriodicity && $t(`exoplatform.perkstore.label.${product.orderPeriodicity.toLowerCase()}`) || '' }}
-            </template>
-          </v-combobox>
+          <v-layout class="sub-text" row v-if="limitedOrdersPerUser">
+            <v-flex xs5>
+              <label>{{ `${limitedOrdersPerUserLabel} *` }}</label>
+            </v-flex>
+            <v-flex xs7>
+              <v-text-field
+                v-model.number="product.maxOrdersPerUser"
+                :rules="requiredIntegerRule"
+                :placeholder="$t('exoplatform.perkstore.label.maxOrdersPerUserPlaceholder')"
+                name="ProductMaxOrdersPerUser"
+                single-line
+                required />
+            </v-flex>
+  
+            <v-flex xs5>
+              <label>{{ $t('exoplatform.perkstore.label.userOrdersLimitationPeriodicity') }}</label>
+            </v-flex>
+            <v-flex xs7>
+                <v-select
+                  v-if="limitedOrdersPerUser"
+                  v-model="product.orderPeriodicity"
+                  :items="periods"
+                  :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
+                  item-text="text"
+                  item-value="value"
+                  hide-no-data
+                  hide-selected
+                  small-chips />
+            </v-flex>
+          </v-layout>
         </v-flex>
       </v-layout>
       <v-card-actions>
@@ -165,10 +181,9 @@ export default {
   data() {
     return {
       productEditionId: null,
+      limitedOrdersPerUser: false,
+      limitedSupply: false,
       requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
-      integerRule: [
-        (v) => !v || this.isPositiveNumber(v, true) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
-      ],
       requiredIntegerRule: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
         (v) => !v || this.isPositiveNumber(v, true) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
@@ -178,68 +193,83 @@ export default {
         (v) => !v || this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
       ],
       maxTextAreaSize: 2000,
-      periodsValues: ['Week', 'Month', 'Quarter', 'Semester', 'Year'],
-      periods: [
-        {
-          text: 'Week',
-          value: 'WEEK'
-        },
-        {
-          text: 'Month',
-          value: 'MONTH'
-        },
-        {
-          text: 'Quarter',
-          value: 'QUARTER'
-        },
-        {
-          text: 'Semester',
-          value: 'SEMESTER'
-        },
-        {
-          text: 'Year',
-          value: 'YEAR'
-        }
-      ],
     };
   },
   computed: {
     orderPeriodicity() {
-      return (this.product && this.product.orderPeriodicity) || '';
+      return (this.product && this.product.orderPeriodicity !== 'none' && this.product.orderPeriodicity) || '';
     },
     orderPeriodicitySuffix() {
-      return (this.orderPeriodicity && `Per${this.orderPeriodicity}`) || '';
+      return (this.orderPeriodicity && `Per${this.capitalize(this.orderPeriodicity)}`) || '';
     },
+    limitedOrdersPerUserLabel() {
+      return this.$t(`exoplatform.perkstore.label.maxOrdersPerUser${this.orderPeriodicitySuffix}`);
+    },
+    periods() {
+      return [
+        {
+          text: this.$t('exoplatform.perkstore.label.noPeriodicity'),
+          value: 'none'
+        },
+        {
+          text: this.$t('exoplatform.perkstore.label.week'),
+          value: 'WEEK'
+        },
+        {
+          text: this.$t('exoplatform.perkstore.label.month'),
+          value: 'MONTH'
+        },
+        {
+          text: this.$t('exoplatform.perkstore.label.quarter'),
+          value: 'QUARTER'
+        },
+        {
+          text: this.$t('exoplatform.perkstore.label.semester'),
+          value: 'SEMESTER'
+        },
+        {
+          text: this.$t('exoplatform.perkstore.label.year'),
+          value: 'YEAR'
+        }
+      ];
+    }
   },
   watch: {
-    product(value, oldValue) {
-      if(value && value !== oldValue) {
-        this.productEditionId = `FileMultiUploadComponent${parseInt(Math.random() * this.MAX_RANDOM_NUMBER)}`;
-      }
-    }
+    limitedSupply() {
+      this.product.unlimited = !this.limitedSupply;
+    },
+    limitedOrdersPerUser() {
+      this.product.orderPeriodicity = this.product.orderPeriodicity || 'none';
+    },
   },
   methods: {
     init() {
-      if(this.product) {
-        if(this.product.receiverMarchand) {
-          this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
-        }
+      this.product = this.product || {};
 
-        if(!this.product.marchands && !this.product.creator) {
-          this.product.marchands = [{
-            type: 'user',
-            id: eXo.env.portal.userName,
-            disabled: true,
-          }];
-        }
-
-        if(this.product.marchands) {
-          this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
-        }
-        if(this.product.accessPermissions) {
-          this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
-        }
+      if(this.product.receiverMarchand) {
+        this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
       }
+
+      if(!this.product.marchands && !this.product.creator) {
+        this.product.marchands = [{
+          type: 'user',
+          id: eXo.env.portal.userName,
+          disabled: true,
+        }];
+      }
+
+      if(this.product.marchands) {
+        this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
+      }
+      if(this.product.accessPermissions) {
+        this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
+      }
+
+      this.productEditionId = `FileMultiUploadComponent${parseInt(Math.random() * this.MAX_RANDOM_NUMBER)}`;
+      this.limitedOrdersPerUser = this.product && this.product.maxOrdersPerUser && this.product.maxOrdersPerUser > 0;
+      this.product.orderPeriodicity = (this.product && this.product.orderPeriodicity) || 'none';
+      this.limitedSupply = this.product && this.product.id && !this.product.unlimited;
+      this.product.enabled = !this.product.id || this.product.enabled;
     },
     selectRecipient(identity) {
       this.product.receiverMarchand = identity;
@@ -267,6 +297,12 @@ export default {
     isPositiveNumber(value, isInt) {
       return value && !isNaN(value) && value > 0 && Number.isFinite(value) && (!isInt || Number.isSafeInteger(value));
     },
+    capitalize(label) {
+      if (!label) {
+        return '';
+      }
+      return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+    },
     saveProduct(event) {
       event.preventDefault();
       event.stopPropagation();
@@ -285,6 +321,16 @@ export default {
           delete imageFile.progress;
           delete imageFile.finished;
         });
+      }
+
+      this.product.unlimited = !this.limitedSupply;
+      if (this.product.unlimited) {
+        this.product.totalSupply = 0;
+      }
+
+      if (!this.limitedOrdersPerUser) {
+        this.product.maxOrdersPerUser = 0;
+        this.product.orderPeriodicity = 'none';
       }
 
       return saveProduct(this.product)

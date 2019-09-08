@@ -225,7 +225,6 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     productToStore.setAccessPermissions(product.getAccessPermissions());
     productToStore.setMarchands(product.getMarchands());
     productToStore.setEnabled(product.isEnabled());
-    productToStore.setUnlimited(product.isUnlimited());
     productToStore.setAllowFraction(product.isAllowFraction());
     productToStore.setPrice(product.getPrice());
     productToStore.setMaxOrdersPerUser(product.getMaxOrdersPerUser());
@@ -235,7 +234,13 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     } else {
       productToStore.setOrderPeriodicity(null);
     }
-    productToStore.setTotalSupply(product.getTotalSupply());
+
+    productToStore.setUnlimited(product.isUnlimited());
+    if (product.isUnlimited()) {
+      productToStore.setTotalSupply(0);
+    } else {
+      productToStore.setTotalSupply(product.getTotalSupply());
+    }
 
     product = perkStoreStorage.saveProduct(productToStore, username);
 
