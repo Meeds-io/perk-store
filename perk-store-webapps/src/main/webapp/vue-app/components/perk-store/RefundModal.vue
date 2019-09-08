@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import {saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
+import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 
 export default {
   props: {
@@ -152,7 +152,7 @@ export default {
       return this.order && this.$t('exoplatform.perkstore.label.quantityWithMax', {0: this.order.remainingQuantityToProcess});
     },
     maxAmount() {
-      return (this.order && this.product && this.order.remainingQuantityToProcess * this.product.price) || 0;
+      return (this.order && this.product && toFixed(this.order.remainingQuantityToProcess * this.product.price)) || 0;
     },
     productTitle() {
       return (this.product && this.product.title)  || (this.order.productTitle) || '';
@@ -161,7 +161,7 @@ export default {
   watch: {
     quantity() {
       if(this.quantity) {
-        this.amount = this.quantity * ((this.product && this.product.price) || 0);
+        this.amount = (this.product && this.product.price && this.quantity && toFixed(this.quantity * this.product.price)) || 0;
       } else {
         this.amount = 0;
       }
