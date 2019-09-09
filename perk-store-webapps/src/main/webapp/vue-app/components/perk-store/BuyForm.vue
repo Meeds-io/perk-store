@@ -9,7 +9,7 @@
         <v-text-field
           v-model.number="quantity"
           :disabled="loading"
-          :rules="requiredNumberRule"
+          :rules="quantityRules"
           :label="quantityInputLabel"
           :placeholder="$t('exoplatform.perkstore.label.quantityPlaceholder')"
           append-icon="fa-plus"
@@ -114,10 +114,11 @@ export default {
       walletPasswordShow: false,
       error: null,
       requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
-      requiredNumberRule: [
+      quantityRules: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
-        (v) => !v || this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
-        (v) => !v || !this.limitedQuantity || this.quantity <= this.maxQuantity || this.$t('exoplatform.perkstore.warning.maxQuantityReached', {0: this.maxQuantity}),
+        (v) => this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        (v) => !this.product || this.product.unlimited || this.quantity <= this.available || this.$t('exoplatform.perkstore.warning.quantityExceedsTotalSupply', {0: this.available}),
+        (v) => !this.product || !this.product.maxOrdersPerUser || this.quantity <= this.remainingOrdersForUser || this.$t('exoplatform.perkstore.warning.quantityExceedsAllowedOrders', {0: this.remainingOrdersForUser}),
       ],
     };
   },
@@ -135,6 +136,13 @@ export default {
       } else {
         return 0;
       }
+    },
+    remainingOrdersForUser() {
+      if(this.product && this.product.maxOrdersPerUser && this.product.userData) {
+        const totalPurchased = this.product.orderPeriodicity ? (this.product.userData.purchasedInCurrentPeriod || 0) : (this.product.userData.totalPurchased || 0);
+        return this.product.maxOrdersPerUser - totalPurchased;
+      }
+      return 0;
     },
     maxOrdersRemaining() {
       if(this.product && this.product.maxOrdersPerUser && this.product.userData) {
