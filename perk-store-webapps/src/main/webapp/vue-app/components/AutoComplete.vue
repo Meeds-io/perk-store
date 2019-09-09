@@ -24,7 +24,8 @@
       chips
       cache-items
       dense
-      flat>
+      flat
+      @update:search-input="searchTerm = $event">
       <template slot="no-data">
         <v-list-item>
           <v-list-item-title v-if="noDataLabel">
