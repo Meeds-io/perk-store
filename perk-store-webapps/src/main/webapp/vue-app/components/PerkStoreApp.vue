@@ -114,36 +114,39 @@
                 :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
                 type="text"
                 class="searchProductsInput mr-3">
-              <v-menu offset-y>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    :title="$t('exoplatform.perkstore.label.productFilters')"
-                    icon
-                    v-on="on">
-                    <v-icon :color="productsFilterIconClass">
-                      fa-filter
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <v-list dense class="pt-0 pb-0">
-                  <v-list-item @click="filterProducts">
-                    <v-list-item-title>
-                      <v-checkbox
-                        v-model="productsFilters.disabled"
-                        :label="$t('exoplatform.perkstore.label.productFiltersDisabledProducts')"
-                        class="pt-0 pb-0" />
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item @click="filterProducts">
-                    <v-list-item-title>
-                      <v-checkbox
-                        v-model="productsFilters.soldOut"
-                        :label="$t('exoplatform.perkstore.label.productFiltersSoldOutProducts')"
-                        class="pt-0 pb-0" />
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
+              <div id="productFilterMenu">
+                <v-menu
+                  v-model="productFilterMenu"
+                  attach="#productFilterMenu"
+                  offset-y>
+                  <v-list dense class="pt-0 pb-0">
+                    <v-list-item @click="filterProducts">
+                      <v-list-item-title>
+                        <v-checkbox
+                          v-model="productsFilters.disabled"
+                          :label="$t('exoplatform.perkstore.label.productFiltersDisabledProducts')"
+                          class="pt-0 pb-0" />
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="filterProducts">
+                      <v-list-item-title>
+                        <v-checkbox
+                          v-model="productsFilters.soldOut"
+                          :label="$t('exoplatform.perkstore.label.productFiltersSoldOutProducts')"
+                          class="pt-0 pb-0" />
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
+              <v-btn
+                :title="$t('exoplatform.perkstore.label.productFilters')"
+                icon
+                @click="productFilterMenu = true">
+                <v-icon :color="productsFilterIconClass">
+                  fa-filter
+                </v-icon>
+              </v-btn>
               <v-btn
                 id="perkStoreAppMenuRefreshButton"
                 :title="$t('exoplatform.perkstore.button.refreshStore')"
@@ -305,6 +308,7 @@ export default {
     ProductNotification,
   },
   data: () => ({
+    productFilterMenu: false,
     walletWarning: null,
     error: null,
     walletAddonInstalled: false,

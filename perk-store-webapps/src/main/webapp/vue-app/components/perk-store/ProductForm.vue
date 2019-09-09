@@ -68,7 +68,6 @@
         <v-flex
           xs12
           md6>
-
           <v-text-field
             v-model.number="product.price"
             :rules="requiredNumberRule"
@@ -90,7 +89,10 @@
             v-model="limitedSupply"
             :label="$t('exoplatform.perkstore.label.limitedSupply')" />
 
-          <v-layout class="sub-text" row v-if="limitedSupply">
+          <v-layout
+            v-if="limitedSupply"
+            class="sub-text"
+            row>
             <v-flex xs5>
               <label>{{ `${$t('exoplatform.perkstore.label.totalSupply')} *` }}</label>
             </v-flex>
@@ -109,7 +111,10 @@
             v-model="limitedOrdersPerUser"
             :label="$t('exoplatform.perkstore.label.limitedOders')" />
 
-          <v-layout class="sub-text" row v-if="limitedOrdersPerUser">
+          <v-layout
+            v-if="limitedOrdersPerUser"
+            class="sub-text"
+            row>
             <v-flex xs5>
               <label>{{ `${limitedOrdersPerUserLabel} *` }}</label>
             </v-flex>
@@ -127,16 +132,16 @@
               <label>{{ $t('exoplatform.perkstore.label.userOrdersLimitationPeriodicity') }}</label>
             </v-flex>
             <v-flex xs7>
-                <v-select
-                  v-if="limitedOrdersPerUser"
-                  v-model="product.orderPeriodicity"
-                  :items="periods"
-                  :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
-                  item-text="text"
-                  item-value="value"
-                  hide-no-data
-                  hide-selected
-                  small-chips />
+              <v-select
+                v-if="limitedOrdersPerUser"
+                v-model="product.orderPeriodicity"
+                :items="periods"
+                :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
+                item-text="text"
+                item-value="value"
+                hide-no-data
+                hide-selected
+                small-chips />
             </v-flex>
           </v-layout>
         </v-flex>

@@ -5,6 +5,18 @@
     margin-bottom: 0;
   }
 
+  .v-menu__content {
+    max-width: none !important;
+  }
+
+  #productFilterMenu {
+    position: relative;
+
+    .v-menu__content {
+      top: 25px !important;
+    }
+  }
+
   .sub-text {
     .v-input {
       padding-top: 0;
@@ -99,6 +111,8 @@
     max-width: ~"calc(100% - 24px)" !important;
     border: 1px solid #e1e8ee !important;
     border-radius: 0 0 3px 3px !important;
+    position: relative;
+    z-index: 10;
   }
   .contactAutoCompleteContent {
     top: 100% !important;
