@@ -1,5 +1,8 @@
 <template>
-  <v-form ref="form" class="productFormParent">
+  <v-form
+    ref="form"
+    v-model="valid"
+    class="productFormParent">
     <v-container grid-list-xl class="white">
       <v-layout
         wrap
@@ -136,6 +139,7 @@
                 v-if="limitedOrdersPerUser"
                 v-model="product.orderPeriodicity"
                 :items="periods"
+                :disabled="!product.maxOrdersPerUser || !limitedOrdersPerUser"
                 :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
                 item-text="text"
                 item-value="value"
@@ -149,6 +153,7 @@
       <v-card-actions>
         <v-spacer />
         <button
+          :disabled="!valid"
           class="ignore-vuetify-classes btn btn-primary mr-1"
           @click="saveProduct">
           {{ $t('exoplatform.perkstore.button.save') }}
@@ -185,6 +190,7 @@ export default {
   },
   data() {
     return {
+      valid: true,
       productEditionId: null,
       limitedOrdersPerUser: false,
       limitedSupply: false,
@@ -195,7 +201,8 @@ export default {
       ],
       requiredNumberRule: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
-        (v) => !v || this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        (v) => this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        (v) => this.isValidDecimals(v) || this.$t('exoplatform.perkstore.warning.invalidNumberOfDecimals', {0: 3}),
       ],
       maxTextAreaSize: 2000,
     };
@@ -307,6 +314,13 @@ export default {
         return '';
       }
       return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+    },
+    isValidDecimals(value) {
+      if(String(value).indexOf('.') >= 0) {
+        return String(value).split('.')[1].length <= 3;
+      } else {
+        return true;
+      }
     },
     saveProduct(event) {
       event.preventDefault();
