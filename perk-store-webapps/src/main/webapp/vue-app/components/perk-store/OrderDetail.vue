@@ -98,10 +98,10 @@
                 :title="$t('exoplatform.perkstore.label.openInWallet')"
                 rel="nofollow"
                 target="_blank">
-                {{ order.amount }} {{ symbol }}
+                {{ orderAmount }} {{ symbol }}
               </a>
               <template v-else>
-                {{ order.amount }} {{ symbol }}
+                {{ orderAmount }} {{ symbol }}
               </template>
               {{ $t('exoplatform.perkstore.label.sentTo') }}
               <profile-link
@@ -247,7 +247,7 @@ import RefundModal from './RefundModal.vue';
 import DeliverModal from './DeliverModal.vue';
 import ProfileLink from '../ProfileLink.vue';
 
-import {saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
+import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 import {formatDateTime} from '../../js/PerkStoreSettings.js';
 import {generateBarCode} from '../../js/QRCode.js';
 
@@ -295,6 +295,9 @@ export default {
     };
   },
   computed: {
+    orderAmount() {
+      return (this.order && this.order.amount && toFixed(this.order.amount)) || 0;
+    },
     barcodeContainerId() {
       return `barcode${this.order.id}`;
     },
