@@ -17,6 +17,7 @@
             :label="`${$t('exoplatform.perkstore.label.productTitle')} *`"
             :placeholder="$t('exoplatform.perkstore.label.productTitlePlaceholder')"
             name="ProductTitle"
+            validate-on-blur
             required
             autofocus
             counter />
@@ -77,6 +78,7 @@
             :label="`${$t('exoplatform.perkstore.label.price')} *`"
             :placeholder="$t('exoplatform.perkstore.label.pricePlaceholder')"
             name="ProductPrice"
+            validate-on-blur
             required />
 
           <upload-input
