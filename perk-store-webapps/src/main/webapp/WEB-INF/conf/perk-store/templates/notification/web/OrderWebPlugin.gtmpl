@@ -26,7 +26,7 @@
                // Is sender modification
                key += ".you";
              }
-             message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, orderDeliveredQuantity, orderLink);
+             message = _ctx.appRes(key, senderLink, modifierLink, orderQuantity, productTitle, symbol, orderRefundedAmount, orderRefundedQuantity, newOrderDeliveredQuantity, orderLink);
             }
           %>
           <%= message %>

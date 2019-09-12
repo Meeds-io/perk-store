@@ -8,8 +8,6 @@ export function initCometd(settings) {
 
   cCometd.subscribe(settings.userSettings.cometdChannel, null, (event) => {
     const data = event.data && JSON.parse(event.data);
-    console.warn('wsMessage', data);
-    // console.debug("WS msg received", data.eventId, data);
     document.dispatchEvent(new CustomEvent(data.eventId, {detail: data && data.message}));
   });
 }

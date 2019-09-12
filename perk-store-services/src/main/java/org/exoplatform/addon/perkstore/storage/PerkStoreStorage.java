@@ -94,9 +94,6 @@ public class PerkStoreStorage {
   }
 
   public double countOrderedQuantity(long productId) {
-    if (productId == 0) {
-      return 0;
-    }
     double countOrderedQuantities = orderDAO.countOrderedQuantityByProductId(productId);
     if (countOrderedQuantities > 0) {
       return countOrderedQuantities - orderDAO.countRefundedQuantityByProductId(productId)
@@ -108,9 +105,6 @@ public class PerkStoreStorage {
   }
 
   public long countRemainingOrdersToProcess(long id) {
-    if (id == 0) {
-      return 0;
-    }
     return orderDAO.countRemainingOrdersToProcessByProductId(id);
   }
 
@@ -122,9 +116,6 @@ public class PerkStoreStorage {
   }
 
   public double countUserTotalPurchasedQuantity(long productId, long identityId) {
-    if (productId == 0) {
-      return 0;
-    }
     double userTotalPurchasedQuantity = orderDAO.countUserTotalPurchasedQuantity(productId, identityId);
     if (userTotalPurchasedQuantity > 0) {
       return userTotalPurchasedQuantity - orderDAO.countUserTotalRefundedQuantity(productId, identityId)
@@ -135,9 +126,6 @@ public class PerkStoreStorage {
   }
 
   public double countUserPurchasedQuantityInPeriod(long productId, long identityId, long startDate, long endDate) {
-    if (productId == 0) {
-      return 0;
-    }
     double userTotalPurchasedQuantity = orderDAO.countUserPurchasedQuantityInPeriod(productId, identityId, startDate, endDate);
     if (userTotalPurchasedQuantity > 0) {
       return userTotalPurchasedQuantity - orderDAO.countUserRefundedQuantityInPeriod(productId, identityId, startDate, endDate)

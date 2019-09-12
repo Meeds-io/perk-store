@@ -89,7 +89,7 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
                (newProduct ? "'a new product'" : "'an existing product'"));
       return false;
     }
-    if (mandatoryOrder && getOrderParameter(ctx) == null) {
+    if (mandatoryOrder && getUpdatedOrderParameter(ctx) == null) {
       LOG.warn("Notification type '{}' isn't valid because the order wasn't found ", getId());
       return false;
     }
@@ -107,13 +107,15 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
   public NotificationInfo makeNotification(NotificationContext ctx) {
     GlobalSettings globalSettings = getSettingsParameter(ctx);
     Product product = getProductParameter(ctx);
-    ProductOrder order = getOrderParameter(ctx);
+    ProductOrder updatedOrder = getUpdatedOrderParameter(ctx);
+    ProductOrder oldOrder = getOldOrderParameter(ctx);
+    Profile modifier = getModifierParameter(ctx);
     ProductOrderModificationType orderModificationType = getOrderModificationTypeParameter(ctx);
 
     NotificationInfo notification = NotificationInfo.instance();
     notification.key(getId());
 
-    setNotificationRecipients(notification, globalSettings, product, order, newProduct, newOrder);
+    setNotificationRecipients(notification, globalSettings, product, updatedOrder, newProduct, newOrder, modifier);
     if (!notification.isSendAll() && (notification.getSendToUserIds() == null || notification.getSendToUserIds().isEmpty())) {
       LOG.debug("Notification type '{}' doesn't have a recipient", getId());
       return null;
@@ -122,10 +124,10 @@ public class PerkStoreNotificationPlugin extends BaseNotificationPlugin {
 
       // This is made to avoid a special case: a product is created and never
       // modified and it receives orders
-      boolean isNew = newProduct || (order != null && product.getLastModifier() == null);
+      boolean isNew = newProduct || (updatedOrder != null && product.getLastModifier() == null);
       storeProductParameters(notification, product, isNew);
-      if (order != null) {
-        storeOrderParameters(notification, order, orderModificationType, newOrder);
+      if (updatedOrder != null) {
+        storeOrderParameters(notification, oldOrder, updatedOrder, orderModificationType, newOrder, modifier);
       }
       return notification.end();
     }

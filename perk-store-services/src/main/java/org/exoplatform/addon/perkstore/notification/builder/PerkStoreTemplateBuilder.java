@@ -110,9 +110,6 @@ public class PerkStoreTemplateBuilder extends AbstractTemplateBuilder {
       throw new IllegalStateException("Product id is missing in notification");
     }
     long productId = Long.parseLong(productIdString);
-    if (productId == 0) {
-      throw new IllegalStateException("Product id is equal to 0 in notification");
-    }
     return getPerkStoreService().getProductById(productId);
   }
 
