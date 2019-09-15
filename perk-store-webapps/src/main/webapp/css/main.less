@@ -8,7 +8,6 @@
   .v-menu__content {
     max-width: none !important;
     z-index: 2000 !important;
-    top: 100% !important;
 
     &.v-autocomplete__content {
       left: 12px !important;
@@ -116,9 +115,26 @@
     margin: 12px 10px 0 !important;
     max-width: ~"calc(100% - 24px)" !important;
     border: 1px solid #e1e8ee !important;
-    border-radius: 0 0 3px 3px !important;
+    border-radius: 0 11px 11px 0!important;
     position: relative;
     z-index: 10;
+
+    .v-toolbar__title {
+      line-height: 37px;
+    }
+
+    .v-toolbar__content {
+      padding-right: 0;
+    }
+
+    .toolbarBalance {
+      line-height: 48px;
+      position: relative;
+      right: 0;
+      border-radius: 0 11px 11px 0;
+      padding: 0 10px;
+      margin-left: 16px;
+    }
   }
   .contactAutoCompleteContent {
     top: 100% !important;
@@ -180,6 +196,19 @@
     cursor: pointer;
   }
 
+  .toolbarButton {
+    min-width: auto;
+    width: auto;
+    height: 77%;
+    padding: 5px;
+    margin: 10px 0;
+    color: rgba(0,0,0,0.70);
+  }
+
+  #perkStoreAppMyOrdersButton {
+    background-color: rgba(87, 141, 201, 0.2) !important;
+  }
+
   .searchProductsInput {
     max-width: 200px;
     margin-top: 10px;
@@ -188,6 +217,10 @@
       background: white;
       padding: 0 7px;
       border-radius: 24px;
+
+      &:before, &:after {
+        border: 0 !important;
+      }
     }
 
     input {
@@ -206,6 +239,9 @@
   .productDetailContent {
     box-sizing: border-box;
 
+    .productDetailContentCard {
+      border-radius: 30px;
+    }
     .left-pa1 {
       right: 85px;
     }
@@ -252,17 +288,45 @@
     background: #fff;
   }
   .productCardFooter {
-    min-height: 210px;
-    height: 210px;
+    min-height: 50px;
+    height: 50px;
+    line-height: 42px;
     box-sizing: border-box;
     max-height: 210px;
     overflow: hidden;
+  }
+  .userPendingOrders {
+    width: auto;
+  }
+  .productImageBuyPage {
+    border-radius: 100%;
+    margin: auto;
+    border: 4px orange solid;
+  }
+  .productImageContainer {
+    max-width: ~"calc(100% - 80px)";
+    margin: 5px;
 
-    .productCardFooterDescription {
-      max-height: 190px;
-      overflow: hidden;
-      white-space: pre-line;
+    .productImage {
+      border-radius: 12px;
     }
+  }
+  .buyProductForm button {
+    width: 45%;
+  }
+  .buyFormFields {
+    max-width: 50%;
+  }
+  .addProductDescription {
+    max-width: 279px;
+    margin: auto;
+    color: rgba(0,0,0,0.54);
+  }
+  .addProductIcon {
+    margin: auto;
+    width: fit-content;
+    border-radius: 100%;
+    border: 3px solid orange;
   }
   .truncate8 {
     overflow: hidden;
@@ -320,10 +384,10 @@
 
   .orderDetailParent {
     .align-start {
-      max-width: 120px; 
+      max-width: 94px;
     }
     .align-end {
-      max-width: ~"calc(100% - 130px)";
+      max-width: ~"calc(100% - 100px)";
       text-align: end;
     }
     .orderStatus {
@@ -341,6 +405,7 @@
     }
     .orderDeliveredLabel {
       min-width: 110px;
+      max-width: 150px;
     }
     .orderRefundedLabel {
       min-width: 135px;
@@ -416,7 +481,8 @@
     padding: 20px 13px 20px 12px;
 
     .imageMiniPreviewParent {
-      display: inline-flex;
+      display: block;
+      margin: 5px;
   
       .imageMiniPreview {
         box-sizing: border-box;
@@ -424,8 +490,10 @@
         width: 70px;
         max-height: 70px;
         height: 70px;
-        padding: 10px;
-        margin-left: 10px;
+        padding: 0;
+        margin-left: 5px;
+        margin-bottom: 10px;
+        border-radius: 9px;
       }
     }
   
@@ -491,12 +559,13 @@
     }
   }
   .carousselParent, .carousselImage, .v-carousel__item, .v-window__container {
-    max-height: 250px;
+    max-height: 210px;
     height: 250px;
     max-width: 100%;
 
     .v-image__image {
       background-size: contain;
+      background-size: 100%;
     }
   }
   .productPreviewContent {
@@ -564,15 +633,6 @@
         height: 0;
         max-height: 0;
         border-width: thin 0 0;
-      }
-      .imageMiniPreviewParent .imageMiniPreview {
-        box-sizing: border-box;
-        max-width: 50px;
-        width: 50px;
-        max-height: 50px;
-        height: 50px;
-        padding: 10px;
-        margin-left: 10px;
       }
     }
   }

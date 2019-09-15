@@ -1,10 +1,5 @@
 <template>
   <v-card>
-    <v-card-actions class="pa-3">
-      <div class="headline">{{ product.title }}</div>
-      <v-spacer />
-    </v-card-actions>
-    <v-divider light />
     <v-layout wrap>
       <v-flex
         v-if="product.imageFiles && product.imageFiles.length"
@@ -20,13 +15,17 @@
           :symbol="symbol"
           :max-orders-reached="maxOrdersReached"
           :available="available"
-          hover />
-        <v-divider />
-        <v-card-title class="productDetailRightParent pt-0">
-          <div v-if="ordered" class="alert alert-success v-content">
+          integrated />
+        <v-card-title class="productDetailRightParent pt-0 px-0">
+          <div v-if="ordered" class="alert alert-success v-content subtitle-2 mx-10">
             <i class="uiIconSuccess"></i>
             {{ $t('exoplatform.perkstore.info.orderSubmittedSuccessfully') }}.
-            <a href="javascript:void(0);" @click="ordered = false">{{ $t('exoplatform.perkstore.button.close') }}</a>
+            <a
+              class="no-wrap"
+              href="javascript:void(0);"
+              @click="ordered = false">
+              {{ $t('exoplatform.perkstore.button.close') }}
+            </a>
           </div>
           <buy-form
             v-else
@@ -37,11 +36,10 @@
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled"
             opened
-            integrated-form
+            integrated
             class="productBuyForm"
+            @close="$emit('close')"
             @ordered="ordered =true; $emit('ordered', $event)" />
-          <v-divider vertical />
-          <div class="pl-2 pr-1 pt-2 pb-1 productDescription">{{ product.description }}</div>
         </v-card-title>
       </v-flex>
     </v-layout>

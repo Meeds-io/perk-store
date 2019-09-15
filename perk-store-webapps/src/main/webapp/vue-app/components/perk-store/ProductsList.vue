@@ -9,7 +9,8 @@
           :wallet-loading="walletLoading"
           :wallet-enabled="walletEnabled"
           class="border-box-sizing"
-          @ordered="$emit('ordered', $event)" />
+          @ordered="$emit('ordered', $event)"
+          @close="$emit('close')" />
       </v-flex>
     </v-expand-transition>
     <template v-if="!selectedProduct">
@@ -22,6 +23,7 @@
           row
           wrap
           class="productsListParent">
+          <create-product-button @create-product="$emit('create-product')" />
           <template v-for="product in products">
             <product-detail
               :key="product.id"
@@ -31,7 +33,7 @@
               :wallet-enabled="walletEnabled"
               class="border-box-sizing xs12 sm6 md4 lg3 xl2"
               @product-details="$emit('product-details', $event)"
-              @orders-list="$emit('orders-list', $event)"
+              @orders-list="displayOrdersList"
               @edit="$emit('edit', $event)"
               @buy="$emit('buy', $event)" />
           </template>
@@ -49,11 +51,13 @@
 
 <script>
 import ProductDetail from './ProductDetail.vue';
+import CreateProductButton from './CreateProductButton.vue';
 import ProductDetailMaximized from './ProductDetailMaximized.vue';
 
 export default {
   components: {
     ProductDetail,
+    CreateProductButton,
     ProductDetailMaximized,
   },
   props: {
@@ -99,6 +103,11 @@ export default {
         return false;
       },
     },
-  }
+  },
+  methods: {
+    displayOrdersList(productId, orderId, currentUserOrders) {
+      this.$emit('orders-list', productId, orderId, currentUserOrders);
+    }
+  },
 }
 </script>

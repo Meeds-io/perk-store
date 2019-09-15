@@ -121,7 +121,7 @@
       <v-list dense class="orderProcessingDetails">
         <v-list-item class="orderProcessingContent">
           <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-item-content>
-          <v-list-item-content class="align-end orderProcessingActions">
+          <v-list-item-content class="align-end orderProcessingActions no-wrap">
             <div>
               <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
                 <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}

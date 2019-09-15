@@ -303,7 +303,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     } else if (filter.getProductId() == 0) {
       // If no product is chosen, then display my orders, even for a manager
       orders = perkStoreStorage.getOrders(username, filter);
-    } else if (canEditProduct(filter.getProductId(), username)) {
+    } else if (!filter.isCurrentUserOrders() && canEditProduct(filter.getProductId(), username)) {
       // If manager, display all orders of the product
       orders = perkStoreStorage.getOrders(null, filter);
     } else {
@@ -890,10 +890,10 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       userData.setPurchasedInCurrentPeriod(purchasedQuantityInPeriod);
     }
 
+    userData.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(identityId, productId));
+
     if (userData.isCanEdit()) {
       product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(productId));
-    } else if (identityId > 0) {
-      product.setNotProcessedOrders(perkStoreStorage.countRemainingOrdersToProcess(identityId, productId));
     }
   }
 
