@@ -1,5 +1,5 @@
 <template>
-  <v-flex class="productDetailContent border-box-sizing xs12 sm6 md4 lg3 xl2 d-none d-sm-flex my-1 clickable" @click="$emit('create-product')">
+  <v-flex class="productDetailContent border-box-sizing clickable" @click="$emit('create-product')">
     <v-hover>
       <v-layout
         slot-scope="{ hover }"

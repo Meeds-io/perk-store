@@ -115,7 +115,6 @@
     margin: 12px 10px 0 !important;
     max-width: ~"calc(100% - 24px)" !important;
     border: 1px solid #e1e8ee !important;
-    border-radius: 0 11px 11px 0!important;
     position: relative;
     z-index: 10;
 
@@ -131,7 +130,6 @@
       line-height: 48px;
       position: relative;
       right: 0;
-      border-radius: 0 11px 11px 0;
       padding: 0 10px;
       margin-left: 16px;
     }
@@ -593,6 +591,16 @@
 
   .OrdersListParent {
     max-width: 100%;
+  }
+}
+
+@media (min-width : 960px) {
+  #PerkStoreApp {
+    .productDetailContent {
+      width: 20%;
+      max-width: 20%;
+      flex-basis: 20%;
+    }
   }
 }
 

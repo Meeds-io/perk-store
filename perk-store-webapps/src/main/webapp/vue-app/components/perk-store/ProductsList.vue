@@ -23,7 +23,10 @@
           row
           wrap
           class="productsListParent">
-          <create-product-button v-if="canAddProduct" @create-product="$emit('create-product')" />
+          <create-product-button
+            v-if="canAddProduct"
+            class="xs12 md3 d-none d-sm-flex my-1"
+            @create-product="$emit('create-product')" />
           <template v-for="product in products">
             <product-detail
               :key="product.id"
@@ -31,7 +34,7 @@
               :symbol="symbol"
               :wallet-loading="walletLoading"
               :wallet-enabled="walletEnabled"
-              class="border-box-sizing xs12 sm6 md4 lg3 xl2"
+              class="border-box-sizing xs12 md3"
               @product-details="$emit('product-details', $event)"
               @orders-list="displayOrdersList"
               @edit="$emit('edit', $event)"

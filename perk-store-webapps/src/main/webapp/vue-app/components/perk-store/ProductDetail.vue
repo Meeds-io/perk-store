@@ -98,7 +98,7 @@
             row
             grow
             class="no-wrap">
-            <v-flex class="text-truncate headline">
+            <v-flex class="text-truncate title">
               <span :title="product.title">{{ product.title }}</span>
             </v-flex>
             <v-flex class="primary--text headline text-right">
