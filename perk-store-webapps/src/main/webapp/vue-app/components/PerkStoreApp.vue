@@ -286,6 +286,7 @@
             :symbol="symbol"
             :loading="loading"
             :need-password="walletNeedPassword"
+            :can-add-product="userSettings.canAddProduct"
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled && walletAddonInstalled"
             @product-details="displayProduct"

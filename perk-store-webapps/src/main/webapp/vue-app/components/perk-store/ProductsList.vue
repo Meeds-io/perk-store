@@ -23,7 +23,7 @@
           row
           wrap
           class="productsListParent">
-          <create-product-button @create-product="$emit('create-product')" />
+          <create-product-button v-if="canAddProduct" @create-product="$emit('create-product')" />
           <template v-for="product in products">
             <product-detail
               :key="product.id"
@@ -98,6 +98,12 @@ export default {
       },
     },
     walletEnabled: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    canAddProduct: {
       type: Boolean,
       default: function() {
         return false;
