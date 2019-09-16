@@ -6,14 +6,14 @@
         :class="`elevation-${hover ? 9 : 3} productDetailContentCard text-center`"
         column>
         <v-flex>
-          <div class="addProductIcon mt-4">
-            <v-icon size="182" class="orange--text">mdi-plus</v-icon>
+          <div class="addProductButton mt-4">
+            <v-icon size="182" class="addProductIcon">mdi-plus</v-icon>
           </div>
         </v-flex>
-        <v-flex class="headline">
+        <v-flex class="addProductTitle headline">
           {{ $t('exoplatform.perkstore.title.createNewProduct') }}
         </v-flex>
-        <v-flex class="title wrap addProductDescription">
+        <v-flex class="wrap addProductDescription">
           {{ $t('exoplatform.perkstore.title.createNewProductDescription') }}
         </v-flex>
       </v-layout>
