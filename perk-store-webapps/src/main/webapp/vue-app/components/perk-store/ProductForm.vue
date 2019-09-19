@@ -162,7 +162,7 @@
         </button>
         <button
           class="ignore-vuetify-classes btn"
-          @click="$event.preventDefault();$event.stopPropagation();$emit('close')">
+          @click="$event.preventDefault();$event.stopPropagation();$emit('close', product)">
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
         <v-spacer />
@@ -355,9 +355,8 @@ export default {
       }
 
       return saveProduct(this.product)
-        .then(() => {
-          this.$emit('added', this.product);
-          this.$emit('close');
+        .then((product) => {
+          this.$emit('saved', product);
         })
         .catch(e => {
           console.debug("Error saving product", e);

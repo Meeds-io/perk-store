@@ -36,7 +36,9 @@ export function saveProduct(product) {
     },
     body: JSON.stringify(product),
   }).then((resp) => {
-    if (!resp || !resp.ok) {
+    if (resp && resp.ok) {
+      return resp.json();
+    } else {
       return throwErrorFromServerCall(resp, 'Error saving product');
     }
   });

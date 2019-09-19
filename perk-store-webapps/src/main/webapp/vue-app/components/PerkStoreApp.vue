@@ -275,9 +275,9 @@
             v-else-if="displayProductForm"
             ref="productForm"
             :product="selectedProduct"
-            @added="init()"
+            @saved="displayProduct"
             @error="error=$event"
-            @close="closeDetails" />
+            @close="displayProduct" />
           <products-list
             v-else-if="!error || (filteredProducts && filteredProducts.length)"
             ref="productsList"
@@ -569,8 +569,8 @@ export default {
         // It's may be about product id and not the object
         product = this.products.find(existingProduct => existingProduct.id === product);
       }
-      if(product) {
-        this.closeDetails();
+      this.closeDetails();
+      if (product) {
         this.displayProductDetails = true;
         this.selectedProduct = Object.assign({}, product);
       }
