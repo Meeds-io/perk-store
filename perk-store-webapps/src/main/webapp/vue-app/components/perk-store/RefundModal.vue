@@ -28,7 +28,7 @@
           <i class="uiIconError"></i>
           {{ error }}
         </div>
-        <v-form ref="form">
+        <v-form ref="form" v-model="validForm">
           <v-text-field
             v-model.number="quantity"
             :disabled="loading"
@@ -65,6 +65,7 @@
             name="walletPassword"
             counter
             required
+            validate-on-blur
             autocomplete="current-passord"
             @click:append="walletPasswordShow = !walletPasswordShow" />
         </v-form>
@@ -72,7 +73,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
-          :disabled="disableRefundButton"
+          :disabled="!validForm"
           :loading="loading || walletLoading"
           class="primary mr-1"
           @click="refundProduct">
@@ -120,6 +121,7 @@ export default {
       walletAddonInstalled: false,
       walletLoading: false,
       walletEnabled: false,
+      validForm: false,
       needPassword: false,
       loading: false,
       quantity: null,
@@ -136,15 +138,12 @@ export default {
       ],
       requiredAmountRule: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
-        (v) => this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        (v) => this.isPositiveNumber(v, false) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
         (v) => v <= this.maxAmount || this.$t('exoplatform.perkstore.warning.maxAmountReached', {0: this.maxAmount}),
       ],
     };
   },
   computed: {
-    disableRefundButton() {
-      return this.walletLoading || !this.walletEnabled || !this.isPositiveNumber(this.amount) || !this.isPositiveNumber(this.quantity, true) || this.quantity > this.order.remainingQuantityToProcess || this.amount > this.maxAmount;
-    },
     amountInputLabel() {
       return this.order && this.$t('exoplatform.perkstore.label.amountWithMax', {0: this.maxAmount});
     },
@@ -204,7 +203,8 @@ export default {
       }
     },
     isPositiveNumber(value, isInt) {
-      return this.product && value && !isNaN(value) && value > 0 && Number.isFinite(value) && (!isInt || this.product.allowFraction || Number.isSafeInteger(value));
+      value = Number(value);
+      return this.product && value && value > 0 && Number.isFinite(value) && (!isInt || Number.isSafeInteger(value));
     },
     walletInitialized(event) {
       this.walletLoading = false;

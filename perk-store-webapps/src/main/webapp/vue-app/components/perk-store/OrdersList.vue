@@ -126,6 +126,7 @@ export default {
       loading: false,
       barcodeReader: false,
       pageSize: 12,
+      currentUserOrders: false,
       limit: 12,
       limitReached: false,
       filterDescriptionLabels: [],
@@ -167,17 +168,18 @@ export default {
     document.addEventListener('exo.addons.perkstore.order.createOrModify', this.updateOrderFromWS);
   },
   methods: {
-    init() {
+    init(currentUserOrders) {
       this.$emit('error', null);
 
       this.computeDisplayFilterDetails();
       this.computeDescriptionLabels();
+      this.currentUserOrders = currentUserOrders;
 
       const initialOrdersLength = this.orders.length;
 
       this.loading = true;
 
-      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.limit)
+      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, this.limit)
         .then((orders) => {
           this.orders = orders || [];
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
@@ -296,7 +298,7 @@ export default {
       this.newAddedOrders.splice(0, this.newAddedOrders.length);
     },
     exportOrders() {
-      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, 0)
+      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, 0)
         .then((ordersToExport) => {
           if(!ordersToExport || !ordersToExport.length) {
             return;

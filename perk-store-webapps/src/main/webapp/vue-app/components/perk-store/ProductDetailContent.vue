@@ -1,5 +1,23 @@
 <template>
+  <v-flex v-if="integrated" class="ml-4">
+    <div class="headline mb-4">
+      {{ product.title }}
+      <div v-if="product.receiverMarchand" class="no-wrap caption">
+        {{ $t('exoplatform.perkstore.label.publishedBy') }}
+        <profile-link
+          :id="product.receiverMarchand.id"
+          :space-id="product.receiverMarchand.spaceId"
+          :url-id="product.receiverMarchand.spaceURLId"
+          :type="product.receiverMarchand.type"
+          :display-name="product.receiverMarchand.displayName" />
+      </div>
+    </div>
+    <div v-if="product.description" class="mb-4 mr-4">
+      {{ product.description }}
+    </div>
+  </v-flex>
   <v-list
+    v-else
     class="grey lighten-4 pt-0 pb-0 productPreviewContent"
     dense
     light
@@ -104,6 +122,12 @@ export default {
       },
     },
     hover: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    integrated: {
       type: Boolean,
       default: function() {
         return false;

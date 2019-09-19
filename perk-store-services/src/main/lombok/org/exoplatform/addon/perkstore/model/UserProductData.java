@@ -31,6 +31,9 @@ public class UserProductData extends PerkStoreCloneable implements Serializable 
   @Exclude
   private double  totalPurchased;
 
+  @Exclude
+  private double  notProcessedOrders;
+
   @SuppressWarnings("all")
   public Object clone() {
     return new UserProductData(username);

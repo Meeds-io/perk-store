@@ -11,7 +11,7 @@
             class="application-toolbar"
             flat
             dense>
-            <v-toolbar-title>
+            <v-toolbar-title class="d-flex mt-1">
               <v-btn
                 v-show="displayFilterButton"
                 id="perkStoreAppMenuDisplayFilterButton"
@@ -23,11 +23,11 @@
                   fa-filter
                 </v-icon>
               </v-btn>
-              {{ $t('exoplatform.perkstore.title.perkStoreApplication') }}
+              <span>{{ $t('exoplatform.perkstore.title.perkStoreApplication') }}</span>
               <template v-if="displayProductDetails && selectedProduct">
               </template>
               <template v-else-if="displayProductForm && selectedProduct && selectedProduct.id">
-                - <span class="primary--text">{{ selectedProduct.title }}</span>
+                - <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductForm && selectedProduct">
                 - {{ $t('exoplatform.perkstore.title.createNewProduct') }}
@@ -43,6 +43,16 @@
               </template>
               <template v-else-if="displayMyOrders">
                 - {{ $t('exoplatform.perkstore.title.myOrders') }}
+              </template>
+              <template v-else-if="perkStoreEnabled && products && products.length">
+                <v-text-field
+                  v-model="search"
+                  :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
+                  prepend-inner-icon="search"
+                  single-line
+                  hide-details
+                  autofocus
+                  class="searchProductsInput ml-3 mt-1 py-0 d-inline-flex" />
               </template>
             </v-toolbar-title>
             <v-spacer />
@@ -91,6 +101,8 @@
               icon
               text
               dark
+              fab
+              small
               @click="editProduct(selectedProduct)">
               <v-icon>fa-pen</v-icon>
             </v-btn>
@@ -98,22 +110,18 @@
               v-if="displayCloseIcon"
               id="perkStoreAppMenuCloseButton"
               :title="$t('exoplatform.perkstore.button.close')"
-              class="secondary"
+              class="secondary ml-3 mr-3"
               icon
               text
               dark
+              fab
+              small
               @click="closeDetails">
               <v-icon>
                 close
               </v-icon>
             </v-btn>
             <template v-else-if="perkStoreEnabled && !barcodeReader">
-              <input
-                v-if="products && products.length"
-                v-model="search"
-                :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
-                type="text"
-                class="searchProductsInput mr-3">
               <div id="productFilterMenu">
                 <v-menu
                   v-model="productFilterMenu"
@@ -136,63 +144,84 @@
                           class="pt-0 pb-0" />
                       </v-list-item-title>
                     </v-list-item>
+                    <v-list-item @click="filterProducts">
+                      <v-list-item-title>
+                        <v-checkbox
+                          v-model="productsFilters.mine"
+                          :label="$t('exoplatform.perkstore.label.createdByMe')"
+                          class="pt-0 pb-0" />
+                      </v-list-item-title>
+                    </v-list-item>
                   </v-list>
                 </v-menu>
               </div>
               <v-btn
                 :title="$t('exoplatform.perkstore.label.productFilters')"
-                icon
+                text
+                small
+                class="toolbarButton"
                 @click="productFilterMenu = true">
-                <v-icon :color="productsFilterIconClass">
+                <v-icon
+                  :color="productsFilterIconClass"
+                  class="mr-2"
+                  size="17">
                   fa-filter
                 </v-icon>
+                <span class="d-sm-inline-flex d-none">
+                  {{ $t('exoplatform.perkstore.label.productFilters') }}
+                </span>
               </v-btn>
-              <v-btn
-                id="perkStoreAppMenuRefreshButton"
-                :title="$t('exoplatform.perkstore.button.refreshStore')"
-                icon
-                text
-                class="mr-0"
-                @click="init()">
-                <v-icon>
-                  refresh
-                </v-icon>
-              </v-btn>
+              <span class="d-sm-inline-flex d-none ml-4"></span>
               <v-btn
                 id="perkStoreAppMyOrdersButton"
                 :title="$t('exoplatform.perkstore.button.myOrders')"
-                icon
                 text
-                class="mr-0"
+                small
+                class="toolbarButton"
                 @click="displayMyOrdersList">
-                <v-icon>
+                <v-icon class="mr-2" size="17">
                   fa-file-invoice-dollar
                 </v-icon>
+                <span class="d-sm-inline-flex d-none">
+                  {{ $t('exoplatform.perkstore.button.myOrders') }}
+                </span>
               </v-btn>
               <v-btn
                 v-if="userSettings.canAddProduct"
                 id="perkStoreAppMenuAddButton"
                 :title="$t('exoplatform.perkstore.button.addProduct')"
-                icon
                 text
-                class="mr-0"
+                small
+                class="toolbarButton d-md-none"
                 @click="newProduct()">
-                <v-icon>
+                <v-icon size="17">
                   add
                 </v-icon>
               </v-btn>
-              <v-btn
-                v-if="userSettings.administrator"
-                id="perkStoreAppMenuSettingsButton"
-                :title="$t('exoplatform.perkstore.button.settings')"
-                class="mr-0 ml-0"
-                icon
-                text
-                @click="displaySettingsModal">
-                <v-icon size="17px">
-                  fa-cog
-                </v-icon>
-              </v-btn>
+              <template v-if="userSettings.canAddProduct">
+                <span class="d-sm-inline-flex d-none ml-3"></span>
+                <v-btn
+                  v-if="userSettings.administrator"
+                  id="perkStoreAppMenuSettingsButton"
+                  :title="$t('exoplatform.perkstore.button.settings')"
+                  class="toolbarButton"
+                  text
+                  small
+                  @click="displaySettingsModal">
+                  <v-icon class="mr-2">
+                    fa-cog
+                  </v-icon>
+                  <span class="d-sm-inline-flex d-none">
+                    {{ $t('exoplatform.perkstore.button.settings') }}
+                  </span>
+                </v-btn>
+              </template>
+              <div class="primary dark toolbarBalance no-wrap">
+                <span class="d-none d-sm-inline-block">
+                  {{ $t('exoplatform.perkstore.label.balance') }}:
+                </span>
+                {{ balance }} {{ symbol }}
+              </div>
             </template>
           </v-toolbar>
 
@@ -246,9 +275,9 @@
             v-else-if="displayProductForm"
             ref="productForm"
             :product="selectedProduct"
-            @added="init()"
+            @saved="displayProduct"
             @error="error=$event"
-            @close="closeDetails" />
+            @close="displayProduct" />
           <products-list
             v-else-if="!error || (filteredProducts && filteredProducts.length)"
             ref="productsList"
@@ -257,12 +286,15 @@
             :symbol="symbol"
             :loading="loading"
             :need-password="walletNeedPassword"
+            :can-add-product="userSettings.canAddProduct"
             :wallet-loading="walletLoading"
             :wallet-enabled="walletEnabled && walletAddonInstalled"
             @product-details="displayProduct"
+            @create-product="newProduct"
             @orders-list="displayProductOrdersList"
             @edit="editProduct"
-            @buy="buyProduct" />
+            @buy="buyProduct"
+            @close="closeDetails" />
 
           <buy-modal
             ref="buyModal"
@@ -296,6 +328,7 @@ import BuyModal from './perk-store/BuyModal.vue';
 import ProductNotification from './perk-store/ProductNotification.vue';
 
 import {initSettings, getOrderFilter, getProductFilter, storeProductFilter} from '../js/PerkStoreSettings.js';
+import {toFixed} from '../js/PerkStoreProductOrder.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 
 export default {
@@ -325,10 +358,11 @@ export default {
     displayProductForm: false,
     displayProductOrders: false,
     search: null,
+    wallet: null,
+    contractDetail: null,
     ordersFilter: {},
     productsFilters: {},
     settings: {},
-    symbol: null,
     userSettings: {},
     createOrUpdateOrderEvent: 'exo.addons.perkstore.order.createOrModify',
     createOrUpdateProductEvent: 'exo.addons.perkstore.product.createOrModify',
@@ -336,6 +370,12 @@ export default {
     modifiedProducts: [],
   }),
   computed: {
+    balance() {
+      return (this.wallet && this.wallet.tokenBalance && toFixed(this.wallet.tokenBalance)) || 0;
+    },
+    symbol() {
+      return this.contractDetail && this.contractDetail.symbol;
+    },
     productsFilterIconClass() {
       return (!this.productsFilters || !this.productsFilters.disabled || !this.productsFilters.soldOut) ? 'primary' : '';
     },
@@ -442,7 +482,7 @@ export default {
     refreshProductList(selectedProductId, selectedOrderId) {
       return getProductList()
         .then((products) => {
-          this.products = (products && products.filter(product => (product.enabled || this.productsFilters.disabled) && (product.unlimited || product.totalSupply > product.purchased  || this.productsFilters.soldOut))) || [];
+          this.products = (products && products.filter(product => (!this.productsFilters.mine || (product.creator && product.creator.type === 'user' && product.creator.id === eXo.env.portal.userName)) && (product.enabled || this.productsFilters.disabled) && (product.unlimited || product.totalSupply > product.purchased  || this.productsFilters.soldOut))) || [];
 
           if (this.products.length && selectedProductId) {
             const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
@@ -467,7 +507,8 @@ export default {
       }
     },
     walletSettingsLoaded(event) {
-      this.symbol = event && event.detail && event.detail.contractDetail && event.detail.contractDetail.symbol;
+      this.contractDetail = event && event.detail && event.detail.contractDetail;
+      this.wallet = event && event.detail && event.detail.wallet;
     },
     walletInitialized(event) {
       this.walletLoading = false;
@@ -489,7 +530,7 @@ export default {
       this.selectedProduct = null;
       this.selectedOrderId = 0;
     },
-    displayProductOrdersList(product, orderId) {
+    displayProductOrdersList(product, orderId, currentUserOrders) {
       if (!product) {
         return;
       }
@@ -497,7 +538,7 @@ export default {
       this.selectedProduct = product;
       this.selectedOrderId = orderId;
       this.displayProductOrders = true;
-      return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init());
+      return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init(currentUserOrders));
     },
     exportOrders() {
       return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.exportOrders());
@@ -528,8 +569,8 @@ export default {
         // It's may be about product id and not the object
         product = this.products.find(existingProduct => existingProduct.id === product);
       }
-      if(product) {
-        this.closeDetails();
+      this.closeDetails();
+      if (product) {
         this.displayProductDetails = true;
         this.selectedProduct = Object.assign({}, product);
       }

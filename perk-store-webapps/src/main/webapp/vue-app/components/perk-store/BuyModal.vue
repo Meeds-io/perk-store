@@ -3,7 +3,7 @@
     v-model="dialog"
     content-class="uiPopup with-overflow"
     class="buyProductModal"
-    width="300px"
+    width="500px"
     max-width="100vw"
     persistent
     eager

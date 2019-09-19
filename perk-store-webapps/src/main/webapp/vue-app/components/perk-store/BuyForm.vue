@@ -1,61 +1,109 @@
 <template>
-  <div>
-    <v-card-text class="py-0">
-      <div v-if="error && !loading" class="alert alert-error v-content">
+  <v-layout
+    column
+    grow
+    class="buyProductForm">
+    <v-flex v-if="error && !loading" xs12>
+      <div class="alert alert-error v-content">
         <i class="uiIconError"></i>
         {{ error }}
       </div>
-      <v-form ref="form">
-        <v-text-field
-          v-model.number="quantity"
-          :disabled="loading"
-          :rules="quantityRules"
-          :label="quantityInputLabel"
-          :placeholder="$t('exoplatform.perkstore.label.quantityPlaceholder')"
-          append-icon="fa-plus"
-          prepend-inner-icon="fa-minus"
-          class="text-center"
-          name="quantity"
-          required
-          @click:prepend-inner="decrementQuantity"
-          @click:append="incrementQuantity" />
-        <div>{{ $t('exoplatform.perkstore.label.purchasePrice', {0: amountLabel}) }} </div>
-        <v-text-field
-          v-if="needPassword && opened"
-          v-model="walletPassword"
-          :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
-          :type="walletPasswordShow ? 'text' : 'password'"
-          :disabled="loading"
-          :rules="requiredRule"
-          :label="$t('exoplatform.perkstore.label.walletPassword')"
-          :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
-          name="walletPassword"
-          autocomplete="current-passord"
-          counter
-          required
-          autofocus
-          @click:append="walletPasswordShow = !walletPasswordShow" />
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn
-        :disabled="disablePayButton"
-        :loading="loading || walletLoading"
-        class="primary mr-1"
-        @click="payProduct">
-        {{ $t('exoplatform.perkstore.button.buy') }}
-      </v-btn>
-      <button
-        v-if="!integratedForm"
-        class="ignore-vuetify-classes btn"
-        :disabled="loading || walletLoading"
-        @click="$emit('close')">
-        {{ $t('exoplatform.perkstore.button.close') }}
-      </button>
-      <v-spacer />
-    </v-card-actions>
-  </div>
+    </v-flex>
+    <v-flex xs12>
+      <v-layout
+        row
+        grow
+        class="no-wrap mx-0">
+        <v-flex
+          v-if="productImage && !integrated"
+          class="d-sm-flex d-none"
+          sm5>
+          <v-img
+            :src="productImage"
+            aspect-ratio="1"
+            max-width="200px"
+            max-height="100%"
+            class="productImageBuyPage" />
+        </v-flex>
+        <v-flex
+          :sm7="!integrated"
+          xs12>
+          <v-layout column grow>
+            <v-card-text class="py-0">
+              <v-form ref="form">
+                <v-divider v-if="integrated" />
+                <div class="my-3 primary--text">{{ $t('exoplatform.perkstore.label.unitPrice') }}: {{ productPrice }} {{ symbol }}</div>
+                <v-divider />
+                <template v-if="product && !product.unlimited">
+                  <div class="my-3">{{ $t('exoplatform.perkstore.label.availableQuantity') }}: {{ maxOrdersRemaining }}</div>
+                  <v-divider />
+                </template>
+                <template v-if="integrated">
+                  <div class="my-3">
+                    {{ $t('exoplatform.perkstore.label.yourOrders') }}: {{ purchasedOrders }}
+                    <template v-if="maxOrdersPerUser">
+                      / {{ maxOrdersPerUser }}
+                    </template>
+                  </div>
+                  <v-divider />
+                </template>
+                <div class="my-3">{{ $t('exoplatform.perkstore.label.purchasePrice', {0: amountLabel}) }}</div>
+                <div class="buyFormFields">
+                  <v-text-field
+                    v-model.number="quantity"
+                    :disabled="loading"
+                    :rules="quantityRules"
+                    :label="quantityInputLabel"
+                    :placeholder="$t('exoplatform.perkstore.label.quantityPlaceholder')"
+                    append-icon="fa-plus"
+                    prepend-inner-icon="fa-minus"
+                    class="text-center"
+                    name="quantity"
+                    required
+                    @click:prepend-inner="decrementQuantity"
+                    @click:append="incrementQuantity" />
+                  <v-text-field
+                    v-if="needPassword && opened"
+                    v-model="walletPassword"
+                    :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
+                    :type="walletPasswordShow ? 'text' : 'password'"
+                    :disabled="loading"
+                    :rules="requiredRule"
+                    :label="$t('exoplatform.perkstore.label.walletPassword')"
+                    :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
+                    name="walletPassword"
+                    autocomplete="current-passord"
+                    counter
+                    required
+                    autofocus
+                    @click:append="walletPasswordShow = !walletPasswordShow" />
+                </div>
+              </v-form>
+            </v-card-text>
+          </v-layout>
+        </v-flex>
+      </v-layout>
+    </v-flex>
+    <v-flex class="offset-sm-5 sm7 xs12 mt-3">
+      <v-card-actions>
+        <v-btn
+          :disabled="disablePayButton"
+          :loading="loading || walletLoading"
+          class="primary mr-1"
+          large
+          @click="payProduct">
+          {{ $t('exoplatform.perkstore.button.buy') }}
+        </v-btn>
+        <v-spacer />
+        <button
+          class="ignore-vuetify-classes btn"
+          :disabled="loading || walletLoading"
+          @click="$emit('close')">
+          {{ $t('exoplatform.perkstore.button.cancel') }}
+        </button>
+      </v-card-actions>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -81,7 +129,7 @@ export default {
         return false;
       },
     },
-    integratedForm: {
+    integrated: {
       type: Boolean,
       default: function() {
         return false;
@@ -123,6 +171,9 @@ export default {
     };
   },
   computed: {
+    productImage() {
+      return this.product && this.product.imageFiles && this.product.imageFiles[0] && this.product.imageFiles[0].src;
+    },
     disablePayButton() {
       return !this.product || !this.walletEnabled || this.walletLoading || !this.quantity || (this.needPassword && !this.walletPassword) || (this.maxOrdersReached && !this.product.unlimited) || !this.isPositiveNumber(this.quantity) || (!this.product.unlimited && this.quantity > this.maxQuantity);
     },
@@ -137,12 +188,20 @@ export default {
         return 0;
       }
     },
+    maxOrdersPerUser() {
+      return this.product && this.product.maxOrdersPerUser;
+    },
+    purchasedOrders() {
+      return this.product && this.product.userData && (this.product.orderPeriodicity ? (this.product.userData.purchasedInCurrentPeriod || 0) : (this.product.userData.totalPurchased || 0));
+    },
     remainingOrdersForUser() {
-      if(this.product && this.product.maxOrdersPerUser && this.product.userData) {
-        const totalPurchased = this.product.orderPeriodicity ? (this.product.userData.purchasedInCurrentPeriod || 0) : (this.product.userData.totalPurchased || 0);
-        return this.product.maxOrdersPerUser - totalPurchased;
+      if(this.maxOrdersPerUser && this.product.userData) {
+        return this.maxOrdersPerUser - this.purchasedOrders;
       }
       return 0;
+    },
+    productPrice() {
+      return this.product && this.product.price;
     },
     maxOrdersRemaining() {
       if(this.product && this.product.maxOrdersPerUser && this.product.userData) {

@@ -3,15 +3,15 @@
     <v-hover>
       <v-card
         slot-scope="{ hover }"
-        :class="`elevation-${hover ? 9 : 3}`"
-        color="grey lighten-4"
+        :class="`elevation-${hover ? 9 : 3} productDetailContentCard`"
         max-width="600">
         <v-carousel
           :show-arrows="false"
           :interval="3000"
           hide-delimiters
           cycle
-          class="carousselParent">
+          class="carousselParent clickable"
+          @click="openProductDetail">
           <template v-if="product.imageFiles">
             <v-carousel-item
               v-for="(imageFile,i) in product.imageFiles"
@@ -24,7 +24,8 @@
             <div
               v-if="hover || !product || !product.enabled || !product.imageFiles || !product.imageFiles.length || !available || maxOrdersReached"
               class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
-              style="height: 100%;">
+              style="height: 100%;"
+              @click="openProductDetail">
               <product-detail-content
                 :product="product"
                 :symbol="symbol"
@@ -35,46 +36,46 @@
           </v-expand-transition>
         </v-carousel>
         <v-card-text
-          :class="product.unlimited && 'mt-2'"
           class="pt-2"
           style="position: relative;">
-          <v-btn
-            :class="ordersListBtnClass"
-            :title="userData.canEdit ? $t('exoplatform.perkstore.label.ordersList') : $t('exoplatform.perkstore.label.myOrders')"
-            absolute
-            color="secondary"
-            class="white--text orderListButton"
-            fab
-            right
-            top
-            @click="$emit('orders-list', product)">
-            <v-badge
-              :color="userData.canEdit ? 'red' : 'orange'"
+          <template v-if="userData.canEdit">
+            <v-btn
+              :class="ordersListBtnClass"
+              :title="$t('exoplatform.perkstore.label.ordersList')"
+              absolute
+              color="secondary"
+              class="white--text orderListButton"
+              fab
               right
-              overlap>
-              <span
-                v-if="product.notProcessedOrders"
-                slot="badge"
-                class="orderListBadge">
-                {{ product.notProcessedOrders }}
-              </span>
-              <v-icon v-if="userData.canEdit">fa-list-ul</v-icon>
-              <v-icon v-else>fa-file-invoice-dollar</v-icon>
-            </v-badge>
-          </v-btn>
-          <v-btn
-            v-if="userData.canEdit"
-            :class="editBtnClass"
-            :title="$t('exoplatform.perkstore.button.editProduct')"
-            absolute
-            color="secondary"
-            class="white--text editButton"
-            fab
-            right
-            top
-            @click="$emit('edit', product)">
-            <v-icon>fa-pen</v-icon>
-          </v-btn>
+              top
+              @click="$emit('orders-list', product)">
+              <v-badge
+                :color="userData.canEdit ? 'red' : 'orange'"
+                right
+                overlap>
+                <span
+                  v-if="product.notProcessedOrders"
+                  slot="badge"
+                  class="orderListBadge">
+                  {{ product.notProcessedOrders }}
+                </span>
+                <v-icon v-if="userData.canEdit">fa-list-ul</v-icon>
+                <v-icon v-else>fa-file-invoice-dollar</v-icon>
+              </v-badge>
+            </v-btn>
+            <v-btn
+              :class="editBtnClass"
+              :title="$t('exoplatform.perkstore.button.editProduct')"
+              absolute
+              color="secondary"
+              class="white--text editButton"
+              fab
+              right
+              top
+              @click="$emit('edit', product)">
+              <v-icon>fa-pen</v-icon>
+            </v-btn>
+          </template>
           <v-btn
             v-if="displayBuyButton"
             :disabled="disabledBuy || !walletEnabled || walletLoading"
@@ -89,38 +90,38 @@
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
         </v-card-text>
-        <v-card-title
-          class="text-truncate no-wrap pt-0 pb-0"
+        <v-card-text
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
-          v-on="on">
-          <h3 :title="product.title" class="mb-2 primary--text text-truncate">
-            <a
-              :href="productLink"
-              class="text-truncate"
-              @click="openProductDetail">
-              {{ product.title }}
-            </a>
-          </h3>
-          <v-spacer />
-          <h3 class="mb-2">
-            {{ product.price }} {{ symbol }}
-          </h3>
-        </v-card-title>
-        <v-progress-linear
-          v-if="!product.unlimited"
-          v-model="purchasedPercentage"
-          :open-delay="0"
-          :title="$t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
-          color="red"
-          height="8"
-          class="mb-0 mt-0"
-          v-on="on" />
-        <v-card-text class="productCardFooter">
-          <div
-            :title="product.description"
-            class="font-weight-light title mb-2 truncate8 productCardFooterDescription"
-            v-text="product.description && product.description.trim()">
-          </div>
+          class="pb-0 pt-2 clickable"
+          @click="openProductDetail">
+          <v-layout
+            row
+            grow
+            class="no-wrap">
+            <v-flex class="text-truncate title productCardTitle">
+              <span :title="product.title">{{ product.title }}</span>
+            </v-flex>
+            <v-flex class="primary--text headline text-right">
+              {{ product.price }} {{ symbol }}
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+        <v-card-text class="py-0 productCardSubtitle">{{ productCreatedDate }}</v-card-text>
+        <v-card-text class="productCardFooter py-0" @click="openProductDetail">
+          <v-hover v-if="userData.notProcessedOrders">
+            <v-chip
+              slot-scope="{ hoverPending }"
+              :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
+              @click="$emit('orders-list', product, null, true)">
+              <v-icon
+                left
+                color="#ffb441"
+                size="16">
+                far fa-clock
+              </v-icon>
+              {{ userData.notProcessedOrders }} {{ $t('exoplatform.perkstore.label.pending') }}
+            </v-chip>
+          </v-hover>
         </v-card-text>
       </v-card>
     </v-hover>
@@ -161,6 +162,9 @@ export default {
     },
   },
   computed: {
+    productCreatedDate() {
+      return (this.product && this.product.createdDate && this.formatDate(new Date(this.product.createdDate))) || '';
+    },
     productLink() {
       return (this.product && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.product.id}`) || '#';
     },
@@ -227,7 +231,13 @@ export default {
       if (!this.disabledBuy && this.walletEnabled) {
         this.$emit('buy', this.product);
       }
-    }
+    },
+    formatDate(date) {
+      if (!date) {
+        return '';
+      }
+      return date.toLocaleString(eXo.env.portal.language, {year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric"});
+    },
   }
 }
 </script>
