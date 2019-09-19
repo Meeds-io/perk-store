@@ -2,13 +2,12 @@
   <v-card>
     <v-layout wrap class="pt-3">
       <v-flex
-        v-if="product.imageFiles && product.imageFiles.length"
         md5
         xs12>
         <image-attachment-selector :images="product.imageFiles" />
       </v-flex>
       <v-flex
-        :class="product.imageFiles && product.imageFiles.length ? 'md7': md12"
+        md7
         xs12>
         <product-detail-content
           :product="product"

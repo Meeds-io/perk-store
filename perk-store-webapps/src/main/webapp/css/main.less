@@ -314,16 +314,43 @@
   .productImageBuyPage {
     border-radius: 100%;
     margin: auto;
-    border: 4px orange solid;
+    border: 4px #ffcb08 solid;
   }
+
   .productImageContainer {
-    max-width: ~"calc(100% - 80px)";
-    margin: 5px;
+    margin: 5px auto;
+    padding: 0 5px;
+    text-align: center;
 
     .productImage {
       border-radius: 12px;
     }
   }
+
+  .productNoImages {
+    background-color: #578dc9!important;
+    color: #fff;
+    width: 170px;
+    height: 170px;
+    box-sizing: border-box;
+    margin: auto;
+    font-size: 4rem;
+  }
+
+  .productNoImageContainer {
+    margin: 0;
+    padding: 0 5px;
+    text-align: center;
+    height: 100%;
+
+    .productNoImages {
+      border-radius: 15px;
+      width: 90%;
+      height: 90%;
+      font-size: 10rem;
+    }
+  }
+
   .buyProductForm button {
     width: 45%;
   }
@@ -352,7 +379,7 @@
     border-radius: 100%;
     border: 3px solid #ffcb08;
     .addProductIcon {
-    color: #ffcb08;
+      color: #ffcb08;
     }
   }
   .truncate8 {
@@ -518,8 +545,7 @@
         max-height: 70px;
         height: 70px;
         padding: 0;
-        margin-left: 5px;
-        margin-bottom: 10px;
+        margin: 0 auto 10px;
         border-radius: 9px;
       }
     }
