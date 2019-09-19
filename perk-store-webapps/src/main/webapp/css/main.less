@@ -204,7 +204,7 @@
   }
 
   #perkStoreAppMyOrdersButton {
-    background-color: rgba(87, 141, 201, 0.2) !important;
+    background-color: rgba(233, 242, 249, 0.7) !important;
   }
 
   .searchProductsInput {
@@ -221,8 +221,15 @@
       }
     }
 
+    i {
+      color: #a8b3c5;
+    }
+
     input {
       background: transparent;
+      ::placeholder {
+        color: #e1e8ee;
+      }
     }
   }
 
@@ -296,6 +303,13 @@
   }
   .userPendingOrders {
     width: auto;
+    text-transform: uppercase;
+    color: #ffb441;
+    font-size: 12px;
+    background-color: rgba(255, 202, 122, 0.3);
+
+    i {
+    }
   }
   .productImageBuyPage {
     border-radius: 100%;
@@ -322,10 +336,16 @@
   .addProductDescription {
     max-width: 279px;
     margin: auto;
-    color: rgba(0,0,0,0.54);
     font-size: 15px;
   }
-  
+
+  .productCardTitle {
+    color: #4d5466;
+  }
+  .productCardSubtitle {
+    color: #a8b3c5;
+  }
+
   .addProductButton {
     margin: auto;
     width: fit-content;

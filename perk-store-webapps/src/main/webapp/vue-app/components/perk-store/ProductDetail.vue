@@ -98,7 +98,7 @@
             row
             grow
             class="no-wrap">
-            <v-flex class="text-truncate title">
+            <v-flex class="text-truncate title productCardTitle">
               <span :title="product.title">{{ product.title }}</span>
             </v-flex>
             <v-flex class="primary--text headline text-right">
@@ -106,18 +106,16 @@
             </v-flex>
           </v-layout>
         </v-card-text>
-        <v-card-text class="py-0">{{ productCreatedDate }}</v-card-text>
+        <v-card-text class="py-0 productCardSubtitle">{{ productCreatedDate }}</v-card-text>
         <v-card-text class="productCardFooter py-0" @click="openProductDetail">
           <v-hover v-if="userData.notProcessedOrders">
             <v-chip
               slot-scope="{ hoverPending }"
-              color="orange lighten-4"
-              text-color="orange"
               :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
               @click="$emit('orders-list', product, null, true)">
               <v-icon
                 left
-                dark
+                color="#ffb441"
                 size="16">
                 far fa-clock
               </v-icon>

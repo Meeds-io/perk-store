@@ -10,10 +10,10 @@
             <v-icon size="182" class="addProductIcon">mdi-plus</v-icon>
           </div>
         </v-flex>
-        <v-flex class="addProductTitle headline">
+        <v-flex class="addProductTitle headline productCardTitle">
           {{ $t('exoplatform.perkstore.title.createNewProduct') }}
         </v-flex>
-        <v-flex class="wrap addProductDescription">
+        <v-flex class="wrap addProductDescription productCardSubtitle">
           {{ $t('exoplatform.perkstore.title.createNewProductDescription') }}
         </v-flex>
       </v-layout>
