@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-layout wrap>
+    <v-layout wrap class="pt-3">
       <v-flex
         v-if="product.imageFiles && product.imageFiles.length"
         md5
