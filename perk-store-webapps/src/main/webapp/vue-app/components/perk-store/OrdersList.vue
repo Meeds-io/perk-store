@@ -2,17 +2,11 @@
   <v-layout
     row
     class="border-box-sizing mr-0 ml-0">
-    <div
-      v-show="barcodeReader"
-      id="interactive"
-      class="viewport"
-      style="width: 100%;"></div>
     <orders-filter
       ref="productOrdersFilter"
       :filter="ordersFilter"
       @search="searchOrders" />
     <v-container
-      v-show="!barcodeReader"
       class="productOrdersParent border-box-sizing mt-0"
       fluid
       grid-list-md>
@@ -56,7 +50,7 @@
       <v-flex
         v-if="loading || displayLoadMoreButton"
         slot="footer"
-        class="mt-2 text-center"
+        class="mt-2 mr-6 text-center elevation-2"
         dense
         flat>
         <v-btn
@@ -120,19 +114,25 @@ export default {
         return "";
       },
     },
+    search: {
+      type: String,
+      default: function() {
+        return "";
+      },
+    },
   },
   data() {
     return {
       loading: false,
-      barcodeReader: false,
-      pageSize: 12,
       currentUserOrders: false,
+      pageSize: 12,
       limit: 12,
       limitReached: false,
       filterDescriptionLabels: [],
       displayFilterDetails: false,
       orders: [],
       newAddedOrders: [],
+      initialLimit: 0,
     };
   },
   computed: {
@@ -143,8 +143,10 @@ export default {
       const order = this.selectedOrderId && this.orders.find(order => order && order.id === this.selectedOrderId);
       if (order) {
         return [order];
+      } else if (this.search) {
+        return this.orders.filter(order => order.sender && order.sender.displayName && order.sender.displayName.toLowerCase().indexOf(this.search.trim().toLowerCase()) >= 0).slice(0, this.initialLimit);
       } else {
-        return this.orders;
+        return this.orders.slice(0, this.limit);
       }
     },
     displayLoadMoreButton() {
@@ -160,8 +162,8 @@ export default {
         this.init();
       }
     },
-    barcodeReader() {
-      this.initBarcodeReader();
+    search() {
+      this.filterOrdersByFullTextSearchField();
     }
   },
   created() {
@@ -175,13 +177,16 @@ export default {
       this.computeDescriptionLabels();
       this.currentUserOrders = currentUserOrders;
 
-      const initialOrdersLength = this.orders.length;
+      const initialOrdersLength = this.orders.length > this.limit ? this.limit - 1 : this.orders.length;
 
       this.loading = true;
 
       return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, this.limit)
         .then((orders) => {
           this.orders = orders || [];
+          return this.$nextTick();
+        })
+        .then(() => {
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
         })
         .catch(e => {
@@ -191,8 +196,42 @@ export default {
           this.loading = false;
         });
     },
+    filterOrdersByFullTextSearchField() {
+      if (this.loading) {
+        return;
+      }
+      if (!this.initialLimit) {
+        this.initialLimit = this.limit;
+      } else if (!this.search) {
+        this.limit = this.initialLimit;
+        return this.init(this.currentUserOrders);
+      }
+      this.loading = true;
+      this.$emit('search-loading');
+      return this.searchOrdersFromServer()
+        .finally(() => {
+          this.$emit('end-search-loading');
+          this.loading = false
+        });
+    },
+    searchOrdersFromServer() {
+      return this.$nextTick()
+        .then(() => {
+          const searchMore = !this.limitReached && this.filteredOrders.length < this.initialLimit;
+          if(searchMore) {
+            return this.increaseLimitAndloadMore(true);
+          }
+        })
+        .then(() => this.$nextTick())
+        .then(() => {
+          const searchMore = !this.limitReached && this.filteredOrders.length < this.initialLimit;
+          if(searchMore) {
+            return this.searchOrdersFromServer();
+          }
+        });
+    },
     searchOrders() {
-      return this.init();
+      return this.init(this.currentUserOrders);
     },
     computeDisplayFilterDetails() {
       this.displayFilterDetails = false;
@@ -268,8 +307,20 @@ export default {
       Object.assign(order, newOrder);
     },
     loadMore() {
+      if (this.search) {
+        this.initialLimit += this.pageSize;
+        this.limit = Math.max(this.limit, this.initialLimit);
+        return this.filterOrdersByFullTextSearchField();
+      } else {
+        return this.increaseLimitAndloadMore();
+      }
+    },
+    increaseLimitAndloadMore(usingSearch) {
       this.limit += this.pageSize;
-      return this.init();
+      if (!usingSearch) {
+        this.initalLimit = this.limit;
+      }
+      return this.init(this.currentUserOrders);
     },
     updateOrderFromWS(event) {
       const wsMessage = event.detail;
@@ -345,64 +396,6 @@ export default {
           downloadLink.setAttribute("download", `orders.csv`);
           downloadLink.click();
         })
-    },
-    openBarcodeReader() {
-      this.barcodeReader = true;
-      this.$emit('reader-opened');
-    },
-    closeBarcodeReader() {
-      this.barcodeReader = false;
-      this.$emit('reader-closed');
-    },
-    initBarcodeReader() {
-      const thiss = this;
-      if (this.barcodeReader) {
-        Quagga.init({
-          inputStream: {
-            type : "LiveStream",
-            constraints: {
-                facingMode: "environment"
-            }
-          },
-          locator: {
-              patchSize: "medium",
-              halfSample: true
-          },
-          numOfWorkers: 4,
-          frequency: 5,
-          decoder: {
-              readers : [{
-                  format: "code_128_reader",
-                  config: {}
-              }]
-          },
-          locate: true
-        }, function(err) {
-            if (err) {
-                console.log(err);
-                return
-            }
-            Quagga.start();
-            Quagga.onDetected((data) => {
-              if (data && data.codeResult && data.codeResult.code) {
-                const barcodeText = data.codeResult.code;
-                const barcodeTextParts = barcodeText.split('@');
-                if (barcodeTextParts.length === 5) {
-                  const productId = barcodeTextParts[1];
-                  const orderId = barcodeTextParts[2];
-                  const userId = barcodeTextParts[3];
-
-                  if (thiss.$refs && thiss.$refs[`orderDetail${orderId}`]) {
-                    thiss.$refs[`orderDetail${orderId}`].openDeliverWindow(productId, orderId, userId);
-                  }
-                }
-              }
-            });
-        });
-      } else {
-        Quagga.stop();
-        $('#interactive').html('');
-      }
     },
   },
 }

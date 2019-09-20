@@ -249,7 +249,6 @@ import ProfileLink from '../ProfileLink.vue';
 
 import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 import {formatDateTime} from '../../js/PerkStoreSettings.js';
-import {generateBarCode} from '../../js/QRCode.js';
 
 export default {
   components: {
@@ -281,7 +280,6 @@ export default {
     return {
       // Attention: Used to close modal only when refunding process
       // is finished
-      barcodeModal: false,
       refunding: false,
       statusList: [
         'ORDERED',
@@ -297,9 +295,6 @@ export default {
   computed: {
     orderAmount() {
       return (this.order && this.order.amount && toFixed(this.order.amount)) || 0;
-    },
-    barcodeContainerId() {
-      return `barcode${this.order.id}`;
     },
     transactionLink() {
       if(this.order.transactionHash && this.order) {
@@ -411,15 +406,6 @@ export default {
           console.debug("Error saving status", e);
           this.$emit('error', e && e.message ? e.message : String(e));
         }).finally(() => this.$emit('loading', false));
-    },
-    displayBarcode() {
-      generateBarCode(this.barcodeContainerId, this.order.productId, this.order.id, eXo.env.portal.userName);
-    },
-    openDeliverWindow(productId, orderId, userId) {
-      console.debug('Detected barcode', productId, orderId, userId, this.$refs);
-      if (this.$refs && this.$refs.deliverModal && this.order && this.order.productId === productId && this.order.id === orderId) {
-        this.$refs.deliverModal.open(productId, orderId, userId);
-      }
     },
   }
 }

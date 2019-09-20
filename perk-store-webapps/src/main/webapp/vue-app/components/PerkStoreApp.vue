@@ -33,13 +33,26 @@
                 - {{ $t('exoplatform.perkstore.title.createNewProduct') }}
               </template>
               <template v-else-if="displayProductOrders && selectedProduct && selectedOrderId">
-                - {{ $t('exoplatform.perkstore.title.order') }} <span class="primary--text">#{{ selectedOrderId }}</span> : <span class="primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.order') }} <span class="ml-2 primary--text">#{{ selectedOrderId }}</span> : <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductOrders && canEditSelectedProduct">
-                - {{ $t('exoplatform.perkstore.title.ordersListOf') }} <span class="primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.ordersListOf') }} <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
+                <v-text-field
+                  v-model="searchOrder"
+                  :placeholder="$t('exoplatform.perkstore.label.orderSearchPlaceholder')"
+                  prepend-inner-icon="search"
+                  single-line
+                  hide-details
+                  autofocus
+                  class="searchProductsInput ml-3 mt-1 py-0 d-inline-flex" />
+                <v-progress-circular
+                  v-show="searchLoading"
+                  color="primary"
+                  class="mb-2 ma-auto"
+                  indeterminate />
               </template>
               <template v-else-if="displayProductOrders && selectedProduct">
-                - {{ $t('exoplatform.perkstore.title.myOrdersListOf') }} <span class="primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.myOrdersListOf') }} <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayMyOrders">
                 - {{ $t('exoplatform.perkstore.title.myOrders') }}
@@ -57,30 +70,7 @@
             </v-toolbar-title>
             <v-spacer />
             <template v-if="displayProductOrders">
-              <template v-if="barcodeReader">
-                <v-btn
-                  id="perkStoreAppMenuOrdersListButton"
-                  :title="$t('exoplatform.perkstore.button.showOrderList')"
-                  icon
-                  text
-                  @click="$refs.ordersList.closeBarcodeReader()">
-                  <v-icon>
-                    fa-list
-                  </v-icon>
-                </v-btn>
-              </template>
-              <template v-else>
-                <v-btn
-                  v-if="canEditSelectedProduct"
-                  id="perkStoreAppMenuBarcodeButton"
-                  :title="$t('exoplatform.perkstore.button.switchToBarCodeReader')"
-                  icon
-                  text
-                  @click="$refs.ordersList.openBarcodeReader()">
-                  <v-icon>
-                    fa-barcode
-                  </v-icon>
-                </v-btn>
+              <template>
                 <v-btn
                   id="perkStoreAppMenuDownloadButton"
                   :title="$t('exoplatform.perkstore.button.exportAsCSV')"
@@ -121,7 +111,7 @@
                 close
               </v-icon>
             </v-btn>
-            <template v-else-if="perkStoreEnabled && !barcodeReader">
+            <template v-else-if="perkStoreEnabled">
               <div id="productFilterMenu">
                 <v-menu
                   v-model="productFilterMenu"
@@ -264,13 +254,14 @@
             :selected-order-id="selectedOrderId"
             :orders-filter="ordersFilter"
             :symbol="symbol"
+            :search="searchOrder"
+            @search-loading="searchLoading = true"
+            @end-search-loading="searchLoading = false"
             @init-wallet="initWalletAPI(true)"
             @display-product="displayProduct($event)"
             @loading="loading = $event"
             @error="error = $event"
-            @close="closeDetails"
-            @reader-closed="barcodeReader = false"
-            @reader-opened="barcodeReader = true" />
+            @close="closeDetails" />
           <product-form
             v-else-if="displayProductForm"
             ref="productForm"
@@ -341,13 +332,14 @@ export default {
     ProductNotification,
   },
   data: () => ({
+    searchOrder: null,
+    searchLoading: false,
     productFilterMenu: false,
     walletWarning: null,
     error: null,
     walletAddonInstalled: false,
     walletLoading: false,
     walletEnabled: false,
-    barcodeReader: false,
     perkStoreEnabled: false,
     walletNeedPassword: false,
     loading: false,
@@ -383,10 +375,10 @@ export default {
       return  this.selectedProduct && this.selectedProduct.userData && this.selectedProduct.userData.canEdit;
     },
     displayFilterButton() {
-      return (this.displayProductOrders && !this.barcodeReader && !this.selectedOrderId) || this.displayMyOrders;
+      return (this.displayProductOrders && !this.selectedOrderId) || this.displayMyOrders;
     },
     displayCloseIcon() {
-      return !this.barcodeReader && (this.displayProductForm || this.displayProductOrders || this.displayProductDetails || this.displayMyOrders);
+      return this.displayProductForm || this.displayProductOrders || this.displayProductDetails || this.displayMyOrders;
     },
     filteredProducts() {
       let products = this.products.slice();
@@ -537,6 +529,7 @@ export default {
       this.closeDetails();
       this.selectedProduct = product;
       this.selectedOrderId = orderId;
+      this.searchOrder = null;
       this.displayProductOrders = true;
       return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init(currentUserOrders));
     },
