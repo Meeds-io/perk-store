@@ -106,7 +106,7 @@
               dark
               fab
               small
-              @click="closeDetails">
+              @click="displayProductForm ? displayProduct(selectedProduct) : closeDetails()">
               <v-icon>
                 close
               </v-icon>
