@@ -3,7 +3,7 @@
     id="PerkStoreApp"
     class="transparent VuetifyApp"
     flat>
-    <main>
+    <main v-if="isApplicationEnabled">
       <v-layout justify-center>
         <v-flex xs12>
           <v-toolbar
@@ -307,6 +307,25 @@
       <div id="perkStoreDialogsParent">
       </div>
     </main>
+    <main v-else id="applicationDisabled">
+      <v-layout wrap class="mt-7">
+        <v-flex class="mx-auto text-center title" xs12>
+          {{ $t('exoplatform.perkstore.info.applicationDisabledPart1') }}
+        </v-flex>
+        <v-flex class="mt-2 mx-auto text-center title" xs12>
+          {{ $t('exoplatform.perkstore.info.applicationDisabledPart2') }}
+        </v-flex>
+        <v-flex class="mx-auto text-center title mt-7" xs12>
+          <a
+            href="https://www.exoplatform.com/rewarding-program"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="no-wrap requestFundsLink">
+            {{ $t('exoplatform.perkstore.info.applicationDisabledLink') }}
+          </a>
+        </v-flex>
+      </v-layout>
+    </main>
   </v-app>
 </template>
 
@@ -341,6 +360,7 @@ export default {
     walletLoading: false,
     walletEnabled: false,
     perkStoreEnabled: false,
+    isApplicationEnabled: true,
     walletNeedPassword: false,
     loading: false,
     selectedProduct: null,
@@ -506,11 +526,14 @@ export default {
       this.walletLoading = false;
       this.walletNeedPassword = false;
       const result = event && event.detail;
-      if(!result || result.error) {
+      if(result && !result.enabled) {
+        this.isApplicationEnabled = false;
+      } else if(!result || result.error) {
         this.walletWarning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
+        this.isApplicationEnabled = result.enabled;
         this.walletNeedPassword = result.needPassword;
       }
     },
