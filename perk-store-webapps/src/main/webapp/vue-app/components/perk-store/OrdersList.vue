@@ -27,25 +27,30 @@
       </v-card>
       <a id="downloadOrders" class="hidden">{{ $t('exoplatform.perkstore.button.download') }}</a>
       <v-row class="OrdersListParent">
-        <v-col
-          v-for="item in filteredOrders"
-          :key="item.id"
-          cols="12"
-          xs="12"
-          sm="6"
-          md="3"
-          xl="2">
-          <order-detail
-            :ref="`orderDetail${item.id}`"
-            :order="item"
-            :product="product"
-            :symbol="symbol"
-            @init-wallet="$emit('init-wallet')"
-            @display-product="$emit('display-product', $event)"
-            @changed="updateOrder(item, $event)"
-            @loading="$emit('loading', $event)"
-            @error="$emit('error', $event)" />
-        </v-col>
+        <template v-if="filteredOrders && filteredOrders.length">
+          <v-col
+            v-for="item in filteredOrders"
+            :key="item.id"
+            cols="15"
+            xs="15"
+            sm="5"
+            md="3"
+            xl="3">
+            <order-detail
+              :ref="`orderDetail${item.id}`"
+              :order="item"
+              :product="product"
+              :symbol="symbol"
+              @init-wallet="$emit('init-wallet')"
+              @display-product="$emit('display-product', $event)"
+              @changed="updateOrder(item, $event)"
+              @loading="$emit('loading', $event)"
+              @error="$emit('error', $event)" />
+          </v-col>
+        </template>
+        <div v-else class="ma-auto">
+          {{ search ? $t('exoplatform.perkstore.button.noOrdersSearchResultFor', {0: search}) : $t('exoplatform.perkstore.button.noOrdersFound') }}
+        </div>
       </v-row>
       <v-flex
         v-if="loading || displayLoadMoreButton"
