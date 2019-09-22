@@ -12,7 +12,17 @@
         </h4>
         <v-spacer />
         <template v-if="userData && userData.canEdit">
-          <div class="orderStatus subtitle-1 mt-1 mb-1 mr-2">{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</div>
+          <select
+            v-model="order.status"
+            class="small subtitle-1 my-auto mr-2 ignore-vuetify-classes"
+            @change="changeStatus()">
+            <option
+              v-for="option in statusList"
+              :key="option"
+              :value="option">
+              {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
+            </option>
+          </select>
           <div
             v-if="order.remainingQuantityToProcess"
             :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
@@ -130,7 +140,7 @@
                 <button
                   v-if="isOrdered"
                   class="ignore-vuetify-classes btn orderProcessingBtn"
-                  @click="cancelOrder">
+                  @click="changeStatus('CANCELED')">
                   {{ $t('exoplatform.perkstore.button.cancel') }}
                 </button>
                 <button
@@ -392,14 +402,15 @@ export default {
       this.$emit('init-wallet');
       this.refunding = false;
     },
-    cancelOrder() {
+    changeStatus(newStatus) {
       this.$emit('loading', true);
       return saveOrderStatus({
         id: this.order.id,
         productId: this.order.productId,
-        status: 'CANCELED',
+        status: newStatus || this.order.status,
       }, 'STATUS')
         .then(order => {
+          this.$emit('changed', order);
           this.$forceUpdate();
         })
         .catch(e => {
