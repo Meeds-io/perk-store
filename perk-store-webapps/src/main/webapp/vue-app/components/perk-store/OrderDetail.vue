@@ -1,7 +1,7 @@
 <template>
   <v-hover v-if="order" class="orderDetailParent">
     <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 3}`">
-      <v-card-title v-if="order.sender" class="pt-1 pb-1">
+      <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1">
         <h4>
           <a
             :href="orderLink"
@@ -14,7 +14,7 @@
         <template v-if="userData && userData.canEdit">
           <select
             v-model="order.status"
-            class="small subtitle-1 my-auto mr-2 ignore-vuetify-classes"
+            class="small my-auto mr-2 ignore-vuetify-classes"
             @change="changeStatus()">
             <option
               v-for="option in statusList"
@@ -298,7 +298,8 @@ export default {
         'PAID',
         'PARTIAL',
         'DELIVERED',
-        'REFUNDED'
+        'REFUNDED',
+        'FRAUD',
       ],
     };
   },
