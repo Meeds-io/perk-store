@@ -110,7 +110,7 @@
         <v-card-text class="productCardFooter py-0" @click="openProductDetail">
           <v-hover v-if="userData.notProcessedOrders">
             <v-chip
-              slot-scope="{ hoverPending }"
+              slot-scope="{ hover: hoverPending }"
               :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
               @click="$emit('orders-list', product, null, true)">
               <v-icon
