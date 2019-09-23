@@ -27,7 +27,7 @@
             v-if="order.remainingQuantityToProcess"
             :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
             class="orderQuantityBadgeParent">
-            <div class="orderQuantityBadge red">
+            <div class="orderQuantityBadge">
               {{ order.remainingQuantityToProcess }}
             </div>
           </div>
