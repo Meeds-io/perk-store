@@ -321,6 +321,14 @@
     margin: 5px auto;
     padding: 0 5px;
     text-align: center;
+    max-height: 340px;
+    width: ~"calc(100% - 103px)";
+    max-width: ~"calc(100% - 103px)";
+
+    &.standaloneImage {
+      width: 100%;
+      max-width: 100%;
+    }
 
     .productImage {
       border-radius: 12px;
@@ -378,8 +386,11 @@
     width: fit-content;
     border-radius: 100%;
     border: 3px solid #ffcb08;
+    max-width: 100%;
+
     .addProductIcon {
       color: #ffcb08;
+      max-width: 100%;
     }
   }
   .truncate8 {

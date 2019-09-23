@@ -130,7 +130,7 @@
   
       <v-list dense class="orderProcessingDetails">
         <v-list-item class="orderProcessingContent">
-          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-item-content>
+          <v-list-item-content v-if="!userData || !userData.canEdit || (!isOrdered && !canDeliverOrder && !canRefundOrder)" class="align-start">{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-item-content>
           <v-list-item-content class="align-end orderProcessingActions no-wrap">
             <div>
               <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">

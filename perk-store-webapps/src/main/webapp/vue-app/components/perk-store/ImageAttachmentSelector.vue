@@ -56,7 +56,7 @@ export default {
       return this.images && this.images.length;
     },
     imageClass() {
-      return this.displaySelector ? 'xs10' : 'xs12';
+      return this.displaySelector ? 'xs10' : 'standaloneImage xs12';
     },
     displaySelector() {
       return this.images && this.images.length > 1;
