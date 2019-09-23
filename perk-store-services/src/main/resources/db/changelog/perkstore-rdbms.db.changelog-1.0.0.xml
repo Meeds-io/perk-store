@@ -145,4 +145,11 @@
     </addColumn>
   </changeSet>
 
+  <changeSet author="perkstore" id="1.0.0-8" dbms="mysql">
+    <sql>
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT MODIFY COLUMN TITLE VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT MODIFY COLUMN DESCRIPTION VARCHAR(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    </sql>
+  </changeSet>
+
 </databaseChangeLog>
