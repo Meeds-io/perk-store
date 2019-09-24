@@ -581,9 +581,12 @@ export default {
       return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
     },
     displayProduct(product) {
-      if (product && !product.id) {
-        // It's may be about product id and not the object
-        product = this.products.find(existingProduct => existingProduct.id === product);
+      if (product) {
+        if (product.id) {
+          product = this.products.find(existingProduct => existingProduct.id === product.id);
+        } else {
+          product = this.products.find(existingProduct => existingProduct.id === product);
+        }
       }
       this.closeDetails();
       if (product) {
