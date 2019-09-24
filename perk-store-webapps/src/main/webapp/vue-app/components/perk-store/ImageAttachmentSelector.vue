@@ -1,6 +1,8 @@
 <template>
-  <v-layout class="no-wrap">
-    <v-flex>
+  <v-layout
+    v-if="hasImages"
+    class="no-wrap">
+    <v-flex v-if="displaySelector" xs2>
       <v-layout
         row
         wrap
@@ -20,7 +22,7 @@
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-flex class="productImageContainer">
+    <v-flex class="productImageContainer" :class="imageClass">
       <v-img
         :src="selectedImage.src"
         max-height="100%"
@@ -30,6 +32,9 @@
         contain />
     </v-flex>
   </v-layout>
+  <div v-else class="productNoImageContainer">
+    <v-icon class="productNoImages">fa-images</v-icon>
+  </div>
 </template>
 <script>
 export default {
@@ -47,6 +52,15 @@ export default {
     };
   },
   computed: {
+    hasImages() {
+      return this.images && this.images.length;
+    },
+    imageClass() {
+      return this.displaySelector ? 'xs10' : 'standaloneImage xs12';
+    },
+    displaySelector() {
+      return this.images && this.images.length > 1;
+    },
     selectedImage() {
       if (this.images && this.images.length) {
         return this.images[this.selectedImageIndex];

@@ -307,23 +307,55 @@
     color: #ffb441;
     font-size: 12px;
     background-color: rgba(255, 202, 122, 0.3);
-
-    i {
-    }
   }
   .productImageBuyPage {
     border-radius: 100%;
     margin: auto;
-    border: 4px orange solid;
+    border: 4px #ffcb08 solid;
   }
+
   .productImageContainer {
-    max-width: ~"calc(100% - 80px)";
-    margin: 5px;
+    margin: 5px auto;
+    padding: 0 5px;
+    text-align: center;
+    max-height: 340px;
+    width: ~"calc(100% - 103px)";
+    max-width: ~"calc(100% - 103px)";
+
+    &.standaloneImage {
+      width: 100%;
+      max-width: 100%;
+    }
 
     .productImage {
       border-radius: 12px;
     }
   }
+
+  .productNoImages {
+    background-color: #578dc9!important;
+    color: #fff;
+    width: 170px;
+    height: 170px;
+    box-sizing: border-box;
+    margin: auto;
+    font-size: 4rem;
+  }
+
+  .productNoImageContainer {
+    margin: 0;
+    padding: 0 5px;
+    text-align: center;
+    height: 100%;
+
+    .productNoImages {
+      border-radius: 15px;
+      width: 90%;
+      height: 90%;
+      font-size: 10rem;
+    }
+  }
+
   .buyProductForm button {
     width: 45%;
   }
@@ -331,7 +363,7 @@
     max-width: 50%;
   }
   .addProductTitle {
-    height: 27px;
+    height: auto;
   }
   .addProductDescription {
     max-width: 279px;
@@ -351,8 +383,11 @@
     width: fit-content;
     border-radius: 100%;
     border: 3px solid #ffcb08;
+    max-width: 100%;
+
     .addProductIcon {
-    color: #ffcb08;
+      color: #ffcb08;
+      max-width: 100%;
     }
   }
   .truncate8 {
@@ -461,23 +496,14 @@
       text-align: center;
       line-height: 23px;
       box-sizing: border-box;
-
-      &.red {
-        background: #f44336;
-        color: #fff;
-        margin-right: 4px;
-      }
-
-      &.green {
-        background: #018601;
-        color: #fff;
-        margin-right: 4px;
-      }
+      color: #fd9a01;
+      background-color: rgba(255, 202, 122, 0.3);
     }
     .orderProcessingDetails {
       background: #e3ecf6;
       min-height: 140px;
       max-height: 140px;
+      padding: 0;
     }
     .orderProcessingBtn {
       height: 30px;
@@ -518,8 +544,7 @@
         max-height: 70px;
         height: 70px;
         padding: 0;
-        margin-left: 5px;
-        margin-bottom: 10px;
+        margin: 0 auto 10px;
         border-radius: 9px;
       }
     }
@@ -607,6 +632,10 @@
   .OrdersListParent {
     max-width: 100%;
   }
+
+  .requestFundsLink {
+    text-decoration: underline;
+  }
 }
 
 @media (min-width : 960px) {
@@ -622,36 +651,6 @@
 /* Override uiPopup !important attributes */
 @media (max-width : 1024px) {
   #PerkStoreApp {
-  
-    .barcodeModal {
-      .v-dialog--active {
-        border-radius: 0;
-        margin: 0;
-        height: 100%;
-        position: fixed;
-        overflow-y: auto;
-        top: 0;
-        left: 0;
-      }
-
-      .barcodeParent {
-        height: 100vh;
-        width: 100vw;
-        margin-top: -55px; 
-        padding-bottom: 55px;
-
-        .barcodeContent {
-          transform: rotate(90deg);
-          width: 100%;
-
-          svg {
-            width: 500px;
-            height: 320px;
-          }
-        }
-      }
-    }
-
     .productDetailContainer {
       .productDetailRightParent {
         flex-direction: column;

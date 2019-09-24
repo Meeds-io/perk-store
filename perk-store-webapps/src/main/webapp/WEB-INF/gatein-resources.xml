@@ -80,42 +80,10 @@
           <module>filedrop</module>
       </depends>
       <depends>
-          <module>JsBarcode</module>
-      </depends>
-      <depends>
-          <module>Quagga</module>
-      </depends>
-      <depends>
         <module>commons-cometd3</module>
         <as>cCometd</as>
       </depends>
     </module>
   </portlet>
-
-  <module>
-    <name>Quagga</name>
-    <script>
-      <minify>false</minify>
-      <adapter>
-        (function() {
-          <include>/js/lib/quagga.min.js</include>
-          return Quagga;
-        })();
-      </adapter>
-    </script>
-  </module>
-
-  <module>
-    <name>JsBarcode</name>
-    <script>
-      <minify>false</minify>
-      <adapter>
-        (function() {
-          <include>/js/lib/JsBarcode.all.min.js</include>
-          return JsBarcode;
-        })();
-      </adapter>
-    </script>
-  </module>
 
 </gatein-resources>

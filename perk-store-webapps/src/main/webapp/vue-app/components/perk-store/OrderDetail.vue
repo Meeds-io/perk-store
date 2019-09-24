@@ -1,7 +1,7 @@
 <template>
   <v-hover v-if="order" class="orderDetailParent">
     <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 3}`">
-      <v-card-title v-if="order.sender" class="pt-1 pb-1">
+      <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1">
         <h4>
           <a
             :href="orderLink"
@@ -12,12 +12,22 @@
         </h4>
         <v-spacer />
         <template v-if="userData && userData.canEdit">
-          <div class="orderStatus subtitle-1 mt-1 mb-1 mr-2">{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</div>
+          <select
+            v-model="order.status"
+            class="small my-auto mr-2 ignore-vuetify-classes"
+            @change="changeStatus()">
+            <option
+              v-for="option in statusList"
+              :key="option"
+              :value="option">
+              {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
+            </option>
+          </select>
           <div
             v-if="order.remainingQuantityToProcess"
             :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
             class="orderQuantityBadgeParent">
-            <div class="orderQuantityBadge red">
+            <div class="orderQuantityBadge">
               {{ order.remainingQuantityToProcess }}
             </div>
           </div>
@@ -120,7 +130,7 @@
   
       <v-list dense class="orderProcessingDetails">
         <v-list-item class="orderProcessingContent">
-          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-item-content>
+          <v-list-item-content v-if="!userData || !userData.canEdit || (!isOrdered && !canDeliverOrder && !canRefundOrder)" class="align-start">{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-item-content>
           <v-list-item-content class="align-end orderProcessingActions no-wrap">
             <div>
               <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
@@ -130,7 +140,7 @@
                 <button
                   v-if="isOrdered"
                   class="ignore-vuetify-classes btn orderProcessingBtn"
-                  @click="cancelOrder">
+                  @click="changeStatus('CANCELED')">
                   {{ $t('exoplatform.perkstore.button.cancel') }}
                 </button>
                 <button
@@ -249,7 +259,6 @@ import ProfileLink from '../ProfileLink.vue';
 
 import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 import {formatDateTime} from '../../js/PerkStoreSettings.js';
-import {generateBarCode} from '../../js/QRCode.js';
 
 export default {
   components: {
@@ -281,7 +290,6 @@ export default {
     return {
       // Attention: Used to close modal only when refunding process
       // is finished
-      barcodeModal: false,
       refunding: false,
       statusList: [
         'ORDERED',
@@ -290,16 +298,14 @@ export default {
         'PAID',
         'PARTIAL',
         'DELIVERED',
-        'REFUNDED'
+        'REFUNDED',
+        'FRAUD',
       ],
     };
   },
   computed: {
     orderAmount() {
       return (this.order && this.order.amount && toFixed(this.order.amount)) || 0;
-    },
-    barcodeContainerId() {
-      return `barcode${this.order.id}`;
     },
     transactionLink() {
       if(this.order.transactionHash && this.order) {
@@ -397,29 +403,21 @@ export default {
       this.$emit('init-wallet');
       this.refunding = false;
     },
-    cancelOrder() {
+    changeStatus(newStatus) {
       this.$emit('loading', true);
       return saveOrderStatus({
         id: this.order.id,
         productId: this.order.productId,
-        status: 'CANCELED',
+        status: newStatus || this.order.status,
       }, 'STATUS')
         .then(order => {
+          this.$emit('changed', order);
           this.$forceUpdate();
         })
         .catch(e => {
           console.debug("Error saving status", e);
           this.$emit('error', e && e.message ? e.message : String(e));
         }).finally(() => this.$emit('loading', false));
-    },
-    displayBarcode() {
-      generateBarCode(this.barcodeContainerId, this.order.productId, this.order.id, eXo.env.portal.userName);
-    },
-    openDeliverWindow(productId, orderId, userId) {
-      console.debug('Detected barcode', productId, orderId, userId, this.$refs);
-      if (this.$refs && this.$refs.deliverModal && this.order && this.order.productId === productId && this.order.id === orderId) {
-        this.$refs.deliverModal.open(productId, orderId, userId);
-      }
     },
   }
 }

@@ -15,7 +15,7 @@
     </v-expand-transition>
     <template v-if="!selectedProduct">
       <v-container
-        v-if="products && products.length"
+        v-if="canAddProduct || (products && products.length)"
         class="border-box-sizing productsListParentContainer"
         fluid
         grid-list-md>
@@ -25,20 +25,22 @@
           class="productsListParent">
           <create-product-button
             v-if="canAddProduct"
-            class="xs12 md3 d-none d-sm-flex my-1"
+            class="xs12 sm4 md3 d-none d-sm-flex my-1"
             @create-product="$emit('create-product')" />
-          <template v-for="product in products">
-            <product-detail
-              :key="product.id"
-              :product="product"
-              :symbol="symbol"
-              :wallet-loading="walletLoading"
-              :wallet-enabled="walletEnabled"
-              class="border-box-sizing xs12 md3"
-              @product-details="$emit('product-details', $event)"
-              @orders-list="displayOrdersList"
-              @edit="$emit('edit', $event)"
-              @buy="$emit('buy', $event)" />
+          <template v-if="products && products.length">
+            <template v-for="product in products">
+              <product-detail
+                :key="product.id"
+                :product="product"
+                :symbol="symbol"
+                :wallet-loading="walletLoading"
+                :wallet-enabled="walletEnabled"
+                class="border-box-sizing xs12 sm4 md3"
+                @product-details="$emit('product-details', $event)"
+                @orders-list="displayOrdersList"
+                @edit="$emit('edit', $event)"
+                @buy="$emit('buy', $event)" />
+            </template>
           </template>
         </v-layout>
       </v-container>

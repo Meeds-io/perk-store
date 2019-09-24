@@ -14,17 +14,25 @@
         row
         grow
         class="no-wrap mx-0">
-        <v-flex
-          v-if="productImage && !integrated"
-          class="d-sm-flex d-none"
-          sm5>
-          <v-img
-            :src="productImage"
-            aspect-ratio="1"
-            max-width="200px"
-            max-height="100%"
-            class="productImageBuyPage" />
-        </v-flex>
+        <template v-if="!integrated">
+          <v-flex
+            v-if="productImage"
+            class="d-sm-flex d-none"
+            sm5>
+            <v-img
+              :src="productImage"
+              aspect-ratio="1"
+              max-width="200px"
+              max-height="100%"
+              class="productImageBuyPage" />
+          </v-flex>
+          <v-flex
+            v-else
+            class="d-sm-flex d-none"
+            sm5>
+            <v-icon class="productImageBuyPage productNoImages">fa-images</v-icon>
+          </v-flex>
+        </template>
         <v-flex
           :sm7="!integrated"
           xs12>

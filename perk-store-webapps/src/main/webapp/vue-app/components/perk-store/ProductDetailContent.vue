@@ -3,7 +3,7 @@
     <div class="headline mb-4">
       {{ product.title }}
       <div v-if="product.receiverMarchand" class="no-wrap caption">
-        {{ $t('exoplatform.perkstore.label.publishedBy') }}
+        {{ $t('exoplatform.perkstore.label.offeredBy') }}
         <profile-link
           :id="product.receiverMarchand.id"
           :space-id="product.receiverMarchand.spaceId"
