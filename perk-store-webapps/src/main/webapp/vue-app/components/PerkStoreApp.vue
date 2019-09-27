@@ -43,7 +43,6 @@
                   prepend-inner-icon="search"
                   single-line
                   hide-details
-                  autofocus
                   class="searchProductsInput ml-3 mt-1 py-0 d-inline-flex" />
                 <v-progress-circular
                   v-show="searchLoading"
@@ -64,7 +63,6 @@
                   prepend-inner-icon="search"
                   single-line
                   hide-details
-                  autofocus
                   class="searchProductsInput ml-3 mt-1 py-0 d-inline-flex" />
               </template>
             </v-toolbar-title>
@@ -307,7 +305,7 @@
       <div id="perkStoreDialogsParent">
       </div>
     </main>
-    <main v-else id="applicationDisabled">
+    <main v-else-if="!loading && !walletLoading" id="applicationDisabled">
       <v-layout wrap class="mt-7">
         <v-flex class="mx-auto text-center title" xs12>
           {{ $t('exoplatform.perkstore.info.applicationDisabledPart1') }}
@@ -360,7 +358,7 @@ export default {
     walletLoading: false,
     walletEnabled: false,
     perkStoreEnabled: false,
-    isApplicationEnabled: true,
+    isApplicationEnabled: false,
     walletNeedPassword: false,
     loading: false,
     selectedProduct: null,
@@ -523,19 +521,20 @@ export default {
       this.wallet = event && event.detail && event.detail.wallet;
     },
     walletInitialized(event) {
-      this.walletLoading = false;
-      this.walletNeedPassword = false;
       const result = event && event.detail;
       if(result && !result.enabled) {
-        this.isApplicationEnabled = false;
+        this.isApplicationEnabled = this.isApplicationEnabled || false;
       } else if(!result || result.error) {
+        this.isApplicationEnabled = true;
         this.walletWarning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
-        this.isApplicationEnabled = result.enabled;
+        this.isApplicationEnabled = this.isApplicationEnabled || result.enabled;
         this.walletNeedPassword = result.needPassword;
       }
+      this.walletNeedPassword = false;
+      this.walletLoading = false;
     },
     closeDetails() {
       this.displayProductDetails = false;
