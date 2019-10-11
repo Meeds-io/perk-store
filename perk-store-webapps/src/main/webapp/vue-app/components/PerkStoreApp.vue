@@ -3,7 +3,17 @@
     id="PerkStoreApp"
     class="transparent VuetifyApp"
     flat>
-    <main v-if="isApplicationEnabled">
+    <main v-if="loading">
+      <v-toolbar color="transparent" flat>
+        <v-spacer />
+        <v-progress-circular
+          color="primary"
+          class="mb-2"
+          indeterminate />
+        <v-spacer />
+      </v-toolbar>
+    </main>
+    <main v-else-if="isApplicationEnabled">
       <v-layout justify-center>
         <v-flex xs12>
           <v-toolbar
@@ -214,7 +224,7 @@
           </v-toolbar>
 
           <v-toolbar
-            v-if="perkStoreEnabled && !loading && !walletLoading && walletWarning"
+            v-if="perkStoreEnabled && !walletLoading && walletWarning"
             color="transparent"
             flat>
             <v-spacer />
@@ -228,16 +238,11 @@
           </v-toolbar>
 
           <v-toolbar
-            v-if="loading || error"
+            v-if="error"
             color="transparent"
             flat>
             <v-spacer />
-            <v-progress-circular
-              v-if="loading"
-              color="primary"
-              class="mb-2"
-              indeterminate />
-            <v-flex v-else-if="error" class="text-center">
+            <v-flex class="text-center">
               <div class="alert alert-error">
                 <i class="uiIconError"></i> {{ error }}
               </div>
@@ -305,7 +310,7 @@
       <div id="perkStoreDialogsParent">
       </div>
     </main>
-    <main v-else-if="!loading && !walletLoading" id="applicationDisabled">
+    <main v-else-if="!walletLoading" id="applicationDisabled">
       <v-layout wrap class="mt-7">
         <v-flex class="mx-auto text-center title" xs12>
           {{ $t('exoplatform.perkstore.info.applicationDisabledPart1') }}
@@ -360,7 +365,7 @@ export default {
     perkStoreEnabled: false,
     isApplicationEnabled: false,
     walletNeedPassword: false,
-    loading: false,
+    loading: true,
     selectedProduct: null,
     selectedOrderId: null,
     displayMyOrders: false,
@@ -474,9 +479,9 @@ export default {
             this.initWalletAPI();
           } else {
             this.walletWarning = this.$t('exoplatform.perkstore.warning.walletNotInstalled');
+            this.loading = false;
           }
         }, 2000);
-        this.loading = false;
       });
     },
     filterProducts(event) {
@@ -531,10 +536,10 @@ export default {
       } else {
         this.walletEnabled = true;
         this.isApplicationEnabled = this.isApplicationEnabled || result.enabled;
-        this.walletNeedPassword = result.needPassword;
       }
-      this.walletNeedPassword = false;
+      this.walletNeedPassword = result && result.needPassword;
       this.walletLoading = false;
+      this.loading = false;
     },
     closeDetails() {
       this.displayProductDetails = false;
