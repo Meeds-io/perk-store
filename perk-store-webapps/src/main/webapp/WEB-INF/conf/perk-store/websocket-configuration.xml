@@ -8,17 +8,17 @@
     <component-plugin>
       <name>exo.perkstore.settings.modified</name>
       <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.WebSocketSettingsListener</type>
+      <type>org.exoplatform.perkstore.listener.WebSocketSettingsListener</type>
     </component-plugin>
     <component-plugin>
-      <name>exo.addons.perkstore.product.createOrModify</name>
+      <name>exo.perkstore.product.createOrModify</name>
       <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.WebSocketProductListener</type>
+      <type>org.exoplatform.perkstore.listener.WebSocketProductListener</type>
     </component-plugin>
     <component-plugin>
-      <name>exo.addons.perkstore.order.createOrModify</name>
+      <name>exo.perkstore.order.createOrModify</name>
       <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.WebSocketOrderListener</type>
+      <type>org.exoplatform.perkstore.listener.WebSocketOrderListener</type>
     </component-plugin>
   </external-component-plugins>
 

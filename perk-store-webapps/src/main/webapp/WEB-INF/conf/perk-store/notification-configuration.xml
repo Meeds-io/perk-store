@@ -5,14 +5,14 @@
   <external-component-plugins>
     <target-component>org.exoplatform.services.listener.ListenerService</target-component>
     <component-plugin>
-      <name>exo.addons.perkstore.order.createOrModify</name>
+      <name>exo.perkstore.order.createOrModify</name>
       <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.ProductOrderNotificationListener</type>
+      <type>org.exoplatform.perkstore.listener.ProductOrderNotificationListener</type>
     </component-plugin>
     <component-plugin>
-      <name>exo.addons.perkstore.product.createOrModify</name>
+      <name>exo.perkstore.product.createOrModify</name>
       <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.ProductNotificationListener</type>
+      <type>org.exoplatform.perkstore.listener.ProductNotificationListener</type>
     </component-plugin>
   </external-component-plugins>
 
@@ -50,7 +50,7 @@
     <component-plugin>
       <name>notification.plugins</name>
       <set-method>addPlugin</set-method>
-      <type>org.exoplatform.addon.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
+      <type>org.exoplatform.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
       <init-params>
         <value-param>
           <name>notification.id</name>
@@ -95,7 +95,7 @@
     <component-plugin>
       <name>notification.plugins</name>
       <set-method>addPlugin</set-method>
-      <type>org.exoplatform.addon.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
+      <type>org.exoplatform.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
       <init-params>
         <value-param>
           <name>notification.id</name>
@@ -140,7 +140,7 @@
     <component-plugin>
       <name>notification.plugins</name>
       <set-method>addPlugin</set-method>
-      <type>org.exoplatform.addon.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
+      <type>org.exoplatform.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
       <init-params>
         <value-param>
           <name>notification.id</name>
@@ -189,7 +189,7 @@
     <component-plugin>
       <name>notification.plugins</name>
       <set-method>addPlugin</set-method>
-      <type>org.exoplatform.addon.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
+      <type>org.exoplatform.perkstore.notification.plugin.PerkStoreNotificationPlugin</type>
       <init-params>
         <value-param>
           <name>notification.id</name>
@@ -241,7 +241,7 @@
     <component-plugin>
       <name>web.channel.perkstore.template</name>
       <set-method>registerTemplateProvider</set-method>
-      <type>org.exoplatform.addon.perkstore.notification.provider.WebTemplateProvider</type>
+      <type>org.exoplatform.perkstore.notification.provider.WebTemplateProvider</type>
       <init-params>
         <value-param>
           <name>channel-id</name>
@@ -252,7 +252,7 @@
     <component-plugin>
       <name>mail.channel.perkstore.template</name>
       <set-method>registerTemplateProvider</set-method>
-      <type>org.exoplatform.addon.perkstore.notification.provider.MailTemplateProvider</type>
+      <type>org.exoplatform.perkstore.notification.provider.MailTemplateProvider</type>
       <init-params>
         <value-param>
           <name>channel-id</name>
@@ -263,7 +263,7 @@
     <component-plugin>
       <name>push.channel.perkstore.template</name>
       <set-method>registerTemplateProvider</set-method>
-      <type>org.exoplatform.addon.perkstore.notification.provider.MobilePushTemplateProvider</type>
+      <type>org.exoplatform.perkstore.notification.provider.MobilePushTemplateProvider</type>
       <init-params>
         <value-param>
           <name>channel-id</name>

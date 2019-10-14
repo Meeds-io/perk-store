@@ -4,36 +4,36 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd" xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
   <component>
-    <type>org.exoplatform.addon.perkstore.dao.PerkStoreOrderDAO</type>
+    <type>org.exoplatform.perkstore.dao.PerkStoreOrderDAO</type>
   </component>
 
   <component>
-    <type>org.exoplatform.addon.perkstore.dao.PerkStoreProductDAO</type>
+    <type>org.exoplatform.perkstore.dao.PerkStoreProductDAO</type>
   </component>
 
   <component>
-    <key>org.exoplatform.addon.perkstore.storage.PerkStoreStorage</key>
-    <type>org.exoplatform.addon.perkstore.storage.cached.PerkStoreCachedStorage</type>
+    <key>org.exoplatform.perkstore.storage.PerkStoreStorage</key>
+    <type>org.exoplatform.perkstore.storage.cached.PerkStoreCachedStorage</type>
   </component>
 
   <component>
-    <type>org.exoplatform.addon.perkstore.service.PerkStoreService</type>
+    <type>org.exoplatform.perkstore.service.PerkStoreService</type>
   </component>
 
   <component>
-    <type>org.exoplatform.addon.perkstore.service.PerkStoreWebSocketService</type>
+    <type>org.exoplatform.perkstore.service.PerkStoreWebSocketService</type>
   </component>
 
   <component>
-    <type>org.exoplatform.addon.perkstore.rest.PerkStoreOrderREST</type>
+    <type>org.exoplatform.perkstore.rest.PerkStoreOrderREST</type>
   </component>
 
   <component>
-    <type>org.exoplatform.addon.perkstore.rest.PerkStoreProductREST</type>
+    <type>org.exoplatform.perkstore.rest.PerkStoreProductREST</type>
   </component>
 
   <component>
-    <type>org.exoplatform.addon.perkstore.rest.PerkStoreSettingsREST</type>
+    <type>org.exoplatform.perkstore.rest.PerkStoreSettingsREST</type>
   </component>
 
   <external-component-plugins>
@@ -41,16 +41,16 @@
     <component-plugin>
       <name>perkstore</name>
       <set-method>addFeaturePlugin</set-method>
-      <type>org.exoplatform.addon.perkstore.plugin.PerkStoreFeaturePlugin</type>
+      <type>org.exoplatform.perkstore.plugin.PerkStoreFeaturePlugin</type>
     </component-plugin>
   </external-component-plugins>
 
   <external-component-plugins>
     <target-component>org.exoplatform.services.listener.ListenerService</target-component>
     <component-plugin>
-      <name>exo.addon.wallet.transaction.mined</name>
+      <name>exo.wallet.transaction.mined</name>
       <set-method>addListener</set-method>
-      <type>org.exoplatform.addon.perkstore.listener.EthereumWalletTransactionListener</type>
+      <type>org.exoplatform.perkstore.listener.EthereumWalletTransactionListener</type>
     </component-plugin>
   </external-component-plugins>
 

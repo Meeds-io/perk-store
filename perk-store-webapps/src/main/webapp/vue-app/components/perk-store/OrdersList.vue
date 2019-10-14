@@ -172,7 +172,7 @@ export default {
     }
   },
   created() {
-    document.addEventListener('exo.addons.perkstore.order.createOrModify', this.updateOrderFromWS);
+    document.addEventListener('exo.perkstore.order.createOrModify', this.updateOrderFromWS);
   },
   methods: {
     init(currentUserOrders) {
