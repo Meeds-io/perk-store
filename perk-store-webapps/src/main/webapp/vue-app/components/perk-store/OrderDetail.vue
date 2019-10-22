@@ -385,7 +385,7 @@ export default {
       return this.order.remainingQuantityToProcess && this.order.remainingQuantityToProcess > 0 && (this.isPaid || this.isPartial);
     },
     canRefundOrder() {
-      return this.refunding || (this.order.remainingQuantityToProcess && (this.order.refundedQuantity === 0 || this.order.refundTransactionStatus === 'FAILED') && this.order.remainingQuantityToProcess > 0 && (this.isPaid || this.isPartial));
+      return this.refunding || (this.order.remainingQuantityToProcess && (this.order.refundedQuantity === 0 || this.order.refundTransactionStatus === 'FAILED') && this.order.remainingQuantityToProcess > 0 && (this.isPaid || this.isPartial) && (this.order.receiver.type === 'space' || this.order.receiver.id === eXo.env.portal.userName));
     },
   },
   methods: {
