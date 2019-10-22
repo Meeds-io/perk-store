@@ -404,7 +404,6 @@ export default {
       this.refunding = false;
     },
     changeStatus(newStatus) {
-      this.$emit('loading', true);
       return saveOrderStatus({
         id: this.order.id,
         productId: this.order.productId,
@@ -417,7 +416,7 @@ export default {
         .catch(e => {
           console.debug("Error saving status", e);
           this.$emit('error', e && e.message ? e.message : String(e));
-        }).finally(() => this.$emit('loading', false));
+        });
     },
   }
 }
