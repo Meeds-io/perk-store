@@ -31,9 +31,8 @@
           <v-col
             v-for="item in filteredOrders"
             :key="item.id"
-            cols="15"
-            xs="15"
-            sm="5"
+            xs="12"
+            sm="6"
             md="3"
             xl="3">
             <order-detail

@@ -587,7 +587,12 @@ export default {
     displayProduct(product) {
       if (product) {
         if (product.id) {
-          product = this.products.find(existingProduct => existingProduct.id === product.id);
+          const existingProduct = this.products.find(existingProduct => existingProduct.id === product.id);
+          if (existingProduct) {
+            product = existingProduct;
+          } else {
+            this.products.unshift(product);
+          }
         } else {
           product = this.products.find(existingProduct => existingProduct.id === product);
         }
