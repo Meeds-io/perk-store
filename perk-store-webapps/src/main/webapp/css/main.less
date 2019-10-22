@@ -115,8 +115,6 @@
     margin: 12px 10px 0 !important;
     max-width: ~"calc(100% - 24px)" !important;
     border: 1px solid #e1e8ee !important;
-    position: relative;
-    z-index: 10;
 
     .v-toolbar__title {
       line-height: 37px;
@@ -407,7 +405,6 @@
   }
 
   .productOrderFilter {
-    height: ~"calc(100% - 90px)" !important;
     margin-top: 1px !important;
     margin-left: 10px;
     border-left: 1px solid #4d5466;
@@ -421,11 +418,9 @@
     border: 1px solid #e1e8ee !important;
   }
   .productOrderFilterContent {
-    min-height: ~"calc(100vh - 109px)" !important;
-    max-height: ~"calc(100vh - 109px)" !important;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 0 0 30px;
+    height: auto;
+    overflow: hidden;
+    padding: 0 0 30px 30px;
   }
 
   .productOrdersParent {

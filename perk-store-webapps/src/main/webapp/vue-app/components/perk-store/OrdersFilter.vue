@@ -6,31 +6,21 @@
     temporary
     absolute
     width="380">
-    <v-toolbar
-      flat
-      dense
-      class="productOrderFilterHeader">
-      <v-toolbar-title>
-        <h3>{{ $t('exoplatform.perkstore.label.filterOrders') }}</h3>
-      </v-toolbar-title>
+    <v-toolbar dense>
+      <v-toolbar-title class="text-truncate">{{ $t('exoplatform.perkstore.label.filterOrders') }}</v-toolbar-title>
       <v-spacer />
-      <v-toolbar-items>
-        <v-btn
-          :title="$t('exoplatform.perkstore.button.search')"
-          class="mr-1 btn btn-primary primary"
-          small
-          dark
-          @click="$emit('search')">
-          <v-icon dark>search</v-icon>
-        </v-btn>
-        <v-btn
-          :title="$t('exoplatform.perkstore.button.save')"
-          class="mr-1 btn"
-          small
-          @click="saveOrderFilter">
-          <v-icon>fa-save</v-icon>
-        </v-btn>
-      </v-toolbar-items>
+      <v-btn
+        :title="$t('exoplatform.perkstore.button.search')"
+        icon
+        @click="$emit('search')">
+        <v-icon dark>search</v-icon>
+      </v-btn>
+      <v-btn
+        :title="$t('exoplatform.perkstore.button.save')"
+        icon
+        @click="saveOrderFilter">
+        <v-icon>fa-save</v-icon>
+      </v-btn>
     </v-toolbar>
     <v-container grid-list-xl class="border-box-sizing pr-1 productOrderFilterContent">
       <v-layout wrap column>
