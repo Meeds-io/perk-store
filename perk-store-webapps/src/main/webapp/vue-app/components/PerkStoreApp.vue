@@ -17,6 +17,7 @@
       <v-layout justify-center>
         <v-flex xs12>
           <v-toolbar
+            :class="productFilterMenu && 'display-on-top'"
             color="white"
             class="application-toolbar"
             flat
