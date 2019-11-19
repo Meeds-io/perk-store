@@ -12,7 +12,7 @@
       <v-btn
         :title="$t('exoplatform.perkstore.button.search')"
         icon
-        @click="$emit('search')">
+        @click="searchOrders()">
         <v-icon dark>search</v-icon>
       </v-btn>
       <v-btn
@@ -91,8 +91,13 @@ export default {
     },
   },
   methods: {
+    searchOrders() {
+      this.$emit('search');
+      this.showFilters();
+    },
     saveOrderFilter() {
       saveOrderFilter(this.filter);
+      this.searchOrders();
     },
     showFilters() {
       this.display = !this.display;
