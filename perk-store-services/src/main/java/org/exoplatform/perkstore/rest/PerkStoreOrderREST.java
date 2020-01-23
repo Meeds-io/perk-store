@@ -29,6 +29,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.exoplatform.commons.search.rest.resource.CollectionResource;
+import org.exoplatform.commons.search.rest.resource.CollectionSizeResource;
 import org.exoplatform.perkstore.exception.PerkStoreException;
 import org.exoplatform.perkstore.model.OrderFilter;
 import org.exoplatform.perkstore.model.ProductOrder;
@@ -39,6 +41,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
 import io.swagger.annotations.*;
+import org.json.JSONObject;
 
 @Path("/perkstore/api/order")
 @Api(value = "/perkstore/api/order", description = "Manages perk store product orders") // NOSONAR
@@ -69,15 +72,23 @@ public class PerkStoreOrderREST implements ResourceContainer {
       @ApiResponse(code = 400, message = "Invalid query input"),
       @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response listOrders(@ApiParam(value = "OrderFilter object with search conditions", required = true) OrderFilter filter) {
+  public Response listOrders(@ApiParam(value = "OrderFilter object with search conditions", required = true) OrderFilter filter,
+                             @ApiParam(value = "Returning or not only the number of Orders without the whole list", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
     if (filter == null) {
       LOG.warn("Bad request sent to server with empty filter");
       return Response.status(400).build();
     }
     String currentUserId = getCurrentUserId();
     try {
-      List<ProductOrder> orders = perkStoreService.getOrders(filter, currentUserId);
-      return Response.ok(orders).build();
+      if (returnSize) {
+        Long totalOrders = perkStoreService.countOrders(filter, currentUserId);
+        JSONObject ordersSize = new JSONObject();
+        ordersSize.put("size", totalOrders);
+        return Response.ok(ordersSize.toString()).build();
+      } else {
+        List<ProductOrder> orders = perkStoreService.getOrders(filter, currentUserId);
+        return Response.ok(orders).build();
+      }
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Listing orders", currentUserId, filter);
     } catch (Exception e) {

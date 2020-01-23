@@ -275,27 +275,51 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   @Test
   public void testGetProducts() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
-    List<Product> products = perkStoreService.getProducts(USERNAME);
+    List<Product> products = perkStoreService.getProducts(false, USERNAME);
     assertNotNull(products);
     assertEquals(0, products.size());
 
     newProduct(perkStoreService, new Product());
-    products = perkStoreService.getProducts(USERNAME);
+    products = perkStoreService.getProducts(false, USERNAME);
     assertNotNull(products);
     assertEquals(1, products.size());
 
     Product savedProduct = newProduct(perkStoreService, new Product());
-    products = perkStoreService.getProducts("root2");
+    products = perkStoreService.getProducts(false,"root2");
     assertNotNull(products);
     assertEquals(2, products.size());
 
     savedProduct.setAccessPermissions(Arrays.asList(Utils.toProfile(1l)));
     perkStoreService.saveProduct(savedProduct, USERNAME);
-    products = perkStoreService.getProducts("root2");
+    products = perkStoreService.getProducts(false, "root2");
     assertNotNull(products);
     assertEquals(1, products.size());
 
-    products = perkStoreService.getProducts(USERNAME_ADMIN);
+    products = perkStoreService.getProducts(false, USERNAME_ADMIN);
+    assertNotNull(products);
+    assertEquals(2, products.size());
+  }
+  
+  @Test
+  public void testGetAvailableProducts() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+
+    Product savedProduct = newProduct(perkStoreService, new Product());
+    Product savedProduct1 = newProduct(perkStoreService, new Product());
+    Product savedProduct2 = newProduct(perkStoreService, new Product());
+    Product savedProduct3 = newProduct(perkStoreService, new Product());
+
+    List<Product> products = perkStoreService.getProducts(false, USERNAME);
+    assertNotNull(products);
+    assertEquals(4, products.size());
+    
+    savedProduct2.setEnabled(false);
+    savedProduct3.setEnabled(false);
+    perkStoreService.saveProduct(savedProduct2, USERNAME);
+    perkStoreService.saveProduct(savedProduct3, USERNAME);
+
+
+    products = perkStoreService.getProducts(true, USERNAME);
     assertNotNull(products);
     assertEquals(2, products.size());
   }
@@ -870,7 +894,49 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
   }
-
+  
+  @Test
+  public void testCountOrders() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    
+    OrderFilter filter = new OrderFilter();
+    checkBasicOperations(filter);
+    
+    filter.setLimit(10);
+    filter.setNotProcessed(true);
+    checkBasicOperations(filter);
+    
+    try {
+      perkStoreService.countOrders(null, USERNAME);
+      fail("filter shouldn't be null");
+    } catch (IllegalArgumentException e1) {
+      // Expected
+    }
+    try {
+      perkStoreService.countOrders(filter, null);
+      fail("username shouldn't be null");
+    } catch (IllegalArgumentException e1) {
+      // Expected
+    }
+    Long orders = perkStoreService.countOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(0, orders, 0);
+    
+    Product[] products = new Product[5];
+    
+    for (int i = 0; i < 5; i++) {
+      products[i] = newProductInstance(new Product());
+      products[i].setAccessPermissions(Arrays.asList(Utils.toProfile(1l)));
+      products[i] = perkStoreService.saveProduct(products[i], USERNAME_ADMIN);
+      entitiesToClean.add(products[i]);
+      newOrder(products[i]);
+    }
+    
+    orders = perkStoreService.countOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(5, orders.intValue());
+    }
+    
   @Test
   public void testGetOrdersWithFraud() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);

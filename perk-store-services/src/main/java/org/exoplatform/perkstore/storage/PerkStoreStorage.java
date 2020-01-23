@@ -147,6 +147,10 @@ public class PerkStoreStorage {
     return entities.stream().map(orderEntity -> getOrderById(orderEntity.getId())).collect(Collectors.toList());
   }
 
+  public Long countOrders(String username, OrderFilter filter) {
+    return orderDAO.countOrders(username, filter);
+  }
+
   public ProductOrder getOrderById(long orderId) {
     ProductOrderEntity orderEntity = orderDAO.find(orderId);
     return orderEntity == null ? null : fromEntity(orderEntity);

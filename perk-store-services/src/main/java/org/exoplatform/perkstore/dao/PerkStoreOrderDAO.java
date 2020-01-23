@@ -149,12 +149,35 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
   }
 
   public List<ProductOrderEntity> getOrders(String username, OrderFilter filter) {
-    TypedQuery<ProductOrderEntity> query = getEntityManager().createQuery(getFilterQueryString(username, filter),
+    StringBuilder orderQuery = getOrderFilterQueryString(username,filter);
+    if (StringUtils.isEmpty(orderQuery.toString().trim())) {
+      orderQuery.insert(0, "Select o from Order o ");
+    } else {
+      orderQuery.insert(0, "Select o from Order o WHERE ");
+    }
+    orderQuery.append(" ORDER BY createdDate DESC");
+    
+    TypedQuery<ProductOrderEntity> query = getEntityManager().createQuery(orderQuery.toString(),
                                                                           ProductOrderEntity.class);
 
     query.setMaxResults(filter.getLimit());
     return query.getResultList();
   }
+
+  public Long countOrders(String username, OrderFilter filter) {
+    StringBuilder orderQuery = getOrderFilterQueryString(username,filter);
+    if (StringUtils.isEmpty(orderQuery.toString().trim())) {
+      orderQuery.insert(0, "Select Count (o) from Order o ");
+    } else {
+      orderQuery.insert(0, "Select Count (o) from Order o WHERE ");
+    }
+    TypedQuery<Long> query = getEntityManager().createQuery(orderQuery.toString(),
+                                                            Long.class);
+
+    Long result = query.getSingleResult();
+    return result == null ? 0 : result;
+  }
+  
 
   public ProductOrderEntity findOrderByTransactionHash(String hash) {
     TypedQuery<ProductOrderEntity> query = getEntityManager().createNamedQuery("Order.findOrderByTransactionHash",
@@ -189,7 +212,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     }
   }
 
-  private String getFilterQueryString(String username, OrderFilter filter) {
+  private StringBuilder getOrderFilterQueryString(String username, OrderFilter filter) {
     StringBuilder query = new StringBuilder();
 
     boolean firstConditionAdded = false;
@@ -244,16 +267,9 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
       query.append(" AND o.createdDate < ");
       query.append(getEndOfDayMillis(selectedDate));
     }
-
-    if (StringUtils.isEmpty(query.toString().trim())) {
-      query.insert(0, "Select o from Order o ");
-    } else {
-      query.insert(0, "Select o from Order o WHERE ");
-    }
-    query.append(" ORDER BY createdDate DESC");
-    return query.toString();
+    return query;
   }
-
+  
   private List<Integer> getSelectedStatuses(OrderFilter filter) {
     List<Integer> statuses = new ArrayList<>();
     if (filter.isOrdered()) {

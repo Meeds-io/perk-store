@@ -25,6 +25,7 @@ import static org.exoplatform.perkstore.statistic.StatisticUtils.OPERATION;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.picocontainer.Startable;
@@ -248,7 +249,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     return product;
   }
 
-  public List<Product> getProducts(String username) throws Exception {
+  public List<Product> getProducts(boolean available, String username) throws Exception {
     List<Product> products = perkStoreStorage.getAllProducts();
     if (products == null || products.isEmpty()) {
       return Collections.emptyList();
@@ -264,6 +265,11 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       } else {
         productsIterator.remove();
       }
+    }
+    if (available) {
+      products = products.stream()
+                         .filter(product -> product.isEnabled() && (product.isUnlimited() || product.getTotalSupply() > product.getPurchased()))
+                         .collect(Collectors.toList());
     }
     return products;
   }
@@ -314,6 +320,16 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       orders.stream().forEach(order -> computeOrderFields(null, order));
     }
     return orders;
+  }
+
+  public Long countOrders(OrderFilter filter, String username) {
+    if (filter == null) {
+      throw new IllegalArgumentException("Filter is mandatory");
+    }
+    if (StringUtils.isBlank(username)) {
+      throw new IllegalArgumentException("username is mandatory");
+    }
+    return perkStoreStorage.countOrders(username, filter);
   }
 
   public void checkCanCreateOrder(ProductOrder order, String username) throws PerkStoreException {

@@ -38,6 +38,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
 import io.swagger.annotations.*;
+import org.json.JSONObject;
 
 @Path("/perkstore/api/product")
 @Api(value = "/perkstore/api/product", description = "Manages perk store products") // NOSONAR
@@ -117,11 +118,19 @@ public class PerkStoreProductREST implements ResourceContainer {
       @ApiResponse(code = 200, message = "Request fulfilled"),
       @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response listProducts() {
+  public Response listProducts(@ApiParam(value = "Returning only the available products or all products", defaultValue = "false") @QueryParam("available") boolean available,
+                               @ApiParam(value = "Returning the number of Products or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
     String currentUserId = getCurrentUserId();
     try {
-      List<Product> allProducts = perkStoreService.getProducts(currentUserId);
-      return Response.ok(allProducts).build();
+      List<Product> allProducts = perkStoreService.getProducts(available, currentUserId);
+      
+      if (returnSize) {
+        JSONObject size = new JSONObject();
+        size.put("size", allProducts.size());
+        return Response.ok(size.toString()).build();
+      } else {
+        return Response.ok(allProducts).build();
+      }
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Getting products list", currentUserId, null);
     } catch (Exception e) {
