@@ -171,6 +171,7 @@ export default {
     }
   },
   created() {
+    this.init();
     document.addEventListener('exo.perkstore.order.createOrModify', this.updateOrderFromWS);
   },
   methods: {

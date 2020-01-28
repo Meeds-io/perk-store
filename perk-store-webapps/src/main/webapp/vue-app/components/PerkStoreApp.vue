@@ -444,7 +444,7 @@ export default {
             .replace(/=/g, '":"')}"}`
         );
     }
-    return this.init(parameters && parameters.productId, parameters && parameters.orderId);
+    return this.init(parameters && parameters.productId, parameters && parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === "true");
   },
   methods: {
     refreshSettings(event) {
@@ -455,7 +455,7 @@ export default {
       this.init();
       // refresh entire application if the access permission is changed
     },
-    init(selectedProductId, selectedOrderId) {
+    init(selectedProductId, selectedOrderId, notProcessedOrders) {
       this.products = [];
       this.productsFilters = getProductFilter() || {};
       this.loading = true;
@@ -470,6 +470,12 @@ export default {
         this.ordersFilter = getOrderFilter();
       })
       .then(() => this.refreshProductList(selectedProductId, selectedOrderId))
+      .then(() => {
+        if (notProcessedOrders) {
+          this.ordersFilter = {notProcessed: true};
+          this.displayMyOrders = true;
+        }
+      })
       .catch(e => {
         console.debug("Error initializing application", e);
         this.error = e && e.message ? e.message : String(e);
