@@ -33,6 +33,9 @@ import org.picocontainer.Startable;
 import org.exoplatform.commons.api.settings.SettingService;
 import org.exoplatform.commons.api.settings.SettingValue;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.perkstore.exception.PerkStoreException;
 import org.exoplatform.perkstore.model.*;
 import org.exoplatform.perkstore.model.constant.*;
@@ -84,20 +87,28 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
   private GlobalSettings            storedGlobalSettings;
 
+  private PortalContainer           container;
+
   public PerkStoreService(PerkStoreWebSocketService webSocketService,
                           PerkStoreStorage perkStoreStorage,
-                          SettingService settingService) {
+                          SettingService settingService,
+                          PortalContainer container) {
     this.perkStoreStorage = perkStoreStorage;
     this.webSocketService = webSocketService;
     this.settingService = settingService;
+    this.container = container;
   }
 
   @Override
   public void start() {
+    ExoContainerContext.setCurrentContainer(container);
+    RequestLifeCycle.begin(container);
     try {
       this.storedGlobalSettings = loadGlobalSettings();
     } catch (Exception e) {
       LOG.error("Error loading perk store global settings", e);
+    } finally {
+      RequestLifeCycle.end();
     }
   }
 
@@ -819,7 +830,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       try {
         globalSettings = fromString(GlobalSettings.class, globalSettingsValue.getValue().toString());
       } catch (JsonException e) {
-        throw new IllegalStateException("Can't read perkstore settings");
+        throw new IllegalStateException("Can't read perkstore settings", e);
       }
       if (globalSettings != null) {
         List<Long> accessPermissions = globalSettings.getAccessPermissions();
