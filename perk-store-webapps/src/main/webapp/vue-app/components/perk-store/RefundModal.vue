@@ -5,7 +5,6 @@
     class="refundProductModal"
     width="300px"
     max-width="100vw"
-    attach="#perkStoreDialogsParent"
     persistent
     eager
     @keydown.esc="close">
@@ -72,13 +71,12 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          :disabled="!validForm"
-          :loading="loading || walletLoading"
-          class="primary mr-1"
+        <button
+          :disabled="!validForm || loading || walletLoading"
+          class="ignore-vuetify-classes btn btn-primary mr-1"
           @click="refundProduct">
           {{ $t('exoplatform.perkstore.button.refund') }}
-        </v-btn>
+        </button>
         <button
           class="ignore-vuetify-classes btn"
           :disabled="loading || walletLoading"

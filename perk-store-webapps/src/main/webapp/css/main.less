@@ -1,10 +1,6 @@
 #PerkStoreApp {
   min-height: ~"calc( 100vh - 60px)";
 
-  textarea {
-    margin-bottom: 0;
-  }
-
   .v-menu__content {
     max-width: none !important;
     z-index: 2000 !important;
@@ -57,23 +53,6 @@
     margin-bottom: 0;
   }
 
-  .v-divider--vertical {
-    vertical-align: middle;
-  }
-
-  .v-messages {
-    min-height: auto;
-  }
-
-  .v-select__selections {
-    max-width: 80%;
-  }
-  .v-divider {
-    margin: 0;
-  }
-  .layout {
-    max-width: 100%;
-  }
   .primary--text {
     color: #578dc9 !important;
   }
@@ -104,11 +83,6 @@
 
   .v-autocomplete label {
     z-index: 1002;
-  }
-
-  code {
-    padding: 0;
-    max-width: 100%;
   }
 
   .application-toolbar {
@@ -311,11 +285,6 @@
     font-size: 12px;
     background-color: rgba(255, 202, 122, 0.3);
   }
-  .productImageBuyPage {
-    border-radius: 100%;
-    margin: auto;
-    border: 4px #ffcb08 solid;
-  }
 
   .productImageContainer {
     margin: 5px auto;
@@ -401,12 +370,6 @@
   }
   .uiIconLightGray:before {
     color: #4d5466;
-  }
-
-  .profileAvatarCircle {
-    max-height: 29px;
-    max-width: 29px;
-    border-radius: 100px;
   }
 
   .productOrderFilter {
@@ -511,24 +474,6 @@
       padding: 0 17px;
     }
   }
-
-  .orderDeliverQuantity {
-    padding-top: 0;
-
-    .v-input__slot {
-      margin: 0;
-
-      &:before {
-        border-style: hidden;
-      }
-    }
-    
-    input {
-      padding: 0;
-    }
-  }
-
-  
 
   .productDetailContainer {
     padding: 20px 13px 20px 12px;
@@ -635,6 +580,74 @@
 
   .requestFundsLink {
     text-decoration: underline;
+  }
+}
+
+.profileAvatarCircle {
+  max-height: 29px;
+  max-width: 29px;
+  border-radius: 100px;
+}
+
+
+.VuetifyApp .v-dialog.uiPopup {
+
+  .productImageBuyPage {
+    border-radius: 100%;
+    margin: auto;
+    border: 4px #ffcb08 solid;
+  }
+
+  .orderDeliverQuantity {
+    padding-top: 0;
+
+    .v-input__slot {
+      margin: 0;
+  
+      &:before {
+        border-style: hidden;
+      }
+    }
+
+    input {
+      padding: 0;
+    }
+  }
+
+  .flex {
+    box-sizing: border-box;
+  }
+
+  select.small, input.small {
+    width: auto;
+    height: 32px;
+  }
+
+  label {
+    margin-bottom: 0;
+  }
+
+  .primary--text {
+    color: #578dc9 !important;
+  }
+
+  .buyProductForm .v-btn {
+    width: 45%;
+  }
+
+  .v-btn.primary:not([disabled]) {
+    background-color: #578dc9 !important;
+    color: #fff;
+  }
+
+  .v-btn.v-btn--disabled.primary[disabled] {
+    background-color: #afc9e5 !important;
+    color: #fff !important;
+    opacity: 1;
+
+    i {
+      color: #fff !important;
+    }
   }
 }
 

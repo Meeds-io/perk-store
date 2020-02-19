@@ -5,8 +5,7 @@
     class="DeliveredProductModal"
     width="300px"
     max-width="100vw"
-    eager
-    attach="#perkStoreDialogsParent">
+    eager>
     <v-card class="elevation-12">
       <div class="ignore-vuetify-classes popupHeader ClearFix">
         <a
@@ -66,14 +65,13 @@
       </v-list>
       <v-card-actions>
         <v-spacer />
-        <v-btn
+        <button
           v-if="order && order.remainingQuantityToProcess"
           :disabled="disableDeliverButton"
-          :loading="loading"
-          class="primary mr-1"
+          class="ignore-vuetify-classes btn btn-primary mr-1"
           @click="deliverProduct">
           {{ $t('exoplatform.perkstore.button.save') }}
-        </v-btn>
+        </button>
         <button
           class="ignore-vuetify-classes btn"
           :disabled="loading"
@@ -133,7 +131,7 @@ export default {
       return Number(this.quantity) + Number(this.order.deliveredQuantity);
     },
     disableDeliverButton() {
-      return !this.order || !this.isPositiveNumber(this.quantity) || this.quantity > this.order.remainingQuantityToProcess;
+      return this.loading || !this.order || !this.isPositiveNumber(this.quantity) || this.quantity > this.order.remainingQuantityToProcess;
     },
   },
   watch: {
