@@ -29,7 +29,8 @@
           <v-divider />
           <v-date-picker
             v-model="selectedDate"
-            type="date" />
+            type="date"
+            class="border-box-sizing" />
         </template>
         <v-checkbox v-model="filter.notProcessed" :label="$t('exoplatform.perkstore.label.notCompletelyProcessed')" />
         <template v-if="!filter.notProcessed">

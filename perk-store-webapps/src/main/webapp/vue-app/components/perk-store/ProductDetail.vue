@@ -50,11 +50,11 @@
               top
               @click="$emit('orders-list', product)">
               <v-badge
+                :value="product.notProcessedOrders"
                 :color="userData.canEdit ? 'red' : 'orange'"
                 right
                 overlap>
                 <span
-                  v-if="product.notProcessedOrders"
                   slot="badge"
                   class="orderListBadge">
                   {{ product.notProcessedOrders }}

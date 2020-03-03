@@ -73,7 +73,7 @@
                   <v-text-field
                     v-if="needPassword && opened"
                     v-model="walletPassword"
-                    :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
+                    :append-icon="walletPasswordShow ? 'mdi-eye' : 'mdi-eye-off'"
                     :type="walletPasswordShow ? 'text' : 'password'"
                     :disabled="loading"
                     :rules="requiredRule"
@@ -81,9 +81,9 @@
                     :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
                     name="walletPassword"
                     autocomplete="current-passord"
-                    counter
                     required
                     autofocus
+                    validate-on-blur
                     @click:append="walletPasswordShow = !walletPasswordShow" />
                 </div>
               </v-form>

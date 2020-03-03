@@ -55,14 +55,13 @@
           <v-text-field
             v-if="needPassword"
             v-model="walletPassword"
-            :append-icon="walletPasswordShow ? 'visibility_off' : 'visibility'"
+            :append-icon="walletPasswordShow ? 'mdi-eye' : 'mdi-eye-off'"
             :type="walletPasswordShow ? 'text' : 'password'"
             :disabled="loading"
             :rules="requiredRule"
             :label="$t('exoplatform.perkstore.label.walletPassword')"
             :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
             name="walletPassword"
-            counter
             required
             validate-on-blur
             autocomplete="current-passord"
