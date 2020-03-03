@@ -30,7 +30,8 @@
         <node>
             <name>perkstore</name>
             <label>#{addon.perkstore.navigation.node.label}</label>
-            <page-reference>portal::intranet::perkstore</page-reference>
+            <visibility>SYSTEM</visibility>
+            <page-reference>portal::global::perkstore</page-reference>
         </node>
     </page-nodes>
 </node-navigation>
