@@ -101,7 +101,7 @@
             <v-flex class="text-truncate title productCardTitle">
               <span :title="product.title">{{ product.title }}</span>
             </v-flex>
-            <v-flex class="primary--text headline text-right">
+            <v-flex class="primary--text headline text-right productCardPrice">
               {{ product.price }} {{ symbol }}
             </v-flex>
           </v-layout>

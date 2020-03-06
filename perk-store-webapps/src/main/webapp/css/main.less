@@ -1,3 +1,5 @@
+@import "variables.less";
+@import "mixins.less";
 #PerkStoreApp {
   min-height: ~"calc( 100vh - 60px)";
 
@@ -54,16 +56,16 @@
   }
 
   .primary--text {
-    color: #578dc9 !important;
+    color: @primaryColor !important;
   }
 
   .primary:not([disabled]) {
-    background-color: #578dc9 !important;
+    background-color: @primaryColor !important;
     color: #fff;
   }
 
   .primary[disabled] {
-    background-color: #afc9e5 !important;
+    background-color: @btnPrimaryDisableBackground !important;
     color: #fff !important;
     opacity: 1;
 
@@ -88,7 +90,7 @@
   .application-toolbar {
     margin: 12px 10px 0 !important;
     max-width: ~"calc(100% - 24px)" !important;
-    border: 1px solid #e1e8ee !important;
+    border: 1px solid @baseGreyColor !important;
 
     &.display-on-top {
       position: relative;
@@ -109,6 +111,7 @@
       right: 0;
       padding: 0 10px;
       margin-left: 16px;
+      background-color: @tertiaryColor !important;
     }
   }
   .contactAutoCompleteContent {
@@ -133,7 +136,7 @@
     }
 
     .v-list__tile:hover {
-      background-color: #578dc9;
+      background-color: @primaryColor;
       color: #fff;
       transition: unset;
       transform: none;
@@ -152,9 +155,9 @@
     cursor: pointer;
     margin: 0 3px 3px 0;
     padding: 2px 6px;
-    background: #578dc9;
+    background: @primaryColor;
     color: #fff;
-    border: 1px solid #215ab2;
+    border: 1px solid @primaryColor;
     border-radius: 3px;
     font-size: 15px;
 
@@ -181,7 +184,7 @@
   }
 
   #perkStoreAppMyOrdersButton {
-    background-color: rgba(233, 242, 249, 0.7) !important;
+    background-color: @btnPrimaryDisableBackground !important;
   }
 
   .searchProductsInput {
@@ -199,13 +202,13 @@
     }
 
     i {
-      color: #a8b3c5;
+      color: @quoteBorder;
     }
 
     input {
       background: transparent;
       ::placeholder {
-        color: #e1e8ee;
+        color: @baseGreyColor;
       }
     }
   }
@@ -278,7 +281,7 @@
   .userPendingOrders {
     width: auto;
     text-transform: uppercase;
-    color: #ffb441;
+    color: @darkYellow;
     font-size: 12px;
     background-color: rgba(255, 202, 122, 0.3);
   }
@@ -302,7 +305,7 @@
   }
 
   .productNoImages {
-    background-color: #578dc9!important;
+    background-color: @primaryColor!important;
     color: #fff;
     width: 170px;
     height: 170px;
@@ -341,21 +344,26 @@
   }
 
   .productCardTitle {
-    color: #4d5466;
+    color: @darkGrey;
   }
+
+  .productCardPrice {
+    color: @tertiaryColor !important;
+  }
+
   .productCardSubtitle {
-    color: #a8b3c5;
+    color: @quoteBorder;
   }
 
   .addProductButton {
     margin: auto;
     width: fit-content;
     border-radius: 100%;
-    border: 3px solid #ffcb08;
+    border: 3px solid @lightYellow;
     max-width: 100%;
 
     .addProductIcon {
-      color: #ffcb08;
+      color: @lightYellow;
       max-width: 100%;
     }
   }
@@ -366,13 +374,13 @@
     -webkit-box-orient: vertical;
   }
   .uiIconLightGray:before {
-    color: #4d5466;
+    color: @darkGrey;
   }
 
   .productOrderFilter {
     margin-top: 1px !important;
     margin-left: 10px;
-    border-left: 1px solid #4d5466;
+    border-left: 1px solid @darkGrey;
     min-width: 340px;
     top: 81px;
     overflow: hidden;
@@ -380,7 +388,7 @@
   }
 
   .productOrderFilterHeader {
-    border: 1px solid #e1e8ee !important;
+    border: 1px solid @baseGreyColor !important;
   }
   .productOrderFilterContent {
     height: auto;
@@ -456,7 +464,7 @@
       text-align: center;
       line-height: 23px;
       box-sizing: border-box;
-      color: #fd9a01;
+      color: @warningColor;
       background-color: rgba(255, 202, 122, 0.3);
     }
     .orderProcessingDetails {
@@ -511,7 +519,7 @@
 
   .fileDrop{
     &, [class^="uiIcon"] {
-      color: #2f5e92;
+      color: @primaryDarkerColor;
     }
     .dropZone {
       border-radius: 5px;
@@ -523,7 +531,7 @@
       display: flex;
 
       &:hover, &:hover .attachFileIcon, &.hover, &.hover .attachFileIcon {
-        background: #578dc9;
+        background: @primaryColor;
         opacity: 0.7;
         color: #fff !important;
       }
@@ -549,7 +557,7 @@
       text-align: center;
     }
     .uploadContainer .uploadError {
-      color: red;
+      color: @errorColor;
     }
   }
   .carousselParent, .carousselImage, .v-carousel__item, .v-window__container {
@@ -592,7 +600,7 @@
   .productImageBuyPage {
     border-radius: 100%;
     margin: auto;
-    border: 4px #ffcb08 solid;
+    border: 4px @lightYellow solid;
   }
 
   .orderDeliverQuantity {
@@ -625,7 +633,7 @@
   }
 
   .primary--text {
-    color: #578dc9 !important;
+    color: @primaryColor !important;
   }
 
   .buyProductForm .v-btn {
@@ -633,12 +641,12 @@
   }
 
   .v-btn.primary:not([disabled]) {
-    background-color: #578dc9 !important;
+    background-color: @primaryColor !important;
     color: #fff;
   }
 
   .v-btn.v-btn--disabled.primary[disabled] {
-    background-color: #afc9e5 !important;
+    background-color: @btnPrimaryDisableBackground !important;
     color: #fff !important;
     opacity: 1;
 

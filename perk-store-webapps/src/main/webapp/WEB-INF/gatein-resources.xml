@@ -3,14 +3,14 @@
   <portal-skin>
     <skin-name>Enterprise</skin-name>
     <skin-module>customModulePerkStore</skin-module>
-    <css-path>/css/perkstore.css</css-path>
+    <css-path>/skin/css/main.css</css-path>
     <css-priority>11</css-priority>
   </portal-skin>
 
   <portal-skin>
     <skin-name>Enterprise</skin-name>
     <skin-module>perkstore</skin-module>
-    <css-path>/css/platform.css</css-path>
+    <css-path>/skin/css/platform.css</css-path>
     <css-priority>0</css-priority>
   </portal-skin>
 
