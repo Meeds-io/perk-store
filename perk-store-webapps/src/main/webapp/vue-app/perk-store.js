@@ -1,5 +1,3 @@
-import './../css/main.less';
-
 import PerkStoreApp from './components/PerkStoreApp.vue';
 
 Vue.use(Vuetify);
