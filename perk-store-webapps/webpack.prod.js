@@ -20,10 +20,12 @@ const config = merge(webpackCommonConfig, {
   },
   entry: {
     perkstore: './src/main/webapp/vue-app/perk-store.js',
+    perkstoreOrder: './src/main/webapp/vue-app/perk-store-order.js'
   },
   output: {
     path: path.join(__dirname, 'target/perk-store/'),
-    filename: 'js/[name].bundle.js'
+    filename: 'js/[name].bundle.js',
+    libraryTarget: 'amd'
   },
   externals: {
     vue: 'Vue',
