@@ -24,4 +24,26 @@
      </portlet-info>
    </portlet>
 
+    <portlet>
+        <portlet-name>PerkstoreOrder</portlet-name>
+        <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
+        <init-param>
+            <name>portlet-view-dispatched-file-path</name>
+            <value>/perkstoreOrder.html</value>
+        </init-param>
+        <init-param>
+            <description>List of profiles that can be used to enable this portlet</description>
+            <name>exo.profiles</name>
+            <value>perk-store</value>
+        </init-param>
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+        <portlet-info>
+            <title>Perk Store Order</title>
+        </portlet-info>
+    </portlet>
+
+
+
 </portlet-app>

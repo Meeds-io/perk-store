@@ -52,4 +52,31 @@
     </module>
   </portlet>
 
+  <portlet>
+    <name>PerkstoreOrder</name>
+    <module>
+      <depends>
+        <module>perkstoreOrderBundle</module>
+      </depends>
+    </module>
+  </portlet>
+
+  <module>
+    <name>PerkstoreOrderBundle</name>
+    <script>
+      <minify>false</minify>
+      <path>/js/perkstoreOrder.bundle.js</path>
+    </script>
+    <depends>
+      <module>vue</module>
+    </depends>
+    <depends>
+      <module>vuetify</module>
+    </depends>
+    <depends>
+      <module>eXoVueI18n</module>
+    </depends>
+  </module>
+
+
 </gatein-resources>

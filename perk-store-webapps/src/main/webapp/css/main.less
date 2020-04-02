@@ -41,7 +41,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
   }
-  
+
   .flex {
     box-sizing: border-box;
   }
@@ -481,7 +481,6 @@
     .imageMiniPreviewParent {
       display: block;
       margin: 5px;
-  
       .imageMiniPreview {
         box-sizing: border-box;
         max-width: 70px;
@@ -493,18 +492,16 @@
         border-radius: 9px;
       }
     }
-  
     .productDetailRightParent {
       display: flex;
       flex-direction: row;
       align-items: start;
       flex-wrap: nowrap;
-  
+
       .productBuyForm {
         min-width:230px;
         width:230px;
       }
-  
       .productDescription {
         white-space: pre-wrap;
         word-break: break-all;
@@ -524,7 +521,6 @@
       align-items: center;
       justify-content: center;
       display: flex;
-
       &:hover, &:hover .attachFileIcon, &.hover, &.hover .attachFileIcon {
         background: @primaryColor;
         opacity: 0.7;
@@ -603,7 +599,6 @@
 
     .v-input__slot {
       margin: 0;
-  
       &:before {
         border-style: hidden;
       }
@@ -647,6 +642,22 @@
   }
 }
 
+#perkstoreOrderPortlet {
+  .big-number {
+    font-size  : 2.4rem !important;
+    line-height: 2.5rem;
+    color      : @darkGrey;
+    margin-top : 0;
+  }
+
+   .product-label {
+    font-size     : .75rem !important;
+    font-weight   : 400;
+    letter-spacing: .0333333333em !important;
+    line-height   : 1.25rem;
+  }
+}
+
 @media (min-width : 960px) {
   #PerkStoreApp {
     .productDetailContent {
@@ -677,3 +688,32 @@
     }
   }
 }
+
+@media (min-width: 1201px) and (max-width: 1300px) {
+  #perkstoreOrderPortlet {
+    .big-number {
+      font-size: 2rem !important;
+    }
+
+     .product-label {
+      font-size: .7rem !important;
+    }
+  }
+}
+
+ @media (max-width: 1200px) {
+  #perkstoreOrderPortlet {
+      .big-number {
+        margin-top: 20px;
+      }
+    }
+  }
+
+
+   @media (max-width: 599px) {
+    #perkstoreOrderPortlet {
+      .big-number {
+        margin-top: 0;
+      }
+    }
+  }
