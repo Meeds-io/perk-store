@@ -9,8 +9,7 @@
           row
           wrap
           mx-0
-          style="cursor: pointer"
-          @click="navigateTo('perkstore?notProcessedOrders=true')">
+          style="cursor: pointer">
           <v-flex
             d-flex
             sx12>
@@ -27,9 +26,7 @@
                 d-flex
                 xs12
                 justify-center>
-                <v-card flat>
-                  <v-card-text class="display-1 font-weight-bold pa-2 big-number">{{ pendingOrdersSize }}<span class="mt-4 product-label">{{ this.$t('exoplatform.perkstore.title.orders') }}</span></v-card-text>
-                </v-card>
+                  <a :href="url('perkstore?notProcessedOrders=true')" class="display-1 font-weight-bold pa-2 big-number">{{ pendingOrdersSize }}<span class="mt-4 product-label">{{ this.$t('exoplatform.perkstore.title.orders') }}</span></a>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -49,19 +46,19 @@
       }
     },
     created() {
-      this.getPendingOrdersSize();
+      this.retrievePendingOrdersCount();
     },
     methods: {
-      getPendingOrdersSize() {
+      retrievePendingOrdersCount() {
         getPendingOrdersSize().then(
                 (orders) => {
                   this.pendingOrdersSize = orders.size;
                 }
         )
       },
-      navigateTo(pagelink) {
-        location.href=`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
+      url(pagelink) {
+        return `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
       },
-    }
+    },
   }
 </script> 
