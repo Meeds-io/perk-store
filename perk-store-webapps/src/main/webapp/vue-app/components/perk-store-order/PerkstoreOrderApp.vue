@@ -26,7 +26,7 @@
                 d-flex
                 xs12
                 justify-center>
-                  <a :href="url('perkstore?notProcessedOrders=true')" class="display-1 font-weight-bold pa-2 big-number">{{ pendingOrdersSize }}<span class="mt-4 product-label">{{ this.$t('exoplatform.perkstore.title.orders') }}</span></a>
+                <a :href="url" class="display-1 font-weight-bold pa-2 big-number">{{ pendingOrdersSize }}<span class="mt-4 product-label">{{ this.$t('exoplatform.perkstore.title.orders') }}</span></a>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -42,7 +42,8 @@
   export default {
     data() {
       return {
-        pendingOrdersSize:''
+        pendingOrdersSize:'',
+        perkstoreUrl : `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/perkstore?notProcessedOrders=true`
       }
     },
     created() {
@@ -55,10 +56,7 @@
                   this.pendingOrdersSize = orders.size;
                 }
         )
-      },
-      url(pagelink) {
-        return `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }` ;
-      },
+      }
     },
   }
 </script> 
