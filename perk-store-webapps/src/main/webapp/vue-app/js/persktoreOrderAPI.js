@@ -2,6 +2,7 @@ export function getPendingOrdersSize() {
     const filter = {notProcessed :true}
     return fetch('/portal/rest/perkstore/api/order/list?returnSize=true', {
         method: 'POST',
+        credentials: 'include',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
