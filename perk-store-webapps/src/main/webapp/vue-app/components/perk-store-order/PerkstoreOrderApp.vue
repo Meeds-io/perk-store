@@ -19,14 +19,24 @@
               class="white">
               <v-flex d-flex xs12>
                 <v-card flat>
-                  <v-card-text class="subtitle-2 grey--text pa-2">{{ this.$t('exoplatform.perkstore.title.myOrders') }}</v-card-text>
+                  <v-card-text class="subtitle-2 grey--text pa-2">
+                    <span :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-header skeleton-border-radius'">
+                      {{ this.$t('exoplatform.perkstore.title.myOrders') }}
+                    </span>
+                  </v-card-text>
                 </v-card>
               </v-flex>
               <v-flex
                 d-flex
                 xs12
-                justify-center>
-                <a :href="url" class="display-1 font-weight-bold pa-2 big-number">{{ pendingOrdersSize }}<span class="mt-4 product-label">{{ this.$t('exoplatform.perkstore.title.orders') }}</span></a>
+                justify-center
+                pa-2>
+                <a
+                  :href="url"
+                  class="display-1 font-weight-bold big-number"
+                  :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-border-radius'">
+                  {{ pendingOrdersSize }}<span class="mt-4 product-label">{{ this.$t('exoplatform.perkstore.title.orders') }}</span>
+                </a>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -43,7 +53,8 @@
     data() {
       return {
         pendingOrdersSize:'',
-        perkstoreUrl : `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/perkstore?notProcessedOrders=true`
+        perkstoreUrl : `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/perkstore?notProcessedOrders=true`,
+        firstLoadingPerkStoreOrder: true,
       }
     },
     created() {
@@ -54,6 +65,9 @@
         getPendingOrdersSize().then(
                 (orders) => {
                   this.pendingOrdersSize = orders.size;
+                  if (this.firstLoadingPerkStoreOrder) {
+                    this.firstLoadingPerkStoreOrder = false;
+                  }
                 }
         )
       }
