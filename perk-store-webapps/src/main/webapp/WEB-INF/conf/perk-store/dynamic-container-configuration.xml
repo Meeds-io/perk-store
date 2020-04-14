@@ -78,7 +78,7 @@
         </value-param>
         <value-param>
           <name>containerName</name>
-          <value>PerkstoreContainer</value>
+          <value>PerkstoreWidgetContainer</value>
         </value-param>
         <object-param>
           <name>PerkstoreOrder</name>
