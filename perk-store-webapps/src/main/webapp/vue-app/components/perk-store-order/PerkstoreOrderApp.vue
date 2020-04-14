@@ -19,9 +19,9 @@
               class="white">
               <v-flex d-flex xs12>
                 <v-card flat>
-                  <v-card-text class="subtitle-2 grey--text pa-2">
+                  <v-card-text class="subtitle-2 header-title-color pa-2">
                     <span :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-header skeleton-border-radius'">
-                      {{ this.$t('exoplatform.perkstore.title.myOrders') }}
+                      {{ $t('exoplatform.perkstore.title.myOrders') }}
                     </span>
                   </v-card-text>
                 </v-card>
@@ -35,7 +35,7 @@
                   :href="url"
                   class="display-1 font-weight-bold big-number"
                   :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-border-radius'">
-                  {{ pendingOrdersSize }}<span class="mt-4 product-label">{{ this.$t('exoplatform.perkstore.title.orders') }}</span>
+                  {{ pendingOrdersSize }}<span class="mt-4 product-label">{{ $t('exoplatform.perkstore.title.orders') }}</span>
                 </a>
               </v-flex>
             </v-layout>
