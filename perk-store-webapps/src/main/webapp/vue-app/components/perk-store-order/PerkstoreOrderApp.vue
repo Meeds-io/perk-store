@@ -33,8 +33,8 @@
                 pa-2>
                 <a
                   :href="url"
-                  class="display-1 font-weight-bold big-number"
-                  :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-border-radius'">
+                  :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-border-radius'"
+                  class="display-1 font-weight-bold big-number">
                   {{ pendingOrdersSize }}<span class="mt-4 product-label">{{ $t('exoplatform.perkstore.title.orders') }}</span>
                 </a>
               </v-flex>
