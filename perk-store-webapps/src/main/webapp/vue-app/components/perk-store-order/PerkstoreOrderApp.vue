@@ -19,7 +19,7 @@
               class="white">
               <v-flex d-flex xs12>
                 <v-card flat>
-                  <v-card-text class="subtitle-2 header-title-color pa-2">
+                  <v-card-text class="subtitle-2 text-sub-title pa-2">
                     <span :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-header skeleton-border-radius'">
                       {{ $t('exoplatform.perkstore.title.myOrders') }}
                     </span>
