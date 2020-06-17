@@ -27,7 +27,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 import org.exoplatform.perkstore.exception.PerkStoreException;
 import org.exoplatform.perkstore.model.FileDetail;
@@ -38,7 +38,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
 import io.swagger.annotations.*;
-import org.json.JSONObject;
 
 @Path("/perkstore/api/product")
 @Api(value = "/perkstore/api/product", description = "Manages perk store products") // NOSONAR
@@ -56,7 +55,6 @@ public class PerkStoreProductREST implements ResourceContainer {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("save")
   @RolesAllowed("users")
   @ApiOperation(value = "Creates or modifies a product", httpMethod = "POST", response = Response.class, consumes = "application/json", produces = "application/json", notes = "returns saved product")
   @ApiResponses(value = {
@@ -84,7 +82,7 @@ public class PerkStoreProductREST implements ResourceContainer {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("get")
+  @Path("{productId}")
   @RolesAllowed("users")
   @ApiOperation(value = "Retrieves a product by its id", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns selected product if exists")
   @ApiResponses(value = {
@@ -92,24 +90,21 @@ public class PerkStoreProductREST implements ResourceContainer {
       @ApiResponse(code = 400, message = "Invalid query input"),
       @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getProduct(@ApiParam(value = "Product technical id", required = true) @QueryParam("productId") String productId) {
-    if (StringUtils.isBlank(productId)) {
+  public Response getProduct(@ApiParam(value = "Product technical id", required = true) @PathParam("productId") long productId) {
+    if (productId == 0) {
       LOG.warn("Bad request sent to server with empty productId");
       return Response.status(400).build();
     }
     String currentUserId = getCurrentUserId();
     try {
-      Product product = perkStoreService.getProductById(Long.parseLong(productId), currentUserId);
+      Product product = perkStoreService.getProductById(productId, currentUserId  );
       return Response.ok(product).build();
-    } catch (PerkStoreException e) {
-      return computeErrorResponse(LOG, e, "Getting product details", currentUserId, productId);
     } catch (Exception e) {
       LOG.error("Error getting product", e);
       return Response.status(500).build();
     }
   }
 
-  @Path("list")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
@@ -140,7 +135,7 @@ public class PerkStoreProductREST implements ResourceContainer {
   }
 
   @GET
-  @Path("{productId}/{imageId}")
+  @Path("{productId}/image/{imageId}")
   @RolesAllowed("users")
   @ApiOperation(value = "Get product image by its id", httpMethod = "GET", response = Response.class, notes = "returns image content")
   @ApiResponses(value = {

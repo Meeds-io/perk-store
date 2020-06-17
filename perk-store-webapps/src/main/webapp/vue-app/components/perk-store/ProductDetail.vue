@@ -3,11 +3,12 @@
     <v-hover>
       <v-card
         slot-scope="{ hover }"
-        :class="`elevation-${hover ? 9 : 3} productDetailContentCard`"
-        max-width="600">
+        :class="hideElevation && 'productDetailContentCard' || `elevation-${hover ? 9 : 3} productDetailContentCard`"
+        :max-width="cardHeight">
         <v-carousel
           :show-arrows="false"
           :interval="3000"
+          :height="carousselHeight"
           hide-delimiters
           cycle
           class="carousselParent clickable"
@@ -36,6 +37,7 @@
           </v-expand-transition>
         </v-carousel>
         <v-card-text
+          v-if="!hideButtons"
           class="pt-2"
           style="position: relative;">
           <template v-if="userData.canEdit">
@@ -92,12 +94,12 @@
         </v-card-text>
         <v-card-text
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
-          class="pb-0 pt-2 clickable"
+          class="pb-0 clickable productCardTitleParent"
           @click="openProductDetail">
           <v-layout
             row
             grow
-            class="no-wrap">
+            class="no-wrap mx-0">
             <v-flex class="text-truncate title productCardTitle">
               <span :title="product.title">{{ product.title }}</span>
             </v-flex>
@@ -106,8 +108,11 @@
             </v-flex>
           </v-layout>
         </v-card-text>
-        <v-card-text class="py-0 productCardSubtitle">{{ productCreatedDate }}</v-card-text>
-        <v-card-text class="productCardFooter py-0" @click="openProductDetail">
+        <v-card-text class="productCardSubtitle">{{ productCreatedDate }}</v-card-text>
+        <v-card-text
+          v-if="!hidePending"
+          class="productCardFooter py-0"
+          @click="openProductDetail">
           <v-hover v-if="userData.notProcessedOrders">
             <v-chip
               slot-scope="{ hover: hoverPending }"
@@ -160,6 +165,36 @@ export default {
         return false;
       },
     },
+    hideButtons: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    hidePending: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    hideElevation: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    cardHeight: {
+      type: Number,
+      default: function() {
+        return 600;
+      },
+    },
+    carousselHeight: {
+      type: Number,
+      default: function() {
+        return 500;
+      },
+    },
   },
   computed: {
     productCreatedDate() {
@@ -191,7 +226,7 @@ export default {
       return '';
     },
     displayBuyButton() {
-      return this.product && this.product.enabled && this.userData.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
+      return !this.hideButtons && this.product && this.product.enabled && this.userData.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
       return (!this.product.unlimited && this.available <= 0) || this.maxOrdersReached;

@@ -8,5 +8,6 @@
   <import>war:/conf/perk-store/websocket-configuration.xml</import>
   <import>war:/conf/perk-store/dynamic-container-configuration.xml</import>
   <import profiles="app-center">war:/conf/perk-store/app-center-configuration.xml</import>
+  <import>war:/conf/perk-store/search-configuration.xml</import>
 
 </configuration>
