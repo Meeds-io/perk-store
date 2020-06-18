@@ -19,7 +19,8 @@
         "Vue": true,
         "Vuetify": true,
         "exoi18n": true,
-        "cCometd": true
+        "cCometd": true,
+        "extensionRegistry": true
     },
     "parserOptions": {
         "sourceType": "module",

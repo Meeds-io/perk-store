@@ -245,7 +245,7 @@ public class PerkStoreStorage {
 
   private String getImageSrc(long productId, long imageAttachementId) {
     return "/" + PortalContainer.getInstance().getName() + "/" + CommonsUtils.getRestContextName()
-        + "/perkstore/api/product/" + productId + "/" + imageAttachementId;
+        + "/perkstore/api/product/" + productId + "/image/" + imageAttachementId;
   }
 
   private void saveProductImages(Product storedProduct, Product product, String username) {

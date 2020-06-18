@@ -262,7 +262,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
   public List<Product> getProducts(boolean available, String username) throws Exception {
     List<Product> products = perkStoreStorage.getAllProducts();
-    if (products == null || products.isEmpty()) {
+    if (products == null || products.isEmpty() || !canAccessApplication(getGlobalSettings(), username)) {
       return Collections.emptyList();
     }
     boolean isPerkstoreManager = isPerkStoreManager(username);

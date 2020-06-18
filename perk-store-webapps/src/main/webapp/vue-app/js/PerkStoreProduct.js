@@ -1,7 +1,7 @@
 import {throwErrorFromServerCall} from './PerkStoreError.js';
 
 export function getProductList() {
-  return fetch('/portal/rest/perkstore/api/product/list', {
+  return fetch('/portal/rest/perkstore/api/product', {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
@@ -14,7 +14,7 @@ export function getProductList() {
 }
 
 export function getProduct(productId) {
-  return fetch(`/portal/rest/perkstore/api/product/get?productId=${productId}`, {
+  return fetch(`/portal/rest/perkstore/api/product/${productId}`, {
     method: 'GET',
     credentials: 'include',
   }).then((resp) => {
@@ -27,7 +27,7 @@ export function getProduct(productId) {
 }
 
 export function saveProduct(product) {
-  return fetch('/portal/rest/perkstore/api/product/save', {
+  return fetch('/portal/rest/perkstore/api/product', {
     method: 'POST',
     credentials: 'include',
     headers: {

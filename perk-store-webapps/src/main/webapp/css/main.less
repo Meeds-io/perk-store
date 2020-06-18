@@ -1,6 +1,7 @@
 @import "variables.less";
 @import "mixins.less";
-#PerkStoreApp {
+
+#PerkStoreApp, .searchPerkStoreProductCard {
   min-height: ~"calc( 100vh - 60px)";
 
   .v-menu__content {
@@ -349,6 +350,12 @@
 
   .productCardSubtitle {
     color: @quoteBorder;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+
+  .productCardTitleParent {
+    padding-top: 8px;
   }
 
   .addProductButton {
@@ -576,6 +583,21 @@
 
   .requestFundsLink {
     text-decoration: underline;
+  }
+}
+
+.searchPerkStoreProductCard {
+  margin-right: 6px;
+
+  .productDetailContentCard {
+    box-shadow: none !important;
+  }
+  .productCardTitleParent {
+    border-top: 1px solid @greyColorLighten1Opacity1;
+    padding-top: 4px !important;
+  }
+  .productCardSubtitle {
+    padding-bottom: 4px !important;
   }
 }
 
