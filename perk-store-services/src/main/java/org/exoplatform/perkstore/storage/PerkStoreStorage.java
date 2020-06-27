@@ -220,6 +220,20 @@ public class PerkStoreStorage {
     return fileDetail;
   }
 
+  public void replaceTransactions(String oldHash, String newHash) {
+    ProductOrderEntity order = orderDAO.findOrderByTransactionHash(oldHash);
+    if (order == null) {
+      order = orderDAO.findOrderByRefundTransactionHash(oldHash);
+      if (order != null) {
+        order.setRefundTransactionHash(newHash);
+        orderDAO.update(order);
+      }
+    } else {
+      order.setTransactionHash(newHash);
+      orderDAO.update(order);
+    }
+  }
+
   private Product parseProductFromEntity(ProductEntity entity) {
     Product product = fromEntity(entity);
     if (product != null && entity != null && entity.getImages() != null && !entity.getImages().isEmpty()) {

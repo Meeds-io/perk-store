@@ -52,6 +52,11 @@
       <set-method>addListener</set-method>
       <type>org.exoplatform.perkstore.listener.EthereumWalletTransactionListener</type>
     </component-plugin>
+    <component-plugin>
+      <name>exo.wallet.transaction.replaced</name>
+      <set-method>addListener</set-method>
+      <type>org.exoplatform.perkstore.listener.EthereumWalletTransactionListener</type>
+    </component-plugin>
   </external-component-plugins>
 
   <external-component-plugins>
@@ -125,5 +130,4 @@
       </init-params>
     </component-plugin>
   </external-component-plugins>
-
 </configuration>
