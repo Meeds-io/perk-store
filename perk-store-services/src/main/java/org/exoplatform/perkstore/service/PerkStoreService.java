@@ -699,6 +699,10 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     return false;
   }
 
+  public void replaceTransactions(String oldHash, String newHash) {
+    perkStoreStorage.replaceTransactions(oldHash, newHash);
+  }
+
   @Override
   public Map<String, Object> getStatisticParameters(String operation, Object result, Object... methodArgs) {
     Map<String, Object> parameters = new HashMap<>();
