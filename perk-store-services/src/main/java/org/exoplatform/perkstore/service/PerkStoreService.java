@@ -605,17 +605,21 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     ProductOrder order = perkStoreStorage.findOrderByTransactionHash(hash);
     if (order == null) {
       order = perkStoreStorage.findOrderByRefundTransactionHash(hash);
-      if (order == null) {
+      if (order == null || !StringUtils.equalsIgnoreCase(order.getRefundTransactionHash(), hash)) {
         // Nor order was found with hash corresponding to payment or refund
         // Transaction
         return;
       } else {
         order.setRefundTransactionStatus(succeeded ? SUCCESS.name() : FAILED.name());
         modificationType = REFUND_TX_STATUS;
+
+        LOG.debug("Set Refund order {} with transaction hash {} as scceeded={}", order.getId(), hash, succeeded);
       }
-    } else {
+    } else if (StringUtils.equalsIgnoreCase(order.getTransactionHash(), hash)) {
       order.setTransactionStatus(succeeded ? SUCCESS.name() : FAILED.name());
       modificationType = TX_STATUS;
+
+      LOG.debug("Set Order {} with transaction hash {} as scceeded={}", order.getId(), hash, succeeded);
     }
 
     String contractAddress = (String) transactionDetails.get("contractAddress");
