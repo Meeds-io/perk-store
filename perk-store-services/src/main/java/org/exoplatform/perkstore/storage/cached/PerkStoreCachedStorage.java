@@ -113,6 +113,22 @@ public class PerkStoreCachedStorage extends PerkStoreStorage {
   }
 
   @Override
+  public ProductOrder replaceTransactions(String oldHash, String newHash) {
+    ProductOrder order = super.replaceTransactions(oldHash, newHash);
+    if (order != null) {
+      this.orderFutureCache.remove(order.getId());
+      this.productFutureCache.remove(order.getProductId());
+      if (StringUtils.isNotBlank(order.getTransactionHash())) {
+        this.orderFutureCache.remove(order.getTransactionHash());
+      }
+      if (StringUtils.isNotBlank(order.getRefundTransactionHash())) {
+        this.orderFutureCache.remove(order.getRefundTransactionHash());
+      }
+    }
+    return order;
+  }
+
+  @Override
   public Product saveProduct(Product product, String username) throws PerkStoreException {
     long productId = product.getId();
     try {
