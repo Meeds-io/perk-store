@@ -573,6 +573,22 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   }
 
   @Test
+  public void testReplaceOrderHash() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    Product product = newProduct(perkStoreService, new Product());
+    product.setAccessPermissions(null);
+    product = perkStoreService.saveProduct(product, USERNAME);
+    ProductOrder order = newOrder(product);
+    assertNotNull(order);
+    assertNull(order.getError());
+
+    String newHash = generateRandomHash();
+    perkStoreService.replaceTransactions(order.getTransactionHash(), newHash);
+    ProductOrder replacedOrder = perkStoreService.getOrderById(order.getId());
+    assertEquals(newHash, replacedOrder.getTransactionHash());
+  }
+
+  @Test
   public void testCreateOrderWithWrongReceiverFraud() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
     Product product = newProductInstance(new Product());

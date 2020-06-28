@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.file.model.FileInfo;
 import org.exoplatform.commons.file.model.FileItem;
 import org.exoplatform.commons.file.services.FileService;
@@ -220,6 +221,7 @@ public class PerkStoreStorage {
     return fileDetail;
   }
 
+  @ExoTransactional
   public void replaceTransactions(String oldHash, String newHash) {
     ProductOrderEntity order = orderDAO.findOrderByTransactionHash(oldHash);
     if (order == null) {
