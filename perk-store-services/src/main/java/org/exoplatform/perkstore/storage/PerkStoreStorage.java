@@ -222,18 +222,19 @@ public class PerkStoreStorage {
   }
 
   @ExoTransactional
-  public void replaceTransactions(String oldHash, String newHash) {
+  public ProductOrder replaceTransactions(String oldHash, String newHash) {
     ProductOrderEntity order = orderDAO.findOrderByTransactionHash(oldHash);
     if (order == null) {
       order = orderDAO.findOrderByRefundTransactionHash(oldHash);
       if (order != null) {
         order.setRefundTransactionHash(newHash);
-        orderDAO.update(order);
+        order = orderDAO.update(order);
       }
     } else {
       order.setTransactionHash(newHash);
-      orderDAO.update(order);
+      order = orderDAO.update(order);
     }
+    return order == null ? null : fromEntity(order);
   }
 
   private Product parseProductFromEntity(ProductEntity entity) {
