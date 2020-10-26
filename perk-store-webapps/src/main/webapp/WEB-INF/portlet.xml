@@ -21,46 +21,46 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
 
-   <portlet>
-     <portlet-name>PerkStore</portlet-name>
-     <display-name xml:lang="EN">Perk Store Application</display-name>
-     <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
-     <init-param>
+  <portlet>
+    <portlet-name>PerkStore</portlet-name>
+    <display-name xml:lang="EN">Perk Store Application</display-name>
+    <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
+    <init-param>
       <name>portlet-view-dispatched-file-path</name>
       <value>/perkstore.html</value>
-     </init-param>
-     <expiration-cache>-1</expiration-cache>
-     <cache-scope>PUBLIC</cache-scope>
-     <supports>
-       <mime-type>text/html</mime-type>
-     </supports>
-     <supported-locale>en</supported-locale>
-     <portlet-info>
-       <title>Perk Store Application</title>
-       <keywords>Perk Store Application</keywords>
-     </portlet-info>
-   </portlet>
+    </init-param>
+    <expiration-cache>-1</expiration-cache>
+    <cache-scope>PUBLIC</cache-scope>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>Perk Store Application</title>
+      <keywords>Perk Store Application</keywords>
+    </portlet-info>
+  </portlet>
 
-    <portlet>
-        <portlet-name>PerkstoreOrder</portlet-name>
-        <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
-        <init-param>
-            <name>portlet-view-dispatched-file-path</name>
-            <value>/perkstoreOrder.html</value>
-        </init-param>
-        <init-param>
-            <description>List of profiles that can be used to enable this portlet</description>
-            <name>exo.profiles</name>
-            <value>perk-store</value>
-        </init-param>
-        <supports>
-            <mime-type>text/html</mime-type>
-        </supports>
-        <portlet-info>
-            <title>Perk Store Order</title>
-        </portlet-info>
-    </portlet>
-
-
+  <portlet>
+    <portlet-name>PerkstoreOrder</portlet-name>
+    <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
+    <init-param>
+      <name>portlet-view-dispatched-file-path</name>
+      <value>/perkstoreOrder.html</value>
+    </init-param>
+    <init-param>
+      <description>List of profiles that can be used to enable this portlet</description>
+      <name>exo.profiles</name>
+      <value>perk-store</value>
+    </init-param>
+    <expiration-cache>-1</expiration-cache>
+    <cache-scope>PUBLIC</cache-scope>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>Perk Store Order</title>
+    </portlet-info>
+  </portlet>
 
 </portlet-app>
