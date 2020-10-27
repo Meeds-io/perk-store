@@ -14,7 +14,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import perkstoreOrderApp from './components/perk-store-order/PerkstoreOrderApp.vue';
+import PerkstoreOrderApp from './components/perk-store-order/PerkstoreOrderApp.vue';
+Vue.component('perkstore-order-app', PerkstoreOrderApp);
 
 Vue.use(Vuetify);
 
@@ -29,15 +30,18 @@ const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language || 'en'
 const resourceBundleName = 'locale.addon.PerkStore';
 const url = `${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/${resourceBundleName}-${lang}.json`;
 
+const appId = 'perkstoreOrderPortlet';
+
 export function init() {
-// getting locale ressources
-exoi18n.loadLanguageAsync(lang, url)
-    .then(i18n => {
-        // init Vue app when locale ressources are ready
-        new Vue({
-            render: h => h(perkstoreOrderApp),
-            i18n,
-            vuetify,
-        }).$mount('#perkstoreOrder');
-    });
+  // getting locale ressources
+  exoi18n.loadLanguageAsync(lang, url).then(i18n => {
+    const appElement = document.createElement('div');
+    appElement.id = appId;
+
+    new Vue({
+      template: `<perkstore-order-app id="${appId}" v-cacheable />`,
+      i18n,
+      vuetify,
+    }).$mount(appElement);
+  });
 }
