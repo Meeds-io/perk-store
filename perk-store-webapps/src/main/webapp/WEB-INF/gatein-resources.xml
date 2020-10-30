@@ -72,28 +72,21 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <portlet>
     <name>PerkstoreOrder</name>
     <module>
+      <script>
+        <minify>false</minify>
+        <path>/js/perkstoreOrder.bundle.js</path>
+      </script>
       <depends>
-        <module>perkstoreOrderBundle</module>
+        <module>vue</module>
+      </depends>
+      <depends>
+        <module>vuetify</module>
+      </depends>
+      <depends>
+        <module>eXoVueI18n</module>
       </depends>
     </module>
   </portlet>
-
-  <module>
-    <name>PerkstoreOrderBundle</name>
-    <script>
-      <minify>false</minify>
-      <path>/js/perkstoreOrder.bundle.js</path>
-    </script>
-    <depends>
-      <module>vue</module>
-    </depends>
-    <depends>
-      <module>vuetify</module>
-    </depends>
-    <depends>
-      <module>eXoVueI18n</module>
-    </depends>
-  </module>
 
   <module>
     <name>PerkStoreSearch</name>
