@@ -15,10 +15,7 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-app
-    id="perkstoreOrderPortlet"
-    flat
-    dark>
+  <v-app flat dark>
     <main>
       <v-container pa-0>
         <v-layout
@@ -35,10 +32,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               class="white">
               <v-flex d-flex xs12>
                 <v-card flat>
-                  <v-card-text class="subtitle-2 text-sub-title pa-2">
-                    <span :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-header skeleton-border-radius'">
-                      {{ $t('exoplatform.perkstore.title.myOrders') }}
-                    </span>
+                  <v-card-text class="subtitle-2 text-color text-sub-title pa-2">
+                    {{ $t('exoplatform.perkstore.title.myOrders') }}
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -47,11 +42,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 xs12
                 justify-center
                 pa-2>
-                <a
-                  :href="url"
-                  :class="firstLoadingPerkStoreOrder && 'skeleton-text skeleton-background skeleton-border-radius'"
-                  class="display-1 font-weight-bold big-number">
-                  {{ pendingOrdersSize }}<span class="mt-4 product-label">{{ $t('exoplatform.perkstore.title.orders') }}</span>
+                <a :href="url" class="display-1 font-weight-bold big-number">
+                  {{ pendingOrdersSize }}<span class="mt-4 ml-1 product-label">{{ $t('exoplatform.perkstore.title.orders') }}</span>
                 </a>
               </v-flex>
             </v-layout>
@@ -68,9 +60,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   export default {
     data() {
       return {
-        pendingOrdersSize:'',
+        pendingOrdersSize: 0,
         perkstoreUrl : `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/perkstore?notProcessedOrders=true`,
-        firstLoadingPerkStoreOrder: true,
       }
     },
     created() {
@@ -78,14 +69,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     },
     methods: {
       retrievePendingOrdersCount() {
-        getPendingOrdersSize().then(
-                (orders) => {
-                  this.pendingOrdersSize = orders.size;
-                  if (this.firstLoadingPerkStoreOrder) {
-                    this.firstLoadingPerkStoreOrder = false;
-                  }
-                }
-        )
+        return getPendingOrdersSize()
+          .then(orders => {
+            this.pendingOrdersSize = orders && orders.size || 0;
+            return this.$nextTick();
+          })
+          .finally(() => this.$root.$emit('application-loaded'));
       }
     },
   }
