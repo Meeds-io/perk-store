@@ -214,9 +214,9 @@ export default {
             this.items.push(this.currentUserItem);
           }
         })
-        .finally(() => {
-          this.isLoadingSuggestions = false;
-        });
+          .finally(() => {
+            this.isLoadingSuggestions = false;
+          });
       } else if (this.currentUserItem) {
         this.items = [this.currentUserItem];
       } else {
@@ -229,7 +229,7 @@ export default {
       const selectedValue = this.selectedValue;
       this.$emit('clear-selection');
       if (selectedValue && selectedValue.length) {
-        if(this.multiple) {
+        if (this.multiple) {
           selectedValue.forEach((value) => this.emitSelectedValue(value));
         } else {
           this.emitSelectedValue(selectedValue);
@@ -260,7 +260,7 @@ export default {
       } else if (isAddress) {
         return searchFullName(selectedValue)
           .then(details => {
-            if(details && details.type) {
+            if (details && details.type) {
               this.addressLoad = 'success';
               this.$emit('item-selected', {
                 id: details.id,
@@ -297,7 +297,7 @@ export default {
             }
           })
           .catch((error) => {
-            console.debug('searchAddress method - error', error);
+            console.error('searchAddress method - error', error);
             this.addressLoad = 'error';
           });
       }
@@ -328,14 +328,14 @@ export default {
       return true;
     },
     selectItems(items) {
-      if(items) {
-        if(items.splice) {
+      if (items) {
+        if (items.splice) {
           items.forEach((item) => {
-            if(item && item.id && item.type) {
+            if (item && item.id && item.type) {
               this.selectSingleItem(item.id, item.type);
             }
           });
-        } else if(items.id && items.type) {
+        } else if (items.id && items.type) {
           this.selectSingleItem(items.id, items.type);
         }
       }
@@ -360,8 +360,8 @@ export default {
       }
     },
     remove(item) {
-      if(this.selectedValue) {
-        if(this.selectedValue.splice) {
+      if (this.selectedValue) {
+        if (this.selectedValue.splice) {
           const index = this.selectedValue.indexOf(item.id_type);
           if (index >= 0){
             this.selectedValue.splice(index, 1);

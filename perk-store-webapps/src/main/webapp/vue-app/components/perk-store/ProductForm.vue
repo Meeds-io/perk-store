@@ -276,11 +276,11 @@ export default {
     init() {
       this.product = this.product || {};
 
-      if(this.product.receiverMarchand) {
+      if (this.product.receiverMarchand) {
         this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
       }
 
-      if(!this.product.marchands && !this.product.creator) {
+      if (!this.product.marchands && !this.product.creator) {
         this.product.marchands = [{
           type: 'user',
           id: eXo.env.portal.userName,
@@ -288,10 +288,10 @@ export default {
         }];
       }
 
-      if(this.product.marchands) {
+      if (this.product.marchands) {
         this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
       }
-      if(this.product.accessPermissions) {
+      if (this.product.accessPermissions) {
         this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
       }
 
@@ -305,22 +305,22 @@ export default {
       this.product.receiverMarchand = identity;
     },
     selectEditor(identity) {
-      if(!this.product.marchands) {
+      if (!this.product.marchands) {
         this.product.marchands = [];
       }
-      if(identity) {
+      if (identity) {
         this.product.marchands.push(identity);
-      } else if(this.product.marchands.length) {
+      } else if (this.product.marchands.length) {
         this.product.marchands = [];
       }
     },
     selectAccessPermission(identity) {
-      if(!this.product.accessPermissions) {
+      if (!this.product.accessPermissions) {
         this.product.accessPermissions = [];
       }
-      if(identity) {
+      if (identity) {
         this.product.accessPermissions.push(identity);
-      } else if(this.product.accessPermissions.length) {
+      } else if (this.product.accessPermissions.length) {
         this.product.accessPermissions = [];
       }
     },
@@ -334,7 +334,7 @@ export default {
       return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
     },
     isValidDecimals(value) {
-      if(String(value).indexOf('.') >= 0) {
+      if (String(value).indexOf('.') >= 0) {
         return String(value).split('.')[1].length <= 3;
       } else {
         return true;
@@ -344,7 +344,7 @@ export default {
       event.preventDefault();
       event.stopPropagation();
 
-      if(!this.$refs.form.validate()) {
+      if (!this.$refs.form.validate()) {
         return false;
       }
 
@@ -375,10 +375,10 @@ export default {
           this.$emit('saved', product);
         })
         .catch(e => {
-          console.debug("Error saving product", e);
+          console.error('Error saving product', e);
           this.$emit('error', e && e.message ? e.message : String(e));
         });
     }
   }
-}
+};
 </script>

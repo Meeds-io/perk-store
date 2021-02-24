@@ -100,7 +100,7 @@ export default {
   },
   watch: {
     selectedDate() {
-      if(this.selectedDate) {
+      if (this.selectedDate) {
         this.filter.selectedDate = new Date(this.selectedDate).getTime();
       } else {
         this.filter.selectedDate = 0;

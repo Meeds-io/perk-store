@@ -131,13 +131,13 @@ export default {
     symbol: {
       type: String,
       default: function() {
-        return "";
+        return '';
       },
     },
     search: {
       type: String,
       default: function() {
-        return "";
+        return '';
       },
     },
   },
@@ -175,7 +175,7 @@ export default {
   },
   watch: {
     product(value, oldValue) {
-      if(value && (!oldValue || value.id !== oldValue.id)) {
+      if (value && (!oldValue || value.id !== oldValue.id)) {
         this.limit = 12;
         this.limitReached = false;
         this.newAddedOrders = [];
@@ -211,7 +211,7 @@ export default {
           this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
         })
         .catch(e => {
-          console.debug("Error while listing orders", e);
+          console.error('Error while listing orders', e);
           this.$emit('error', e && e.message ? e.message : String(e));
         }).finally(() => {
           this.loading = false;
@@ -232,21 +232,21 @@ export default {
       return this.searchOrdersFromServer()
         .finally(() => {
           this.$emit('end-search-loading');
-          this.loading = false
+          this.loading = false;
         });
     },
     searchOrdersFromServer() {
       return this.$nextTick()
         .then(() => {
           const searchMore = !this.limitReached && this.filteredOrders.length < this.initialLimit;
-          if(searchMore) {
+          if (searchMore) {
             return this.increaseLimitAndloadMore(true);
           }
         })
         .then(() => this.$nextTick())
         .then(() => {
           const searchMore = !this.limitReached && this.filteredOrders.length < this.initialLimit;
-          if(searchMore) {
+          if (searchMore) {
             return this.searchOrdersFromServer();
           }
         });
@@ -257,15 +257,15 @@ export default {
     computeDisplayFilterDetails() {
       this.displayFilterDetails = false;
 
-      if(!this.selectedOrdersFilter) {
+      if (!this.selectedOrdersFilter) {
         this.displayFilterDetails = false;
         return;
       }
-      if(this.selectedOrdersFilter.notProcessed) {
+      if (this.selectedOrdersFilter.notProcessed) {
         this.displayFilterDetails = true;
         return;
       }
-      if(this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
+      if (this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
         this.displayFilterDetails = true;
         return;
       }
@@ -285,36 +285,36 @@ export default {
     },
     computeDescriptionLabels() {
       this.filterDescriptionLabels = [];
-      if(this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
+      if (this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
         const dateString = formatDate(this.selectedOrdersFilter.selectedDate);
         this.filterDescriptionLabels.push(`DATE: ${dateString}`);
       }
-      if(this.selectedOrdersFilter.notProcessed) {
-        this.filterDescriptionLabels.push("notProcessed");
+      if (this.selectedOrdersFilter.notProcessed) {
+        this.filterDescriptionLabels.push('notProcessed');
       } else {
         if (this.selectedOrdersFilter.ordered) {
-          this.filterDescriptionLabels.push("ordered");
+          this.filterDescriptionLabels.push('ordered');
         }
         if (this.selectedOrdersFilter.canceled) {
-          this.filterDescriptionLabels.push("canceled");
+          this.filterDescriptionLabels.push('canceled');
         }
         if (this.selectedOrdersFilter.error) {
-          this.filterDescriptionLabels.push("error");
+          this.filterDescriptionLabels.push('error');
         }
         if (this.selectedOrdersFilter.paid) {
-          this.filterDescriptionLabels.push("paid");
+          this.filterDescriptionLabels.push('paid');
         }
         if (this.selectedOrdersFilter.partial) {
-          this.filterDescriptionLabels.push("partial");
+          this.filterDescriptionLabels.push('partial');
         }
         if (this.selectedOrdersFilter.delivered) {
-          this.filterDescriptionLabels.push("delivered");
+          this.filterDescriptionLabels.push('delivered');
         }
         if (this.selectedOrdersFilter.refunded) {
-          this.filterDescriptionLabels.push("refunded");
+          this.filterDescriptionLabels.push('refunded');
         }
         if (this.selectedOrdersFilter.fraud) {
-          this.filterDescriptionLabels.push("fraud");
+          this.filterDescriptionLabels.push('fraud');
         }
       }
     },
@@ -345,14 +345,14 @@ export default {
     },
     updateOrderFromWS(event) {
       const wsMessage = event.detail;
-      if(this.orders && this.orders.length && wsMessage.productorder && wsMessage.productorder.id) {
+      if (this.orders && this.orders.length && wsMessage.productorder && wsMessage.productorder.id) {
         const order = this.orders.find(order => order && order.id === wsMessage.productorder.id);
-        if(order) {
+        if (order) {
           this.updateOrder(order, wsMessage.productorder);
           this.updateOrder(order, wsMessage.productorder, this.newAddedOrders);
-        } else if(this.product && wsMessage.productorder.productId === this.product.id) {
+        } else if (this.product && wsMessage.productorder.productId === this.product.id) {
           if (this.product.userData && this.product.userData.canEdit) {
-            if(wsMessage.productorder.status.toUpperCase() === 'ORDERED' && !this.newAddedOrders.find(order => order.id === wsMessage.productorder.id)) {
+            if (wsMessage.productorder.status.toUpperCase() === 'ORDERED' && !this.newAddedOrders.find(order => order.id === wsMessage.productorder.id)) {
               this.newAddedOrders.unshift(wsMessage.productorder);
             }
           } else {
@@ -372,7 +372,7 @@ export default {
     exportOrders() {
       return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, 0)
         .then((ordersToExport) => {
-          if(!ordersToExport || !ordersToExport.length) {
+          if (!ordersToExport || !ordersToExport.length) {
             return;
           }
           ordersToExport.reverse();
@@ -410,14 +410,14 @@ export default {
               order.createdDate && order.createdDate !== csvHeader.createdDate ? formatDateTime(order.createdDate) : (order.createdDate || '-'),
               order.deliveredDate && order.deliveredDate !== csvHeader.deliveredDate ? formatDateTime(order.deliveredDate) : (order.deliveredDate || '-'),
               order.refundedDate && order.refundedDate !== csvHeader.refundedDate ? formatDateTime(order.refundedDate) : (order.refundedDate || '-'),
-            ]).map(e=>e.join(",")).join("\n");
+            ]).map(e=>e.join(',')).join('\n');
           const csvContent = `data:text/csv;charset=utf-8,${ordersToExport}`;
           const downloadLink = document.getElementById('downloadOrders');
-          downloadLink.setAttribute("href", csvContent);
-          downloadLink.setAttribute("download", `orders.csv`);
+          downloadLink.setAttribute('href', csvContent);
+          downloadLink.setAttribute('download', 'orders.csv');
           downloadLink.click();
-        })
+        });
     },
   },
-}
+};
 </script>

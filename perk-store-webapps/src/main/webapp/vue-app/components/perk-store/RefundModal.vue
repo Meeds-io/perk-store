@@ -147,6 +147,7 @@ export default {
       requiredNumberRule: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
         (v) => this.isPositiveNumber(v, true) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        // eslint-disable-next-line no-unused-vars
         (v) => !this.order || this.quantity <= Number(this.order.remainingQuantityToProcess) || this.$t('exoplatform.perkstore.warning.maxQuantityReached', {0: this.remainingQuantityToProcess}),
       ],
       requiredAmountRule: [
@@ -172,14 +173,14 @@ export default {
   },
   watch: {
     quantity() {
-      if(this.quantity) {
+      if (this.quantity) {
         this.amount = (this.product && this.product.price && this.quantity && toFixed(this.quantity * this.product.price)) || 0;
       } else {
         this.amount = 0;
       }
     },
     error() {
-      if(this.error) {
+      if (this.error) {
         this.loading = false;
       }
     },
@@ -187,7 +188,7 @@ export default {
       if (this.dialog) {
         this.walletLoading = true;
         this.walletEnabled = false;
-        document.dispatchEvent(new CustomEvent('exo-wallet-init', {'detail' : {sender: this.order.receiver}}));
+        document.dispatchEvent(new CustomEvent('exo-wallet-init', {'detail': {sender: this.order.receiver}}));
         this.quantity = this.order && this.order.remainingQuantityToProcess;
         this.warning = null;
         this.error = null;
@@ -211,7 +212,7 @@ export default {
       this.dialog = true;
     },
     close() {
-      if(!this.walletLoading) {
+      if (!this.walletLoading) {
         this.dialog = false;
       }
     },
@@ -222,7 +223,7 @@ export default {
     walletInitialized(event) {
       this.walletLoading = false;
       const result = event && event.detail;
-      if(!result || result.error) {
+      if (!result || result.error) {
         this.warning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
         this.walletEnabled = false;
       } else {
@@ -242,7 +243,7 @@ export default {
       const pendingTransaction = event.detail;
 
       // Check if the event is triggered for current window
-      if(this.dialog && this.loading) {
+      if (this.dialog && this.loading) {
         this.$emit('refunding');
 
         return saveOrderStatus({
@@ -258,7 +259,7 @@ export default {
             this.loading = false;
           })
           .catch(e => {
-            console.debug("Error saving refund order", e);
+            console.error('Error saving refund order', e);
             this.loading = false;
             this.error = e && e.message ? e.message : String(e);
           });
@@ -274,7 +275,7 @@ export default {
       event.preventDefault();
       event.stopPropagation();
 
-      if(!this.$refs.form.validate()) {
+      if (!this.$refs.form.validate()) {
         return false;
       }
 
@@ -313,7 +314,7 @@ export default {
       });
 
       // simulate saving order before sending transaction to blockchain
-      document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail' : {
+      document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
         amount: this.amount,
         sender: this.order.receiver,
         receiver: this.order.sender,

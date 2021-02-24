@@ -29,7 +29,7 @@ export function searchContact(filter, onlyUsers) {
     .then(() => (onlyUsers && []) || searchSpaces(filter))
     .then((spaces) => (items = spaces && spaces.length ? items.concat(spaces) : items))
     .catch((e) => {
-      console.debug('searchContact method - error', e);
+      console.error('searchContact method - error', e);
     });
 }
 
@@ -101,7 +101,7 @@ export function searchFullName(address) {
     }
   } catch (e) {
     // This could happen in tests
-    console.debug('Error getting item from session storage');
+    console.error('Error getting item from session storage');
   }
 
   return fetch(`/portal/rest/wallet/api/account/detailsByAddress?address=${address}`, {credentials: 'include'})
@@ -125,7 +125,7 @@ export function searchFullName(address) {
       }
     })
     .catch((e) => {
-      console.debug('searchFullName method - error', e);
+      console.error('searchFullName method - error', e);
     });
 }
 

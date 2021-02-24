@@ -107,7 +107,7 @@ export default {
       this.dialog = true;
     },
     close() {
-      if(!this.loading) {
+      if (!this.loading) {
         this.dialog = false;
       }
     },

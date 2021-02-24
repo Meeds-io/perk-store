@@ -152,7 +152,7 @@ export default {
   },
   watch: {
     error() {
-      if(this.error) {
+      if (this.error) {
         this.loading = false;
       }
     },
@@ -259,7 +259,7 @@ export default {
           this.$emit('delivered', order);
         })
         .catch(e => {
-          console.debug("Error saving delivered quantity", e);
+          console.error('Error saving delivered quantity', e);
           this.loading = false;
           this.error = e && e.message ? e.message : String(e);
         });

@@ -136,5 +136,5 @@ export default {
       this.$emit('orders-list', productId, orderId, currentUserOrders);
     }
   },
-}
+};
 </script>

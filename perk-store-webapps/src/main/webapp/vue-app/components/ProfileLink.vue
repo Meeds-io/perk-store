@@ -115,7 +115,7 @@ export default {
     },
   },
   watch: {
-    id(oldValue, newValue) {
+    id() {
       if (this.id) {
         // TODO disable tiptip because of high CPU usage using its code
         this.initTiptip();

@@ -151,7 +151,7 @@ export default {
         if (file) {
           thiss.deleteFile(file);
         }
-        if(!thiss.error) {
+        if (!thiss.error) {
           thiss.error = thiss.$t('exoplatform.perkstore.error.uploadGenericError', {0: file && file.name || '', 1: thiss.maxFiles});
         }
       },
@@ -195,7 +195,7 @@ export default {
           thiss.$set(fileDetails, 'src', data);
           thiss.$set(fileDetails, 'data', data);
           thiss.$forceUpdate();
-        }
+        };
         reader.readAsDataURL(file);
 
         // Add file to list
@@ -207,7 +207,7 @@ export default {
           fileDetail.progress = progress;
         }
       },
-      uploadFinished: (i, file, response, time) => {
+      uploadFinished: (i, file) => {
         thiss.$emit('changed');
         const fileDetailToChange = thiss.files.find(f => f.file === file);
         setTimeout(() => {
@@ -222,7 +222,7 @@ export default {
     },
     deleteFile(fileOrId) {
       const idx = this.files.findIndex(f => f.file === fileOrId || f.id === fileOrId);
-      if(idx < 0) {
+      if (idx < 0) {
         return;
       }
       const fileDetails = this.files[idx];
@@ -234,9 +234,9 @@ export default {
           this.files.splice(idx, 1);
           this.$emit('changed');
         })
-        .catch((e) => {
-          this.error = e;
-        });
+          .catch((e) => {
+            this.error = e;
+          });
       } else {
         this.files.splice(idx, 1);
         this.$emit('changed');

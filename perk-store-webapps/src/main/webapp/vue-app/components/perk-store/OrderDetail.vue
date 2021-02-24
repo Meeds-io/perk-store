@@ -298,7 +298,7 @@ export default {
     symbol: {
       type: String,
       default: function() {
-        return "";
+        return '';
       },
     },
   },
@@ -324,8 +324,8 @@ export default {
       return (this.order && this.order.amount && toFixed(this.order.amount)) || 0;
     },
     transactionLink() {
-      if(this.order.transactionHash && this.order) {
-        if((this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName) || (this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName)) {
+      if (this.order.transactionHash && this.order) {
+        if ((this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName) || (this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName)) {
           return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.transactionHash}&principal=true`;
         } else if (this.order.receiver && this.order.receiver.type === 'space') {
           return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/SpaceWallet?hash=${this.order.transactionHash}&principal=true`;
@@ -334,8 +334,8 @@ export default {
       return null;
     },
     refundTransactionLink() {
-      if(this.order && this.order.refundTransactionHash) {
-        if((this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
+      if (this.order && this.order.refundTransactionHash) {
+        if ((this.order.receiver && this.order.receiver.type === 'user' && this.order.receiver.id === eXo.env.portal.userName) || (this.order.sender && this.order.sender.type === 'user' && this.order.sender.id === eXo.env.portal.userName)) {
           return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet?hash=${this.order.refundTransactionHash}&principal=true`;
         } else if (this.order.receiver && this.order.receiver.type === 'space') {
           return `${eXo.env.portal.context}/g/:spaces:${this.order.receiver.spaceURLId}/${this.order.receiver.id}/SpaceWallet?hash=${this.order.refundTransactionHash}&principal=true`;
@@ -411,7 +411,7 @@ export default {
 
       this.$emit('display-product', this.order.productId);
     },
-    refunded(order) {
+    refunded() {
       // Nothing to do, the update will be made by Websocket
     },
     refundDialogClosed() {
@@ -430,10 +430,10 @@ export default {
           this.$forceUpdate();
         })
         .catch(e => {
-          console.debug("Error saving status", e);
+          console.error('Error saving status', e);
           this.$emit('error', e && e.message ? e.message : String(e));
         });
     },
   }
-}
+};
 </script>

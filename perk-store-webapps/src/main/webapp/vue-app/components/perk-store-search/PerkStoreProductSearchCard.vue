@@ -73,5 +73,5 @@ export default {
       this.symbol = result && result.detail && result.detail.symbol;
     });
   },
-}
+};
 </script>
