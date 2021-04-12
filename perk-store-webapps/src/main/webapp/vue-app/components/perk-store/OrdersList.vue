@@ -17,7 +17,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template>
   <v-layout
     row
-    class="border-box-sizing mr-0 ml-0">
+    class="border-box-sizing me-0 ms-0">
     <orders-filter
       ref="productOrdersFilter"
       :filter="ordersFilter"
@@ -70,7 +70,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <v-flex
         v-if="loading || displayLoadMoreButton"
         slot="footer"
-        class="mt-2 mr-6 text-center elevation-2"
+        class="mt-2 me-6 text-center elevation-2"
         dense
         flat>
         <v-btn

@@ -52,7 +52,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       dark
       flat
       icon
-      class="ml-0"
+      class="ms-0"
       @click="close">
       <v-icon dark>close</v-icon>
     </v-btn>

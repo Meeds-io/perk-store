@@ -105,6 +105,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <goals>
               <goal>install-node-and-npm</goal>
             </goals>
+            <phase>prepare-package</phase>
             <configuration>
               <nodeVersion>v11.4.0</nodeVersion>
               <npmVersion>6.5.0</npmVersion>
@@ -115,6 +116,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <goals>
               <goal>npm</goal>
             </goals>
+            <phase>prepare-package</phase>
             <configuration>
               <arguments>config set python "/usr/bin/python2.7"</arguments>
             </configuration>
@@ -124,6 +126,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <goals>
               <goal>npm</goal>
             </goals>
+            <phase>prepare-package</phase>
             <configuration>
               <arguments>install</arguments>
             </configuration>
@@ -133,6 +136,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <goals>
               <goal>npm</goal>
             </goals>
+            <phase>prepare-package</phase>
             <configuration>
               <arguments>run build</arguments>
             </configuration>
