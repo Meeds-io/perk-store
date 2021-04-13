@@ -30,7 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <template v-if="userData && userData.canEdit">
           <select
             v-model="order.status"
-            class="small my-auto mr-2 ignore-vuetify-classes"
+            class="small my-auto me-2 ignore-vuetify-classes"
             @change="changeStatus()">
             <option
               v-for="option in statusList"
@@ -150,7 +150,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-list-item-content class="align-end orderProcessingActions no-wrap">
             <div>
               <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
-                <v-icon class="green--text mr-1" size="16px">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
+                <v-icon class="green--text me-1" size="16px">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
               </div>
               <template v-else-if="userData && userData.canEdit">
                 <button
@@ -161,13 +161,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </button>
                 <button
                   v-if="canDeliverOrder"
-                  class="ignore-vuetify-classes btn btn-primary orderProcessingBtn ml-1"
+                  class="ignore-vuetify-classes btn btn-primary orderProcessingBtn ms-1"
                   @click="$refs.deliverModal.openNoSelection()">
                   {{ $t('exoplatform.perkstore.button.deliver') }}
                 </button>
                 <button
                   v-if="canRefundOrder"
-                  class="ignore-vuetify-classes btn orderProcessingBtn ml-1"
+                  class="ignore-vuetify-classes btn orderProcessingBtn ms-1"
                   @click="$refs.refundModal.open()">
                   {{ $t('exoplatform.perkstore.button.refund') }}
                 </button>
@@ -190,7 +190,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 {{ $t('exoplatform.perkstore.label.status.canceled') }}
               </div>
               <div v-else>
-                <v-icon class="orange--text mr-1" size="16px">far fa-clock</v-icon>PENDING
+                <v-icon class="orange--text me-1" size="16px">far fa-clock</v-icon>PENDING
               </div>
             </div>
           </v-list-item-content>
@@ -205,7 +205,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :width="5"
                 :value="deliveredPercentage"
                 :color="deliveredPercentageColor"
-                class="ml-2">
+                class="ms-2">
                 <span class="no-wrap">
                   {{ order.deliveredQuantity }}/{{ order.quantity }}
                 </span>

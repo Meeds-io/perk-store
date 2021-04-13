@@ -38,7 +38,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-icon>fa-save</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-container grid-list-xl class="border-box-sizing pr-1 productOrderFilterContent">
+    <v-container grid-list-xl class="border-box-sizing pe-1 productOrderFilterContent">
       <v-layout wrap column>
         <h4><v-checkbox v-model="filter.searchInDates" :label="$t('exoplatform.perkstore.label.searchInDates')" /></h4>
         <template v-if="filter.searchInDates">
