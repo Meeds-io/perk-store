@@ -60,17 +60,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <v-btn
               :class="ordersListBtnClass"
               :title="$t('exoplatform.perkstore.label.ordersList')"
+              :right="!$vuetify.rtl"
               absolute
               color="secondary"
               class="white--text orderListButton"
               fab
-              right
               top
               @click="$emit('orders-list', product)">
               <v-badge
                 :value="product.notProcessedOrders"
                 :color="userData.canEdit ? 'red' : 'orange'"
-                right
+                :right="!$vuetify.rtl"
                 overlap>
                 <span
                   slot="badge"
@@ -84,11 +84,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <v-btn
               :class="editBtnClass"
               :title="$t('exoplatform.perkstore.button.editProduct')"
+              :right="!$vuetify.rtl"
               absolute
               color="secondary"
               class="white--text editButton"
               fab
-              right
               top
               @click="$emit('edit', product)">
               <v-icon>fa-pen</v-icon>
@@ -99,10 +99,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             :disabled="disabledBuy || !walletEnabled || walletLoading"
             :loading="!disabledBuy && walletLoading"
             :title="$t('exoplatform.perkstore.button.buy')"
+            :right="!$vuetify.rtl"
             absolute
             class="white--text primary"
             fab
-            right
             top
             @click="displayBuyModal">
             <v-icon>fa-shopping-cart</v-icon>
@@ -135,7 +135,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
               @click="$emit('orders-list', product, null, true)">
               <v-icon
-                left
+                :left="!$vuetify.rtl"
                 color="#ffb441"
                 size="16">
                 far fa-clock

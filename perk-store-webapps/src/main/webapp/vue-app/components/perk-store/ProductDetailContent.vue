@@ -15,7 +15,7 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-flex v-if="integrated" class="ml-4">
+  <v-flex v-if="integrated" class="ms-4">
     <div class="headline mb-4">
       {{ product.title }}
       <div v-if="product.receiverMarchand" class="no-wrap caption">
@@ -28,7 +28,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :display-name="product.receiverMarchand.displayName" />
       </div>
     </div>
-    <div v-if="product.description" class="mb-4 mr-4">
+    <div v-if="product.description" class="mb-4 me-4">
       {{ product.description }}
     </div>
   </v-flex>

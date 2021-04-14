@@ -78,7 +78,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-btn
           :disabled="disablePayButton"
           :loading="loading"
-          class="primary mr-1"
+          class="primary me-1"
           @click="saveSettings">
           {{ $t('exoplatform.perkstore.button.save') }}
         </v-btn>

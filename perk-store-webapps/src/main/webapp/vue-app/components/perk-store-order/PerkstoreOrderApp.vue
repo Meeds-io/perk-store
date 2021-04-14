@@ -43,7 +43,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 justify-center
                 pa-2>
                 <a :href="url" class="display-1 font-weight-bold big-number">
-                  {{ pendingOrdersSize }}<span class="mt-4 ml-1 product-label">{{ $t('exoplatform.perkstore.title.orders') }}</span>
+                  {{ pendingOrdersSize }}<span class="mt-4 ms-1 product-label">{{ $t('exoplatform.perkstore.title.orders') }}</span>
                 </a>
               </v-flex>
             </v-layout>

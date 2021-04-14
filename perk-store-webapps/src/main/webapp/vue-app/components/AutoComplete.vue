@@ -63,11 +63,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             v-if="addressLoad === 'loading'"
             indeterminate
             color="white"
-            class="mr-2" />
+            class="me-2" />
           <v-icon
             v-else-if="addressLoad === 'error'"
             alt="Invalid address"
-            class="mr-2"
+            class="me-2"
             color="red"
             size="15">
             warning

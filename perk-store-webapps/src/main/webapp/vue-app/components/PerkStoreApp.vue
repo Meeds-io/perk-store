@@ -54,23 +54,23 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <template v-if="displayProductDetails && selectedProduct">
               </template>
               <template v-else-if="displayProductForm && selectedProduct && selectedProduct.id">
-                - <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
+                - <span class="ms-2 primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductForm && selectedProduct">
                 - {{ $t('exoplatform.perkstore.title.createNewProduct') }}
               </template>
               <template v-else-if="displayProductOrders && selectedProduct && selectedOrderId">
-                - {{ $t('exoplatform.perkstore.title.order') }} <span class="ml-2 primary--text">#{{ selectedOrderId }}</span> : <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.order') }} <span class="ms-2 primary--text">#{{ selectedOrderId }}</span> : <span class="ms-2 primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayProductOrders && canEditSelectedProduct">
-                - {{ $t('exoplatform.perkstore.title.ordersListOf') }} <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.ordersListOf') }} <span class="ms-2 primary--text">{{ selectedProduct.title }}</span>
                 <v-text-field
                   v-model="searchOrder"
                   :placeholder="$t('exoplatform.perkstore.label.orderSearchPlaceholder')"
                   prepend-inner-icon="search"
                   single-line
                   hide-details
-                  class="searchProductsInput ml-3 mt-1 py-0 d-inline-flex" />
+                  class="searchProductsInput ms-3 mt-1 py-0 d-inline-flex" />
                 <v-progress-circular
                   v-show="searchLoading"
                   color="primary"
@@ -78,7 +78,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   indeterminate />
               </template>
               <template v-else-if="displayProductOrders && selectedProduct">
-                - {{ $t('exoplatform.perkstore.title.myOrdersListOf') }} <span class="ml-2 primary--text">{{ selectedProduct.title }}</span>
+                - {{ $t('exoplatform.perkstore.title.myOrdersListOf') }} <span class="ms-2 primary--text">{{ selectedProduct.title }}</span>
               </template>
               <template v-else-if="displayMyOrders">
                 - {{ $t('exoplatform.perkstore.title.myOrders') }}
@@ -90,7 +90,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   prepend-inner-icon="search"
                   single-line
                   hide-details
-                  class="searchProductsInput ml-3 mt-1 py-0 d-inline-flex" />
+                  class="searchProductsInput ms-3 mt-1 py-0 d-inline-flex" />
               </template>
             </v-toolbar-title>
             <v-spacer />
@@ -125,7 +125,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               v-if="displayCloseIcon"
               id="perkStoreAppMenuCloseButton"
               :title="$t('exoplatform.perkstore.button.close')"
-              class="secondary ml-3 mr-3"
+              class="secondary ms-3 me-3"
               icon
               text
               dark
@@ -178,7 +178,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @click="productFilterMenu = true">
                 <v-icon
                   :color="productsFilterIconClass"
-                  class="mr-2"
+                  class="me-2"
                   size="17">
                   fa-filter
                 </v-icon>
@@ -186,7 +186,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   {{ $t('exoplatform.perkstore.label.productFilters') }}
                 </span>
               </v-btn>
-              <span class="d-sm-inline-flex d-none ml-4"></span>
+              <span class="d-sm-inline-flex d-none ms-4"></span>
               <v-btn
                 id="perkStoreAppMyOrdersButton"
                 :title="$t('exoplatform.perkstore.button.myOrders')"
@@ -194,7 +194,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 small
                 class="toolbarButton"
                 @click="displayMyOrdersList">
-                <v-icon class="mr-2" size="17">
+                <v-icon class="me-2" size="17">
                   fa-file-invoice-dollar
                 </v-icon>
                 <span class="d-sm-inline-flex d-none">
@@ -214,7 +214,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </v-icon>
               </v-btn>
               <template v-if="userSettings.canAddProduct">
-                <span class="d-sm-inline-flex d-none ml-3"></span>
+                <span class="d-sm-inline-flex d-none ms-3"></span>
                 <v-btn
                   v-if="userSettings.administrator"
                   id="perkStoreAppMenuSettingsButton"
@@ -223,7 +223,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   text
                   small
                   @click="displaySettingsModal">
-                  <v-icon class="mr-2">
+                  <v-icon class="me-2">
                     fa-cog
                   </v-icon>
                   <span class="d-sm-inline-flex d-none">
