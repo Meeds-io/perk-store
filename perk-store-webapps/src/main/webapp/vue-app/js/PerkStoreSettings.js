@@ -26,7 +26,7 @@ export function initSettings() {
 }
 
 export function getSettings() {
-  return fetch(`/portal/rest/perkstore/api/settings`, {credentials: 'include'}).then((resp) => {
+  return fetch('/portal/rest/perkstore/api/settings', {credentials: 'include'}).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();
     } else {
@@ -37,7 +37,7 @@ export function getSettings() {
 
 export function saveSettings(settings) {
   if (settings) {
-    return fetch(`/portal/rest/perkstore/api/settings/save`, {
+    return fetch('/portal/rest/perkstore/api/settings/save', {
       credentials: 'include',
       method: 'POST',
       headers: {

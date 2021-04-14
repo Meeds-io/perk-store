@@ -189,7 +189,9 @@ export default {
       quantityRules: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
         (v) => this.isPositiveNumber(v) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
+        // eslint-disable-next-line no-unused-vars
         (v) => !this.product || this.product.unlimited || this.quantity <= this.available || this.$t('exoplatform.perkstore.warning.quantityExceedsTotalSupply', {0: this.available}),
+        // eslint-disable-next-line no-unused-vars
         (v) => !this.product || !this.product.maxOrdersPerUser || this.quantity <= this.remainingOrdersForUser || this.$t('exoplatform.perkstore.warning.quantityExceedsAllowedOrders', {0: this.remainingOrdersForUser}),
       ],
     };
@@ -205,7 +207,7 @@ export default {
       return (this.quantity && this.product && this.product.price && toFixed(this.product.price * this.quantity)) || 0;
     },
     available() {
-      if(this.product && !this.product.unlimited) {
+      if (this.product && !this.product.unlimited) {
         const available = this.product.totalSupply - this.product.purchased;
         return available > 0 ? available : 0;
       } else {
@@ -219,7 +221,7 @@ export default {
       return this.product && this.product.userData && (this.product.orderPeriodicity ? (this.product.userData.purchasedInCurrentPeriod || 0) : (this.product.userData.totalPurchased || 0));
     },
     remainingOrdersForUser() {
-      if(this.maxOrdersPerUser && this.product.userData) {
+      if (this.maxOrdersPerUser && this.product.userData) {
         return this.maxOrdersPerUser - this.purchasedOrders;
       }
       return 0;
@@ -228,7 +230,7 @@ export default {
       return this.product && this.product.price;
     },
     maxOrdersRemaining() {
-      if(this.product && this.product.maxOrdersPerUser && this.product.userData) {
+      if (this.product && this.product.maxOrdersPerUser && this.product.userData) {
         const totalPurchased = this.product.orderPeriodicity ? (this.product.userData.purchasedInCurrentPeriod || 0) : (this.product.userData.totalPurchased || 0);
         const quantity = this.product.maxOrdersPerUser - totalPurchased;
         return quantity > 0 ? quantity : 0;
@@ -248,7 +250,7 @@ export default {
       return this.product && (this.product.maxOrdersPerUser || !this.product.unlimited);
     },
     quantityInputLabel() {
-      if(this.limitedQuantity) {
+      if (this.limitedQuantity) {
         return this.$t('exoplatform.perkstore.label.quantityWithMax', {0: this.maxQuantity});
       } else {
         return this.$t('exoplatform.perkstore.label.quantity');
@@ -260,7 +262,7 @@ export default {
   },
   watch: {
     error() {
-      if(this.error) {
+      if (this.error) {
         this.loading = false;
       }
     },
@@ -291,7 +293,7 @@ export default {
     },
     pendingTransaction(event) {
       // Check if the event is triggered for current window
-      if(this.opened && this.loading) {
+      if (this.opened && this.loading) {
         const pendingTransaction = event.detail;
         return createOrder({
           productId: this.product.id,
@@ -305,7 +307,7 @@ export default {
             this.$emit('ordered', order);
           })
           .catch(e => {
-            console.debug("Error saving order", e);
+            console.error('Error saving order', e);
             this.loading = false;
             this.error = e && e.message ? e.message : String(e);
           });
@@ -322,7 +324,7 @@ export default {
 
       this.error = null;
 
-      if(!this.$refs.form.validate()) {
+      if (!this.$refs.form.validate()) {
         return false;
       }
 
@@ -331,7 +333,7 @@ export default {
       let qty = this.quantity;
       try {
         qty = this.product.allowFraction ? parseFloat(qty) : parseInt(qty);
-      } catch(e) {
+      } catch (e) {
         // Nothing to do
       }
 
@@ -371,7 +373,7 @@ export default {
         receiver: this.product.receiverMarchand,
       }, true)
         .then(() => {
-          document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail' : {
+          document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
             amount: this.amount,
             receiver: this.product.receiverMarchand,
             sender: {
@@ -384,7 +386,7 @@ export default {
           }}));
         })
         .catch(e => {
-          console.debug("Checking order availability error", e);
+          console.error('Checking order availability error', e);
           this.loading = false;
           this.error = e && e.message ? e.message : String(e);
         });

@@ -115,20 +115,20 @@ export default {
       return (this.product && this.product.userData) || {};
     },
     ordersListBtnClass() {
-      if(!this.product) {
+      if (!this.product) {
         return '';
       }
       let paddingIndex = 0;
-      if(this.userData.canEdit) {
+      if (this.userData.canEdit) {
         paddingIndex++;
       }
-      if(this.displayBuyButton) {
+      if (this.displayBuyButton) {
         paddingIndex++;
       }
       return `left-pa${paddingIndex}`;
     },
     editBtnClass() {
-      if(this.displayBuyButton) {
+      if (this.displayBuyButton) {
         return 'left-pa1';
       }
       return '';
@@ -155,7 +155,7 @@ export default {
       return this.product.maxOrdersPerUser && this.userData && (this.maxOrdersCurrentPeriodReached || this.maxOrdersAllTimeReached);
     },
     available() {
-      if(this.product.unlimited) {
+      if (this.product.unlimited) {
         return 10000;
       } else {
         const available = this.product.totalSupply - this.product.purchased;
@@ -181,5 +181,5 @@ export default {
       }
     }
   }
-}
+};
 </script>

@@ -55,27 +55,27 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-  import {getPendingOrdersSize} from '../../js/persktoreOrderAPI.js'
+import {getPendingOrdersSize} from '../../js/persktoreOrderAPI.js';
 
-  export default {
-    data() {
-      return {
-        pendingOrdersSize: 0,
-        perkstoreUrl : `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/perkstore?notProcessedOrders=true`,
-      }
-    },
-    created() {
-      this.retrievePendingOrdersCount();
-    },
-    methods: {
-      retrievePendingOrdersCount() {
-        return getPendingOrdersSize()
-          .then(orders => {
-            this.pendingOrdersSize = orders && orders.size || 0;
-            return this.$nextTick();
-          })
-          .finally(() => this.$root.$emit('application-loaded'));
-      }
-    },
-  }
+export default {
+  data() {
+    return {
+      pendingOrdersSize: 0,
+      perkstoreUrl: `${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/perkstore?notProcessedOrders=true`,
+    };
+  },
+  created() {
+    this.retrievePendingOrdersCount();
+  },
+  methods: {
+    retrievePendingOrdersCount() {
+      return getPendingOrdersSize()
+        .then(orders => {
+          this.pendingOrdersSize = orders && orders.size || 0;
+          return this.$nextTick();
+        })
+        .finally(() => this.$root.$emit('application-loaded'));
+    }
+  },
+};
 </script> 

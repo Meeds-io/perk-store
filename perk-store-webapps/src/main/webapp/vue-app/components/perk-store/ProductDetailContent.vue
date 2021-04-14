@@ -155,5 +155,5 @@ export default {
       return (this.product && this.product.userData) || {};
     },
   }
-}
+};
 </script>

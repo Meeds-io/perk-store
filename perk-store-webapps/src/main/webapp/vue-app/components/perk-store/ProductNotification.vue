@@ -78,7 +78,7 @@ export default {
     return {
       snackbar: false,
       snackbarDisplayed: [],
-    }
+    };
   },
   computed: {
     displayDivider() {
@@ -93,7 +93,7 @@ export default {
   },
   watch: {
     snackbar() {
-      if(!this.snackbar) {
+      if (!this.snackbar) {
         this.products.forEach(product => this.snackbarDisplayed.push(product.id));
       }
     },
@@ -109,5 +109,5 @@ export default {
       this.snackbar = false;
     }
   },
-}
+};
 </script>

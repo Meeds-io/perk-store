@@ -16,7 +16,7 @@
  */
 export function generateBarCode(elementId, productId, orderId, userId) {
   const text = `@${productId}@${orderId}@${userId}@`;
-  JsBarcode(`#${elementId}`, text, {
+  new JsBarcode(`#${elementId}`, text, {
     displayValue: false
   });
 }

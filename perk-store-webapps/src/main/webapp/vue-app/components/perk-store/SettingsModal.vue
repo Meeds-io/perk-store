@@ -113,7 +113,7 @@ export default {
   },
   watch: {
     error() {
-      if(this.error) {
+      if (this.error) {
         this.loading = false;
       }
     },
@@ -133,33 +133,33 @@ export default {
       this.dialog = true;
     },
     close() {
-      if(!this.loading) {
+      if (!this.loading) {
         this.dialog = false;
       }
     },
     init() {
-      if(this.settingsToSave) {
+      if (this.settingsToSave) {
         this.$refs.applicationAccessPermissionAutocomplete.clear();
-        if(this.settingsToSave.accessPermissionsProfiles) {
+        if (this.settingsToSave.accessPermissionsProfiles) {
           this.$refs.applicationAccessPermissionAutocomplete.selectItems(this.settingsToSave.accessPermissionsProfiles);
         }
         this.$refs.applicationManagersAutocomplete.clear();
-        if(this.settingsToSave.managersProfiles) {
+        if (this.settingsToSave.managersProfiles) {
           this.$refs.applicationManagersAutocomplete.selectItems(this.settingsToSave.managersProfiles);
         }
         this.$refs.applicationProductCreationPermissionAutocomplete.clear();
-        if(this.settingsToSave.productCreationPermissionsProfiles) {
+        if (this.settingsToSave.productCreationPermissionsProfiles) {
           this.$refs.applicationProductCreationPermissionAutocomplete.selectItems(this.settingsToSave.productCreationPermissionsProfiles);
         }
       }
     },
     selectValue(fieldName, identity) {
-      if(!this.settingsToSave[fieldName]) {
+      if (!this.settingsToSave[fieldName]) {
         this.settingsToSave[fieldName] = [];
       }
-      if(identity) {
+      if (identity) {
         this.settingsToSave[fieldName].push(identity);
-      } else if(this.settingsToSave[fieldName].length) {
+      } else if (this.settingsToSave[fieldName].length) {
         this.settingsToSave[fieldName] = [];
       }
     },
@@ -169,12 +169,12 @@ export default {
 
       return saveSettings(this.settingsToSave)
         .then(() => {
-          this.$emit("saved");
+          this.$emit('saved');
           this.dialog = false;
           this.loading = false;
         })
         .catch(e => {
-          console.debug("Save settings error", e);
+          console.error('Save settings error', e);
           this.loading = false;
           this.error = e && e.message ? e.message : String(e);
         });

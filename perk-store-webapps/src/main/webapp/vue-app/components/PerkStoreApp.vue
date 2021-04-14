@@ -422,7 +422,7 @@ export default {
     },
     filteredProducts() {
       let products = this.products.slice();
-      if(this.search && this.search.trim().length) {
+      if (this.search && this.search.trim().length) {
         const searchTerm = this.search.trim().toLowerCase();
         products = products.slice().filter(product => (product.title && product.title.toLowerCase().indexOf(searchTerm)) >= 0 || (product.description && product.description.toLowerCase().indexOf(searchTerm) >= 0));
       }
@@ -445,26 +445,26 @@ export default {
     document.addEventListener('exo-wallet-settings-loaded', this.walletSettingsLoaded);
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
     document.addEventListener('exo-wallet-init-loading', this.walletIsLoading);
-    if(window.walletAddonInstalled) {
+    if (window.walletAddonInstalled) {
       this.initWalletAPI();
     } else {
       document.addEventListener('exo-wallet-installed', this.initWalletAPI);
     }
     const search = document.location.search.substring(1);
     let parameters = null;
-    if(search) {
+    if (search) {
       parameters = JSON.parse(
-          `{"${decodeURI(search)
-            .replace(/"/g, '\\"')
-            .replace(/&/g, '","')
-            .replace(/=/g, '":"')}"}`
-        );
+        `{"${decodeURI(search)
+          .replace(/"/g, '\\"')
+          .replace(/&/g, '","')
+          .replace(/=/g, '":"')}"}`
+      );
     }
-    return this.init(parameters && parameters.productId, parameters && parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === "true");
+    return this.init(parameters && parameters.productId, parameters && parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
   },
   methods: {
     refreshSettings(event) {
-      if(!event || !event.detail || !event.detail.globalsettings) {
+      if (!event || !event.detail || !event.detail.globalsettings) {
         return;
       }
 
@@ -476,36 +476,36 @@ export default {
       this.productsFilters = getProductFilter() || {};
       this.loading = true;
       return initSettings()
-      .then(() => {
-        this.perkStoreEnabled = true;
-        this.settings = window.perkStoreSettings;
-        if(!this.settings) {
-          this.settings = {};
-        }
-        this.userSettings = this.settings.userSettings;
-        this.ordersFilter = getOrderFilter();
-      })
-      .then(() => this.refreshProductList(selectedProductId, selectedOrderId))
-      .then(() => {
-        if (notProcessedOrders) {
-          this.ordersFilter = {notProcessed: true};
-          this.displayMyOrders = true;
-        }
-      })
-      .catch(e => {
-        console.debug("Error initializing application", e);
-        this.error = e && e.message ? e.message : String(e);
-      })
-      .finally(() => {
-        window.setTimeout(() => {
-          if(window.walletAddonInstalled) {
-            this.initWalletAPI();
-          } else {
-            this.walletWarning = this.$t('exoplatform.perkstore.warning.walletNotInstalled');
-            this.loading = false;
+        .then(() => {
+          this.perkStoreEnabled = true;
+          this.settings = window.perkStoreSettings;
+          if (!this.settings) {
+            this.settings = {};
           }
-        }, 2000);
-      });
+          this.userSettings = this.settings.userSettings;
+          this.ordersFilter = getOrderFilter();
+        })
+        .then(() => this.refreshProductList(selectedProductId, selectedOrderId))
+        .then(() => {
+          if (notProcessedOrders) {
+            this.ordersFilter = {notProcessed: true};
+            this.displayMyOrders = true;
+          }
+        })
+        .catch(e => {
+          console.error('Error initializing application', e);
+          this.error = e && e.message ? e.message : String(e);
+        })
+        .finally(() => {
+          window.setTimeout(() => {
+            if (window.walletAddonInstalled) {
+              this.initWalletAPI();
+            } else {
+              this.walletWarning = this.$t('exoplatform.perkstore.warning.walletNotInstalled');
+              this.loading = false;
+            }
+          }, 2000);
+        });
     },
     filterProducts(event) {
       if (event) {
@@ -524,8 +524,8 @@ export default {
 
           if (this.products.length && selectedProductId) {
             const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
-            if(selectedProduct) {
-              if(selectedOrderId) {
+            if (selectedProduct) {
+              if (selectedOrderId) {
                 this.displayProductOrdersList(selectedProduct, Number(selectedOrderId));
               } else {
                 this.displayProduct(selectedProduct);
@@ -540,7 +540,7 @@ export default {
       this.walletWarning = null;
     },
     initWalletAPI(forceReload) {
-      if(forceReload || (!this.walletAddonInstalled && window.walletAddonInstalled)) {
+      if (forceReload || (!this.walletAddonInstalled && window.walletAddonInstalled)) {
         document.dispatchEvent(new CustomEvent('exo-wallet-init'));
       }
     },
@@ -550,9 +550,9 @@ export default {
     },
     walletInitialized(event) {
       const result = event && event.detail;
-      if(result && !result.enabled) {
+      if (result && !result.enabled) {
         this.isApplicationEnabled = this.isApplicationEnabled || false;
-      } else if(!result || result.error) {
+      } else if (!result || result.error) {
         this.isApplicationEnabled = true;
         this.walletWarning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
         this.walletEnabled = false;
@@ -627,7 +627,7 @@ export default {
       }
     },
     showFilters() {
-      if(this.$refs.ordersList) {
+      if (this.$refs.ordersList) {
         this.$refs.ordersList.showFilters();
       }
     },
@@ -640,12 +640,12 @@ export default {
     },
     updateProduct(event) {
       const wsMessage = event.detail;
-      if(wsMessage.product && wsMessage.product.id) {
+      if (wsMessage.product && wsMessage.product.id) {
         let product = this.products && this.products.find(product => product && product.id === wsMessage.product.id);
         // Existing product
-        if(product && product.id) {
+        if (product && product.id) {
           getProduct(product.id).then(freshProduct => {
-            if(freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
+            if (freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
               // Additional check for user data target
               Object.assign(product, freshProduct);
 
@@ -659,12 +659,12 @@ export default {
 
           // New product added
           getProduct(product.id).then(freshProduct => {
-            if(freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
+            if (freshProduct && freshProduct.userData && freshProduct.userData.username === eXo.env.portal.userName) {
               // Additional check for user data target
               Object.assign(product, freshProduct);
 
               // Add notification to non last modifier
-              if(event.type === this.createOrUpdateProductEvent && !this.modifiedProducts.find(modifiedProduct => modifiedProduct.id === product.id) && (product.lastModifier && product.lastModifier.id !== eXo.env.portal.userName) || (!product.lastModifier && product.creator && product.creator.id !== eXo.env.portal.userName)) {
+              if (event.type === this.createOrUpdateProductEvent && !this.modifiedProducts.find(modifiedProduct => modifiedProduct.id === product.id) && (product.lastModifier && product.lastModifier.id !== eXo.env.portal.userName) || (!product.lastModifier && product.creator && product.creator.id !== eXo.env.portal.userName)) {
                 this.modifiedProducts.unshift(product);
               }
             }
