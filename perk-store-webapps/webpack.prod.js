@@ -26,9 +26,7 @@ const config = merge(webpackCommonConfig, {
     perkstoreSearch: './src/main/webapp/vue-app/perk-store-search.js'
   },
   output: {
-    path: path.join(__dirname, 'target/perk-store/'),
-    filename: 'js/[name].bundle.js',
-    libraryTarget: 'amd'
+    path: path.join(__dirname, 'target/perk-store/')
   },
   externals: {
     vue: 'Vue',

@@ -37,6 +37,10 @@ const config = {
       }
     ]
   },
+  output: {
+    filename: 'js/[name].bundle.js',
+    libraryTarget: 'amd'
+  },
   externals: {
     vue: 'Vue',
     vuetify: 'Vuetify',
