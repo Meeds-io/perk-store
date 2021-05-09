@@ -21,7 +21,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     class="notificationParent"
     color="black">
     <v-card
-      flat
       dark
       class="transparent">
       <template v-for="order in filteredOrders">
@@ -41,7 +40,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-btn
           :title="$t('exoplatform.perkstore.button.refresh')"
           dark
-          flat
           @click="refreshList">
           {{ $t('exoplatform.perkstore.button.refresh') }}
         </v-btn>
@@ -50,7 +48,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </v-card>
     <v-btn
       dark
-      flat
       icon
       class="ms-0"
       @click="close">

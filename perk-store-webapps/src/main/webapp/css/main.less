@@ -18,6 +18,67 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 @import "mixins.less";
 
 #PerkStoreApp, .searchPerkStoreProductCard {
+  .orders-list {
+    background: white;
+
+    .toolbarOrders {
+      margin-bottom: 17px;
+
+      .boxTitle {
+        width: 30%
+      }
+
+      .spacer {
+        width: 40%
+      }
+
+      .filterOrders {
+        width: 20%;
+      }
+
+      .download {
+        width: 5%;
+      }
+
+      .filterList {
+        width: 5%;
+      }
+    }
+  }
+
+  .product-list {
+    background: white;
+
+    .toolbarProduct {
+      padding: 15px 5px 15px 5px;
+
+      .addProduct {
+        width: 31%
+      }
+
+      .spacer {
+        width: 44%
+      }
+
+      .filter {
+        width: 20%
+      }
+
+      .filter_menu {
+        width: 12%;
+        padding-top: 5px;
+
+        .menuList {
+          margin: auto;
+          width: 75%;
+        }
+      }
+
+      .settingsIconAdmin {
+        width: 3%
+      }
+    }
+  }
   min-height: ~"calc( 100vh - 60px)";
 
   .v-menu__content {
@@ -194,6 +255,24 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
   .clickable {
     cursor: pointer;
+
+    .addProduct {
+      padding: 7px;
+
+      > i {
+        color: var(--allPagesGreyColorLighten1, #a8b3c5) !important;
+      }
+    }
+
+    > button {
+      white-space: nowrap;
+    }
+
+    .textBalance {
+      white-space: nowrap;
+      padding-top: 10px;
+      color: var(--allPagesGreyColorLighten1, #a8b3c5);
+    }
   }
 
   .toolbarButton {
@@ -201,7 +280,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     width: auto;
     height: 77%;
     padding: 5px;
-    margin: 10px 0;
     color: rgba(0,0,0,0.70);
   }
 
