@@ -19,7 +19,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     class="border-box-sizing clickable addProduct">
     <button class="btn ignore-vuetify-classes me-1" @click="$emit('create-product')">
       <i class="fas fa-plus pr-1"></i>
-      Add Product
+      {{ $t('exoplatform.perkstore.button.addProduct') }}
     </button>
     <span class="textBalance">
       {{ $t('exoplatform.perkstore.label.balance') }}: {{ symbol }} {{ balance }}
