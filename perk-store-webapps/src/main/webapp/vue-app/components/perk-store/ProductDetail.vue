@@ -36,6 +36,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               :src="imageFile.src"
               max="300"
               class="carousselImage" />
+            <v-btn
+              absolute
+              color="white"
+              class="productCardPrice"
+              fab
+              left
+              top>
+              {{ symbol }} {{ product.price }}
+            </v-btn>
           </template>
           <v-expand-transition>
             <div
@@ -63,7 +72,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               :right="!$vuetify.rtl"
               absolute
               color="secondary"
-              class="white--text orderListButton"
+              class="white--text orderListButton "
               fab
               top
               @click="$emit('orders-list', product)">
@@ -112,38 +121,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
           class="pb-0 clickable productCardTitleParent"
           @click="openProductDetail">
-          <v-layout
-            row
-            grow
-            class="no-wrap mx-0">
-            <v-flex class="text-truncate title productCardTitle">
-              <span :title="product.title">{{ product.title }}</span>
-            </v-flex>
-            <v-flex class="primary--text headline text-right productCardPrice">
-              {{ product.price }} {{ symbol }}
-            </v-flex>
-          </v-layout>
+          <span :title="product.title">{{ product.title }}</span>
         </v-card-text>
         <v-card-text class="productCardSubtitle">{{ productCreatedDate }}</v-card-text>
-        <v-card-text
-          v-if="!hidePending"
-          class="productCardFooter py-0"
-          @click="openProductDetail">
-          <v-hover v-if="userData.notProcessedOrders">
-            <v-chip
-              slot-scope="{ hover: hoverPending }"
-              :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
-              @click="$emit('orders-list', product, null, true)">
-              <v-icon
-                :left="!$vuetify.rtl"
-                color="#ffb441"
-                size="16">
-                far fa-clock
-              </v-icon>
-              {{ userData.notProcessedOrders }} {{ $t('exoplatform.perkstore.label.pending') }}
-            </v-chip>
-          </v-hover>
-        </v-card-text>
       </v-card>
     </v-hover>
   </v-flex>
