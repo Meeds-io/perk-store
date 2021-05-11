@@ -147,14 +147,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <v-spacer />
               </v-toolbar>
               <product-form
-                v-if="displayProductForm"
                 ref="productForm"
                 :product="selectedProduct"
                 @saved="displayProduct"
                 @error="error=$event"
                 @close="displayProduct" />
               <products-list
-                v-else-if="!error || (filteredProducts && filteredProducts.length)"
+                v-if="!error || (filteredProducts && filteredProducts.length)"
                 ref="productsList"
                 :products="filteredProducts"
                 :selected-product="displayProductDetails && selectedProduct"
@@ -323,7 +322,7 @@ export default {
     perkStoreEnabled: false,
     walletNeedPassword: false,
     loading: true,
-    selectedProduct: null,
+    selectedProduct: {},
     selectedOrderId: null,
     displayMyOrders: false,
     displayProductDetails: false,
