@@ -29,7 +29,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-spacer />
       </v-toolbar>
     </main>
-    <main>
+    <main v-else-if="isApplicationEnabled">
       <v-layout justify-center>
         <v-flex xs12>
           <v-toolbar
@@ -327,6 +327,25 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <div id="perkStoreDialogsParent">
       </div>
     </main>
+    <main v-else-if="!walletLoading" id="applicationDisabled">
+      <v-layout wrap class="mt-7">
+        <v-flex class="mx-auto text-center title" xs12>
+          {{ $t('exoplatform.perkstore.info.applicationDisabledPart1') }}
+        </v-flex>
+        <v-flex class="mt-2 mx-auto text-center title" xs12>
+          {{ $t('exoplatform.perkstore.info.applicationDisabledPart2') }}
+        </v-flex>
+        <v-flex class="mx-auto text-center title mt-7" xs12>
+          <a
+            href="https://www.exoplatform.com/rewarding-program"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="no-wrap requestFundsLink">
+            {{ $t('exoplatform.perkstore.info.applicationDisabledLink') }}
+          </a>
+        </v-flex>
+      </v-layout>
+    </main>
   </v-app>
 </template>
 
@@ -361,6 +380,7 @@ export default {
     walletLoading: false,
     walletEnabled: false,
     perkStoreEnabled: false,
+    isApplicationEnabled: false,
     walletNeedPassword: false,
     loading: true,
     selectedProduct: null,
@@ -530,11 +550,15 @@ export default {
     },
     walletInitialized(event) {
       const result = event && event.detail;
-      if (!result || result.error) {
+      if (result && !result.enabled) {
+        this.isApplicationEnabled = this.isApplicationEnabled || false;
+      } else if (!result || result.error) {
+        this.isApplicationEnabled = true;
         this.walletWarning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
+        this.isApplicationEnabled = this.isApplicationEnabled || result.enabled;
       }
       this.walletNeedPassword = result && result.needPassword;
       this.walletLoading = false;
