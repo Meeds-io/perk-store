@@ -124,6 +124,25 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <span :title="product.title">{{ product.title }}</span>
         </v-card-text>
         <v-card-text class="productCardSubtitle">{{ productCreatedDate }}</v-card-text>
+        <v-card-text
+          v-if="!hidePending"
+          class="productCardFooter py-0"
+          @click="openProductDetail">
+          <v-hover v-if="userData.notProcessedOrders">
+            <v-chip
+              slot-scope="{ hover: hoverPending }"
+              :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
+              @click="$emit('orders-list', product, null, true)">
+              <v-icon
+                :left="!$vuetify.rtl"
+                color="#ffb441"
+                size="16">
+                far fa-clock
+              </v-icon>
+              {{ userData.notProcessedOrders }} {{ $t('exoplatform.perkstore.label.pending') }}
+            </v-chip>
+          </v-hover>
+        </v-card-text>
       </v-card>
     </v-hover>
   </v-flex>
