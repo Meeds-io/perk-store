@@ -15,7 +15,7 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-card flat class="transparent">
+  <v-card flat>
     <v-expand-transition name="fade" appear>
       <v-flex v-show="selectedProduct" class="productDetailContainer">
         <product-detail-maximized
@@ -39,10 +39,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           row
           wrap
           class="productsListParent">
-          <create-product-button
-            v-if="canAddProduct"
-            class="xs12 sm4 md3 d-none d-sm-flex my-1"
-            @create-product="$emit('create-product')" />
           <template v-if="products && products.length">
             <template v-for="product in products">
               <product-detail
@@ -72,13 +68,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <script>
 import ProductDetail from './ProductDetail.vue';
-import CreateProductButton from './CreateProductButton.vue';
 import ProductDetailMaximized from './ProductDetailMaximized.vue';
 
 export default {
   components: {
     ProductDetail,
-    CreateProductButton,
     ProductDetailMaximized,
   },
   props: {
