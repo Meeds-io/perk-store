@@ -33,8 +33,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <template>
         <v-app class="application-toolbar">
           <v-tabs v-model="tab">
-            <v-tab @click="displayProductForm ? displayProduct(selectedProduct) : closeDetails()">Catalogue</v-tab>
-            <v-tab @click="displayMyOrdersList">My Orders</v-tab>
+            <v-tab @click="displayProductForm ? displayProduct(selectedProduct) : closeDetails()">{{ $t('exoplatform.perkstore.label.Catalogue') }}</v-tab>
+            <v-tab @click="displayMyOrdersList">{{ $t('exoplatform.perkstore.label.MyOrders') }}</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item class="product-list" eager>
