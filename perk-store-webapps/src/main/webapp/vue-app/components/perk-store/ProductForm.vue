@@ -15,160 +15,173 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-form
-    ref="form"
-    v-model="valid"
-    class="productFormParent">
-    <v-container grid-list-xl class="white">
-      <v-layout
-        wrap
-        justify-space-between>
-        <v-flex
-          xs12
-          md4>
-          <v-text-field
-            v-model="product.title"
-            :rules="requiredRule"
-            :maxlength="200"
-            :label="`${$t('exoplatform.perkstore.label.productTitle')} *`"
-            :placeholder="$t('exoplatform.perkstore.label.productTitlePlaceholder')"
-            name="ProductTitle"
-            validate-on-blur
-            required
-            autofocus
-            counter />
-
-          <v-textarea
-            v-model="product.description"
-            :maxlength="maxTextAreaSize"
-            :label="$t('exoplatform.perkstore.label.productDescription')"
-            :placeholder="$t('exoplatform.perkstore.label.productDescriptionPlaceholder')"
-            name="ProductDescription"
-            rows="5"
-            flat
-            counter />
-
-          <auto-complete
-            ref="receiverMarchandAutocomplete"
-            :rules="requiredRule"
-            :input-label="`${$t('exoplatform.perkstore.label.marchandWallet')} *`"
-            :input-placeholder="$t('exoplatform.perkstore.label.marchandWalletPlaceholder')"
-            :no-data-label="$t('exoplatform.perkstore.label.marchandWalletSearchPlaceholder')"
-            big-field
-            required
-            @item-selected="selectRecipient"
-            @clear-selection="selectRecipient()" />
-
-          <auto-complete
-            ref="productMarchandsAutocomplete"
-            :rules="requiredRule"
-            :input-label="`${$t('exoplatform.perkstore.label.productEditors')} *`"
-            :input-placeholder="$t('exoplatform.perkstore.label.productEditorsPlaceholder')"
-            :no-data-label="$t('exoplatform.perkstore.label.productEditorsSearchPlaceholder')"
-            multiple
-            only-users
-            no-address
-            big-field
-            required
-            @item-selected="selectEditor"
-            @clear-selection="selectEditor()" />
-
-          <auto-complete
-            ref="productAccessPermissionAutocomplete"
-            :input-label="$t('exoplatform.perkstore.label.productAllowedBuyers')"
-            :input-placeholder="$t('exoplatform.perkstore.label.productAllowedBuyersPlaceholder')"
-            :no-data-label="$t('exoplatform.perkstore.label.productAllowedBuyersSearchPlaceholder')"
-            multiple
-            no-address
-            big-field
-            @item-selected="selectAccessPermission"
-            @clear-selection="selectAccessPermission()" />
-        </v-flex>
-
-        <v-flex
-          xs12
-          md6>
-          <v-text-field
-            v-model.number="product.price"
-            :rules="requiredNumberRule"
-            :label="`${$t('exoplatform.perkstore.label.price')} *`"
-            :placeholder="$t('exoplatform.perkstore.label.pricePlaceholder')"
-            name="ProductPrice"
-            validate-on-blur
-            required />
-
-          <upload-input
-            :max-files="5"
-            :max-uploads-size-in-mb="5"
-            :files="product.imageFiles" />
-
-          <v-checkbox
-            v-model="product.enabled"
-            :label="$t('exoplatform.perkstore.label.enabledProduct')" />
-
-          <v-checkbox
-            v-model="limitedSupply"
-            :label="$t('exoplatform.perkstore.label.limitedSupply')" />
-
+  <exo-drawer
+    ref="productFormDrawer"
+    allow-expand
+    right>
+    <template slot="title">
+      {{ product && product.id ? $t('exoplatform.perkstore.button.editProduct') : $t('exoplatform.perkstore.button.addProduct') }}
+    </template>
+    <template slot="content">
+      <v-form
+        ref="form"
+        v-model="valid"
+        class="productFormParent">
+        <v-container grid-list-xl class="white">
           <v-layout
-            v-if="limitedSupply"
-            class="sub-text"
-            row>
-            <v-flex xs5>
-              <label>{{ `${$t('exoplatform.perkstore.label.totalSupply')} *` }}</label>
-            </v-flex>
-            <v-flex xs7>
+            :class="this.$refs.productFormDrawer && this.$refs.productFormDrawer.expand ? '' : 'drawerProductExpand'"
+            wrap
+            justify-space-between>
+            <v-flex
+              :class="this.$refs.productFormDrawer && this.$refs.productFormDrawer.expand ? 'md4' : ''"
+              xs12>
               <v-text-field
-                v-model.number="product.totalSupply"
-                name="ProductTotalSupply"
-                :placeholder="$t('exoplatform.perkstore.label.totalSupplyPlaceholder')"
+                v-model="product.title"
                 :rules="requiredRule"
-                single-line
-                required />
-            </v-flex>
-          </v-layout>
+                :maxlength="200"
+                :label="`${$t('exoplatform.perkstore.label.productTitle')} *`"
+                :placeholder="$t('exoplatform.perkstore.label.productTitlePlaceholder')"
+                name="ProductTitle"
+                validate-on-blur
+                required
+                autofocus
+                counter />
 
-          <v-checkbox
-            v-model="limitedOrdersPerUser"
-            :label="$t('exoplatform.perkstore.label.limitedOders')" />
+              <v-textarea
+                v-model="product.description"
+                :maxlength="maxTextAreaSize"
+                :label="$t('exoplatform.perkstore.label.productDescription')"
+                :placeholder="$t('exoplatform.perkstore.label.productDescriptionPlaceholder')"
+                name="ProductDescription"
+                rows="5"
+                flat
+                counter />
 
-          <v-layout
-            v-if="limitedOrdersPerUser"
-            class="sub-text"
-            row>
-            <v-flex xs5>
-              <label>{{ `${limitedOrdersPerUserLabel} *` }}</label>
+              <auto-complete
+                ref="receiverMarchandAutocomplete"
+                :rules="requiredRule"
+                :input-label="`${$t('exoplatform.perkstore.label.marchandWallet')} *`"
+                :input-placeholder="$t('exoplatform.perkstore.label.marchandWalletPlaceholder')"
+                :no-data-label="$t('exoplatform.perkstore.label.marchandWalletSearchPlaceholder')"
+                big-field
+                required
+                @item-selected="selectRecipient"
+                @clear-selection="selectRecipient()" />
+
+              <auto-complete
+                ref="productMarchandsAutocomplete"
+                :rules="requiredRule"
+                :input-label="`${$t('exoplatform.perkstore.label.productEditors')} *`"
+                :input-placeholder="$t('exoplatform.perkstore.label.productEditorsPlaceholder')"
+                :no-data-label="$t('exoplatform.perkstore.label.productEditorsSearchPlaceholder')"
+                multiple
+                only-users
+                no-address
+                big-field
+                required
+                @item-selected="selectEditor"
+                @clear-selection="selectEditor()" />
+
+              <auto-complete
+                ref="productAccessPermissionAutocomplete"
+                :input-label="$t('exoplatform.perkstore.label.productAllowedBuyers')"
+                :input-placeholder="$t('exoplatform.perkstore.label.productAllowedBuyersPlaceholder')"
+                :no-data-label="$t('exoplatform.perkstore.label.productAllowedBuyersSearchPlaceholder')"
+                multiple
+                no-address
+                big-field
+                @item-selected="selectAccessPermission"
+                @clear-selection="selectAccessPermission()" />
             </v-flex>
-            <v-flex xs7>
+
+            <v-flex
+              :class="this.$refs.productFormDrawer && this.$refs.productFormDrawer.expand ? 'md6' : ''"
+              xs12>
               <v-text-field
-                v-model.number="product.maxOrdersPerUser"
-                :rules="requiredIntegerRule"
-                :placeholder="$t('exoplatform.perkstore.label.maxOrdersPerUserPlaceholder')"
-                name="ProductMaxOrdersPerUser"
-                single-line
+                v-model.number="product.price"
+                :rules="requiredNumberRule"
+                :label="`${$t('exoplatform.perkstore.label.price')} *`"
+                :placeholder="$t('exoplatform.perkstore.label.pricePlaceholder')"
+                name="ProductPrice"
+                validate-on-blur
                 required />
-            </v-flex>
-  
-            <v-flex xs5>
-              <label>{{ $t('exoplatform.perkstore.label.userOrdersLimitationPeriodicity') }}</label>
-            </v-flex>
-            <v-flex xs7>
-              <v-select
+
+              <upload-input
+                :max-files="5"
+                :max-uploads-size-in-mb="5"
+                :files="product.imageFiles" />
+
+              <v-checkbox
+                v-model="product.enabled"
+                :label="$t('exoplatform.perkstore.label.enabledProduct')" />
+
+              <v-checkbox
+                v-model="limitedSupply"
+                :label="$t('exoplatform.perkstore.label.limitedSupply')" />
+
+              <v-layout
+                v-if="limitedSupply"
+                class="sub-text"
+                row>
+                <v-flex xs5>
+                  <label>{{ `${$t('exoplatform.perkstore.label.totalSupply')} *` }}</label>
+                </v-flex>
+                <v-flex xs7>
+                  <v-text-field
+                    v-model.number="product.totalSupply"
+                    name="ProductTotalSupply"
+                    :placeholder="$t('exoplatform.perkstore.label.totalSupplyPlaceholder')"
+                    :rules="requiredRule"
+                    single-line
+                    required />
+                </v-flex>
+              </v-layout>
+
+              <v-checkbox
+                v-model="limitedOrdersPerUser"
+                :label="$t('exoplatform.perkstore.label.limitedOders')" />
+
+              <v-layout
                 v-if="limitedOrdersPerUser"
-                v-model="product.orderPeriodicity"
-                :items="periods"
-                :disabled="!product.maxOrdersPerUser || !limitedOrdersPerUser"
-                :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
-                item-text="text"
-                item-value="value"
-                hide-no-data
-                hide-selected
-                small-chips />
+                class="sub-text"
+                row>
+                <v-flex xs5>
+                  <label>{{ `${limitedOrdersPerUserLabel} *` }}</label>
+                </v-flex>
+                <v-flex xs7>
+                  <v-text-field
+                    v-model.number="product.maxOrdersPerUser"
+                    :rules="requiredIntegerRule"
+                    :placeholder="$t('exoplatform.perkstore.label.maxOrdersPerUserPlaceholder')"
+                    name="ProductMaxOrdersPerUser"
+                    single-line
+                    required />
+                </v-flex>
+
+                <v-flex xs5>
+                  <label>{{ $t('exoplatform.perkstore.label.userOrdersLimitationPeriodicity') }}</label>
+                </v-flex>
+                <v-flex xs7>
+                  <v-select
+                    v-if="limitedOrdersPerUser"
+                    v-model="product.orderPeriodicity"
+                    :items="periods"
+                    :disabled="!product.maxOrdersPerUser || !limitedOrdersPerUser"
+                    :placeholder="$t('exoplatform.perkstore.label.userOrdersLimitationPeriodicityPlaceholder')"
+                    item-text="text"
+                    item-value="value"
+                    hide-no-data
+                    hide-selected
+                    small-chips />
+                </v-flex>
+              </v-layout>
             </v-flex>
           </v-layout>
-        </v-flex>
-      </v-layout>
-      <v-card-actions>
+        </v-container>
+      </v-form>
+    </template>
+    <template slot="footer">
+      <div class="d-flex">
         <v-spacer />
         <button
           :disabled="!valid"
@@ -178,13 +191,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </button>
         <button
           class="ignore-vuetify-classes btn"
-          @click="$event.preventDefault();$event.stopPropagation();$emit('close', product)">
+          @click="close">
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
-        <v-spacer />
-      </v-card-actions>
-    </v-container>
-  </v-form>
+      </div>
+    </template>
+  </exo-drawer>
 </template>
 
 <script>
@@ -273,33 +285,37 @@ export default {
     },
   },
   methods: {
+    close(){
+      this.$refs.productFormDrawer.close();
+    },
     init() {
+      this.$refs.productFormDrawer.open();
       this.product = this.product || {};
-
-      if (this.product.receiverMarchand) {
-        this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
-      }
-
-      if (!this.product.marchands && !this.product.creator) {
-        this.product.marchands = [{
-          type: 'user',
-          id: eXo.env.portal.userName,
-          disabled: true,
-        }];
-      }
-
-      if (this.product.marchands) {
-        this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
-      }
-      if (this.product.accessPermissions) {
-        this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
-      }
-
-      this.productEditionId = `FileMultiUploadComponent${parseInt(Math.random() * this.MAX_RANDOM_NUMBER)}`;
-      this.limitedOrdersPerUser = this.product && this.product.maxOrdersPerUser && this.product.maxOrdersPerUser > 0;
-      this.product.orderPeriodicity = (this.product && this.product.orderPeriodicity) || 'none';
-      this.limitedSupply = this.product && this.product.id && !this.product.unlimited;
-      this.product.enabled = !this.product.id || this.product.enabled;
+      this.$nextTick(() => {
+        if (!this.product.marchands && !this.product.creator) {
+          this.product.marchands = [{
+            type: 'user',
+            id: eXo.env.portal.userName,
+            disabled: true,
+          }];
+        }
+        this.$nextTick(() => {
+          if (this.product.marchands) {
+            this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
+          }
+          if (this.product.accessPermissions) {
+            this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
+          }
+          if (this.product.receiverMarchand) {
+            this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
+          }
+        });
+        this.productEditionId = `FileMultiUploadComponent${parseInt(Math.random() * this.MAX_RANDOM_NUMBER)}`;
+        this.limitedOrdersPerUser = this.product && this.product.maxOrdersPerUser && this.product.maxOrdersPerUser > 0;
+        this.product.orderPeriodicity = (this.product && this.product.orderPeriodicity) || 'none';
+        this.limitedSupply = this.product && this.product.id && !this.product.unlimited;
+        this.product.enabled = !this.product.id || this.product.enabled;
+      });
     },
     selectRecipient(identity) {
       this.product.receiverMarchand = identity;
@@ -369,14 +385,17 @@ export default {
         this.product.maxOrdersPerUser = 0;
         this.product.orderPeriodicity = 'none';
       }
-
       return saveProduct(this.product)
         .then((product) => {
           this.$emit('saved', product);
+        }).then(() =>{
+          this.close();
+          this.product = {};
         })
         .catch(e => {
           console.error('Error saving product', e);
           this.$emit('error', e && e.message ? e.message : String(e));
+          this.close();
         });
     }
   }
