@@ -116,11 +116,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   @click="$emit('orders-list', product, null, true)">
                   <v-icon
                     :left="!$vuetify.rtl"
-                    color="#ffb441"
                     size="16">
                     far fa-clock
                   </v-icon>
-                  {{ userData.notProcessedOrders }} {{ $t('exoplatform.perkstore.label.pending') }}
+                 2 Pending
                 </v-chip>
               </v-hover>
             </div>
