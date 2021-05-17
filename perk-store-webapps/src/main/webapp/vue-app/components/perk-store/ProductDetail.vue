@@ -76,6 +76,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               class="white--text orderListButton"
               fab
               top
+              small
               @click="$emit('orders-list', product)">
               <v-badge
                 :value="product.notProcessedOrders"
@@ -100,6 +101,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               class="white--text editButton"
               fab
               top
+              small
               @click="$emit('edit', product)">
               <v-icon>fa-pen</v-icon>
             </v-btn>
