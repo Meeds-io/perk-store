@@ -119,7 +119,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     size="16">
                     far fa-clock
                   </v-icon>
-                 2 Pending
+                  {{ userData.notProcessedOrders }} {{ $t('exoplatform.perkstore.label.pending') }}
                 </v-chip>
               </v-hover>
             </div>
