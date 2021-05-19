@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     allow-expand
     right>
     <template slot="title">
-      {{ product && product.id ? $t('exoplatform.perkstore.button.editProduct') : $t('exoplatform.perkstore.button.addProduct') }}
+      {{ product && product.id ? $t('exoplatform.perkstore.button.editProduct', {0: product.title}) : $t('exoplatform.perkstore.label.addNewProduct') }}
     </template>
     <template slot="content">
       <v-form
