@@ -44,13 +44,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <a id="downloadOrders" class="hidden">{{ $t('exoplatform.perkstore.button.download') }}</a>
       <v-row class="OrdersListParent">
         <template v-if="filteredOrders && filteredOrders.length">
-          <v-col
+          <div
             v-for="item in filteredOrders"
             :key="item.id"
-            xs="12"
-            sm="6"
-            md="3"
-            xl="3">
+            class="OrdersListItems">
             <order-detail
               :ref="`orderDetail${item.id}`"
               :order="item"
@@ -61,7 +58,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               @changed="updateOrder(item, $event)"
               @loading="$emit('loading', $event)"
               @error="$emit('error', $event)" />
-          </v-col>
+          </div>
         </template>
         <div v-else class="ma-auto">
           {{ search ? $t('exoplatform.perkstore.button.noOrdersSearchResultFor', {0: search}) : $t('exoplatform.perkstore.button.noOrdersFound') }}
@@ -417,6 +414,9 @@ export default {
           downloadLink.setAttribute('download', 'orders.csv');
           downloadLink.click();
         });
+    },
+    displayBuyModal() {
+      this.$emit('buy', this.product);
     },
   },
 };
