@@ -29,8 +29,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             display-avatar />
         </div>
         <v-spacer />
-        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut uiIconDarkGray"></i>
-        <i v-else class="uiIconEcmsCheckIn uiIconDarkGray"></i>
+        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut orderDetailUiIcons"></i>
+        <i v-else class="uiIconEcmsCheckIn orderDetailUiIcons"></i>
       </v-card-title>
 
       <v-divider />
@@ -74,13 +74,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-list-item>
         <v-divider />
         <v-list-item>
-          <i class="uiIconDatePicker uiIconDarkGray"></i>  &nbsp;
+          <i class="uiIconDatePicker orderDetailUiIcons"></i>  &nbsp;
           <div :title="createdDateLabel" class="orderCreatedDate text-truncate">
             {{ createdDateLabel }}
           </div>
         </v-list-item>
         <v-list-item>
-          <i class="uiIconTag uiIconDarkGray"></i> &nbsp;
+          <i class="uiIconTag orderDetailUiIcons"></i> &nbsp;
           <div class="text-truncate orderDetailText">
             {{ order.quantity }} x
             <a
@@ -93,7 +93,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-list-item>
         <v-list-item>
           <div class="no-wrap text-truncate orderDetailText">
-            <i class="uiIconCard uiIconDarkGray"></i> &nbsp;
+            <i class="uiIconCard orderDetailUiIcons"></i> &nbsp;
             <a
               v-if="transactionLink"
               :href="transactionLink"
