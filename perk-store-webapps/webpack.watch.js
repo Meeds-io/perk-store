@@ -21,6 +21,6 @@ const webpackProductionConfig = require('./webpack.prod.js');
 
 module.exports = merge(webpackProductionConfig, {
   output: {
-    path: '/exo-server/webapps/perk-store/'
+    path: '/home/exo/work/exoRepos/6.2.x/platform-6.2.x-SNAPSHOT/webapps/perk-store/'
   }
 });
