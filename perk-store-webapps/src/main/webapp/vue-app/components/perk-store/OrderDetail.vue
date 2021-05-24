@@ -29,8 +29,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             display-avatar />
         </div>
         <v-spacer />
-        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
-        <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
         <div
           v-if="true"
           :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
@@ -39,8 +37,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             {{ order.remainingQuantityToProcess }}
           </div>
         </div>
+        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
+        <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
       </v-card-title>
-
       <v-divider />
 
       <v-list dense>
@@ -74,13 +73,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-list-item>
         <v-divider />
         <v-list-item>
-          <i class="uiIconDatePicker orderDetailUiIcons"></i>  &nbsp;
+          <i class="uiIconDatePicker orderDetailUiIcons"></i>
           <div :title="createdDateLabel" class="orderCreatedDate text-truncate">
             {{ createdDateLabel }}
           </div>
         </v-list-item>
         <v-list-item>
-          <i class="uiIconTag orderDetailUiIcons"></i> &nbsp;
+          <i class="uiIconTag orderDetailUiIcons"></i>
           <div class="text-truncate orderDetailText">
             {{ order.quantity }} x
             <a
@@ -93,7 +92,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-list-item>
         <v-list-item>
           <div class="no-wrap text-truncate orderDetailText">
-            <i class="uiIconCard orderDetailUiIcons"></i> &nbsp;
+            <i class="uiIconCard orderDetailUiIcons"></i>
             <a
               v-if="transactionLink"
               :href="transactionLink"
@@ -120,10 +119,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <v-divider />
   
       <v-list dense class="orderProcessingDetails ">
-        <v-list-item class="orderProcessingContent justify-center">
+        <v-list-item :class="'orderProcessingContent' && order.deliveredDate ? '' : 'justify-center'">
           <div class="no-wrap">
             <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
-              <v-icon class="green--text me-1" size="16px">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
+              <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
             </div>
             <template v-else-if="userData && userData.canEdit">
               <button
@@ -163,7 +162,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               {{ $t('exoplatform.perkstore.label.status.canceled') }}
             </div>
             <div v-else>
-              <v-icon class="orange--text me-1" size="16px">far fa-clock</v-icon>PENDING
+              <v-icon class="orange--text me-1" size="16">far fa-clock</v-icon>PENDING
+            </div>
+          </div>
+          <div v-if="order.deliveredDate">
+            <div :title="deliveredDateLabel" class="orderDeliveredDate text-truncate">
+              {{ deliveredDateLabel }}
             </div>
           </div>
         </v-list-item>
@@ -181,33 +185,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </span>
             </v-progress-circular>
           </div>
-          <v-list-item-content v-if="order.deliveredDate">
-            <div :title="deliveredDateLabel" class="orderDeliveredDate text-truncate">
-              {{ deliveredDateLabel }}
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item v-if="order.refundedAmount && order.refundTransactionHash" class="mt-1 justify-center">
-          <v-list-item-content class="align-start orderRefundedLabel">
-            <div class="no-wrap">
-              <a
-                v-if="refundTransactionLink"
-                :href="refundTransactionLink"
-                :title="$t('exoplatform.perkstore.label.openInWallet')"
-                rel="nofollow"
-                target="_blank">
-                {{ symbol }} {{ order.refundedAmount }}
-              </a>
-              <template v-else>
-                {{ symbol }} {{ order.refundedAmount }}
-              </template>
-            </div>
-          </v-list-item-content>
-          <v-list-item-content v-if="order.refundedDate" class="align-end">
-            <div :title="refundedDateLabel" class="orderRefundedDate text-truncate">
-              {{ refundedDateLabel }}
-            </div>
-          </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-card>

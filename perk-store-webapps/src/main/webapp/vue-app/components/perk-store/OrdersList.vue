@@ -415,9 +415,6 @@ export default {
           downloadLink.click();
         });
     },
-    displayBuyModal() {
-      this.$emit('buy', this.product);
-    },
   },
 };
 </script>
