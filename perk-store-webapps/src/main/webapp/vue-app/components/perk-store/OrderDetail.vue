@@ -16,256 +16,177 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
   <v-hover v-if="order" class="orderDetailParent">
-    <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 3}`">
+    <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 1}`">
       <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1">
-        <h4>
-          <a
-            :href="orderLink"
-            rel="nofollow"
-            target="_blank">
-            <strong>#{{ order.id }}</strong>
-          </a>
-        </h4>
+        <div class="text-truncate orderDetailText">
+          <profile-link
+            v-if="order.sender"
+            :id="order.sender.id"
+            :space-id="order.sender.spaceId"
+            :url-id="order.sender.spaceURLId"
+            :type="order.sender.type"
+            :display-name="order.sender.displayName"
+            display-avatar />
+        </div>
         <v-spacer />
-        <template v-if="userData && userData.canEdit">
-          <select
-            v-model="order.status"
-            class="small my-auto me-2 ignore-vuetify-classes"
-            @change="changeStatus()">
-            <option
-              v-for="option in statusList"
-              :key="option"
-              :value="option">
-              {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
-            </option>
-          </select>
-          <div
-            v-if="order.remainingQuantityToProcess"
-            :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
-            class="orderQuantityBadgeParent">
-            <div class="orderQuantityBadge">
-              {{ order.remainingQuantityToProcess }}
-            </div>
+        <div
+          v-if="true"
+          :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
+          class="orderQuantityBadgeParent">
+          <div class="orderQuantityBadge">
+            {{ order.remainingQuantityToProcess }}
           </div>
-        </template>
-        <span v-else>{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</span>
+        </div>
+        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
+        <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
       </v-card-title>
-
       <v-divider />
 
       <v-list dense>
         <v-list-item>
-          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-item-content>
-          <v-list-item-content class="align-end">
-            <div class="text-truncate orderDetailText">
-              <perk-store-profile-link
-                v-if="order.sender"
-                :id="order.sender.id"
-                :space-id="order.sender.spaceId"
-                :url-id="order.sender.spaceURLId"
-                :type="order.sender.type"
-                :display-name="order.sender.displayName"
-                display-avatar />
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.date') }}:</v-list-item-content>
-          <v-list-item-content class="align-end">
-            <div :title="createdDateLabel" class="orderCreatedDate text-truncate">
-              {{ createdDateLabel }}
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content class="align-start">{{ $t('exoplatform.perkstore.label.items') }}:</v-list-item-content>
-          <v-list-item-content class="align-end">
-            <div class="text-truncate orderDetailText">
-              {{ order.quantity }} x 
-              <a
-                :href="productLink"
-                :title="productTitle"
-                @click="openProductDetail">
-                {{ productTitle }}
-              </a>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item>
           <v-list-item-content class="align-start">
-            <span>{{ $t('exoplatform.perkstore.label.payment') }}:</span>
-          </v-list-item-content>
-          <v-list-item-content class="align-end">
-            <div class="no-wrap text-truncate orderDetailText">
-              <v-icon
-                v-if="order.transactionStatus === 'SUCCESS'"
-                :title="$t('exoplatform.perkstore.label.transactionSuceess')"
-                class="green--text"
-                size="16">
-                fa-check-circle
-              </v-icon>
-              <v-icon
-                v-else-if="order.transactionStatus === 'FAILED'"
-                :title="$t('exoplatform.perkstore.label.transactionFailed')"
-                class="red--text"
-                size="16">
-                fa-exclamation-circle
-              </v-icon>
-              <v-icon
-                v-else-if="order.transactionStatus === 'PENDING'"
-                :title="$t('exoplatform.perkstore.label.transactionPending')"
-                class="orange--text"
-                size="16">
-                far fa-clock
-              </v-icon>
+            <h4>
               <a
-                v-if="transactionLink"
-                :href="transactionLink"
-                :title="$t('exoplatform.perkstore.label.openInWallet')"
+                :href="orderLink"
                 rel="nofollow"
                 target="_blank">
-                {{ orderAmount }} {{ symbol }}
+                <strong>#{{ order.id }}</strong>
               </a>
-              <template v-else>
-                {{ orderAmount }} {{ symbol }}
-              </template>
-              {{ $t('exoplatform.perkstore.label.sentTo') }}
-              <perk-store-profile-link
-                v-if="order.receiver"
-                :id="order.receiver.id"
-                :space-id="order.receiver.spaceId"
-                :url-id="order.receiver.spaceURLId"
-                :type="order.receiver.type"
-                :display-name="order.receiver.displayName" />
-            </div>
+            </h4>
           </v-list-item-content>
+          <v-list-item-content class="align-end no-wrap">
+            <template v-if="userData && userData.canEdit">
+              <select
+                v-model="order.status"
+                class="small my-auto me-2 ignore-vuetify-classes"
+                @change="changeStatus()">
+                <option
+                  v-for="option in statusList"
+                  :key="option"
+                  :value="option">
+                  {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
+                </option>
+              </select>
+            </template>
+            <span v-else>{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</span>
+          </v-list-item-content>
+        </v-list-item>
+        <v-divider />
+        <v-list-item>
+          <i class="uiIconDatePicker orderDetailUiIcons"></i>
+          <div :title="createdDateLabel" class="orderCreatedDate text-truncate">
+            {{ createdDateLabel }}
+          </div>
+        </v-list-item>
+        <v-list-item>
+          <i class="uiIconTag orderDetailUiIcons"></i>
+          <div class="text-truncate orderDetailText">
+            {{ order.quantity }} x
+            <a
+              :href="productLink"
+              :title="productTitle"
+              @click="openProductDetail">
+              {{ productTitle }}
+            </a>
+          </div>
+        </v-list-item>
+        <v-list-item>
+          <div class="no-wrap text-truncate orderDetailText">
+            <i class="uiIconCard orderDetailUiIcons"></i>
+            <a
+              v-if="transactionLink"
+              :href="transactionLink"
+              :title="$t('exoplatform.perkstore.label.openInWallet')"
+              rel="nofollow"
+              target="_blank">
+              {{ symbol }} {{ orderAmount }}
+            </a>
+            <template v-else>
+              {{ symbol }} {{ orderAmount }}
+            </template>
+            {{ $t('exoplatform.perkstore.label.sentTo') }}
+            <profile-link
+              v-if="order.receiver"
+              :id="order.receiver.id"
+              :space-id="order.receiver.spaceId"
+              :url-id="order.receiver.spaceURLId"
+              :type="order.receiver.type"
+              :display-name="order.receiver.displayName" />
+          </div>
         </v-list-item>
       </v-list>
-  
       <v-divider />
-  
-      <v-list dense class="orderProcessingDetails">
-        <v-list-item class="orderProcessingContent">
-          <v-list-item-content v-if="!userData || !userData.canEdit || (!isOrdered && !canDeliverOrder && !canRefundOrder)" class="align-start">{{ $t('exoplatform.perkstore.label.processing') }}:</v-list-item-content>
-          <v-list-item-content class="align-end orderProcessingActions no-wrap">
-            <div>
-              <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
-                <v-icon class="green--text me-1" size="16px">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
-              </div>
-              <template v-else-if="userData && userData.canEdit">
-                <button
-                  v-if="isOrdered"
-                  class="ignore-vuetify-classes btn orderProcessingBtn"
-                  @click="changeStatus('CANCELED')">
-                  {{ $t('exoplatform.perkstore.button.cancel') }}
-                </button>
-                <button
-                  v-if="canDeliverOrder"
-                  class="ignore-vuetify-classes btn btn-primary orderProcessingBtn ms-1"
-                  @click="$refs.deliverModal.openNoSelection()">
-                  {{ $t('exoplatform.perkstore.button.deliver') }}
-                </button>
-                <button
-                  v-if="canRefundOrder"
-                  class="ignore-vuetify-classes btn orderProcessingBtn ms-1"
-                  @click="$refs.refundModal.open()">
-                  {{ $t('exoplatform.perkstore.button.refund') }}
-                </button>
-                <perk-store-deliver-modal
-                  v-if="canDeliverOrder"
-                  ref="deliverModal"
-                  :product="product"
-                  :order="order" />
-                <perk-store-refund-modal
-                  v-if="canRefundOrder"
-                  ref="refundModal"
-                  :product="product"
-                  :order="order"
-                  :symbol="symbol"
-                  @refunding="refunding = true"
-                  @refunded="refunded"
-                  @closed="refundDialogClosed" />
-              </template>
-              <div v-else-if="isCanceled">
-                {{ $t('exoplatform.perkstore.label.status.canceled') }}
-              </div>
-              <div v-else>
-                <v-icon class="orange--text me-1" size="16px">far fa-clock</v-icon>PENDING
-              </div>
+      <v-list dense class="orderProcessingDetails ">
+        <v-list-item :class="'orderProcessingContent' && order.deliveredDate ? '' : 'justify-center'">
+          <div class="no-wrap">
+            <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
+              <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
             </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="mt-1">
-          <v-list-item-content class="align-start orderDeliveredLabel">
-            <div class="no-wrap">
-              {{ $t('exoplatform.perkstore.label.deliveredQuantity') }}:
-              <v-progress-circular
-                :rotate="360"
-                :size="40"
-                :width="5"
-                :value="deliveredPercentage"
-                :color="deliveredPercentageColor"
-                class="ms-2">
-                <span class="no-wrap">
-                  {{ order.deliveredQuantity }}/{{ order.quantity }}
-                </span>
-              </v-progress-circular>
+            <template v-else-if="userData && userData.canEdit">
+              <button
+                v-if="isOrdered"
+                class="ignore-vuetify-classes btn orderProcessingBtn"
+                @click="changeStatus('CANCELED')">
+                {{ $t('exoplatform.perkstore.button.cancel') }}
+              </button>
+              <button
+                v-if="canDeliverOrder"
+                class="ignore-vuetify-classes btn btn-primary orderProcessingBtn ms-1"
+                @click="$refs.deliverModal.openNoSelection()">
+                {{ $t('exoplatform.perkstore.button.deliver') }}
+              </button>
+              <button
+                v-if="canRefundOrder"
+                class="ignore-vuetify-classes btn orderProcessingBtn ms-1"
+                @click="$refs.refundModal.open()">
+                {{ $t('exoplatform.perkstore.button.refund') }}
+              </button>
+              <deliver-modal
+                v-if="canDeliverOrder"
+                ref="deliverModal"
+                :product="product"
+                :order="order" />
+              <refund-modal
+                v-if="canRefundOrder"
+                ref="refundModal"
+                :product="product"
+                :order="order"
+                :symbol="symbol"
+                @refunding="refunding = true"
+                @refunded="refunded"
+                @closed="refundDialogClosed" />
+            </template>
+            <div v-else-if="isCanceled">
+              {{ $t('exoplatform.perkstore.label.status.canceled') }}
             </div>
-          </v-list-item-content>
-          <v-list-item-content v-if="order.deliveredDate" class="align-end">
+            <div v-else>
+              <v-icon class="orange--text me-1" size="16">far fa-clock</v-icon>PENDING
+            </div>
+          </div>
+          <div v-if="order.deliveredDate">
             <div :title="deliveredDateLabel" class="orderDeliveredDate text-truncate">
               {{ deliveredDateLabel }}
             </div>
-          </v-list-item-content>
+          </div>
         </v-list-item>
-        <v-list-item v-if="order.refundedAmount && order.refundTransactionHash" class="mt-1">
-          <v-list-item-content class="align-start orderRefundedLabel">
-            <div class="no-wrap">
-              {{ $t('exoplatform.perkstore.label.refundedQuantity') }}:
-              <v-icon
-                v-if="order.refundTransactionStatus === 'SUCCESS'"
-                :title="$t('exoplatform.perkstore.label.transactionSuceess')"
-                class="green--text"
-                size="16">
-                fa-check-circle
-              </v-icon>
-              <v-icon
-                v-if="order.refundTransactionStatus === 'FAILED'"
-                :title="$t('exoplatform.perkstore.label.transactionFailed')"
-                class="red--text"
-                size="16">
-                fa-exclamation-circle
-              </v-icon>
-              <v-icon
-                v-if="order.refundTransactionStatus === 'PENDING'"
-                :title="$t('exoplatform.perkstore.label.transactionPending')"
-                class="orange--text"
-                size="16">
-                far fa-clock
-              </v-icon>
-              <a
-                v-if="refundTransactionLink"
-                :href="refundTransactionLink"
-                :title="$t('exoplatform.perkstore.label.openInWallet')"
-                rel="nofollow"
-                target="_blank">
-                {{ order.refundedAmount }} {{ symbol }}
-              </a>
-              <template v-else>
-                {{ order.refundedAmount }} {{ symbol }}
-              </template>
-            </div>
-          </v-list-item-content>
-          <v-list-item-content v-if="order.refundedDate" class="align-end">
-            <div :title="refundedDateLabel" class="orderRefundedDate text-truncate">
-              {{ refundedDateLabel }}
-            </div>
-          </v-list-item-content>
+        <v-list-item class="mt-1 justify-center">
+          <div class="no-wrap orderDeliveredLabel ">
+            <v-progress-circular
+              :rotate="360"
+              :size="40"
+              :width="5"
+              :value="deliveredPercentage"
+              :color="deliveredPercentageColor"
+              class="ms-2">
+              <span class="no-wrap">
+                {{ order.deliveredQuantity }}/{{ order.quantity }}
+              </span>
+            </v-progress-circular>
+          </div>
         </v-list-item>
       </v-list>
     </v-card>
   </v-hover>
-  <span v-else class="hidden"></span>
 </template>
 
 <script>
