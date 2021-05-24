@@ -56,7 +56,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     prepend-inner-icon="fa-filter"
                     single-line
                     hide-details
-                    class="pa-0 ml-3 mr-3 my-auto" />
+                    class="pa-0 ml-3 mr-3 my-auto filterProduct" />
                 </div>
                 <div class="filter_menu">
                   <div class="menuList">
