@@ -24,6 +24,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </template>
     <template slot="content">
       <v-form
+        v-if="this.$refs.productFormDrawer && this.$refs.productFormDrawer.drawer"
         ref="form"
         v-model="valid"
         class="productFormParent">
@@ -288,34 +289,38 @@ export default {
     close(){
       this.$refs.productFormDrawer.close();
     },
+    async open() {
+      this.showDrawer =true;
+      await this.$refs.productFormDrawer.open();
+      this.init();
+    },
     init() {
-      this.$refs.productFormDrawer.open();
       this.product = this.product || {};
-      this.$nextTick(() => {
-        if (!this.product.marchands && !this.product.creator) {
-          this.product.marchands = [{
-            type: 'user',
-            id: eXo.env.portal.userName,
-            disabled: true,
-          }];
-        }
-        this.$nextTick(() => {
-          if (this.product.marchands) {
-            this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
-          }
-          if (this.product.accessPermissions) {
-            this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
-          }
-          if (this.product.receiverMarchand) {
-            this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
-          }
-        });
-        this.productEditionId = `FileMultiUploadComponent${parseInt(Math.random() * this.MAX_RANDOM_NUMBER)}`;
-        this.limitedOrdersPerUser = this.product && this.product.maxOrdersPerUser && this.product.maxOrdersPerUser > 0;
-        this.product.orderPeriodicity = (this.product && this.product.orderPeriodicity) || 'none';
-        this.limitedSupply = this.product && this.product.id && !this.product.unlimited;
-        this.product.enabled = !this.product.id || this.product.enabled;
-      });
+
+      if (this.product.receiverMarchand) {
+        this.$refs.receiverMarchandAutocomplete.selectItems(this.product.receiverMarchand);
+      }
+
+      if (!this.product.marchands && !this.product.creator) {
+        this.product.marchands = [{
+          type: 'user',
+          id: eXo.env.portal.userName,
+          disabled: true,
+        }];
+      }
+
+      if (this.product.marchands) {
+        this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
+      }
+      if (this.product.accessPermissions) {
+        this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
+      }
+
+      this.productEditionId = `FileMultiUploadComponent${parseInt(Math.random() * this.MAX_RANDOM_NUMBER)}`;
+      this.limitedOrdersPerUser = this.product && this.product.maxOrdersPerUser && this.product.maxOrdersPerUser > 0;
+      this.product.orderPeriodicity = (this.product && this.product.orderPeriodicity) || 'none';
+      this.limitedSupply = this.product && this.product.id && !this.product.unlimited;
+      this.product.enabled = !this.product.id || this.product.enabled;
     },
     selectRecipient(identity) {
       this.product.receiverMarchand = identity;
