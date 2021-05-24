@@ -290,7 +290,6 @@ export default {
       this.$refs.productFormDrawer.close();
     },
     async open() {
-      this.showDrawer =true;
       await this.$refs.productFormDrawer.open();
       this.init();
     },
