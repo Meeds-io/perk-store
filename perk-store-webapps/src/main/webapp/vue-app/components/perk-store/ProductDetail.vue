@@ -94,7 +94,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </v-btn>
             <v-btn
               :class="editBtnClass"
-              :title="$t('exoplatform.perkstore.button.editProduct')"
+              :title="$t('exoplatform.perkstore.button.editProduct', {0: product.title})"
               :right="!$vuetify.rtl"
               absolute
               color="secondary"

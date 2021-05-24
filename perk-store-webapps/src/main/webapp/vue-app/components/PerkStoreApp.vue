@@ -529,14 +529,14 @@ export default {
       this.selectedProduct = {
         imageFiles: []
       };
-      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
+      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.open());
     },
     editProduct(product) {
       this.closeDetails();
       this.displayProductForm = true;
       this.selectedProduct = Object.assign({}, product);
       this.selectedProduct.imageFiles = this.selectedProduct.imageFiles || [];
-      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.init());
+      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.open());
     },
     displayProduct(product) {
       if (product) {
