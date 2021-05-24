@@ -512,7 +512,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     text-overflow: ellipsis;
     max-width: 170px;
   }
-
   .addProductButton {
     margin: auto;
     width: fit-content;
@@ -598,7 +597,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       flex: 0 1 auto;
     }
     .orderDeliveredLabel {
-      min-width: 110px;
+      min-width: 10px;
       max-width: 150px;
     }
     .orderRefundedLabel {
@@ -630,11 +629,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       box-sizing: border-box;
       color: @warningColor;
       background-color: rgba(255, 202, 122, 0.3);
+      margin-right: 5px;
     }
     .orderProcessingDetails {
-      min-height: 140px;
-      max-height: 140px;
-      padding: 0;
+      min-height: 100px;
+      max-height: 100px;
     }
     .orderProcessingBtn {
       height: 30px;
@@ -753,6 +752,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   .OrdersListParent {
     max-width: 100%;
   }
+  .OrdersListItems {
+    max-width: 20%;
+    flex: 0 0 20%;
+    padding: 25px;
+  }
 
   .requestFundsLink {
     text-decoration: underline;
@@ -863,6 +867,22 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     line-height   : 1.25rem;
   }
 }
+  .orderDetailParentTitle{
+    height: 60px;
+  }
+  .orderDetailUiIcons{
+    color: @greyColorLighten1Default;
+    padding-right: 5px;
+  }
+  .orderDetailCheckInUiIcons{
+    color: @errorColor;
+  }
+  .orderDetailCheckOutUiIcons{
+    color: @successColor;
+  }
+  .orderDeliveredDate{
+    margin-left: 45px;
+  }
 
 @media (min-width : 960px) {
   #PerkStoreApp {
