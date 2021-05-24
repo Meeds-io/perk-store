@@ -16,19 +16,7 @@
  */
 package org.exoplatform.perkstore.rest;
 
-import static org.exoplatform.perkstore.service.utils.Utils.computeErrorResponse;
-import static org.exoplatform.perkstore.service.utils.Utils.getCurrentUserId;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-
-import org.json.JSONObject;
-
+import io.swagger.annotations.*;
 import org.exoplatform.perkstore.exception.PerkStoreException;
 import org.exoplatform.perkstore.model.FileDetail;
 import org.exoplatform.perkstore.model.Product;
@@ -36,8 +24,17 @@ import org.exoplatform.perkstore.service.PerkStoreService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
+import org.json.JSONObject;
 
-import io.swagger.annotations.*;
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.List;
+
+import static org.exoplatform.perkstore.service.utils.Utils.computeErrorResponse;
+import static org.exoplatform.perkstore.service.utils.Utils.getCurrentUserId;
 
 @Path("/perkstore/api/product")
 @Api(value = "/perkstore/api/product", description = "Manages perk store products") // NOSONAR
@@ -71,6 +68,7 @@ public class PerkStoreProductREST implements ResourceContainer {
     String currentUserId = getCurrentUserId();
     try {
       product = perkStoreService.saveProduct(product, currentUserId);
+      product = perkStoreService.getProductById(product.getId(), currentUserId);
       return Response.ok(product).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Saving product", currentUserId, product);

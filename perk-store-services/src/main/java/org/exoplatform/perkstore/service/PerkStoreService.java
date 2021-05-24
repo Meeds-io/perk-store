@@ -257,7 +257,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     product = perkStoreStorage.saveProduct(productToStore, username);
 
     getListenerService().broadcast(PRODUCT_CREATE_OR_MODIFY_EVENT, product, isNew);
-    return getProductById(product.getId(),username);
+    return product;
   }
 
   public List<Product> getProducts(boolean available, String username) throws Exception {
