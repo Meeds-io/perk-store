@@ -16,7 +16,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
   <v-hover v-if="order" class="orderDetailParent">
-    <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 3}`">
+    <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 1}`">
       <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1">
         <div class="text-truncate orderDetailText">
           <profile-link
@@ -29,8 +29,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             display-avatar />
         </div>
         <v-spacer />
-        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut orderDetailUiIcons"></i>
-        <i v-else class="uiIconEcmsCheckIn orderDetailUiIcons"></i>
+        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
+        <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
+        <div
+          v-if="true"
+          :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
+          class="orderQuantityBadgeParent">
+          <div class="orderQuantityBadge">
+            {{ order.remainingQuantityToProcess }}
+          </div>
+        </div>
       </v-card-title>
 
       <v-divider />
@@ -60,14 +68,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
                 </option>
               </select>
-              <div
-                v-if="order.remainingQuantityToProcess"
-                :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
-                class="orderQuantityBadgeParent">
-                <div class="orderQuantityBadge">
-                  {{ order.remainingQuantityToProcess }}
-                </div>
-              </div>
             </template>
             <span v-else>{{ $t(`exoplatform.perkstore.label.status.${order.status.toLowerCase()}`) }}</span>
           </v-list-item-content>
