@@ -291,7 +291,10 @@ export default {
     ProductNotification,
   },
   data: () => ({
+<<<<<<< HEAD
     showMenu: false,
+=======
+>>>>>>> Task-44220  View all dropdown (#46)
     newsStatusLabel: '',
     filterProduct: '',
     tab: null,
@@ -400,9 +403,12 @@ export default {
     return this.init(parameters && parameters.productId, parameters && parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
   },
   methods: {
+<<<<<<< HEAD
     closeMenu() {
       this.showMenu = false;
     },
+=======
+>>>>>>> Task-44220  View all dropdown (#46)
     refreshSettings(event) {
       if (!event || !event.detail || !event.detail.globalsettings) {
         return;
