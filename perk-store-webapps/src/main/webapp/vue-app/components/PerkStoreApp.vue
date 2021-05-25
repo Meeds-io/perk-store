@@ -92,6 +92,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     <v-btn
                       id="perkStoreAppMenuSettingsButton"
                       :title="$t('exoplatform.perkstore.button.settings')"
+                      :style="$vuetify.rtl ? 'float: left;' : 'float: right;'"
                       class="toolbarButton"
                       text
                       small
