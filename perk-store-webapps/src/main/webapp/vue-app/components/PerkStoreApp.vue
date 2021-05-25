@@ -32,95 +32,77 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <main v-else>
       <template>
         <v-app class="application-toolbar">
-          <v-tabs v-model="tab">
+          <v-tabs
+            v-model="tab"
+            slider-size="4">
             <v-tab @click="displayProductForm ? displayProduct(selectedProduct) : closeDetails()">{{ $t('exoplatform.perkstore.label.Catalogue') }}</v-tab>
             <v-tab @click="displayMyOrdersList">{{ $t('exoplatform.perkstore.label.MyOrders') }}</v-tab>
           </v-tabs>
-          <v-tabs-items v-model="tab">
+          <v-tabs-items v-model="tab" class="tabs-content">
             <v-tab-item class="product-list" eager>
-              <div class="d-flex toolbarProduct">
-                <div class="addProduct">
-                  <create-product-button
-                    v-if="userSettings.canAddProduct"
-                    :balance="balance"
-                    :symbol="symbol"
-                    class="xs12 sm4 md3 d-none d-sm-flex my-1"
-                    @create-product="newProduct" />
-                </div>
-                <div class="spacer">
-                </div>
-                <div class="filter">
-                  <v-text-field
-                    v-model="search"
-                    :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
-                    prepend-inner-icon="fa-filter"
-                    single-line
-                    hide-details
-                    class="pa-0 ml-3 mr-3 my-auto filterProduct" />
-                </div>
-                <div class="filter_menu">
-                  <div class="menuList">
-                    <v-menu
-                      v-model="menu"
-                      offset-y
-                      attach
-                      left
-                      min-width="auto">
-                      <template v-slot:activator="{ on, attrs }">
-                        <button
-                          class="btn ignore-vuetify-classes me-1"
-                          v-bind="attrs"
-                          style="white-space: nowrap;"
-                          @click="menu =true"
-                          @blur="closeMenu()">
-                          {{ $t('exoplatform.perkstore.label.ViewAll') }}
-                        </button>
-                      </template>
-                      <v-list dense class="pt-0 pb-0">
-                        <v-list-item @mousedown="$event.preventDefault()" @click="filterProducts">
-                          <v-list-item-title>
-                            <v-checkbox
-                              v-model="productsFilters.disabled"
-                              :label="$t('exoplatform.perkstore.label.productFiltersDisabledProducts')"
-                              class="pt-0 pb-0" />
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @mousedown="$event.preventDefault()" @click="filterProducts">
-                          <v-list-item-title>
-                            <v-checkbox
-                              v-model="productsFilters.soldOut"
-                              :label="$t('exoplatform.perkstore.label.productFiltersSoldOutProducts')"
-                              class="pt-0 pb-0" />
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @mousedown="$event.preventDefault()" @click="filterProducts">
-                          <v-list-item-title>
-                            <v-checkbox
-                              v-model="productsFilters.mine"
-                              :label="$t('exoplatform.perkstore.label.createdByMe')"
-                              class="pt-0 pb-0" />
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-                </div>
-                <div :class="userSettings.administrator ? 'settingsIconAdmin':''">
-                  <v-btn
-                    v-if="userSettings.administrator"
-                    id="perkStoreAppMenuSettingsButton"
-                    :title="$t('exoplatform.perkstore.button.settings')"
-                    class="toolbarButton"
-                    text
-                    small
-                    @click="displaySettingsModal">
-                    <v-icon class="me-2">
-                      fa-cog
-                    </v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <v-divider />
+              <v-toolbar
+                :class="userSettings.administrator ? 'pl-4 pr-6' : 'toolbarListProduct'"
+                color="transparent"
+                flat>
+                <create-product-button
+                  v-if="userSettings.canAddProduct"
+                  :balance="balance"
+                  :symbol="symbol"
+                  class="xs12 sm4 md3 d-none d-sm-flex my-1"
+                  @create-product="newProduct" />
+                <v-spacer class="spacerProduct" />
+                <v-text-field
+                  v-model="search"
+                  :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
+                  prepend-inner-icon="fa-filter"
+                  single-line
+                  hide-details
+                  class="pa-0 ml-3 mr-3 mb-2 filterProduct" />
+                <v-menu
+                  v-model="showMenu"
+                  offset-y>
+                  <template v-slot:activator="{ on }">
+                    <button
+                      class="btn"
+                      v-on="on"
+                      @blur="closeMenu()">
+                      {{ newsStatusLabel }}
+                      <i class="uiIconMiniArrowDown uiIconLightGray"></i>
+                    </button>
+                  </template>
+                  <v-list>
+                    <v-list-item @mousedown="$event.preventDefault()">
+                      <v-list-item-action class="filterLabel" @click="filterProduct ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-action>
+                    </v-list-item>
+                    <v-list-item @mousedown="$event.preventDefault()">
+                      <v-list-item-action class="filterLabel" @click="filterProduct ='productFiltersDisabledProducts'">{{ $t('exoplatform.perkstore.label.productFiltersDisabledProducts') }}</v-list-item-action>
+                    </v-list-item>
+                    <v-list-item @mousedown="$event.preventDefault()">
+                      <v-list-item-action
+                        class="filterLabel"
+                        @click="filterProduct ='productFiltersSoldOutProducts'">
+                        {{ $t('exoplatform.perkstore.label.productFiltersSoldOutProducts') }}
+                      </v-list-item-action>
+                    </v-list-item>
+                    <v-list-item @mousedown="$event.preventDefault()">
+                      <v-list-item-action class="filterLabel" @click="filterProduct ='createdByMe'">{{ $t('exoplatform.perkstore.label.createdByMe') }}</v-list-item-action>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                <v-btn
+                  v-if="userSettings.administrator"
+                  id="perkStoreAppMenuSettingsButton"
+                  :title="$t('exoplatform.perkstore.button.settings')"
+                  class="toolbarButton"
+                  :class="$vuetify.rtl ? 'float-left' : 'float-right'"
+                  text
+                  small
+                  @click="displaySettingsModal">
+                  <v-icon class="me-2">
+                    fa-cog
+                  </v-icon>
+                </v-btn>
+              </v-toolbar>
               <v-toolbar
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
                 color="transparent"
@@ -309,8 +291,10 @@ export default {
     ProductNotification,
   },
   data: () => ({
+    showMenu: false,
+    newsStatusLabel: '',
+    filterProduct: '',
     tab: null,
-    menu: false,
     searchOrder: null,
     searchLoading: false,
     productFilterMenu: false,
@@ -361,11 +345,33 @@ export default {
     },
   },
   watch: {
+    filterProduct() {
+      if (this.filterProduct === 'productFiltersDisabledProducts') {
+        this.productsFilters.disabled = true;
+        this.productsFilters.soldOut = false;
+        this.productsFilters.mine = false;
+      } else if (this.filterProduct === 'productFiltersSoldOutProducts'){
+        this.productsFilters.soldOut = true;
+        this.productsFilters.disabled = false;
+        this.productsFilters.mine = false;
+      } else if (this.filterProduct === 'createdByMe') {
+        this.productsFilters.mine = true;
+        this.productsFilters.disabled = false;
+        this.productsFilters.soldOut = false;
+      } else {
+        this.productsFilters.mine = false;
+        this.productsFilters.disabled = false;
+        this.productsFilters.soldOut = false;
+      }
+      this.newsStatusLabel = this.$t(`exoplatform.perkstore.label.${this.filterProduct}`);
+      this.filterProducts();
+    },
     selectedProduct() {
       this.error = null;
     }
   },
   created() {
+    this.newsStatusLabel = this.$t('exoplatform.perkstore.label.all');
     document.addEventListener('exo.perkstore.settings.modified', this.refreshSettings);
 
     document.addEventListener(this.createOrUpdateProductEvent, this.updateProduct);
@@ -393,8 +399,8 @@ export default {
     return this.init(parameters && parameters.productId, parameters && parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
   },
   methods: {
-    closeMenu(){
-      this.menu = false;
+    closeMenu() {
+      this.showMenu = false;
     },
     refreshSettings(event) {
       if (!event || !event.detail || !event.detail.globalsettings) {
