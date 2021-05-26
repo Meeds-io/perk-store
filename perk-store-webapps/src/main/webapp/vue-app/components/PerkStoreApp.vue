@@ -65,27 +65,27 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     <button
                       class="btn"
                       v-on="on"
-                      @blur="closeMenu()">
+                      @blur="closeMenu">
                       {{ newsStatusLabel }}
                       <i class="uiIconMiniArrowDown uiIconLightGray"></i>
                     </button>
                   </template>
                   <v-list>
                     <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-action class="filterLabel" @click="filterProduct ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-action>
+                      <v-list-item-title class="filterLabel" @click="filterProduct ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
                     </v-list-item>
                     <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-action class="filterLabel" @click="filterProduct ='productFiltersDisabledProducts'">{{ $t('exoplatform.perkstore.label.productFiltersDisabledProducts') }}</v-list-item-action>
+                      <v-list-item-title class="filterLabel" @click="filterProduct ='productFiltersDisabledProducts'">{{ $t('exoplatform.perkstore.label.productFiltersDisabledProducts') }}</v-list-item-title>
                     </v-list-item>
                     <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-action
+                      <v-list-item-title
                         class="filterLabel"
                         @click="filterProduct ='productFiltersSoldOutProducts'">
                         {{ $t('exoplatform.perkstore.label.productFiltersSoldOutProducts') }}
-                      </v-list-item-action>
+                      </v-list-item-title>
                     </v-list-item>
                     <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-action class="filterLabel" @click="filterProduct ='createdByMe'">{{ $t('exoplatform.perkstore.label.createdByMe') }}</v-list-item-action>
+                      <v-list-item-title class="filterLabel" @click="filterProduct ='createdByMe'">{{ $t('exoplatform.perkstore.label.createdByMe') }}</v-list-item-title>
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -365,6 +365,7 @@ export default {
       }
       this.newsStatusLabel = this.$t(`exoplatform.perkstore.label.${this.filterProduct}`);
       this.filterProducts();
+      this.showMenu = false;
     },
     selectedProduct() {
       this.error = null;
