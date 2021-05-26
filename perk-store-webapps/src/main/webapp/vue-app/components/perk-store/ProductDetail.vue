@@ -27,32 +27,61 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :height="carousselHeight"
           hide-delimiters
           cycle
-          class="carousselParent clickable"
-          @click="openProductDetail">
+          class="carousselParent">
           <template v-if="product.imageFiles">
             <v-carousel-item
               v-for="(imageFile,i) in product.imageFiles"
               :key="i"
               :src="imageFile.src"
               max="300"
-              class="carousselImage" />
-            <v-btn
-              absolute
-              color="white"
-              class="productCardPrice"
-              fab
-              left
-              small
-              top>
-              {{ symbol }} {{ product.price }}
-            </v-btn>
+              class="carousselImage">
+              <v-toolbar
+                color="transparent"
+                class="toolbarCard"
+                flat>
+                <v-btn
+                  absolute
+                  color="white"
+                  class="productCardPrice"
+                  fab
+                  small
+                  top>
+                  {{ symbol }} {{ product.price }}
+                </v-btn>
+                <v-spacer />
+                <v-menu
+                  v-if="userData.canEdit"
+                  v-model="showMenu"
+                  offset-y
+                  attach
+                  :nudge-left="110">
+                  <template v-slot:activator="{ on}">
+                    <v-btn
+                      dark
+                      :title="$t('exoplatform.perkstore.button.editProduct', {0: product.title})"
+                      icon
+                      class="productCardAction mr-0"
+                      v-on="on"
+                      @blur="closeMenu">
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list class="pa-0 ma-0">
+                    <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
+                      <v-list-item-title class="editProductMenu ml-n2" @click="$emit('edit', product)">
+                        <i class="uiIconEdit mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuEditProduct') }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-toolbar>
+            </v-carousel-item>
           </template>
           <v-expand-transition>
             <div
-              v-if="hover || !product || !product.enabled || !product.imageFiles || !product.imageFiles.length || !available || maxOrdersReached"
+              v-if="false && hover || !product || !product.enabled || !product.imageFiles || !product.imageFiles.length || !available || maxOrdersReached"
               class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
-              style="height: 100%;"
-              @click="openProductDetail">
+              style="height: 100%;">
               <product-detail-content
                 :product="product"
                 :symbol="symbol"
@@ -91,19 +120,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <v-icon v-if="userData.canEdit">fa-list-ul</v-icon>
                 <v-icon v-else>fa-file-invoice-dollar</v-icon>
               </v-badge>
-            </v-btn>
-            <v-btn
-              :class="editBtnClass"
-              :title="$t('exoplatform.perkstore.button.editProduct', {0: product.title})"
-              :right="!$vuetify.rtl"
-              absolute
-              color="secondary"
-              class="white--text editButton"
-              fab
-              top
-              small
-              @click="$emit('edit', product)">
-              <v-icon>fa-pen</v-icon>
             </v-btn>
             <div
               v-if="!hidePending"
@@ -215,6 +231,9 @@ export default {
       },
     },
   },
+  data: () => ({
+    showMenu: false
+  }),
   computed: {
     productCreatedDate() {
       return (this.product && this.product.createdDate && this.formatDate(new Date(this.product.createdDate))) || '';
@@ -275,6 +294,9 @@ export default {
     },
   },
   methods: {
+    closeMenu() {
+      this.showMenu = false;
+    },
     openProductDetail(event) {
       event.stopPropagation();
       event.preventDefault();

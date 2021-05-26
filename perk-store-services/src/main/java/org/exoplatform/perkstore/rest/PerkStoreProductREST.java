@@ -16,7 +16,19 @@
  */
 package org.exoplatform.perkstore.rest;
 
-import io.swagger.annotations.*;
+import static org.exoplatform.perkstore.service.utils.Utils.computeErrorResponse;
+import static org.exoplatform.perkstore.service.utils.Utils.getCurrentUserId;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.List;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+
+import org.json.JSONObject;
+
 import org.exoplatform.perkstore.exception.PerkStoreException;
 import org.exoplatform.perkstore.model.FileDetail;
 import org.exoplatform.perkstore.model.Product;
@@ -24,17 +36,8 @@ import org.exoplatform.perkstore.service.PerkStoreService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
-import org.json.JSONObject;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.List;
-
-import static org.exoplatform.perkstore.service.utils.Utils.computeErrorResponse;
-import static org.exoplatform.perkstore.service.utils.Utils.getCurrentUserId;
+import io.swagger.annotations.*;
 
 @Path("/perkstore/api/product")
 @Api(value = "/perkstore/api/product", description = "Manages perk store products") // NOSONAR
