@@ -19,7 +19,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <v-hover>
       <v-card
         slot-scope="{ hover }"
-        :class="hideElevation && 'productDetailContentCard' || `elevation-${hover ? 9 : 3} productDetailContentCard`"
+        :class="hideElevation && 'productDetailContentCard' || `elevation-${hover ? 9 : 1} productDetailContentCard`"
         :max-width="cardHeight">
         <v-carousel
           :show-arrows="false"
@@ -40,13 +40,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 class="toolbarCard"
                 flat>
                 <v-btn
-                  absolute
-                  color="white"
-                  class="productCardPrice"
-                  fab
-                  small
-                  top>
-                  {{ symbol }} {{ product.price }}
+                  dark
+                  :title="$t('exoplatform.perkstore.button.editProduct', {0: product.title})"
+                  icon
+                  class="productCardAction mr-0"
+                  @blur="closeMenu"
+                  v-on="on">
+                  <v-icon large>mdi-information-outline</v-icon>
                 </v-btn>
                 <v-spacer />
                 <v-menu
@@ -77,70 +77,30 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </v-toolbar>
             </v-carousel-item>
           </template>
-          <v-expand-transition>
-            <div
-              v-if="false && hover || !product || !product.enabled || !product.imageFiles || !product.imageFiles.length || !available || maxOrdersReached"
-              class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
-              style="height: 100%;">
-              <product-detail-content
-                :product="product"
-                :symbol="symbol"
-                :max-orders-reached="maxOrdersReached"
-                :hover="hover || !product.imageFiles || !product.imageFiles.length"
-                :available="available" />
-            </div>
-          </v-expand-transition>
         </v-carousel>
         <v-card-text
           v-if="!hideButtons"
           class="pt-2"
           style="position: relative;">
-          <template v-if="userData.canEdit">
-            <v-btn
-              :class="ordersListBtnClass"
-              :title="$t('exoplatform.perkstore.label.ordersList')"
-              :right="!$vuetify.rtl"
-              absolute
-              color="secondary"
-              class="white--text orderListButton"
-              fab
-              top
-              small
-              @click="$emit('orders-list', product)">
-              <v-badge
-                :value="product.notProcessedOrders"
-                :color="userData.canEdit ? 'red' : 'orange'"
-                :right="!$vuetify.rtl"
-                overlap>
-                <span
-                  slot="badge"
-                  class="orderListBadge">
-                  {{ product.notProcessedOrders }}
-                </span>
-                <v-icon v-if="userData.canEdit">fa-list-ul</v-icon>
-                <v-icon v-else>fa-file-invoice-dollar</v-icon>
-              </v-badge>
-            </v-btn>
-            <div
-              v-if="!hidePending"
-              class="productCardPending py-0"
-              @click="openProductDetail">
-              <v-hover v-if="userData.notProcessedOrders">
-                <v-chip
-                  slot-scope="{ hover: hoverPending }"
-                  :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
-                  @click="$emit('orders-list', product, null, true)">
-                  <v-icon
-                    :left="!$vuetify.rtl"
-                    size="16"
-                    class="userPendingOrdersIcon">
-                    far fa-clock
-                  </v-icon>
-                  {{ userData.notProcessedOrders }} {{ $t('exoplatform.perkstore.label.pending') }}
-                </v-chip>
-              </v-hover>
-            </div>
-          </template>
+          <div
+            v-if="!hidePending"
+            class="productCardPending py-0"
+            @click="openProductDetail">
+            <v-hover v-if="userData.notProcessedOrders">
+              <v-chip
+                slot-scope="{ hover: hoverPending }"
+                :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
+                @click="$emit('orders-list', product, null, true)">
+                <v-icon
+                  :left="!$vuetify.rtl"
+                  size="16"
+                  class="userPendingOrdersIcon">
+                  far fa-clock
+                </v-icon>
+                {{ userData.notProcessedOrders }} {{ $t('exoplatform.perkstore.label.pending') }}
+              </v-chip>
+            </v-hover>
+          </div>
           <v-btn
             v-if="displayBuyButton"
             :disabled="disabledBuy || !walletEnabled || walletLoading"
@@ -148,33 +108,33 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             :title="$t('exoplatform.perkstore.button.buy')"
             :right="!$vuetify.rtl"
             absolute
-            class="white--text primary"
+            class="white--text primary buyButton"
             fab
             top
-            small
+            large
             @click="displayBuyModal">
             <v-icon>fa-shopping-cart</v-icon>
           </v-btn>
         </v-card-text>
-        <v-card-text
-          :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
-          class="pb-0 clickable productCardTitleParent"
-          @click="openProductDetail">
-          <span :title="product.title">{{ product.title }}</span>
-        </v-card-text>
-        <v-card-text class="productCardSubtitle">{{ productCreatedDate }}</v-card-text>
+        <div @click="openProductDetail">
+          <v-card-text
+            :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
+            class="pb-0 clickable productCardTitleParent">
+            <span :title="product.title">{{ product.title }}</span>
+          </v-card-text>
+          <v-card-text
+            class="productCardSubtitle">
+            <span class="priceSymbol">{{ symbol }}</span> {{ product.price }}
+          </v-card-text>
+        </div>
       </v-card>
     </v-hover>
   </v-flex>
 </template>
 
 <script>
-import ProductDetailContent from './ProductDetailContent.vue';
 
 export default {
-  components: {
-    ProductDetailContent
-  },
   props: {
     product: {
       type: Object,
