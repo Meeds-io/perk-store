@@ -348,7 +348,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   .productDetailContent {
     box-sizing: border-box;
     padding: 25px;
-
+    .toolbarCard {
+      padding: 7px;
+      padding-top: 0px !important;
+      margin-top: -5px;
+    }
     .productDetailContentCard {
       border-radius: 15px;
     }
@@ -485,10 +489,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
   .productCardPrice {
     color: @black;
-    margin-top: 20px;
+    margin-top: 32px;
     margin-left: -15px;
     font-weight: bold;
     font-size : 10px;
+  }
+
+  .productCardAction {
+    height: 26px !important;
+    width: 26px !important;
+    color: #fff !important;
+    background: var(--allPagesBtnPrimaryDisableBackground, #afc9e5) !important;
   }
 
   .productCardSubtitle {
@@ -708,6 +719,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     }
     .uploadContainer .uploadError {
       color: @errorColor;
+    }
+  }
+  .carousselParent {
+    .editProductMenu {
+      cursor: pointer;
     }
   }
   .carousselParent, .carousselImage, .v-carousel__item, .v-window__container {
