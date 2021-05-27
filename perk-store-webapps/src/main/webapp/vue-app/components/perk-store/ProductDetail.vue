@@ -40,13 +40,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 class="toolbarCard"
                 flat>
                 <v-btn
-                  dark
-                  :title="$t('exoplatform.perkstore.button.editProduct', {0: product.title})"
                   icon
-                  class="productCardAction mr-0"
-                  @blur="closeMenu"
-                  v-on="on">
-                  <v-icon large>mdi-information-outline</v-icon>
+                  small
+                  :title="$t('exoplatform.perkstore.button.productInfo')"
+                  class="peopleInfoIcon productCardAction d-flex">
+                  <v-icon size="12">fa-info</v-icon>
                 </v-btn>
                 <v-spacer />
                 <v-menu
@@ -102,10 +100,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </v-hover>
           </div>
           <v-btn
-            v-if="displayBuyButton"
-            :disabled="disabledBuy || !walletEnabled || walletLoading"
+            :disabled="(disabledBuy || !walletEnabled || walletLoading) || !displayBuyButton"
             :loading="!disabledBuy && walletLoading"
-            :title="$t('exoplatform.perkstore.button.buy')"
+            :title="buttonTitle"
             :right="!$vuetify.rtl"
             absolute
             class="white--text primary buyButton"
@@ -193,6 +190,9 @@ export default {
     showMenu: false
   }),
   computed: {
+    buttonTitle(){
+      return this.displayBuyButton ? this.$t('exoplatform.perkstore.button.buy') : this.$t('exoplatform.perkstore.button.disabledBuyButton');
+    },
     productCreatedDate() {
       return (this.product && this.product.createdDate && this.formatDate(new Date(this.product.createdDate))) || '';
     },
