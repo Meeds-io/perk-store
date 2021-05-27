@@ -102,7 +102,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-btn
             :disabled="(disabledBuy || !walletEnabled || walletLoading) || !displayBuyButton"
             :loading="!disabledBuy && walletLoading"
-            :title="displayBuyButton ? $t('exoplatform.perkstore.button.buy') : $t('exoplatform.perkstore.button.disabledBuyButton')"
+            :title="buttonTitle"
             :right="!$vuetify.rtl"
             absolute
             class="white--text primary buyButton"
@@ -190,6 +190,9 @@ export default {
     showMenu: false
   }),
   computed: {
+    buttonTitle(){
+      return this.displayBuyButton ? this.$t('exoplatform.perkstore.button.buy') : this.$t('exoplatform.perkstore.button.disabledBuyButton');
+    },
     productCreatedDate() {
       return (this.product && this.product.createdDate && this.formatDate(new Date(this.product.createdDate))) || '';
     },
