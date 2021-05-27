@@ -14,8 +14,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import PerkstoreOrderApp from './components/perk-store-order/PerkstoreOrderApp.vue';
-Vue.component('perkstore-order-app', PerkstoreOrderApp);
+import './initComponents.js';
 
 Vue.use(Vuetify);
 
@@ -36,7 +35,7 @@ export function init() {
     appElement.id = appId;
 
     new Vue({
-      template: `<perkstore-order-app id="${appId}" v-cacheable />`,
+      template: `<perk-store-order-app id="${appId}" v-cacheable />`,
       i18n,
       vuetify,
     }).$mount(appElement);

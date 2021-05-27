@@ -82,7 +82,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               v-if="false && hover || !product || !product.enabled || !product.imageFiles || !product.imageFiles.length || !available || maxOrdersReached"
               class="d-flex transition-fast-in-fast-out darken-2 v-card--reveal white--text productDetailHover"
               style="height: 100%;">
-              <product-detail-content
+              <perk-store-product-detail-content
                 :product="product"
                 :symbol="symbol"
                 :max-orders-reached="maxOrdersReached"
@@ -169,12 +169,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import ProductDetailContent from './ProductDetailContent.vue';
-
 export default {
-  components: {
-    ProductDetailContent
-  },
   props: {
     product: {
       type: Object,

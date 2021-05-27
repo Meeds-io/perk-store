@@ -48,7 +48,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-list-item-content>{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-item-content>
           <v-list-item-content class="align-end">
             <div class="text-truncate orderDetailText">
-              <profile-link
+              <perk-store-profile-link
                 :id="order.sender.id"
                 :space-id="order.sender.spaceId"
                 :url-id="order.sender.spaceURLId"
@@ -101,14 +101,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import ProfileLink from '../ProfileLink.vue';
-
 import {saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
-
 export default {
-  components: {
-    ProfileLink,
-  },
   props: {
     product: {
       type: Object,

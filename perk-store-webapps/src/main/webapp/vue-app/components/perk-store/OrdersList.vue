@@ -18,7 +18,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <v-layout
     row
     class="border-box-sizing me-0 ms-0">
-    <orders-filter
+    <perk-store-orders-filter
       ref="productOrdersFilter"
       :filter="ordersFilter"
       @search="searchOrders" />
@@ -51,7 +51,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             sm="6"
             md="3"
             xl="3">
-            <order-detail
+            <perk-store-order-detail
               :ref="`orderDetail${item.id}`"
               :order="item"
               :product="product"
@@ -88,7 +88,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           class="mb-2"
           indeterminate />
       </v-flex>
-      <order-notification
+      <perk-store-order-notification
         :orders="newAddedOrders"
         @refresh-list="addNewOrdersToList" />
     </v-container>
@@ -96,19 +96,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import OrderDetail from './OrderDetail.vue';
-import OrdersFilter from './OrdersFilter.vue';
-import OrderNotification from './OrderNotification.vue';
-
 import {getOrderList} from '../../js/PerkStoreProductOrder.js';
 import {getDefaultOrderFilter, formatDate, formatDateTime} from '../../js/PerkStoreSettings.js';
 
 export default {
-  components: {
-    OrderDetail,
-    OrdersFilter,
-    OrderNotification,
-  },
   props: {
     product: {
       type: Object,

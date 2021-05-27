@@ -44,7 +44,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :class="userSettings.administrator ? 'pl-4 pr-6' : 'toolbarListProduct'"
                 color="transparent"
                 flat>
-                <create-product-button
+                <perk-store-create-product-button
                   v-if="userSettings.canAddProduct"
                   :balance="balance"
                   :symbol="symbol"
@@ -128,13 +128,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </v-flex>
                 <v-spacer />
               </v-toolbar>
-              <product-form
+              <perk-store-product-form
                 ref="productForm"
                 :product="selectedProduct"
                 @saved="displayProduct"
                 @error="error=$event"
                 @close="displayProduct" />
-              <products-list
+              <perk-store-products-list
                 v-if="!error || (filteredProducts && filteredProducts.length)"
                 ref="productsList"
                 :products="filteredProducts"
@@ -151,17 +151,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @edit="editProduct"
                 @buy="buyProduct"
                 @close="closeDetails" />
-              <buy-modal
+              <perk-store-buy-modal
                 ref="buyModal"
                 :product="selectedProduct"
                 :symbol="symbol"
                 :need-password="walletNeedPassword"
                 :wallet-loading="walletLoading"
                 :wallet-enabled="walletEnabled" />
-              <settings-modal
+              <perk-store-settings-modal
                 ref="settingsModal"
                 @saved="init()" />
-              <product-notification
+              <perk-store-product-notification
                 :products="modifiedProducts"
                 @refresh-list="addNewProductsToList" />
             </v-tab-item>
@@ -245,7 +245,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </v-flex>
                 <v-spacer />
               </v-toolbar>
-              <orders-list
+              <perk-store-orders-list
                 ref="ordersList"
                 :product="selectedProduct"
                 :selected-order-id="selectedOrderId"
@@ -268,28 +268,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import SettingsModal from './perk-store/SettingsModal.vue';
-import ProductsList from './perk-store/ProductsList.vue';
-import OrdersList from './perk-store/OrdersList.vue';
-import ProductForm from './perk-store/ProductForm.vue';
-import BuyModal from './perk-store/BuyModal.vue';
-import ProductNotification from './perk-store/ProductNotification.vue';
-
 import {initSettings, getOrderFilter, getProductFilter, storeProductFilter} from '../js/PerkStoreSettings.js';
 import {toFixed} from '../js/PerkStoreProductOrder.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
-import CreateProductButton from './perk-store/CreateProductButton.vue';
-
 export default {
-  components: {
-    SettingsModal,
-    ProductsList,
-    CreateProductButton,
-    OrdersList,
-    ProductForm,
-    BuyModal,
-    ProductNotification,
-  },
   data: () => ({
     showMenu: false,
     newsStatusLabel: '',

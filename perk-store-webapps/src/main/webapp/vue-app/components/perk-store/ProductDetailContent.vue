@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       {{ product.title }}
       <div v-if="product.receiverMarchand" class="no-wrap caption">
         {{ $t('exoplatform.perkstore.label.offeredBy') }}
-        <profile-link
+        <perk-store-profile-link
           :id="product.receiverMarchand.id"
           :space-id="product.receiverMarchand.spaceId"
           :url-id="product.receiverMarchand.spaceURLId"
@@ -57,7 +57,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-list-item-content><strong>{{ $t('exoplatform.perkstore.label.offeredBy') }}:</strong></v-list-item-content>
           <v-list-item-content class="productDetailText align-end">
             <div class="text-truncate">
-              <profile-link
+              <perk-store-profile-link
                 :id="product.receiverMarchand.id"
                 :space-id="product.receiverMarchand.spaceId"
                 :url-id="product.receiverMarchand.spaceURLId"
@@ -106,12 +106,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import ProfileLink from '../ProfileLink.vue';
-
 export default {
-  components: {
-    ProfileLink,
-  },
   props: {
     product: {
       type: Object,

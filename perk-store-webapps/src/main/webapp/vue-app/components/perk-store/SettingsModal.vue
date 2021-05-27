@@ -40,7 +40,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           {{ error }}
         </div>
 
-        <auto-complete
+        <perk-store-auto-complete
           ref="applicationAccessPermissionAutocomplete"
           :input-label="$t('exoplatform.perkstore.label.applicationAccessPermissions')"
           :input-placeholder="$t('exoplatform.perkstore.label.applicationAccessPermissionsPlaceholder')"
@@ -51,7 +51,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           @item-selected="selectValue('accessPermissionsProfiles', $event)"
           @clear-selection="selectValue('accessPermissionsProfiles')" />
 
-        <auto-complete
+        <perk-store-auto-complete
           ref="applicationManagersAutocomplete"
           :input-label="$t('exoplatform.perkstore.label.applicationManagersPermissions')"
           :input-placeholder="$t('exoplatform.perkstore.label.applicationManagersPermissionsPlaceholder')"
@@ -62,7 +62,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           @item-selected="selectValue('managersProfiles', $event)"
           @clear-selection="selectValue('managersProfiles')" />
 
-        <auto-complete
+        <perk-store-auto-complete
           ref="applicationProductCreationPermissionAutocomplete"
           :input-label="$t('exoplatform.perkstore.label.applicationCreationPermissions')"
           :input-placeholder="$t('exoplatform.perkstore.label.applicationCreationPermissionsPlaceholder')"
@@ -95,14 +95,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import AutoComplete from '../AutoComplete.vue';
-
 import {saveSettings} from '../../js/PerkStoreSettings.js';
 
 export default {
-  components: {
-    AutoComplete,
-  },
   data() {
     return {
       dialog: false,

@@ -18,7 +18,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <v-card flat>
     <v-expand-transition name="fade" appear>
       <v-flex v-show="selectedProduct" class="productDetailContainer">
-        <product-detail-maximized
+        <perk-store-product-detail-maximized
           :product="selectedProduct || {}"
           :symbol="symbol"
           :need-password="needPassword"
@@ -41,7 +41,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           class="productsListParent">
           <template v-if="products && products.length">
             <template v-for="product in products">
-              <product-detail
+              <perk-store-product-detail
                 :key="product.id"
                 :product="product"
                 :symbol="symbol"
@@ -67,14 +67,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import ProductDetail from './ProductDetail.vue';
-import ProductDetailMaximized from './ProductDetailMaximized.vue';
-
 export default {
-  components: {
-    ProductDetail,
-    ProductDetailMaximized,
-  },
   props: {
     products: {
       type: Array,
