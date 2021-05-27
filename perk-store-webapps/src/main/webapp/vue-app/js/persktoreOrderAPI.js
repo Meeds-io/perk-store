@@ -20,7 +20,7 @@ export function getPendingOrdersSize() {
     method: 'POST',
     credentials: 'include',
     headers: {
-      Accept: 'application/json',
+      Accept: 'application/json',git
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(filter),

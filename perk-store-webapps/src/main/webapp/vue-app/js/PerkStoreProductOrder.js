@@ -34,13 +34,14 @@ export function getOrderList(productId, filter, selectedOrderId, currentUserOrde
   if (!productId) {
     productId = 0;
   }
-
-  filter = Object.assign(filter || {}, {
-    productId: productId,
-    currentUserOrders: currentUserOrders || false,
-    selectedOrderId: selectedOrderId,
-    limit: limit ? limit : 0,
-  });
+  if (filter){
+    filter = Object.assign(filter || {}, {
+      productId: productId,
+      currentUserOrders: currentUserOrders || false,
+      selectedOrderId: selectedOrderId,
+      limit: limit ? limit : 0,
+    });
+  }
 
   return fetch('/portal/rest/perkstore/api/order/list', {
     method: 'POST',
@@ -49,7 +50,7 @@ export function getOrderList(productId, filter, selectedOrderId, currentUserOrde
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(filter),
+    body: filter ? JSON.stringify(filter) : null,
   }).then((resp) => {
     if (resp && resp.ok) {
       return resp.json();

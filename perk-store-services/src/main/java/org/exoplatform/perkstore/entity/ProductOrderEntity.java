@@ -28,6 +28,7 @@ import org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus;
 @ExoEntity
 @Table(name = "ADDONS_PERKSTORE_PRODUCT_ORDER")
 @NamedQueries({
+    @NamedQuery(name = "Order.getUserOrders", query = "SELECT distinct(o) FROM Order o WHERE o.senderId= :identityId OR o.receiverId= :identityId ORDER BY o.createdDate DESC"),
     @NamedQuery(name = "Order.getAllProductOrders", query = "SELECT distinct(o) FROM Order o WHERE o.product.id = :productId ORDER BY o.createdDate DESC"),
     @NamedQuery(name = "Order.countOrderedQuantityByProductId", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId"),
     @NamedQuery(name = "Order.countRefundedQuantityByProductId", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId"),
