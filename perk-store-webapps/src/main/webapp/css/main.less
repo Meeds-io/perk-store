@@ -351,7 +351,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       margin-top: -5px;
     }
     .productDetailContentCard {
-      border-radius: 15px;
+      border-radius: 5px;
     }
     .left-pa1 {
       right: 60px ~'; /** orientation=lt */ ';
@@ -480,10 +480,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     font-size: 15px;
   }
 
-  .productCardTitle {
-    color: @darkGrey;
-  }
-
   .productCardPrice {
     color: @black;
     margin-top: 32px;
@@ -497,11 +493,19 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     width: 26px !important;
     color: #fff !important;
     background: var(--allPagesBtnPrimaryDisableBackground, #afc9e5) !important;
-  }
 
+  }
   .productCardSubtitle {
-    color: @quoteBorder;
+    color: @black;
     padding-top: 3px;
+    font-weight: bold;
+    font-size : 16px;
+    font-family: Helvetica,arial,sans-serif;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    .priceSymbol{
+      color : #d07b7b;
+    }
   }
 
   .productCardTitleParent {
@@ -510,7 +514,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 170px;
+    max-width: 255px;
+    color: @textColorDefault;
+    font-size : 14px;
   }
   .addProductButton {
     margin: auto;
@@ -724,8 +730,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     }
   }
   .carousselParent, .carousselImage, .v-carousel__item, .v-window__container {
-    max-height: 150px;
-    height: 150px;
+    max-height: 170px;
+    height: 170px;
     max-width: 100%;
   }
   .productPreviewContent {
@@ -882,6 +888,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   }
   .orderDeliveredDate{
     margin-left: 45px;
+  }
+  .buyButton{
+    margin-top: 10px;
+    width:50px !important;
+    height:50px !important;
   }
 
 @media (min-width : 960px) {
