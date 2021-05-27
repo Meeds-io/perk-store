@@ -94,7 +94,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <script>
 import {getOrderList} from '../../js/PerkStoreProductOrder.js';
-import {getDefaultOrderFilter, formatDate, formatDateTime} from '../../js/PerkStoreSettings.js';
+import { formatDate, formatDateTime} from '../../js/PerkStoreSettings.js';
 
 export default {
   props: {
@@ -144,9 +144,6 @@ export default {
     };
   },
   computed: {
-    selectedOrdersFilter() {
-      return (!this.selectedOrderId && this.ordersFilter) || getDefaultOrderFilter();
-    },
     filteredOrders() {
       const order = this.selectedOrderId && this.orders.find(order => order && order.id === this.selectedOrderId);
       if (order) {
@@ -190,7 +187,7 @@ export default {
 
       this.loading = true;
 
-      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, this.limit)
+      return getOrderList(this.product && this.product.id, this.selectedOrderId, this.currentUserOrders, this.limit)
         .then((orders) => {
           this.orders = orders || [];
           return this.$nextTick();
