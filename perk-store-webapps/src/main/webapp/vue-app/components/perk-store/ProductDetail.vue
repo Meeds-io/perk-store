@@ -42,7 +42,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <v-btn
                   icon
                   small
-                  :title="$t('eexoplatform.perkstore.button.productInfo')"
+                  :title="$t('exoplatform.perkstore.button.productInfo')"
                   class="peopleInfoIcon productCardAction d-flex">
                   <v-icon size="12">fa-info</v-icon>
                 </v-btn>
@@ -100,9 +100,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </v-hover>
           </div>
           <v-btn
-            :disabled="(disabledBuy || !walletEnabled || walletLoading) && displayBuyButton"
+            :disabled="(disabledBuy || !walletEnabled || walletLoading) || !displayBuyButton"
             :loading="!disabledBuy && walletLoading"
-            :title="$t('exoplatform.perkstore.button.buy')"
+            :title="displayBuyButton ? $t('exoplatform.perkstore.button.buy') : $t('exoplatform.perkstore.button.disabledBuyButton')"
             :right="!$vuetify.rtl"
             absolute
             class="white--text primary buyButton"
