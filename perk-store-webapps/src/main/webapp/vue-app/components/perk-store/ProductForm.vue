@@ -58,7 +58,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 flat
                 counter />
 
-              <auto-complete
+              <perk-store-auto-complete
                 ref="receiverMarchandAutocomplete"
                 :rules="requiredRule"
                 :input-label="`${$t('exoplatform.perkstore.label.marchandWallet')} *`"
@@ -69,7 +69,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @item-selected="selectRecipient"
                 @clear-selection="selectRecipient()" />
 
-              <auto-complete
+              <perk-store-auto-complete
                 ref="productMarchandsAutocomplete"
                 :rules="requiredRule"
                 :input-label="`${$t('exoplatform.perkstore.label.productEditors')} *`"
@@ -83,7 +83,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @item-selected="selectEditor"
                 @clear-selection="selectEditor()" />
 
-              <auto-complete
+              <perk-store-auto-complete
                 ref="productAccessPermissionAutocomplete"
                 :input-label="$t('exoplatform.perkstore.label.productAllowedBuyers')"
                 :input-placeholder="$t('exoplatform.perkstore.label.productAllowedBuyersPlaceholder')"
@@ -107,7 +107,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 validate-on-blur
                 required />
 
-              <upload-input
+              <perk-store-upload-input
                 :max-files="5"
                 :max-uploads-size-in-mb="5"
                 :files="product.imageFiles" />
@@ -201,16 +201,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import UploadInput from './FileMultiUploadInput.vue';
-import AutoComplete from '../AutoComplete.vue';
-
 import {saveProduct} from '../../js/PerkStoreProduct.js';
 
 export default {
-  components: {
-    UploadInput,
-    AutoComplete,
-  },
   props: {
     product: {
       type: Object,

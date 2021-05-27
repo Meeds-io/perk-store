@@ -1,8 +1,4 @@
-import PerkStoreProductSearchCard from './components/perk-store-search/PerkStoreProductSearchCard.vue';
-import ProductDetail from './components/perk-store/ProductDetail.vue';
-
-Vue.component('perk-store-product-search-card', PerkStoreProductSearchCard);
-Vue.component('product-detail', ProductDetail);
+import './initComponents.js';
 
 export function formatSearchResult(results, term) {
   if (results && results.length) {

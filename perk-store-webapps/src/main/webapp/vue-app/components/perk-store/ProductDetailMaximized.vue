@@ -20,12 +20,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <v-flex
         md5
         xs12>
-        <image-attachment-selector :images="product.imageFiles" />
+        <perk-store-image-attachment-selector :images="product.imageFiles" />
       </v-flex>
       <v-flex
         md7
         xs12>
-        <product-detail-content
+        <perk-store-product-detail-content
           :product="product"
           :symbol="symbol"
           :max-orders-reached="maxOrdersReached"
@@ -42,7 +42,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               {{ $t('exoplatform.perkstore.button.close') }}
             </a>
           </div>
-          <buy-form
+          <perk-store-buy-form
             v-else
             ref="buyForm"
             :product="product"
@@ -62,16 +62,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import ProductDetailContent from './ProductDetailContent.vue';
-import ImageAttachmentSelector from './ImageAttachmentSelector.vue';
-import BuyForm from './BuyForm.vue';
-
 export default {
-  components: {
-    ProductDetailContent,
-    ImageAttachmentSelector,
-    BuyForm,
-  },
   props: {
     product: {
       type: Object,

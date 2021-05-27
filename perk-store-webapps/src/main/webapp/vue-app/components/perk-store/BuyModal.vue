@@ -35,7 +35,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           {{ $t('exoplatform.perkstore.title.buyProductModal', {0: product && product.title}) }}
         </span>
       </div>
-      <buy-form
+      <perk-store-buy-form
         ref="buyForm"
         :product="product"
         :symbol="symbol"
@@ -50,12 +50,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import BuyForm from './BuyForm.vue';
-
 export default {
-  components: {
-    BuyForm,
-  },
   props: {
     product: {
       type: Object,

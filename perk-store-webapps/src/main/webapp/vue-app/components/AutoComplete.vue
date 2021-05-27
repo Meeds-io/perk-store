@@ -113,7 +113,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <script>
 import {searchAddress, searchContact, searchFullName, searchUserOrSpaceObject} from '../js/PerkStoreIdentityRegistry.js';
-
 export default {
   props: {
     rules: {
