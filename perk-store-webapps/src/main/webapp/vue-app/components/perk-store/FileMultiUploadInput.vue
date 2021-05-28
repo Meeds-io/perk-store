@@ -29,7 +29,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         type="file"
         class="attachFile hidden"
         accept=".gif,.jpg,.jpeg,.png"
-        multiple>
+        multiple>*
     </label>
     <div class="uploadContainer">
       <div v-if="error" class="alert alert-error v-content">
