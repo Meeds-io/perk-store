@@ -185,7 +185,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <div class="d-flex">
         <v-spacer />
         <button
-          :disabled="!valid"
+          :disabled="enableSaveProduct"
           class="ignore-vuetify-classes btn btn-primary me-1"
           @click="saveProduct">
           {{ $t('exoplatform.perkstore.button.save') }}
@@ -232,6 +232,9 @@ export default {
     };
   },
   computed: {
+    enableSaveProduct() {
+      return !this.valid || this.product.imageFiles && this.product.imageFiles.length === 0;
+    },
     orderPeriodicity() {
       return (this.product && this.product.orderPeriodicity !== 'none' && this.product.orderPeriodicity) || '';
     },
