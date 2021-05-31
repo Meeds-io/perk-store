@@ -450,8 +450,6 @@ export default {
             this.products = products.filter(product =>!(product.unlimited || product.totalSupply > product.purchased));
           } else if (this.productsFilters.mine) {
             this.products = products.filter(product =>product.creator && product.creator.type === 'user' && product.creator.id === eXo.env.portal.userName);
-          } else {
-            this.products = [];
           }
           if (this.products.length && selectedProductId) {
             const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
