@@ -437,14 +437,20 @@ export default {
         storeProductFilter(this.productsFilters);
       }
       this.loading = true;
-      this.menu = false;
       return this.refreshProductList().finally(() => this.loading = false);
     },
     refreshProductList(selectedProductId, selectedOrderId) {
       return getProductList()
         .then((products) => {
-          this.products = (products && products.filter(product => (!this.productsFilters.mine || (product.creator && product.creator.type === 'user' && product.creator.id === eXo.env.portal.userName)) && (product.enabled || this.productsFilters.disabled) && (product.unlimited || product.totalSupply > product.purchased  || this.productsFilters.soldOut))) || [];
-
+          if (!this.productsFilters.mine && !this.productsFilters.disabled && !this.productsFilters.soldOut) {
+            this.products =products;
+          } else if (this.productsFilters.disabled) {
+            this.products = products.filter(product =>!product.enabled);
+          } else if (this.productsFilters.soldOut) {
+            this.products = products.filter(product =>!(product.unlimited || product.totalSupply > product.purchased));
+          } else if (this.productsFilters.mine) {
+            this.products = products.filter(product =>product.creator && product.creator.type === 'user' && product.creator.id === eXo.env.portal.userName);
+          }
           if (this.products.length && selectedProductId) {
             const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
             if (selectedProduct) {
