@@ -43,7 +43,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :label="`${$t('exoplatform.perkstore.label.productTitle')} *`"
                 :placeholder="$t('exoplatform.perkstore.label.productTitlePlaceholder')"
                 name="ProductTitle"
-                validate-on-blur
                 required
                 autofocus
                 counter />
@@ -104,7 +103,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :label="`${$t('exoplatform.perkstore.label.price')} *`"
                 :placeholder="$t('exoplatform.perkstore.label.pricePlaceholder')"
                 name="ProductPrice"
-                validate-on-blur
                 required />
 
               <perk-store-upload-input
