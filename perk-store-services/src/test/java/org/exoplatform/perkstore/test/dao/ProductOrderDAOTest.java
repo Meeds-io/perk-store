@@ -567,5 +567,25 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     count = orderDAO.countUserTotalOrderedQuantityByStatus(3000l, orderEntity.getSenderId(), orderEntity.getStatus());
     assertEquals(0, count, 0);
   }
+  @Test
+  public void testGetOrdersByIdentity() {
+    PerkStoreOrderDAO orderDAO = getService(PerkStoreOrderDAO.class);
+    List<ProductOrderEntity> orders = orderDAO.getOrdersByIdentity(0L);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    ProductEntity productEntity = newProduct();
+    ProductOrderEntity orderEntity = newOrder(productEntity);
+    List<ProductOrderEntity> savedOrderEntity = orderDAO.getOrdersByIdentity(1L);
+    assertNotNull(savedOrderEntity);
+    assertEquals(1, savedOrderEntity.size(), 0);
+    assertEquals(1L, savedOrderEntity.get(0).getReceiverId(), 0);
+
+
+    savedOrderEntity = orderDAO.getOrdersByIdentity(2L);
+    assertNotNull(savedOrderEntity);
+    assertEquals(1, savedOrderEntity.size(), 0);
+    assertEquals(2L, savedOrderEntity.get(0).getSenderId(), 0);
+  }
 
 }
