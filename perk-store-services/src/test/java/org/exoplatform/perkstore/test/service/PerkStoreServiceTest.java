@@ -1279,4 +1279,34 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     }
   }
 
+  @Test
+  public void testGetUserOrders() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+
+    try {
+      perkStoreService.getUserOrders( null);
+      fail("username shouldn't be null");
+    } catch (IllegalArgumentException e1) {
+      // Expected
+    }
+    List<ProductOrder> orders = perkStoreService.getUserOrders(USERNAME);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    Product savedProduct = newProductInstance(new Product());
+    savedProduct.setAccessPermissions(Arrays.asList(Utils.toProfile(1l)));
+    savedProduct = perkStoreService.saveProduct(savedProduct, USERNAME);
+    entitiesToClean.add(savedProduct);
+
+    orders = perkStoreService.getUserOrders(USERNAME);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    ProductOrder savedOrder = newOrder(savedProduct);
+
+    orders = perkStoreService.getUserOrders(USERNAME);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+    assertEquals(savedOrder,orders.get(0));
+  }
 }

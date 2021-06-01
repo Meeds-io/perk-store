@@ -166,7 +166,7 @@ public class PerkStoreStorage {
   public List<ProductOrder> getUserOrders(String username) {
     Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
     Long identityId = Long.parseLong(identity.getId());
-    List<ProductOrderEntity> entities = orderDAO.getOrdersByIdenity(identityId);
+    List<ProductOrderEntity> entities = orderDAO.getOrdersByIdentity(identityId);
     return entities.stream().map(orderEntity -> getOrderById(orderEntity.getId())).collect(Collectors.toList());
   }
 
