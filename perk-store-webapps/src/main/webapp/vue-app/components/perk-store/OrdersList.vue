@@ -48,7 +48,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             v-for="item in filteredOrders"
             :key="item.id"
             class="OrdersListItems">
-            <order-detail
+            <perk-store-order-detail
               :ref="`orderDetail${item.id}`"
               :order="item"
               :product="product"
