@@ -335,7 +335,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     long startTimeOfDay = date.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
     return startTimeOfDay * 1000;
   }
-  public List<ProductOrderEntity> getOrdersByIdenity(long identityId) {
+  public List<ProductOrderEntity> getOrdersByIdentity(long identityId) {
     TypedQuery<ProductOrderEntity> query = getEntityManager().createNamedQuery("Order.getUserOrders", ProductOrderEntity.class);
     query.setParameter(IDENTITY_ID_PARAMETER, identityId);
     return  query.getResultList();
