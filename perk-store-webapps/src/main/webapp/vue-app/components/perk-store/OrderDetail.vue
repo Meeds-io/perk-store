@@ -19,7 +19,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 1}`">
       <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1">
         <div class="text-truncate orderDetailText">
-          <profile-link
+          <perk-store-profile-link
             v-if="order.sender"
             :id="order.sender.id"
             :space-id="order.sender.spaceId"
@@ -30,14 +30,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </div>
         <v-spacer />
         <div
-          v-if="true"
+          v-if="order.remainingQuantityToProcess"
           :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
           class="orderQuantityBadgeParent">
           <div class="orderQuantityBadge">
             {{ order.remainingQuantityToProcess }}
           </div>
         </div>
-        <i v-if="userData && userData.canEdit" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
+        <i v-if="orderIconCheck" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
         <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
       </v-card-title>
       <v-divider />
@@ -105,7 +105,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               {{ symbol }} {{ orderAmount }}
             </template>
             {{ $t('exoplatform.perkstore.label.sentTo') }}
-            <profile-link
+            <perk-store-profile-link
               v-if="order.receiver"
               :id="order.receiver.id"
               :space-id="order.receiver.spaceId"
@@ -146,7 +146,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 ref="deliverModal"
                 :product="product"
                 :order="order" />
-              <refund-modal
+              <perk-store-refund-modal
                 v-if="canRefundOrder"
                 ref="refundModal"
                 :product="product"
@@ -232,6 +232,9 @@ export default {
     };
   },
   computed: {
+    orderIconCheck() {
+      return this.order.sender.id === eXo.env.portal.userName ;
+    },
     orderAmount() {
       return (this.order && this.order.amount && toFixed(this.order.amount)) || 0;
     },
