@@ -74,13 +74,16 @@ public class PerkStoreOrderREST implements ResourceContainer {
       @ApiResponse(code = 500, message = "Internal server error") })
   public Response listOrders(@ApiParam(value = "OrderFilter object with search conditions", required = true) OrderFilter filter,
                              @ApiParam(value = "Returning or not only the number of Orders without the whole list", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
-    String currentUserId = getCurrentUserId();
     if (filter == null) {
-      List<ProductOrder> orders = perkStoreService.getUserOrders(currentUserId);
-      return Response.ok(orders).build();
+      LOG.warn("Bad request sent to server with empty filter");
+      return Response.status(400).build();
     }
+    String currentUserId = getCurrentUserId();
     try {
-      if (returnSize) {
+      if (filter.getProductId() == 0) {
+        List<ProductOrder> orders = perkStoreService.getUserOrders(currentUserId);
+        return Response.ok(orders).build();
+      } else if (returnSize) {
         Long totalOrders = perkStoreService.countOrders(filter, currentUserId);
         JSONObject ordersSize = new JSONObject();
         ordersSize.put("size", totalOrders);
