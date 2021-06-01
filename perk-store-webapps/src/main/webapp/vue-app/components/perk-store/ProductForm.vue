@@ -250,23 +250,23 @@ export default {
         },
         {
           text: this.$t('exoplatform.perkstore.label.week'),
-          value: 'WEEK'
+          value: 'Week'
         },
         {
           text: this.$t('exoplatform.perkstore.label.month'),
-          value: 'MONTH'
+          value: 'Month'
         },
         {
           text: this.$t('exoplatform.perkstore.label.quarter'),
-          value: 'QUARTER'
+          value: 'Quarter'
         },
         {
           text: this.$t('exoplatform.perkstore.label.semester'),
-          value: 'SEMESTER'
+          value: 'Semester'
         },
         {
           text: this.$t('exoplatform.perkstore.label.year'),
-          value: 'YEAR'
+          value: 'Year'
         }
       ];
     }
