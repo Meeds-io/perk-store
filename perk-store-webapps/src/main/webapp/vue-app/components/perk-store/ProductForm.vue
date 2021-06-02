@@ -216,7 +216,7 @@ export default {
       productEditionId: null,
       limitedOrdersPerUser: false,
       limitedSupply: false,
-      requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
+      requiredRule: [(v) => !!(v && v.length) || this.$t('exoplatform.perkstore.warning.requiredField')],
       requiredIntegerRule: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
         (v) => !v || this.isPositiveNumber(v, true) || this.$t('exoplatform.perkstore.warning.invalidPositiveNumber'),
