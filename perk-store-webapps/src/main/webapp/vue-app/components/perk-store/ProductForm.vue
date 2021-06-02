@@ -305,6 +305,9 @@ export default {
       if (this.product.marchands) {
         this.$refs.productMarchandsAutocomplete.selectItems(this.product.marchands);
       }
+      if (!this.product.receiverMarchand && this.product.marchands) {
+        this.$refs.receiverMarchandAutocomplete.selectItems(this.product.marchands);
+      }
       if (this.product.accessPermissions) {
         this.$refs.productAccessPermissionAutocomplete.selectItems(this.product.accessPermissions);
       }
