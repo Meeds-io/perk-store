@@ -1082,6 +1082,12 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       return true;
     }
 
+    if (product.getCreator() != null && StringUtils.isNotBlank(username)) {
+      if (username.equals(product.getCreator().getId())) {
+        return true;
+      }
+    }
+
     if (StringUtils.isBlank(username)) {
       return false;
     }
