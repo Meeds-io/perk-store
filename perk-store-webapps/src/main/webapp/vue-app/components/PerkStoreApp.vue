@@ -57,7 +57,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   prepend-inner-icon="fa-filter"
                   single-line
                   hide-details
-                  class="pa-0 ml-3 mr-3 mb-2 filterProduct" />
+                  class="pa-0 ml-3 mr-3 mb-2 perkStoreFilter" />
                 <v-menu
                   v-model="showMenu"
                   offset-y>
@@ -178,20 +178,18 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <div class="spacer">
                 </div>
                 <div class="filterOrders">
-                  <div v-if="displayProductOrders && canEditSelectedProduct">
-                    <v-text-field
-                      v-model="searchOrder"
-                      :placeholder="$t('exoplatform.perkstore.label.orderSearchPlaceholder')"
-                      prepend-inner-icon="fa-filter"
-                      single-line
-                      hide-details
-                      class="pa-0 ml-3 mr-3 my-auto" />
-                    <v-progress-circular
-                      v-show="searchLoading"
-                      color="primary"
-                      class="mb-2 ma-auto"
-                      indeterminate />
-                  </div>
+                  <v-text-field
+                    v-model="searchOrder"
+                    :placeholder="$t('exoplatform.perkstore.label.orderSearchPlaceholder')"
+                    prepend-inner-icon="fa-filter"
+                    single-line
+                    hide-details
+                    class="pa-0 ml-3 mr-3 my-auto perkStoreFilter" />
+                  <v-progress-circular
+                    v-show="searchLoading"
+                    color="primary"
+                    class="mb-2 ma-auto"
+                    indeterminate />
                 </div>
                 <div class="download">
                   <v-btn
