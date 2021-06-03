@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.util.Collections;
 import java.util.List;
 
+import org.exoplatform.perkstore.model.constant.ProductOrderType;
 import org.junit.Test;
 
 import org.exoplatform.perkstore.dao.PerkStoreOrderDAO;
@@ -289,14 +290,39 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-    // Test with not existing identity
     orders = orderDAO.getOrders("test", filter);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    // Test with not existing identity
     orders = orderDAO.getOrders("root30", filter);
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
+
+    filter.setMyOrders(true);
+    filter.setSelectedOrderId(0);
+    filter.setProductId(0);
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = orderDAO.getOrders("test", filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    orders = orderDAO.getOrders(username, filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SEND);
+    orders = orderDAO.getOrders(username, filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = orderDAO.getOrders("test", filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+    filter.setMyOrders(false);
+    filter.setSelectedOrderId(1);
+    filter.setProductId(1);
 
     OrderFilter filterTmp = filter.clone();
     filterTmp.setSelectedOrderId(200l);
@@ -566,26 +592,6 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
 
     count = orderDAO.countUserTotalOrderedQuantityByStatus(3000l, orderEntity.getSenderId(), orderEntity.getStatus());
     assertEquals(0, count, 0);
-  }
-  @Test
-  public void testGetOrdersByIdentity() {
-    PerkStoreOrderDAO orderDAO = getService(PerkStoreOrderDAO.class);
-    List<ProductOrderEntity> orders = orderDAO.getOrdersByIdentity(0L);
-    assertNotNull(orders);
-    assertEquals(0, orders.size(), 0);
-
-    ProductEntity productEntity = newProduct();
-    ProductOrderEntity orderEntity = newOrder(productEntity);
-    List<ProductOrderEntity> savedOrderEntity = orderDAO.getOrdersByIdentity(1L);
-    assertNotNull(savedOrderEntity);
-    assertEquals(1, savedOrderEntity.size(), 0);
-    assertEquals(1L, savedOrderEntity.get(0).getReceiverId(), 0);
-
-
-    savedOrderEntity = orderDAO.getOrdersByIdentity(2L);
-    assertNotNull(savedOrderEntity);
-    assertEquals(1, savedOrderEntity.size(), 0);
-    assertEquals(2L, savedOrderEntity.get(0).getSenderId(), 0);
   }
 
 }

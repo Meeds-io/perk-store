@@ -80,10 +80,7 @@ public class PerkStoreOrderREST implements ResourceContainer {
     }
     String currentUserId = getCurrentUserId();
     try {
-      if (filter.getProductId() == 0) {
-        List<ProductOrder> orders = perkStoreService.getUserOrders(currentUserId);
-        return Response.ok(orders).build();
-      } else if (returnSize) {
+      if (returnSize) {
         Long totalOrders = perkStoreService.countOrders(filter, currentUserId);
         JSONObject ordersSize = new JSONObject();
         ordersSize.put("size", totalOrders);

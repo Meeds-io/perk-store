@@ -333,17 +333,6 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     return orders;
   }
 
-  public List<ProductOrder> getUserOrders(String username) {
-
-    if (StringUtils.isBlank(username)) {
-      throw new IllegalArgumentException("username is mandatory");
-    }
-    List<ProductOrder> orders =perkStoreStorage.getUserOrders(username);;
-    if (orders != null && !orders.isEmpty()) {
-      orders.stream().forEach(order -> computeOrderFields(null, order));
-    }
-    return orders;
-  }
   public Long countOrders(OrderFilter filter, String username) {
     if (filter == null) {
       throw new IllegalArgumentException("Filter is mandatory");

@@ -37,7 +37,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             {{ order.remainingQuantityToProcess }}
           </div>
         </div>
-        <i v-if="orderIconCheck" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
+        <i v-if="!orderIconCheck" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
         <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
       </v-card-title>
       <v-divider />

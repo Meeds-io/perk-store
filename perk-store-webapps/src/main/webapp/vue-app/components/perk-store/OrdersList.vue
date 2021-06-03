@@ -141,6 +141,7 @@ export default {
       orders: [],
       newAddedOrders: [],
       initialLimit: 0,
+      ordersType: '',
     };
   },
   computed: {
@@ -189,6 +190,7 @@ export default {
       const initialOrdersLength = this.orders.length > this.limit ? this.limit - 1 : this.orders.length;
 
       this.loading = true;
+      this.selectedOrdersFilter.ordersType = this.filterOrdersType() ;
 
       return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, this.limit)
         .then((orders) => {
@@ -406,6 +408,20 @@ export default {
           downloadLink.click();
         });
     },
+    filterOrdersType(){
+      const orders = {
+        ALL: 'ALL',
+        SEND: 'SEND',
+        RECEIVED: 'RECEIVED'
+      };
+      if (this.ordersType === orders.RECEIVED){
+        return orders.RECEIVED ;
+      } else if (this.ordersType === orders.SEND){
+        return orders.SEND;
+      } else {
+        return orders.ALL ;
+      }
+    }
   },
 };
 </script>

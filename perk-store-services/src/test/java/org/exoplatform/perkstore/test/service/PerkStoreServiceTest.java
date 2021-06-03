@@ -749,6 +749,24 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    filter.setMyOrders(true);
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = perkStoreService.getOrders(filter, "root10");
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SEND);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+    filter.setMyOrders(false);
+    filter.setOrdersType(null);
+
     orders = perkStoreService.getOrders(filter, USERNAME);
     filter.setOrdered(true);
     checkBasicOperations(filter);
@@ -1277,36 +1295,5 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     } finally {
       container.unregisterComponent(UploadService.class);
     }
-  }
-
-  @Test
-  public void testGetUserOrders() throws Exception {
-    PerkStoreService perkStoreService = getService(PerkStoreService.class);
-
-    try {
-      perkStoreService.getUserOrders( null);
-      fail("username shouldn't be null");
-    } catch (IllegalArgumentException e1) {
-      // Expected
-    }
-    List<ProductOrder> orders = perkStoreService.getUserOrders(USERNAME);
-    assertNotNull(orders);
-    assertEquals(0, orders.size(), 0);
-
-    Product savedProduct = newProductInstance(new Product());
-    savedProduct.setAccessPermissions(Arrays.asList(Utils.toProfile(1l)));
-    savedProduct = perkStoreService.saveProduct(savedProduct, USERNAME);
-    entitiesToClean.add(savedProduct);
-
-    orders = perkStoreService.getUserOrders(USERNAME);
-    assertNotNull(orders);
-    assertEquals(0, orders.size(), 0);
-
-    ProductOrder savedOrder = newOrder(savedProduct);
-
-    orders = perkStoreService.getUserOrders(USERNAME);
-    assertNotNull(orders);
-    assertEquals(1, orders.size(), 0);
-    assertEquals(savedOrder,orders.get(0));
   }
 }
