@@ -258,6 +258,30 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    String username = "root" + orderEntity.getSenderId();
+
+    filter.setMyOrders(true);
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = orderDAO.getOrders("test", filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    orders = orderDAO.getOrders(username, filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SEND);
+    orders = orderDAO.getOrders(username, filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = orderDAO.getOrders("test", filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+    filter.setMyOrders(false);
+    filter.setOrdersType(null);
+
     orders = orderDAO.getOrders(null, filter);
     filter.setOrdered(true);
     assertNotNull(orders);
@@ -284,7 +308,6 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-    String username = "root" + orderEntity.getSenderId();
 
     orders = orderDAO.getOrders(username, filter);
     assertNotNull(orders);
@@ -298,31 +321,6 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     orders = orderDAO.getOrders("root30", filter);
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
-
-    filter.setMyOrders(true);
-    filter.setSelectedOrderId(0);
-    filter.setProductId(0);
-    filter.setOrdersType(ProductOrderType.ALL);
-    orders = orderDAO.getOrders("test", filter);
-    assertNotNull(orders);
-    assertEquals(1, orders.size(), 0);
-
-    orders = orderDAO.getOrders(username, filter);
-    assertNotNull(orders);
-    assertEquals(1, orders.size(), 0);
-
-    filter.setOrdersType(ProductOrderType.SEND);
-    orders = orderDAO.getOrders(username, filter);
-    assertNotNull(orders);
-    assertEquals(1, orders.size(), 0);
-
-    filter.setOrdersType(ProductOrderType.RECEIVED);
-    orders = orderDAO.getOrders("test", filter);
-    assertNotNull(orders);
-    assertEquals(1, orders.size(), 0);
-    filter.setMyOrders(false);
-    filter.setSelectedOrderId(1);
-    filter.setProductId(1);
 
     OrderFilter filterTmp = filter.clone();
     filterTmp.setSelectedOrderId(200l);
