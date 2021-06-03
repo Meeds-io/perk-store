@@ -70,7 +70,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
               <perk-store-auto-complete
                 ref="productMarchandsAutocomplete"
-                :rules="requiredRule"
+                :rules="rules"
                 :input-label="`${$t('exoplatform.perkstore.label.productEditors')} *`"
                 :input-placeholder="$t('exoplatform.perkstore.label.productEditorsPlaceholder')"
                 :no-data-label="$t('exoplatform.perkstore.label.productEditorsSearchPlaceholder')"
@@ -216,6 +216,7 @@ export default {
       productEditionId: null,
       limitedOrdersPerUser: false,
       limitedSupply: false,
+      rules: [v => !!(v && v.length) || this.$t('exoplatform.perkstore.warning.requiredField')],
       requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
       requiredIntegerRule: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
