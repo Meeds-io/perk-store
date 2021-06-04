@@ -15,119 +15,123 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-layout
-    column
-    grow
-    class="buyProductForm">
-    <v-flex v-if="error && !loading" xs12>
-      <div class="alert alert-error v-content">
-        <i class="uiIconError"></i>
-        {{ error }}
-      </div>
-    </v-flex>
-    <v-flex xs12>
-      <v-layout
-        row
-        grow
-        class="no-wrap mx-0">
-        <template v-if="!integrated">
-          <v-flex
-            v-if="productImage"
-            class="d-sm-flex d-none"
-            sm5>
+  <v-form id="buyFormProduct" ref="form">
+    <v-container>
+      <v-flex v-if="error && !loading" xs12>
+        <div class="alert alert-error v-content">
+          <i class="uiIconError"></i>
+          {{ error }}
+        </div>
+      </v-flex>
+      <v-row v-if="product.description">
+        <div class="d-flex flex-column pl-4 pb-2">
+          <label class="mb-1 font-weight-bold">{{ $t('exoplatform.perkstore.label.Description') }}:</label>
+          <div class="font-weight-regular">{{ product.description }}</div>
+        </div>
+      </v-row>
+      <v-row v-if="productImage">
+        <label class="pl-4 pb-2 font-weight-bold">{{ $t('exoplatform.perkstore.label.Gallery') }}</label>
+      </v-row>
+      <v-row v-if="productImage">
+        <v-col
+          v-for="img in product.imageFiles.slice(0, 3)"
+          :key="img.src"
+          class="pl-4"
+          cols="12"
+          sm="4">
+          <a :href="img.src" target="_blank">
             <v-img
-              :src="productImage"
+              :src="img.src"
               aspect-ratio="1"
               max-width="200px"
               max-height="100%"
               class="productImageBuyPage" />
-          </v-flex>
-          <v-flex
-            v-else
-            class="d-sm-flex d-none"
-            sm5>
-            <v-icon class="productImageBuyPage productNoImages">fa-images</v-icon>
-          </v-flex>
-        </template>
-        <v-flex
-          :sm7="!integrated"
-          xs12>
-          <v-layout column grow>
-            <v-card-text class="py-0">
-              <v-form ref="form">
-                <v-divider v-if="integrated" />
-                <div class="my-3 primary--text">{{ $t('exoplatform.perkstore.label.unitPrice') }}: {{ productPrice }} {{ symbol }}</div>
-                <v-divider />
-                <template v-if="product && !product.unlimited">
-                  <div class="my-3">{{ $t('exoplatform.perkstore.label.availableQuantity') }}: {{ maxOrdersRemaining }}</div>
-                  <v-divider />
-                </template>
-                <template v-if="integrated">
-                  <div class="my-3">
-                    {{ $t('exoplatform.perkstore.label.yourOrders') }}: {{ purchasedOrders }}
-                    <template v-if="maxOrdersPerUser">
-                      / {{ maxOrdersPerUser }}
-                    </template>
-                  </div>
-                  <v-divider />
-                </template>
-                <div class="my-3">{{ $t('exoplatform.perkstore.label.purchasePrice', {0: amountLabel}) }}</div>
-                <div class="buyFormFields">
-                  <v-text-field
-                    v-model.number="quantity"
-                    :disabled="loading"
-                    :rules="quantityRules"
-                    :label="quantityInputLabel"
-                    :placeholder="$t('exoplatform.perkstore.label.quantityPlaceholder')"
-                    append-icon="fa-plus"
-                    prepend-inner-icon="fa-minus"
-                    class="text-center"
-                    name="quantity"
-                    required
-                    @click:prepend-inner="decrementQuantity"
-                    @click:append="incrementQuantity" />
-                  <v-text-field
-                    v-if="needPassword && opened"
-                    v-model="walletPassword"
-                    :append-icon="walletPasswordShow ? 'mdi-eye' : 'mdi-eye-off'"
-                    :type="walletPasswordShow ? 'text' : 'password'"
-                    :disabled="loading"
-                    :rules="requiredRule"
-                    :label="$t('exoplatform.perkstore.label.walletPassword')"
-                    :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
-                    name="walletPassword"
-                    autocomplete="current-passord"
-                    required
-                    autofocus
-                    validate-on-blur
-                    @click:append="walletPasswordShow = !walletPasswordShow" />
-                </div>
-              </v-form>
-            </v-card-text>
-          </v-layout>
-        </v-flex>
-      </v-layout>
-    </v-flex>
-    <v-flex class="offset-sm-5 sm7 xs12 mt-3">
-      <v-card-actions>
-        <v-btn
-          :disabled="disablePayButton"
-          :loading="loading || walletLoading"
-          class="primary me-1"
-          large
-          @click="payProduct">
-          {{ $t('exoplatform.perkstore.button.buy') }}
-        </v-btn>
-        <v-spacer />
-        <button
-          class="ignore-vuetify-classes btn"
-          :disabled="loading || walletLoading"
-          @click="$emit('close')">
-          {{ $t('exoplatform.perkstore.button.cancel') }}
-        </button>
-      </v-card-actions>
-    </v-flex>
-  </v-layout>
+          </a>
+        </v-col>
+      </v-row>
+      <v-row class="pl-5">
+        <v-col
+          cols="12"
+          sm="6">
+          <v-row class="pb-3">
+            <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.Marchant') }}:</label>
+          </v-row>
+          <v-row v-if="product.creator" class="pb-3">
+            <exo-user-avatar
+              :username="product.creator.id"
+              :fullname="product.creator.displayName"
+              :avatar-url="`/portal/rest/v1/social/users/${product.creator.id}/avatar`"
+              :title="product.creator.displayName"
+              :size="25"
+              :url="null"
+              class="pr-2" />
+          </v-row>
+          <v-row>
+            <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.QuantityToBuy') }}:</label>
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model.number="quantity"
+              :disabled="loading"
+              :rules="quantityRules"
+              append-icon="fa-plus"
+              prepend-inner-icon="fa-minus"
+              class="text-center pt-1 quantity"
+              name="quantity"
+              required
+              @click:prepend-inner="decrementQuantity"
+              @click:append="incrementQuantity" />
+          </v-row>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6">
+          <v-row class="pb-3">
+            <label class="font-weight-bold">
+              {{ $t('exoplatform.perkstore.label.unitPrice') }}:
+            </label>
+          </v-row>
+          <v-row class="pb-3">
+            <label class="font-weight-bold">
+              <span class="priceSymbol">{{ symbol }}</span> {{ productPrice }}
+            </label>
+          </v-row>
+          <v-row class="pb-4 mt-1">
+            <label class="font-weight-bold">
+              {{ $t('exoplatform.perkstore.label.AmountToBuy') }}:
+            </label>
+          </v-row>
+          <v-row>
+            <label class="font-weight-bold">
+              <span class="priceSymbol">{{ symbol }}</span>  {{ amountLabel }}
+            </label>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row class="pl-5">
+        <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
+      </v-row>
+      <v-row class="pl-5">
+        <v-text-field
+          v-if="needPassword"
+          v-model="walletPassword"
+          :append-icon="walletPasswordShow ? 'mdi-eye' : 'mdi-eye-off'"
+          :type="walletPasswordShow ? 'text' : 'password'"
+          :disabled="loading"
+          :rules="requiredRule"
+          :label="$t('exoplatform.perkstore.label.walletPassword')"
+          :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
+          name="walletPassword"
+          autocomplete="current-passord"
+          class="passwordWallet"
+          required
+          autofocus
+          color="grey darken-4"
+          validate-on-blur
+          @click:append="walletPasswordShow = !walletPasswordShow" />
+      </v-row>
+    </v-container>
+  </v-form>
 </template>
 
 <script>
@@ -244,7 +248,7 @@ export default {
       return this.product && !this.maxQuantity;
     },
     amountLabel() {
-      return `${this.amount || 0} ${this.symbol}`;
+      return `${this.amount || 0}`;
     },
     limitedQuantity() {
       return this.product && (this.product.maxOrdersPerUser || !this.product.unlimited);
@@ -293,7 +297,7 @@ export default {
     },
     pendingTransaction(event) {
       // Check if the event is triggered for current window
-      if (this.opened && this.loading) {
+      if (this.loading) {
         const pendingTransaction = event.detail;
         return createOrder({
           productId: this.product.id,
@@ -389,6 +393,10 @@ export default {
           console.error('Checking order availability error', e);
           this.loading = false;
           this.error = e && e.message ? e.message : String(e);
+        }).finally(() => {
+          if (!this.error) {
+            this.$emit('close');
+          }
         });
     },
   },
