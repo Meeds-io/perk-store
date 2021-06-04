@@ -22,7 +22,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     background: white;
 
     .toolbarOrders {
-      margin-bottom: 17px;
+      margin: 17px;
 
       .boxTitle {
         width: 30%;
@@ -144,6 +144,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   }
 
   select.small, input.small {
+    min-width: 50px;
     width: auto;
     height: 32px;
   }
@@ -284,18 +285,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       padding: 7px;
 
       > i {
-        color: var(--allPagesGreyColorLighten1, #a8b3c5) !important;
+        color: var(--allPagesGreyColorLighten1, @greyColorLighten1Default) !important;
       }
     }
 
     > button {
       white-space: nowrap;
-    }
-
-    .textBalance {
-      white-space: nowrap;
-      padding-top: 10px;
-      color: var(--allPagesGreyColorLighten1, #a8b3c5);
     }
   }
 
@@ -332,7 +327,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       }
     }
   }
-
+      .textBalance {
+        white-space: nowrap;
+        padding-top: 10px;
+        color: var(--allPagesGreyColorLighten1, #a8b3c5);
+      }
   .v-card--reveal {
     align-items: center;
     bottom: 0;
@@ -341,7 +340,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     width: 100%;
   }
 
-  .productDetailContent {
+  .perkStoreDetailContent {
     box-sizing: border-box;
     padding: 25px;
     .toolbarCard {
@@ -587,10 +586,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
   .orderDetailParent {
     .align-start {
-      max-width: 94px;
+      max-width: 100%;
     }
     .align-end {
-      max-width: ~"calc(100% - 100px)";
+      max-width: 100%;
       text-align: end;
     }
     .orderStatus {
@@ -617,7 +616,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     }
     .orderProcessingContent {
       min-height: 30px;
-
       .v-list__tile {
         height: fit-content;
       }
@@ -646,6 +644,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     .orderProcessingDetails {
       min-height: 100px;
       max-height: 100px;
+      .align-end {
+        max-width: 100%;
+        text-align: end;
+        margin-left: 15% !important;
+      }
     }
     .orderProcessingBtn {
       height: 30px;
@@ -765,8 +768,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     max-width: 100%;
   }
   .OrdersListItems {
+    width: 20%;
     max-width: 20%;
-    flex: 0 0 20%;
+    flex-basis: 20%;
     padding: 25px;
   }
 
@@ -889,7 +893,25 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     color: @successColor;
   }
   .orderDeliveredDate{
-    margin-left: 45px;
+    margin-left: 15px;
+    color: @greyColorLighten1Default;
+    padding-right: 70px;
+  }
+  .orderCardTitle{
+    height: 55px;
+    padding: 10px 3px 8px 16px !important;
+  }
+  .orderDetailText{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px;
+  }
+  .orderCardSubtitle{
+    height: 22px;
+    padding: 10px 3px 7px 16px !important;
+    margin-bottom: 5px;
+    margin-top: -5px;
   }
   .buyButton{
     margin-top: 10px;
@@ -911,7 +933,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   }
 @media (min-width : 960px) {
   #PerkStoreApp {
-    .productDetailContent {
+    .perkStoreDetailContent {
       width: 20%;
       max-width: 20%;
       flex-basis: 20%;

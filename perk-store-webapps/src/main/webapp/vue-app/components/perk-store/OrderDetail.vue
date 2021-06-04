@@ -17,7 +17,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template>
   <v-hover v-if="order" class="orderDetailParent">
     <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 1}`">
-      <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1">
+      <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1 orderCardTitle">
         <div class="text-truncate orderDetailText">
           <perk-store-profile-link
             v-if="order.sender"
@@ -29,21 +29,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             display-avatar />
         </div>
         <v-spacer />
-        <div
-          v-if="order.remainingQuantityToProcess"
-          :title="$t('exoplatform.perkstore.label.remainingQuatityToProcess', {0: order.remainingQuantityToProcess})"
-          class="orderQuantityBadgeParent">
-          <div class="orderQuantityBadge">
-            {{ order.remainingQuantityToProcess }}
-          </div>
-        </div>
-        <i v-if="!orderIconCheck" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
+        <i v-if="!orderCheckIn" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
         <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
       </v-card-title>
       <v-divider />
 
       <v-list dense>
-        <v-list-item>
+        <v-list-item class="mb-1 pl-2 pb-3 pr-4 pt-1 orderCardSubtitle">
           <v-list-item-content class="align-start">
             <h4>
               <a
@@ -54,8 +46,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </a>
             </h4>
           </v-list-item-content>
-          <v-list-item-content class="align-end no-wrap">
-            <template v-if="userData && userData.canEdit">
+          <v-list-item-content class="align-end">
+            <template v-if="!orderCheckIn">
               <select
                 v-model="order.status"
                 class="small my-auto me-2 ignore-vuetify-classes"
@@ -74,7 +66,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-divider />
         <v-list-item>
           <i class="uiIconDatePicker orderDetailUiIcons"></i>
-          <div :title="createdDateLabel" class="orderCreatedDate text-truncate">
+          <div :title="createdDateLabel" class="orderDetailText text-truncate">
             {{ createdDateLabel }}
           </div>
         </v-list-item>
@@ -117,8 +109,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </v-list>
       <v-divider />
       <v-list dense class="orderProcessingDetails ">
-        <v-list-item :class="'orderProcessingContent' && order.deliveredDate ? '' : 'justify-center'">
-          <div class="no-wrap">
+        <v-list-item
+          class="orderProcessingContent orderCardSubtitle"
+          :class="orderProcessingClass">
+          <div class="no-wrap align-start">
             <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
               <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
             </div>
@@ -141,7 +135,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @click="$refs.refundModal.open()">
                 {{ $t('exoplatform.perkstore.button.refund') }}
               </button>
-              <deliver-modal
+              <perk-store-deliver-modal
                 v-if="canDeliverOrder"
                 ref="deliverModal"
                 :product="product"
@@ -163,8 +157,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <v-icon class="orange--text me-1" size="16">far fa-clock</v-icon>PENDING
             </div>
           </div>
-          <div v-if="order.deliveredDate">
-            <div :title="deliveredDateLabel" class="orderDeliveredDate text-truncate">
+          <div v-if="order.deliveredDate" class="align-end">
+            <div :title="deliveredDateLabel" class=" text-truncate orderDeliveredDate ">
               {{ deliveredDateLabel }}
             </div>
           </div>
@@ -232,7 +226,10 @@ export default {
     };
   },
   computed: {
-    orderIconCheck() {
+    orderProcessingClass() {
+      return this.order.deliveredDate ? '' : 'justify-center';
+    },
+    orderCheckIn() {
       return this.order.sender.id === eXo.env.portal.userName ;
     },
     orderAmount() {
