@@ -32,6 +32,7 @@ import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.perkstore.model.OrderFilter;
 import org.exoplatform.perkstore.model.constant.ProductOrderStatus;
+import org.exoplatform.perkstore.model.constant.ProductOrderType;
 import org.exoplatform.perkstore.service.PerkStoreService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -47,6 +48,8 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
   private static final String IDENTITY_ID_PARAMETER = "identityId";
 
   private static final String AND_OPERATOR          = " AND ";
+
+  private static final String OR_OPERATOR          = " OR ";
 
   private static final String PRODUCT_ID_PARAMETER  = "productId";
 
@@ -246,8 +249,26 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
         } else {
           firstConditionAdded = true;
         }
+        if (filter.getProductId() ==0 && filter.isMyOrders()) {
+          if (filter.getOrdersType() == ProductOrderType.ALL) {
+            query.append(" o.senderId = ");
+            query.append(identity.getId());
+            query.append(OR_OPERATOR);
+            query.append(" o.receiverId = ");
+            query.append(identity.getId());
+          }
+          if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
+            query.append(" o.receiverId = ");
+            query.append(identity.getId());
+          }
+          if (filter.getOrdersType() == ProductOrderType.SENT) {
+            query.append(" o.senderId = ");
+            query.append(identity.getId());
+          }
+        } else {
         query.append(" o.senderId = ");
         query.append(identity.getId());
+        }
       }
     }
 
@@ -335,5 +356,4 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     long startTimeOfDay = date.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
     return startTimeOfDay * 1000;
   }
-
 }
