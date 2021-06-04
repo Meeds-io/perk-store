@@ -749,6 +749,24 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    filter.setMyOrders(true);
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = perkStoreService.getOrders(filter, "root10");
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SENT);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+    filter.setMyOrders(false);
+    filter.setOrdersType(null);
+
     orders = perkStoreService.getOrders(filter, USERNAME);
     filter.setOrdered(true);
     checkBasicOperations(filter);
@@ -1278,5 +1296,4 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
       container.unregisterComponent(UploadService.class);
     }
   }
-
 }

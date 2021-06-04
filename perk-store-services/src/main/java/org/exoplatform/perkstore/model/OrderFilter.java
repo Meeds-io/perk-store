@@ -19,6 +19,7 @@ package org.exoplatform.perkstore.model;
 import java.io.Serializable;
 
 import lombok.*;
+import org.exoplatform.perkstore.model.constant.ProductOrderType;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -57,6 +58,11 @@ public class OrderFilter extends PerkStoreCloneable implements Serializable {
   private boolean           refunded;
 
   private boolean           fraud;
+
+  private boolean           myOrders;
+
+  private ProductOrderType ordersType;
+
 
   @Override
   public OrderFilter clone() { // NOSONAR
