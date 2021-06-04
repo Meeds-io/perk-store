@@ -33,6 +33,8 @@ export function toFixed(value, decimals) {
 export function getOrderList(productId, filter, selectedOrderId, currentUserOrders, limit) {
   if (!productId) {
     productId = 0;
+  } else {
+    filter.myOrders = false;
   }
 
   filter = Object.assign(filter || {}, {
