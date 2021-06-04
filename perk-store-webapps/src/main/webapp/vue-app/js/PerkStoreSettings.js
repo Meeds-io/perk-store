@@ -65,6 +65,7 @@ export function getDefaultOrderFilter() {
     delivered: true,
     refunded: true,
     fraud: true,
+    myOrders: true,
   };
 }
 

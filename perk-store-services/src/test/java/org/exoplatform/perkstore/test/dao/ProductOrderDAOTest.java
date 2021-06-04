@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.util.Collections;
 import java.util.List;
 
+import org.exoplatform.perkstore.model.constant.ProductOrderType;
 import org.junit.Test;
 
 import org.exoplatform.perkstore.dao.PerkStoreOrderDAO;
@@ -257,6 +258,30 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    String username = "root" + orderEntity.getSenderId();
+
+    filter.setMyOrders(true);
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = orderDAO.getOrders("test", filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    orders = orderDAO.getOrders(username, filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SENT);
+    orders = orderDAO.getOrders(username, filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = orderDAO.getOrders("test", filter);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+    filter.setMyOrders(false);
+    filter.setOrdersType(null);
+
     orders = orderDAO.getOrders(null, filter);
     filter.setOrdered(true);
     assertNotNull(orders);
@@ -283,17 +308,16 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-    String username = "root" + orderEntity.getSenderId();
 
     orders = orderDAO.getOrders(username, filter);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-    // Test with not existing identity
     orders = orderDAO.getOrders("test", filter);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    // Test with not existing identity
     orders = orderDAO.getOrders("root30", filter);
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
