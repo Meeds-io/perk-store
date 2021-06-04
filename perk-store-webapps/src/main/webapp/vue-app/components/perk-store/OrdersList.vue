@@ -411,13 +411,13 @@ export default {
     filterOrdersType(){
       const orders = {
         ALL: 'ALL',
-        SEND: 'SEND',
+        SENT: 'SENT',
         RECEIVED: 'RECEIVED'
       };
       if (this.ordersType === orders.RECEIVED){
         return orders.RECEIVED ;
-      } else if (this.ordersType === orders.SEND){
-        return orders.SEND;
+      } else if (this.ordersType === orders.SENT){
+        return orders.SENT;
       } else {
         return orders.ALL ;
       }

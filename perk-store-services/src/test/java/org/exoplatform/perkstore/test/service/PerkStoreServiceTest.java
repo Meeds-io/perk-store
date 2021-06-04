@@ -760,7 +760,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-    filter.setOrdersType(ProductOrderType.SEND);
+    filter.setOrdersType(ProductOrderType.SENT);
     orders = perkStoreService.getOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);

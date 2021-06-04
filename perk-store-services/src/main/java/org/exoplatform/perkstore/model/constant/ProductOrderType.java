@@ -2,7 +2,7 @@ package org.exoplatform.perkstore.model.constant;
 
 public enum ProductOrderType {
   ALL("ALL","all"),
-  SEND("SEND","send"),
+  SENT("SENT","sent"),
   RECEIVED("RECEIVED","received");
   private String name;
 

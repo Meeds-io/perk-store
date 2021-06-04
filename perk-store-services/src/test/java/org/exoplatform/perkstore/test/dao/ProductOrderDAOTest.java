@@ -270,7 +270,7 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-    filter.setOrdersType(ProductOrderType.SEND);
+    filter.setOrdersType(ProductOrderType.SENT);
     orders = orderDAO.getOrders(username, filter);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
