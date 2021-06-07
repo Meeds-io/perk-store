@@ -22,10 +22,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     background: white;
 
     .toolbarOrders {
+      padding: 15px 5px 15px 15px;
       margin: 17px;
 
       .boxTitle {
         width: 30%;
+        margin-top: 15px;
 
         .titleOrders {
           padding: 15px;
@@ -330,7 +332,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       .textBalance {
         white-space: nowrap;
         padding-top: 10px;
-        color: var(--allPagesGreyColorLighten1, #a8b3c5);
+        color: var(--allPagesGreyColorLighten1, @greyColorLighten1Default);
       }
   .v-card--reveal {
     align-items: center;
@@ -909,9 +911,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   }
   .orderCardSubtitle{
     height: 22px;
-    padding: 10px 3px 7px 16px !important;
-    margin-bottom: 5px;
-    margin-top: -5px;
   }
   .buyButton{
     margin-top: 10px;
