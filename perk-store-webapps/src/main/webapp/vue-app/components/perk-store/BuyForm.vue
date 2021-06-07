@@ -17,8 +17,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template>
   <v-form id="buyFormProduct" ref="form">
     <v-container>
-      <v-flex v-if="error && !loading" xs12>
-        <div class="alert alert-error v-content">
+      <v-flex
+        v-if="errors && errors.length > 0 && !loading"
+        xs12>
+        <div
+          v-for="error in errors"
+          :key="error"
+          class="alert alert-error v-content">
           <i class="uiIconError"></i>
           {{ error }}
         </div>
@@ -188,7 +193,7 @@ export default {
       quantity: 1,
       walletPassword: '',
       walletPasswordShow: false,
-      error: null,
+      errors: [],
       requiredRule: [(v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField')],
       quantityRules: [
         (v) => !!v || this.$t('exoplatform.perkstore.warning.requiredField'),
@@ -265,8 +270,8 @@ export default {
     }
   },
   watch: {
-    error() {
-      if (this.error) {
+    errors() {
+      if (this.errors && this.errors.length > 0) {
         this.loading = false;
       }
     },
@@ -279,7 +284,7 @@ export default {
     init() {
       this.quantity = 1;
       this.warning = null;
-      this.error = null;
+      this.errors = [];
       this.loading = false;
       this.walletPassword = '';
       this.walletPasswordShow = false;
@@ -313,20 +318,20 @@ export default {
           .catch(e => {
             console.error('Error saving order', e);
             this.loading = false;
-            this.error = e && e.message ? e.message : String(e);
+            this.errors.push(e && e.message ? e.message : String(e));
           });
       }
     },
     errorTransaction(event) {
       this.loading = false;
 
-      this.error = event.detail;
+      this.errors.push(event.detail);
     },
     payProduct(event) {
       event.preventDefault();
       event.stopPropagation();
 
-      this.error = null;
+      this.errors = [];
 
       if (!this.$refs.form.validate()) {
         return false;
@@ -342,29 +347,29 @@ export default {
       }
 
       if (!qty || isNaN(qty) || qty <= 0 || !Number.isFinite(qty) || (!this.product.allowFraction && !Number.isSafeInteger(this.quantity))) {
-        this.error = this.$t('exoplatform.perkstore.warning.invalidQuantity');
+        this.errors.push(this.$t('exoplatform.perkstore.warning.invalidQuantity'));
         return;
       }
 
       this.quantity = qty;
 
       if (!this.product.unlimited && this.quantity > this.maxQuantity) {
-        this.error = this.$t('exoplatform.perkstore.warning.invalidQuantityWithMax', {0: this.maxQuantity});
+        this.errors.push(this.$t('exoplatform.perkstore.warning.invalidQuantityWithMax', {0: this.maxQuantity}));
         return;
       }
 
       if (!this.product.receiverMarchand) {
-        this.error = this.$t('exoplatform.perkstore.warning.noProductMarchand');
+        this.errors.push(this.$t('exoplatform.perkstore.warning.noProductMarchand'));
         return;
       }
 
       if (!this.product.price) {
-        this.error = this.$t('exoplatform.perkstore.warning.noProductPrice');
+        this.errors.push(this.$t('exoplatform.perkstore.warning.noProductPrice'));
         return;
       }
 
       if (!this.amount) {
-        this.error = this.$t('exoplatform.perkstore.warning.noAmountToSend');
+        this.errors.push(this.$t('exoplatform.perkstore.warning.noAmountToSend'));
         return;
       }
 
@@ -392,9 +397,9 @@ export default {
         .catch(e => {
           console.error('Checking order availability error', e);
           this.loading = false;
-          this.error = e && e.message ? e.message : String(e);
+          this.errors.push(e && e.message ? e.message : String(e));
         }).finally(() => {
-          if (!this.error) {
+          if (!this.errors || this.errors.length === 0) {
             this.$emit('close');
           }
         });

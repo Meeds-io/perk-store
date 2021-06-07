@@ -18,8 +18,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <v-flex class="productDetailContent">
     <v-card
       :class="hideElevation && 'productDetailContentCard' || `elevation-${hover ? 9 : 1} productDetailContentCard`"
-      :max-width="cardHeight"
-      v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
+      :max-width="cardHeight">
       <v-carousel
         :show-arrows="false"
         :interval="3000"
@@ -77,12 +76,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </v-carousel>
       <v-card-text
         v-if="!hideButtons"
-        class="pt-2"
-        style="position: relative;">
+        class="pt-2 pendingCard"
+        v-on="!cantBuyProduct && !userData.notProcessedOrders ? { click: displayBuyModal } : {}">
         <div
           v-if="!hidePending"
-          class="productCardPending py-0"
-          @click="openProductDetail">
+          class="productCardPending py-0">
           <v-hover v-if="userData.notProcessedOrders">
             <v-chip
               slot-scope="{ hover: hoverPending }"
@@ -113,7 +111,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-icon>fa-shopping-cart</v-icon>
         </v-btn>
       </v-card-text>
-      <div @click="openProductDetail">
+      <div class="footerCardProduct" v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
         <v-card-text
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
           class="pb-0 clickable productCardTitleParent">
