@@ -165,13 +165,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @refresh-list="addNewProductsToList" />
             </v-tab-item>
             <v-tab-item class="orders-list" eager>
-              <div class="d-flex toolbarOrders">
-                <div class="boxTitle">
+              <div class="pa-4 d-flex toolbarOrders">
+                <div class="mt-4 boxTitle">
                   <div v-if="displayProductOrders && selectedProduct && selectedOrderId" class="titleOrders">
                     <span class="ms-2">{{ $t('exoplatform.perkstore.title.order') }} #{{ selectedOrderId }}</span> : <span class="ms-2">{{ selectedProduct.title }}</span>
                   </div>
                   <div v-else-if="displayProductOrders && selectedProduct" class="titleOrders">
                     <span class="ms-2">{{ $t('exoplatform.perkstore.title.myOrdersListOf') }} {{ selectedProduct.title }}</span>
+                  </div>
+                  <div v-else>
+                    <span class="textBalance titleOrders">{{ $t('exoplatform.perkstore.label.balance') }}: {{ symbol }} {{ balance }}</span>
                   </div>
                 </div>
                 <div class="spacer">
@@ -216,7 +219,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   </v-btn>
                 </div>
               </div>
-              <v-divider />
               <v-toolbar
                 v-if="error"
                 color="transparent"

@@ -42,12 +42,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-card-title>
       </v-card>
       <a id="downloadOrders" class="hidden">{{ $t('exoplatform.perkstore.button.download') }}</a>
-      <v-row class="OrdersListParent">
+      <v-layout
+        row
+        wrap
+        class="OrdersListParent">
         <template v-if="filteredOrders && filteredOrders.length">
           <div
             v-for="item in filteredOrders"
             :key="item.id"
-            class="OrdersListItems">
+            class="flex perkStoreDetailContent border-box-sizing xs12 sm4 md3">
             <perk-store-order-detail
               :ref="`orderDetail${item.id}`"
               :order="item"
@@ -63,7 +66,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <div v-else class="ma-auto">
           {{ search ? $t('exoplatform.perkstore.button.noOrdersSearchResultFor', {0: search}) : $t('exoplatform.perkstore.button.noOrdersFound') }}
         </div>
-      </v-row>
+      </v-layout>
       <v-flex
         v-if="loading || displayLoadMoreButton"
         slot="footer"
@@ -159,7 +162,7 @@ export default {
       }
     },
     displayLoadMoreButton() {
-      return !this.limitReached && this.orders.length && this.orders.length % this.pageSize === 0;
+      return this.limitReached && this.orders.length && this.orders.length % this.pageSize === 0;
     }
   },
   watch: {
