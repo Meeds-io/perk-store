@@ -131,9 +131,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <perk-store-product-form
                 ref="productForm"
                 :product="selectedProduct"
-                @saved="displayProduct"
                 @error="error=$event"
-                @close="displayProduct" />
+                @refreshProduct="refreshProductList" />
               <perk-store-products-list
                 v-if="!error || (filteredProducts && filteredProducts.length)"
                 ref="productsList"
@@ -145,7 +144,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :can-add-product="userSettings.canAddProduct"
                 :wallet-loading="walletLoading"
                 :wallet-enabled="walletEnabled && walletAddonInstalled"
-                @product-details="displayProduct"
                 @create-product="newProduct"
                 @orders-list="displayProductOrdersList"
                 @edit="editProduct"
@@ -157,7 +155,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :symbol="symbol"
                 :need-password="walletNeedPassword"
                 :wallet-loading="walletLoading"
-                :wallet-enabled="walletEnabled" />
+                :wallet-enabled="walletEnabled"
+                @closeProductDetails="closeProduct()" />
               <perk-store-settings-modal
                 ref="settingsModal"
                 @saved="init()" />
@@ -325,6 +324,24 @@ export default {
     },
   },
   watch: {
+    loading() {
+      if (!this.loading) {
+        setTimeout( () => {
+          const urlPath = document.location.pathname;
+          const productId = urlPath.split('perkstore/')[1] ? urlPath.split('perkstore/')[1].split(/[^0-9]/)[0] : null;
+          if (productId && this.$refs.buyModal) {
+            getProduct(productId).then(freshProduct => {
+              if (freshProduct) {
+                this.selectedProduct = freshProduct;
+                this.$refs.buyModal.open();
+              }
+            }).catch(() => {
+              window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
+            });
+          }
+        }, 200);
+      }
+    },
     filterProduct() {
       if (this.filterProduct === 'productFiltersDisabledProducts') {
         this.productsFilters.disabled = true;
@@ -377,9 +394,13 @@ export default {
           .replace(/=/g, '":"')}"}`
       );
     }
-    return this.init(parameters && parameters.productId, parameters && parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
+    return this.init(parameters && parameters.productId, parameters &&
+    parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
   },
   methods: {
+    closeProduct() {
+      window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
+    },
     closeMenu() {
       this.showMenu = false;
     },
@@ -557,6 +578,7 @@ export default {
     },
     buyProduct(product) {
       this.selectedProduct = product;
+      window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/${product.id}`);
       this.$refs.buyModal.open();
     },
     displaySettingsModal() {
