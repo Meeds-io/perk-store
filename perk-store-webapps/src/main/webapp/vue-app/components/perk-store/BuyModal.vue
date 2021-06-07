@@ -15,26 +15,14 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-dialog
-    v-model="dialog"
-    content-class="uiPopup with-overflow"
-    class="buyProductModal"
-    width="500px"
-    max-width="100vw"
-    persistent
-    eager
-    @keydown.esc="close">
-    <v-card class="elevation-12">
-      <div class="ignore-vuetify-classes popupHeader ClearFix">
-        <a
-          class="uiIconClose pull-right"
-          aria-hidden="true"
-          @click="close">
-        </a>
-        <span class="ignore-vuetify-classes PopupTitle popupTitle text-truncate">
-          {{ $t('exoplatform.perkstore.title.buyProductModal', {0: product && product.title}) }}
-        </span>
-      </div>
+  <exo-drawer
+    ref="BuyModalDrawer"
+    right
+    @closed="onCloseDrawer">
+    <template slot="title">
+      {{ $t('exoplatform.perkstore.title.buyProductModal', {0: product && product.title}) }}
+    </template>
+    <template slot="content">
       <perk-store-buy-form
         ref="buyForm"
         :product="product"
@@ -42,11 +30,29 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         :need-password="needPassword"
         :wallet-loading="walletLoading"
         :wallet-enabled="walletEnabled"
-        :opened="dialog"
-        @ordered="dialog = false;$emit('ordered', $event)"
+        @ordered="$emit('ordered', $event)"
         @close="close" />
-    </v-card>
-  </v-dialog>
+    </template>
+    <template slot="footer">
+      <div class="d-flex mr-2">
+        <v-spacer />
+        <button
+          :loading="loadingAction()"
+          class="ignore-vuetify-classes btn me-1"
+          @click="close">
+          {{ $t('exoplatform.perkstore.button.cancel') }}
+        </button>
+        <v-btn
+          :disabled="disableButton()"
+          :loading="loadingAction()"
+          class="primary me-1"
+          large
+          @click="buyProduct">
+          {{ $t('exoplatform.perkstore.button.buy') }}
+        </v-btn>
+      </div>
+    </template>
+  </exo-drawer>
 </template>
 
 <script>
@@ -88,23 +94,25 @@ export default {
       dialog: false,
     };
   },
-  watch: {
-    dialog() {
-      if (this.dialog) {
-        this.$refs.buyForm.init();
-      } else {
-        this.$emit('closed');
-      }
-    },
-  },
   methods: {
+    loadingAction() {
+      return this.$refs.buyForm && this.$refs.buyForm.loading;
+    },
+    disableButton() {
+      return this.$refs.buyForm && this.$refs.buyForm.disablePayButton;
+    },
+    buyProduct(event) {
+      this.$refs.buyForm.payProduct(event);
+    },
     open() {
-      this.dialog = true;
+      this.$refs.BuyModalDrawer.open();
+    },
+    onCloseDrawer() {
+      this.$emit('closeProductDetails');
     },
     close() {
-      if (!this.loading) {
-        this.dialog = false;
-      }
+      this.$emit('closeProductDetails');
+      this.$refs.BuyModalDrawer.close();
     },
   },
 };
