@@ -388,9 +388,8 @@ export default {
         this.product.orderPeriodicity = 'none';
       }
       return saveProduct(this.product)
-        .then((product) => {
-          this.$emit('saved', product);
-        }).then(() =>{
+        .then(() =>{
+          this.$emit('refreshProduct');
           this.close();
           this.product = {};
         })
