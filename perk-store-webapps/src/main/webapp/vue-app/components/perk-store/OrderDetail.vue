@@ -29,7 +29,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             display-avatar />
         </div>
         <v-spacer />
-        <i v-if="orderCheckIn" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
+        <i v-if="!orderCheckIn" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
         <i v-else class="uiIconEcmsCheckIn orderDetailCheckInUiIcons"></i>
       </v-card-title>
       <v-divider />
@@ -47,7 +47,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </h4>
           </v-list-item-content>
           <v-list-item-content class="align-end">
-            <template v-if="orderCheckIn">
+            <template v-if="!orderCheckIn">
               <select
                 v-model="order.status"
                 class="small my-auto me-2 ignore-vuetify-classes"
@@ -116,7 +116,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
               <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
             </div>
-            <template v-else-if="orderCheckIn">
+            <template v-else-if="userData && userData.canEdit">
               <button
                 v-if="isOrdered"
                 class="ignore-vuetify-classes btn orderProcessingBtn"
@@ -186,6 +186,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script>
 import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 import {formatDateTime} from '../../js/PerkStoreSettings.js';
+import {getProduct} from '../../js/PerkStoreProduct.js';
+
 
 export default {
   props: {
@@ -213,6 +215,7 @@ export default {
       // Attention: Used to close modal only when refunding process
       // is finished
       refunding: false,
+      orderProduct: {},
       statusList: [
         'ORDERED',
         'CANCELED',
@@ -230,7 +233,7 @@ export default {
       return this.order.deliveredDate ? '' : 'justify-center';
     },
     orderCheckIn() {
-      return this.order.sender.id !== eXo.env.portal.userName ;
+      return this.order.sender.id === eXo.env.portal.userName ;
     },
     orderAmount() {
       return (this.order && this.order.amount && toFixed(this.order.amount)) || 0;
@@ -265,7 +268,8 @@ export default {
       return (this.product && this.product.title) || (this.order && this.order.productTitle) || '';
     },
     userData() {
-      return (this.product && this.product.userData) || {};
+      this.getProductById();
+      return (this.orderProduct && this.orderProduct.userData) || {};
     },
     createdDateLabel() {
       return formatDateTime(this.order.createdDate);
@@ -345,6 +349,13 @@ export default {
           console.error('Error saving status', e);
           this.$emit('error', e && e.message ? e.message : String(e));
         });
+    },
+    getProductById() {
+      getProduct(this.order.productId).then((product) => {
+        if (product){
+          this.orderProduct = product;
+        }
+      });
     },
   }
 };
