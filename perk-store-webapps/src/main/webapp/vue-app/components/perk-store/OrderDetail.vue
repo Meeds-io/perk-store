@@ -188,7 +188,6 @@ import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 import {formatDateTime} from '../../js/PerkStoreSettings.js';
 import {getProduct} from '../../js/PerkStoreProduct.js';
 
-
 export default {
   props: {
     product: {
@@ -355,6 +354,9 @@ export default {
         if (product){
           this.orderProduct = product;
         }
+      }).catch(e => {
+        console.error('Error getting product', e);
+        this.$emit('error', e && e.message ? e.message : String(e));
       });
     },
   }
