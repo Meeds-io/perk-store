@@ -17,7 +17,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template>
   <v-hover v-if="order" class="orderDetailParent">
     <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 1}`">
-      <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1 orderCardTitle">
+      <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1 orderCardTitle no-wrap">
         <div class="text-truncate orderDetailText">
           <perk-store-profile-link
             v-if="order.sender"
@@ -112,26 +112,26 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-list-item
           class="orderProcessingContent orderCardSubtitle"
           :class="orderProcessingClass">
-          <div class="no-wrap align-start">
+          <div class="no-wrap">
             <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
               <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
             </div>
             <template v-else-if="userData && userData.canEdit">
               <button
                 v-if="isOrdered"
-                class="ignore-vuetify-classes btn orderProcessingBtn"
+                class="ignore-vuetify-classes btn orderProcessingBtn text-truncate"
                 @click="changeStatus('CANCELED')">
                 {{ $t('exoplatform.perkstore.button.cancel') }}
               </button>
               <button
                 v-if="canDeliverOrder"
-                class="ignore-vuetify-classes btn btn-primary orderProcessingBtn ms-1"
+                class="ignore-vuetify-classes btn btn-primary orderProcessingBtn text-truncate me-1 ms-1"
                 @click="$refs.deliverModal.openNoSelection()">
                 {{ $t('exoplatform.perkstore.button.deliver') }}
               </button>
               <button
                 v-if="canRefundOrder"
-                class="ignore-vuetify-classes btn orderProcessingBtn ms-1"
+                class="ignore-vuetify-classes btn orderProcessingBtn text-truncate text-truncate me-1 ms-1"
                 @click="$refs.refundModal.open()">
                 {{ $t('exoplatform.perkstore.button.refund') }}
               </button>
@@ -265,7 +265,7 @@ export default {
       return (this.order && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.order.productId}`) || '#';
     },
     productTitle() {
-      return (this.product && this.product.title) || (this.order && this.order.productTitle) || '';
+      return (this.orderProduct && this.orderProduct.title) || (this.order && this.order.productTitle) || '';
     },
     userData() {
       this.getProductById();
