@@ -30,7 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </v-flex>
       <v-row v-if="product.description">
         <div class="d-flex flex-column pl-4 pb-2">
-          <label class="mb-1 font-weight-bold">{{ $t('exoplatform.perkstore.label.Description') }}:</label>
+          <label class="mb-1 font-weight-bold">{{ $t('exoplatform.perkstore.label.productDescription') }}:</label>
           <div class="font-weight-regular">{{ product.description }}</div>
         </div>
       </v-row>
@@ -68,7 +68,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               :avatar-url="`/portal/rest/v1/social/users/${product.creator.id}/avatar`"
               :title="product.creator.displayName"
               :size="25"
-              :url="null"
+              :url="getUrlProfile"
               class="pr-2" />
           </v-row>
           <v-row>
@@ -81,7 +81,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               :rules="quantityRules"
               append-icon="fa-plus"
               prepend-inner-icon="fa-minus"
-              class="text-center pt-1 quantity"
+              class="text-center pt-1 quantity perkStoreTextField"
               name="quantity"
               required
               @click:prepend-inner="decrementQuantity"
@@ -124,7 +124,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :type="walletPasswordShow ? 'text' : 'password'"
           :disabled="loading"
           :rules="requiredRule"
-          :label="$t('exoplatform.perkstore.label.walletPassword')"
           :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
           name="walletPassword"
           autocomplete="current-passord"
@@ -206,6 +205,9 @@ export default {
     };
   },
   computed: {
+    getUrlProfile() {
+      return this.product && this.product.creator && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/profile/${this.product.creator.id}`;
+    },
     productImage() {
       return this.product && this.product.imageFiles && this.product.imageFiles[0] && this.product.imageFiles[0].src;
     },

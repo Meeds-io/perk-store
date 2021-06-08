@@ -103,7 +103,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       right: 12px ~'!important; /** orientation=rt */ ';
     }
   }
-  .perkStoreFilter {
+  .perkStoreTextField {
     .v-input__control > .v-input__slot:before {
       border-color: rgba(0, 0, 0, 0.25) !important;
     }
@@ -916,9 +916,19 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     background-color: @disabledBackgroundButtonDefault !important;
     pointer-events: auto !important;
   }
+  .titleBuyProductDrawer {
+    display: inline;
+    white-space: nowrap ;
+    overflow: hidden ;
+    text-overflow: ellipsis ;
+  }
   #buyFormProduct {
     .quantity {
       max-width: 80%;
+      .v-icon.v-icon {
+        font-size: 12px !important;
+      }
+      color: rgba(0, 0, 0, 0.25) !important;
     }
     .priceSymbol {
       color: @errorColor;
