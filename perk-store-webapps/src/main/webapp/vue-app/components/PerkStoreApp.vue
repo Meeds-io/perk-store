@@ -57,7 +57,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   prepend-inner-icon="fa-filter"
                   single-line
                   hide-details
-                  class="pa-0 ml-3 mr-3 mb-2 perkStoreFilter" />
+                  class="pa-0 ml-3 mr-3 mb-2 perkStoreTextField" />
                 <v-menu
                   v-model="showMenu"
                   offset-y>
@@ -186,7 +186,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     prepend-inner-icon="fa-filter"
                     single-line
                     hide-details
-                    class="pa-0 ml-3 mr-3 my-auto perkStoreFilter" />
+                    class="pa-0 ml-3 mr-3 my-auto perkStoreTextField" />
                   <v-progress-circular
                     v-show="searchLoading"
                     color="primary"
@@ -335,7 +335,11 @@ export default {
             getProduct(productId).then(freshProduct => {
               if (freshProduct) {
                 this.selectedProduct = freshProduct;
-                this.$refs.buyModal.open();
+                if (this.selectedProduct.creator.id === eXo.env.portal.userName) {
+                  window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
+                } else {
+                  this.$refs.buyModal.open();
+                }
               }
             }).catch(() => {
               window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
@@ -401,7 +405,11 @@ export default {
   },
   methods: {
     closeProduct() {
-      window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
+      const currentUrl = window.location.pathname;
+      const defaultUrl = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`;
+      if (currentUrl.includes(defaultUrl)) {
+        window.history.pushState('perkstore', 'My perkstore', defaultUrl);
+      }
     },
     closeMenu() {
       this.showMenu = false;

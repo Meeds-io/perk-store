@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     right
     @closed="onCloseDrawer">
     <template slot="title">
-      {{ $t('exoplatform.perkstore.title.buyProductModal', {0: product && product.title}) }}
+      <div class="titleBuyProductDrawer">{{ product.title }}</div>
     </template>
     <template slot="content">
       <perk-store-buy-form
@@ -108,6 +108,7 @@ export default {
       this.$refs.BuyModalDrawer.open();
     },
     onCloseDrawer() {
+      this.$refs.buyForm.init();
       this.$emit('closeProductDetails');
     },
     close() {
