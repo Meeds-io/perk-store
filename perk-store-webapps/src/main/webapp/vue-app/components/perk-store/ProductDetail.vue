@@ -76,7 +76,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </v-carousel>
       <v-card-text
         v-if="!hideButtons"
-        :class="!cantBuyProduct ? 'clickable ':''"
+        :class="cardTextClass"
         class="pt-2 pendingCard pb-0"
         v-on="!cantBuyProduct && !userData.notProcessedOrders ? { click: displayBuyModal } : {}">
         <div
@@ -113,7 +113,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-btn>
       </v-card-text>
       <div
-        :class="!cantBuyProduct ? 'clickable':''"
+        :class="cardTextClass"
         class="pt-4"
         v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
         <v-card-text
@@ -192,6 +192,9 @@ export default {
     showMenu: false
   }),
   computed: {
+    cardTextClass() {
+      return this.cantBuyProduct ? '' : 'clickable ';
+    },
     cantBuyProduct() {
       return (this.disabledBuy || !this.walletEnabled || this.walletLoading) || !this.displayBuyButton;
     },
