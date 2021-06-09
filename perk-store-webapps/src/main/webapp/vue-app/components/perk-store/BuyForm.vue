@@ -68,7 +68,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               :avatar-url="`/portal/rest/v1/social/users/${product.creator.id}/avatar`"
               :title="product.creator.displayName"
               :size="25"
-              :url="getUrlProfile"
+              :url="getUrl"
               avatar-class="border-color"
               class="buyFormMarchant" />
           </v-row>
@@ -206,8 +206,17 @@ export default {
     };
   },
   computed: {
-    getUrlProfile() {
-      return this.product && this.product.creator && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/profile/${this.product.creator.id}`;
+    getUrl() {
+      if (this.product.creator.type === 'user') {
+        return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/profile/${this.product.creator.id}`;
+      } else if (this.product.creator.spaceId && this.product.creator.spaceId !== 0) {
+        let groupId = this.product.creator.spaceURLId;
+        if (groupId) {
+          groupId = groupId.replace(/\//g, ':');
+          return `${eXo.env.portal.context}/g/${groupId}/`;
+        }
+      }
+      return '';
     },
     productImage() {
       return this.product && this.product.imageFiles && this.product.imageFiles[0] && this.product.imageFiles[0].src;
