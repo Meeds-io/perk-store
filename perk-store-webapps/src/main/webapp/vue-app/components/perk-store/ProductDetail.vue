@@ -76,7 +76,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </v-carousel>
       <v-card-text
         v-if="!hideButtons"
-        class="pt-2 pendingCard"
+        :class="cardTextClass"
+        class="pt-2 pendingCard pb-0"
         v-on="!cantBuyProduct && !userData.notProcessedOrders ? { click: displayBuyModal } : {}">
         <div
           v-if="!hidePending"
@@ -111,10 +112,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-icon>fa-shopping-cart</v-icon>
         </v-btn>
       </v-card-text>
-      <div class="footerCardProduct" v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
+      <div
+        :class="cardTextClass"
+        class="pt-4"
+        v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
         <v-card-text
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
-          class="pb-0 clickable productCardTitleParent">
+          class="pb-0 productCardTitleParent">
           <span :title="product.title">{{ product.title }}</span>
         </v-card-text>
         <v-card-text
@@ -188,6 +192,9 @@ export default {
     showMenu: false
   }),
   computed: {
+    cardTextClass() {
+      return this.cantBuyProduct ? '' : 'clickable ';
+    },
     cantBuyProduct() {
       return (this.disabledBuy || !this.walletEnabled || this.walletLoading) || !this.displayBuyButton;
     },
