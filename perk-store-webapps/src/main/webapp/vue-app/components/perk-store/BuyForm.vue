@@ -69,7 +69,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               :title="product.creator.displayName"
               :size="25"
               :url="getUrlProfile"
-              class="pr-2" />
+              avatar-class="border-color"
+              class="buyFormMarchant" />
           </v-row>
           <v-row>
             <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.QuantityToBuy') }}:</label>

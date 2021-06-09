@@ -405,7 +405,11 @@ export default {
   },
   methods: {
     closeProduct() {
-      window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
+      const currentUrl = window.location.pathname;
+      const defaultUrl = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`;
+      if (currentUrl.includes(defaultUrl)) {
+        window.history.pushState('perkstore', 'My perkstore', defaultUrl);
+      }
     },
     closeMenu() {
       this.showMenu = false;
