@@ -128,7 +128,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :placeholder="$t('exoplatform.perkstore.label.walletPasswordPlaceholder')"
           name="walletPassword"
           autocomplete="current-passord"
-          class="passwordWallet"
+          class="passwordWallet pt-0"
           required
           autofocus
           color="grey darken-4"
