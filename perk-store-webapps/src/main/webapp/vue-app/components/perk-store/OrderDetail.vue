@@ -138,12 +138,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <perk-store-deliver-modal
                 v-if="canDeliverOrder"
                 ref="deliverModal"
-                :product="product"
+                :product="orderProduct"
                 :order="order" />
               <perk-store-refund-modal
                 v-if="canRefundOrder"
                 ref="refundModal"
-                :product="product"
+                :product="orderProduct"
                 :order="order"
                 :symbol="symbol"
                 @refunding="refunding = true"
