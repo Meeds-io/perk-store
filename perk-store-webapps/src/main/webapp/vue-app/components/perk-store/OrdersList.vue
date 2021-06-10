@@ -50,7 +50,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <div
             v-for="item in filteredOrders"
             :key="item.id"
-            class="flex perkStoreDetailContent border-box-sizing xs12 sm4 md3">
+            class="flex perkStoreDetailContent border-box-sizing">
             <perk-store-order-detail
               :ref="`orderDetail${item.id}`"
               :order="item"
@@ -162,7 +162,7 @@ export default {
       }
     },
     displayLoadMoreButton() {
-      return this.limitReached && this.orders.length && this.orders.length % this.pageSize === 0;
+      return !this.limitReached && this.orders.length && this.orders.length % this.pageSize === 0;
     }
   },
   watch: {
@@ -201,7 +201,9 @@ export default {
           return this.$nextTick();
         })
         .then(() => {
-          this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
+          if (this.limitReached){
+            this.limitReached = this.orders.length <= initialOrdersLength || this.orders.length < this.limit;
+          }
         })
         .catch(e => {
           console.error('Error while listing orders', e);

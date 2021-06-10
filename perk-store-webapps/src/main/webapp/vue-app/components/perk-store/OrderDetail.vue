@@ -66,13 +66,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-divider />
         <v-list-item>
           <i class="uiIconDatePicker orderDetailUiIcons"></i>
-          <div :title="createdDateLabel" class="orderDetailText text-truncate">
+          <div :title="createdDateLabel" class="text-truncate">
             {{ createdDateLabel }}
           </div>
         </v-list-item>
         <v-list-item>
           <i class="uiIconTag orderDetailUiIcons"></i>
-          <div class="text-truncate orderDetailText">
+          <div class="text-truncate">
             {{ order.quantity }} x
             <a
               :href="productLink"
@@ -83,7 +83,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </div>
         </v-list-item>
         <v-list-item>
-          <div class="no-wrap text-truncate orderDetailText">
+          <div class="no-wrap text-truncate">
             <i class="uiIconCard orderDetailUiIcons"></i>
             <a
               v-if="transactionLink"
@@ -138,12 +138,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <perk-store-deliver-modal
                 v-if="canDeliverOrder"
                 ref="deliverModal"
-                :product="product"
+                :product="orderProduct"
                 :order="order" />
               <perk-store-refund-modal
                 v-if="canRefundOrder"
                 ref="refundModal"
-                :product="product"
+                :product="orderProduct"
                 :order="order"
                 :symbol="symbol"
                 @refunding="refunding = true"
@@ -158,7 +158,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </div>
           </div>
           <div v-if="order.deliveredDate" class="align-end">
-            <div :title="deliveredDateLabel" class=" text-truncate orderDeliveredDate ">
+            <div :title="deliveredDateLabel" class="text-truncate orderDeliveredDate ">
               {{ deliveredDateLabel }}
             </div>
           </div>
