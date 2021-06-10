@@ -177,22 +177,20 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     <span class="textBalance titleOrders">{{ $t('exoplatform.perkstore.label.balance') }}: {{ symbol }} {{ balance }}</span>
                   </div>
                 </div>
-                <div class="spacer">
+                <div class="spacer spacerOrder">
                 </div>
-                <div class="filterOrders">
-                  <v-text-field
-                    v-model="searchOrder"
-                    :placeholder="$t('exoplatform.perkstore.label.orderSearchPlaceholder')"
-                    prepend-inner-icon="fa-filter"
-                    single-line
-                    hide-details
-                    class="pa-0 ml-3 mr-3 my-auto perkStoreTextField" />
-                  <v-progress-circular
-                    v-show="searchLoading"
-                    color="primary"
-                    class="mb-2 ma-auto"
-                    indeterminate />
-                </div>
+                <v-text-field
+                  v-model="searchOrder"
+                  :placeholder="$t('exoplatform.perkstore.label.orderSearchPlaceholder')"
+                  prepend-inner-icon="fa-filter"
+                  single-line
+                  hide-details
+                  class="pa-0 ml-3 mr-3 mb-2 perkStoreTextField filterOrders" />
+                <v-progress-circular
+                  v-show="searchLoading"
+                  color="primary"
+                  class="mb-2 ma-auto"
+                  indeterminate />
                 <div class="download">
                   <v-btn
                     v-if="displayProductOrders"
