@@ -40,7 +40,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       cache-items
       dense
       flat
-      @update:search-input="searchTerm = $event">
+      @update:search-input="searchTerm = $event"
+      @click.stop>
       <template slot="no-data">
         <v-list-item>
           <v-list-item-title v-if="noDataLabel">
@@ -241,6 +242,13 @@ export default {
       if (item) {
         item.id_type = `${item.type}_${item.id}`;
         this.currentUserItem = item;
+      }
+    });
+  },
+  mounted() {
+    window.addEventListener('click',() => {
+      if (this.$refs.selectAutoComplete) {
+        this.$refs.selectAutoComplete.blur();
       }
     });
   },
