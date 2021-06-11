@@ -108,7 +108,7 @@ export default {
       this.$refs.BuyModalDrawer.open();
     },
     onCloseDrawer() {
-      this.$refs.buyForm.init();
+      this.$refs.buyForm.quantity = 1;
       this.$emit('closeProductDetails');
     },
     close() {
