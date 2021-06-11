@@ -18,7 +18,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <exo-drawer
     ref="productFormDrawer"
     allow-expand
-    right>
+    right
+    @closed="onCloseDrawer">
     <template slot="title">
       {{ product && product.id ? $t('exoplatform.perkstore.button.editProduct', {0: product.title}) : $t('exoplatform.perkstore.label.addNewProduct') }}
     </template>
@@ -281,6 +282,11 @@ export default {
     },
   },
   methods: {
+    onCloseDrawer() {
+      if (Object.keys(this.product).length !== 0) {
+        this.$emit('closeDrawer');
+      }
+    },
     close(){
       this.$refs.productFormDrawer.close();
     },
