@@ -110,8 +110,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <v-divider />
       <v-list dense class="orderProcessingDetails ">
         <v-list-item
-          class="orderProcessingContent orderCardSubtitle"
-          :class="orderProcessingClass">
+          class="orderProcessingContent orderCardSubtitle justify-center">
           <div class="no-wrap">
             <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
               <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
@@ -155,11 +154,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </div>
             <div v-else>
               <v-icon class="orange--text me-1" size="16">far fa-clock</v-icon>PENDING
-            </div>
-          </div>
-          <div v-if="order.deliveredDate" class="align-end">
-            <div :title="deliveredDateLabel" class="text-truncate orderDeliveredDate ">
-              {{ deliveredDateLabel }}
             </div>
           </div>
         </v-list-item>
@@ -228,9 +222,6 @@ export default {
     };
   },
   computed: {
-    orderProcessingClass() {
-      return this.order.deliveredDate ? '' : 'justify-center';
-    },
     orderCheckIn() {
       return this.order.sender.id === eXo.env.portal.userName ;
     },
