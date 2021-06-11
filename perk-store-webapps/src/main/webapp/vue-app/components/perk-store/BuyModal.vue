@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     right
     @closed="onCloseDrawer">
     <template slot="title">
-      <div class="titleBuyProductDrawer">{{ product.title }}</div>
+      <div class="titleBuyProductDrawer">{{ product && product.title }}</div>
     </template>
     <template slot="content">
       <perk-store-buy-form
@@ -104,11 +104,11 @@ export default {
     buyProduct(event) {
       this.$refs.buyForm.payProduct(event);
     },
-    open() {
-      this.$refs.BuyModalDrawer.open();
+    async open() {
+      await this.$refs.BuyModalDrawer.open();
+      this.$refs.buyForm.quantity = 1;
     },
     onCloseDrawer() {
-      this.$refs.buyForm.init();
       this.$emit('closeProductDetails');
     },
     close() {

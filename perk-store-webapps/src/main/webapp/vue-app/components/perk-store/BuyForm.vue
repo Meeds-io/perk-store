@@ -28,7 +28,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           {{ error }}
         </div>
       </v-flex>
-      <v-row v-if="product.description">
+      <v-row v-if="product && product.description">
         <div class="d-flex flex-column pl-4 pb-2">
           <label class="mb-1 font-weight-bold">{{ $t('exoplatform.perkstore.label.productDescription') }}:</label>
           <div class="font-weight-regular">{{ product.description }}</div>
