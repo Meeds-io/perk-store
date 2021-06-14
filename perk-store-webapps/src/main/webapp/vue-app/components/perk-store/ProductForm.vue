@@ -107,7 +107,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 required />
 
               <perk-store-upload-input
-                :max-files="5"
+                :max-files="3"
                 :max-uploads-size-in-mb="5"
                 :files="product.imageFiles" />
 
