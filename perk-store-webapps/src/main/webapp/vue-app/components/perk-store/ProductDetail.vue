@@ -199,10 +199,22 @@ export default {
       return (this.disabledBuy || !this.walletEnabled || this.walletLoading) || !this.displayBuyButton;
     },
     buyButtonClass(){
-      return this.displayBuyButton ? 'btn btn-primary' : 'disabledBuyButton';
+      return !this.cantBuyProduct ? 'btn btn-primary' : 'disabledBuyButton';
     },
     buyButtonTitle(){
-      return this.displayBuyButton ? this.$t('exoplatform.perkstore.button.buy') : this.$t('exoplatform.perkstore.button.disabledBuyButton');
+      if (!this.walletEnabled ) {
+        return  '';
+      }  else if (this.product.creator.id === eXo.env.portal.userName){
+        return this.$t('exoplatform.perkstore.button.disabledBuyButton');
+      } else if (!this.product.enabled){
+        return  this.$t('exoplatform.perkstore.label.disabledProduct');
+      } else if (this.maxOrdersReached){
+        return this.$t('exoplatform.perkstore.label.maxOrdersIsReached', {0: this.product.maxOrdersPerUser, });
+      }  else if (!this.product.unlimited && !this.available){
+        return this.$t('exoplatform.perkstore.label.SoldOut');
+      } else {
+        return this.$t('exoplatform.perkstore.button.buy');
+      }
     },
     productCreatedDate() {
       return (this.product && this.product.createdDate && this.formatDate(new Date(this.product.createdDate))) || '';
