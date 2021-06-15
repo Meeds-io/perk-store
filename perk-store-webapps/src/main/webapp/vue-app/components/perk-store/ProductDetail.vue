@@ -145,12 +145,6 @@ export default {
         return '';
       },
     },
-    balance: {
-      type: Number,
-      default: function() {
-        return 0;
-      },
-    },
     walletLoading: {
       type: Boolean,
       default: function() {
@@ -202,7 +196,7 @@ export default {
       return this.cantBuyProduct ? '' : 'clickable ';
     },
     cantBuyProduct() {
-      return (this.disabledBuy || !this.walletEnabled || this.walletLoading) || !this.displayBuyButton || (this.product.price > this.balance);
+      return (this.disabledBuy || !this.walletEnabled || this.walletLoading) || !this.displayBuyButton;
     },
     buyButtonClass(){
       return !this.cantBuyProduct ? 'btn btn-primary' : 'disabledBuyButton';
@@ -216,7 +210,7 @@ export default {
         return  this.$t('exoplatform.perkstore.label.disabledProduct');
       } else if (this.maxOrdersReached){
         return this.$t('exoplatform.perkstore.label.maxOrdersIsReached', {0: this.product.maxOrdersPerUser, });
-      }  else if (this.product.price > this.balance){
+      }  else if (!this.product.unlimited && !this.available){
         return this.$t('exoplatform.perkstore.label.SoldOut');
       } else {
         return this.$t('exoplatform.perkstore.button.buy');
