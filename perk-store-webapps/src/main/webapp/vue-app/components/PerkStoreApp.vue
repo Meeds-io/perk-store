@@ -111,7 +111,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <v-flex class="text-center">
                   <div class="alert alert-warning">
                     <i class="uiIconWarning"></i>
-                    {{ walletWarning }}
+                    {{ walletWarning }}.
+                    <a :href="walletUri"> {{ $t('exoplatform.perkstore.label.clickHere') }} </a>
                   </div>
                 </v-flex>
                 <v-spacer />
@@ -238,7 +239,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <v-flex class="text-center">
                   <div class="alert alert-warning">
                     <i class="uiIconWarning"></i>
-                    {{ walletWarning }}
+                    {{ walletWarning }}.
+                    <a :href="walletUri"> {{ $t('exoplatform.perkstore.label.clickHere') }} </a>
                   </div>
                 </v-flex>
                 <v-spacer />
@@ -303,6 +305,7 @@ export default {
     createOrUpdateProductEvent: 'exo.perkstore.product.createOrModify',
     products: [],
     modifiedProducts: [],
+    walletUri: `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet`,
   }),
   computed: {
     balance() {
