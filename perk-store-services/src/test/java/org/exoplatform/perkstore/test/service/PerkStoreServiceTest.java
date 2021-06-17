@@ -1260,7 +1260,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     Mockito.when(uploadService.getUploadResource(Mockito.any())).thenAnswer(new Answer<UploadResource>() {
       @Override
       public UploadResource answer(InvocationOnMock invocation) throws Throwable {
-        String uploadId = invocation.getArgumentAt(0, String.class);
+        String uploadId = invocation.getArgument(0, String.class);
         UploadResource upResource = new UploadResource(uploadId);
         upResource.setFileName(uploadId);
         upResource.setMimeType("image/png");
