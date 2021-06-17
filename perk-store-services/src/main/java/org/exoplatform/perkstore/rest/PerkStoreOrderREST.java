@@ -29,8 +29,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
-import org.exoplatform.commons.search.rest.resource.CollectionResource;
-import org.exoplatform.commons.search.rest.resource.CollectionSizeResource;
 import org.exoplatform.perkstore.exception.PerkStoreException;
 import org.exoplatform.perkstore.model.OrderFilter;
 import org.exoplatform.perkstore.model.ProductOrder;
