@@ -305,11 +305,9 @@ export default {
     createOrUpdateProductEvent: 'exo.perkstore.product.createOrModify',
     products: [],
     modifiedProducts: [],
+    walletUri: `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet`,
   }),
   computed: {
-    walletUri() {
-      return `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet`;
-    },
     balance() {
       return (this.wallet && this.wallet.tokenBalance && toFixed(this.wallet.tokenBalance)) || 0;
     },
