@@ -19,7 +19,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <v-container>
       <v-flex
         v-if="errors && errors.length > 0 && !loading"
-        xs12>
+        class="errorContainer">
         <div
           v-for="error in errors"
           :key="error"
