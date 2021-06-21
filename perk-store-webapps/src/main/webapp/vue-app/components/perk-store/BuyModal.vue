@@ -106,7 +106,7 @@ export default {
     },
     async open() {
       await this.$refs.BuyModalDrawer.open();
-      this.$refs.buyForm.quantity = 1;
+      this.$refs.buyForm.init();
     },
     onCloseDrawer() {
       this.$emit('closeProductDetails');
