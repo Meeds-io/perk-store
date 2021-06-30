@@ -231,18 +231,19 @@ export default {
         });
     },
     searchOrdersFromServer() {
+      const self = this;
       return this.$nextTick()
         .then(() => {
-          const searchMore = !this.limitReached && this.filteredOrders.length < this.initialLimit;
+          const searchMore = !self.limitReached && self.filteredOrders.length > self.initialLimit;
           if (searchMore) {
-            return this.increaseLimitAndloadMore(true);
+            return self.increaseLimitAndloadMore(true);
           }
         })
-        .then(() => this.$nextTick())
+        .then(() => self.$nextTick())
         .then(() => {
-          const searchMore = !this.limitReached && this.filteredOrders.length < this.initialLimit;
+          const searchMore = !self.limitReached && self.filteredOrders.length > self.initialLimit;
           if (searchMore) {
-            return this.searchOrdersFromServer();
+            return self.searchOrdersFromServer();
           }
         });
     },
@@ -323,18 +324,12 @@ export default {
       Object.assign(order, newOrder);
     },
     loadMore() {
-      if (this.search) {
-        this.initialLimit += this.pageSize;
-        this.limit = Math.max(this.limit, this.initialLimit);
-        return this.filterOrdersByFullTextSearchField();
-      } else {
-        return this.increaseLimitAndloadMore();
-      }
+      return this.increaseLimitAndloadMore();
     },
     increaseLimitAndloadMore(usingSearch) {
       this.limit += this.pageSize;
       if (!usingSearch) {
-        this.initalLimit = this.limit;
+        this.initialLimit = this.limit;
       }
       return this.init(this.currentUserOrders);
     },
