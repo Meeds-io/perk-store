@@ -323,18 +323,12 @@ export default {
       Object.assign(order, newOrder);
     },
     loadMore() {
-      if (this.search) {
-        this.initialLimit += this.pageSize;
-        this.limit = Math.max(this.limit, this.initialLimit);
-        return this.filterOrdersByFullTextSearchField();
-      } else {
-        return this.increaseLimitAndloadMore();
-      }
+      return this.increaseLimitAndloadMore();
     },
     increaseLimitAndloadMore(usingSearch) {
       this.limit += this.pageSize;
       if (!usingSearch) {
-        this.initalLimit = this.limit;
+        this.initialLimit = this.limit;
       }
       return this.init(this.currentUserOrders);
     },
