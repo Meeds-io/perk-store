@@ -16,7 +16,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
   <v-hover v-if="order" class="orderDetailParent">
-    <v-card slot-scope="{ hover }" :class="`elevation-${hover ? 9 : 1}`">
+    <v-card>
       <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1 orderCardTitle no-wrap">
         <div class="text-truncate orderDetailText">
           <perk-store-profile-link
