@@ -131,6 +131,12 @@ export default {
         return '';
       },
     },
+    filterOrder: {
+      type: String,
+      default: function() {
+        return 'all';
+      },
+    },
   },
   data() {
     return {
@@ -155,8 +161,12 @@ export default {
       const order = this.selectedOrderId && this.orders.find(order => order && order.id === this.selectedOrderId);
       if (order) {
         return [order];
-      } else if (this.search) {
+      } else if (this.search && this.filterOrder === 'all') {
         return this.orders.filter(order => order.sender && order.sender.displayName && order.sender.displayName.toLowerCase().indexOf(this.search.trim().toLowerCase()) >= 0).slice(0, this.initialLimit);
+      } else if (this.filterOrder === 'purchase') {
+        return this.orders.filter(order => order.sender && order.sender.id && order.sender.id === eXo.env.portal.userName && (!this.search || order.sender.displayName.toLowerCase().indexOf(this.search.trim().toLowerCase()) >= 0)).slice(0, this.initialLimit);
+      } else if (this.filterOrder === 'sale') {
+        return this.orders.filter(order => order.sender && order.sender.id && order.sender.id !== eXo.env.portal.userName && (!this.search || order.sender.displayName.toLowerCase().indexOf(this.search.trim().toLowerCase()) >= 0)).slice(0, this.initialLimit);
       } else {
         return this.orders.slice(0, this.limit);
       }
