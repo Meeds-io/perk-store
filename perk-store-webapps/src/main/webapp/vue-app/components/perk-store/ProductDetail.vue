@@ -17,7 +17,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template>
   <v-flex class="perkStoreDetailContent">
     <v-card
-      :class="hideElevation && 'productDetailContentCard' || `elevation-${hover ? 9 : 1} productDetailContentCard`"
+      class="productDetailContentCard"
       :max-width="cardHeight">
       <v-carousel
         :show-arrows="false"
