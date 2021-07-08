@@ -36,15 +36,34 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       }
 
       .filterOrders {
-        width: 20%;
+        width: max-content;
+      }
+
+      .orderMenu {
+        width: max-content;
       }
 
       .download {
-        width: 5%;
+        width: max-content;
       }
 
       .filterList {
-        width: 5%;
+        width: max-content;
+        .btn{
+          border: 1px solid @tertiaryColor !important;
+          color: @tertiaryColor !important;
+        }
+        .filterOrdersSetting {
+          .uiIconFilterSetting {
+            font-family: "PLF-FONT-ICONS" !important;
+            font-style: normal;
+            font-size: 16px;
+            color: @tertiaryColor;
+            &:before {
+              content: "\eaf2";
+            }
+          }
+        }
       }
     }
   }
@@ -544,14 +563,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
   .productOrderFilter {
     margin-top: 1px !important;
-    margin-left: 10px ~'; /** orientation=lt */ ';
-    margin-right: 10px ~'; /** orientation=rt */ ';
-    border-left: 1px solid @darkGrey ~'; /** orientation=lt */ ';
-    border-right: 1px solid @darkGrey ~'; /** orientation=rt */ ';
     min-width: 340px;
     top: 81px;
     overflow: hidden;
+    box-shadow: none;
     max-width: ~"calc(100vw - 20px)";
+    .v-toolbar {
+      box-shadow: none;
+      font-weight: bold;
+    }
   }
 
   .productOrderFilterHeader {
@@ -560,7 +580,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   .productOrderFilterContent {
     height: auto;
     overflow: hidden;
-    padding: 0 0 30px 30px;
+    padding: 0 30px;
   }
 
   .productOrdersParent {
@@ -951,7 +971,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       }
     }
   }
-
 @media (min-width : @smallMobileWidth) and (max-width : @maxMobileWidth){
   #PerkStoreApp {
     .buyButton{
