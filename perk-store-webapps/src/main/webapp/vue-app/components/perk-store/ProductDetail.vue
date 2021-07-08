@@ -37,13 +37,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               color="transparent"
               class="toolbarCard"
               flat>
-              <v-btn
-                icon
-                small
-                :title="$t('exoplatform.perkstore.button.productInfo')"
-                class="peopleInfoIcon productCardAction d-flex">
-                <v-icon size="12">fa-info</v-icon>
-              </v-btn>
               <v-spacer />
               <v-menu
                 v-if="userData.canEdit"
