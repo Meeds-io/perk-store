@@ -170,7 +170,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <v-toolbar
                 color="transparent"
                 flat
-                class="pa-4 toolbarOrders">
+                class="px-8 toolbarOrders">
                 <div class="mt-4 boxTitle">
                   <div v-if="displayProductOrders && selectedProduct && selectedOrderId" class="titleOrders">
                     <span class="ms-2">{{ $t('exoplatform.perkstore.title.order') }} #{{ selectedOrderId }}</span> : <span class="ms-2">{{ selectedProduct.title }}</span>
@@ -196,30 +196,44 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   color="primary"
                   class="mb-2 ma-auto"
                   indeterminate />
-                <v-menu
-                  v-model="showOrderMenu"
-                  offset-y>
-                  <template v-slot:activator="{ on }">
-                    <button
-                      class="btn"
-                      v-on="on"
-                      @blur="closeOrderMenu">
-                      {{ filterOrderLabel }}
-                      <i class="uiIconMiniArrowDown uiIconLightGray"></i>
-                    </button>
-                  </template>
-                  <v-list>
-                    <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-title class="filterLabel" @click="filterOrder ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-title class="filterLabel" @click="filterOrder ='purchase'">{{ $t('exoplatform.perkstore.label.purchase') }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-title class="filterLabel" @click="filterOrder ='sale'"> {{ $t('exoplatform.perkstore.label.sale') }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <div class="orderMenu px-2">
+                  <v-menu
+                    v-model="showOrderMenu"
+                    offset-y>
+                    <template v-slot:activator="{ on }">
+                      <button
+                        class="btn"
+                        v-on="on"
+                        @blur="closeOrderMenu">
+                        {{ filterOrderLabel }}
+                        <i class="uiIconMiniArrowDown uiIconLightGray"></i>
+                      </button>
+                    </template>
+                    <v-list>
+                      <v-list-item @mousedown="$event.preventDefault()">
+                        <v-list-item-title class="filterLabel" @click="filterOrder ='ALL'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @mousedown="$event.preventDefault()">
+                        <v-list-item-title class="filterLabel" @click="filterOrder ='SENT'">{{ $t('exoplatform.perkstore.label.purchase') }}</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @mousedown="$event.preventDefault()">
+                        <v-list-item-title class="filterLabel" @click="filterOrder ='RECEIVED'"> {{ $t('exoplatform.perkstore.label.sale') }}</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </div>
+                <div class="filterList px-2">
+                  <button
+                    class="btn filterOrdersSetting"
+                    v-on="on"
+                    outlined
+                    @click="showFilters">
+                    <i class="uiIcon uiIconFilterSetting pr-3"></i>
+                    <span>
+                      {{ $t('exoplatform.perkstore.button.filter') }}
+                    </span>
+                  </button>
+                </div>
                 <div class="download" v-if="displayProductOrders">
                   <v-btn
                     id="perkStoreAppMenuDownloadButton"
@@ -229,18 +243,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     @click="exportOrders">
                     <v-icon>
                       fa-download
-                    </v-icon>
-                  </v-btn>
-                </div>
-                <div class="filterList">
-                  <v-btn
-                    id="perkStoreAppMenuDisplayFilterButton"
-                    :title="$t('exoplatform.perkstore.button.displayFilters')"
-                    icon
-                    text
-                    @click="showFilters">
-                    <v-icon color="primary">
-                      fa-filter
                     </v-icon>
                   </v-btn>
                 </div>
@@ -305,7 +307,7 @@ export default {
     newsStatusLabel: '',
     filterOrderLabel: '',
     filterProduct: '',
-    filterOrder: 'all',
+    filterOrder: 'ALL',
     tab: null,
     searchOrder: null,
     searchLoading: false,
@@ -403,11 +405,11 @@ export default {
       this.showMenu = false;
     },
     filterOrder() {
-      if (this.filterOrder === 'all') {
+      if (this.filterOrder === 'ALL') {
         this.filterOrderLabel = this.$t('exoplatform.perkstore.label.all');
-      } else if (this.filterOrder === 'purchase'){
+      } else if (this.filterOrder === 'SENT'){
         this.filterOrderLabel = this.$t('exoplatform.perkstore.label.purchase');
-      } else if (this.filterOrder === 'sale') {
+      } else if (this.filterOrder === 'RECEIVED') {
         this.filterOrderLabel = this.$t('exoplatform.perkstore.label.sale');
       }
       this.showOrderMenu = false;

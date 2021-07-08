@@ -21,23 +21,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     class="elevation-3 productOrderFilter"
     temporary
     absolute
-    width="380">
-    <v-toolbar dense>
+    width="380"
+    :right="rightDrawer"
+    :left="leftDrawer">
+    <v-toolbar color="transparent">
       <v-toolbar-title class="text-truncate">{{ $t('exoplatform.perkstore.label.filterOrders') }}</v-toolbar-title>
-      <v-spacer />
-      <v-btn
-        :title="$t('exoplatform.perkstore.button.search')"
-        icon
-        @click="searchOrders()">
-        <v-icon dark>search</v-icon>
-      </v-btn>
-      <v-btn
-        :title="$t('exoplatform.perkstore.button.save')"
-        icon
-        @click="saveOrderFilter">
-        <v-icon>fa-save</v-icon>
-      </v-btn>
     </v-toolbar>
+    <v-divider />
     <v-container grid-list-xl class="border-box-sizing pe-1 productOrderFilterContent">
       <v-layout wrap column>
         <h4><v-checkbox v-model="filter.searchInDates" :label="$t('exoplatform.perkstore.label.searchInDates')" /></h4>
@@ -77,6 +67,25 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </template>
       </v-layout>
     </v-container>
+    <template v-slot:append>
+      <v-divider />
+      <v-footer color="transparent" class="px-8 mb-2">
+        <v-btn
+          :title="$t('exoplatform.perkstore.button.cancel')"
+          class="btn"
+          large
+          @click="showFilters">
+          <span>{{ $t('exoplatform.perkstore.button.cancel') }}</span>
+        </v-btn>
+        <v-spacer />
+        <v-btn
+          :title="$t('exoplatform.perkstore.button.save')"
+          class="btn-primary"
+          @click="saveOrderFilter">
+          <span>{{ $t('exoplatform.perkstore.button.save') }}</span>
+        </v-btn>
+      </v-footer>
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -97,6 +106,14 @@ export default {
       display: false,
       selectedDate: null,
     };
+  },
+  computed: {
+    rightDrawer() {
+      return eXo.env.portal.orientation === 'ltr';
+    },
+    leftDrawer() {
+      return eXo.env.portal.orientation === 'rtl';
+    },
   },
   watch: {
     selectedDate() {
