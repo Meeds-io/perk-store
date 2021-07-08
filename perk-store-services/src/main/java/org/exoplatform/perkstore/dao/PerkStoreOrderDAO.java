@@ -251,11 +251,12 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
         }
         if (filter.getProductId() ==0 && filter.isMyOrders()) {
           if (filter.getOrdersType() == ProductOrderType.ALL) {
-            query.append(" o.senderId = ");
+            query.append("( o.senderId = ");
             query.append(identity.getId());
             query.append(OR_OPERATOR);
             query.append(" o.receiverId = ");
             query.append(identity.getId());
+            query.append(" )");
           }
           if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
             query.append(" o.receiverId = ");
