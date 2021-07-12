@@ -35,7 +35,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <div class="no-wrap text-truncate">
             {{ $t('exoplatform.perkstore.label.selectedFilter') }}:
             <v-chip v-for="filterDescription in filterDescriptionLabels" :key="filterDescription">
-              {{ $t(`exoplatform.perkstore.label.status.${filterDescription}`) }}
+              {{ $t(`exoplatform.perkstore.label.status.${filterDescription}`) }}   <template v-if="filterDescription == 'date'"> : {{ selectedDate }} </template>
             </v-chip>
           </div>
           <v-spacer />
@@ -150,6 +150,7 @@ export default {
       orders: [],
       newAddedOrders: [],
       initialLimit: 0,
+      selectedDate: '',
     };
   },
   computed: {
@@ -290,8 +291,8 @@ export default {
     computeDescriptionLabels() {
       this.filterDescriptionLabels = [];
       if (this.selectedOrdersFilter.searchInDates && this.selectedOrdersFilter.selectedDate) {
-        const dateString = formatDate(this.selectedOrdersFilter.selectedDate);
-        this.filterDescriptionLabels.push(`DATE: ${dateString}`);
+        this.selectedDate = formatDate(this.selectedOrdersFilter.selectedDate);
+        this.filterDescriptionLabels.push('date');
       }
       if (this.selectedOrdersFilter.notProcessed) {
         this.filterDescriptionLabels.push('notProcessed');
