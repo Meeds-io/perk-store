@@ -18,8 +18,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <exo-drawer
     ref="ordersFilterDrawer"
     class="productOrderFilter"
-    :right="!$vuetify.rtl"
-    width="380">
+    :right="!$vuetify.rtl">
     <template slot="title">
       <span class="mx-2"> {{ $t('exoplatform.perkstore.label.filterOrders') }} </span>
     </template>
