@@ -361,7 +361,7 @@ export default {
   },
   watch: {
     tab() {
-      if(this.tab === 0) {
+      if (this.tab === 0) {
         window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
       } else if (this.tab === 1) {
         window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`);
@@ -371,11 +371,11 @@ export default {
       if (!this.loading) {
         const urlPath = document.location.pathname;
         const productId = urlPath.split('products/')[1] ? urlPath.split('products/')[1].split(/[^0-9]/)[0] : null;
-        if(urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
+        if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
           this.tab = 0;
         } else if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`) {
           this.tab = 1;
-        } else if(productId) {
+        } else if (productId) {
           setTimeout( () => {
             if (productId && this.$refs.buyModal) {
               getProduct(productId).then(freshProduct => {
