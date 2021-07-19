@@ -65,6 +65,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </template>
     <template slot="footer">
       <div class="VuetifyApp flex d-flex">
+        <v-btn
+            class="reset"
+            @click="reset">
+          <template>
+            <i class="fas fa-redo"></i>
+            {{ $t('popup.reset') }}
+          </template>
+        </v-btn>
         <v-spacer />
         <v-btn
           :title="$t('exoplatform.perkstore.button.cancel')"
@@ -85,7 +93,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import {saveOrderFilter} from '../../js/PerkStoreSettings.js';
+import {getOrderFilter, saveOrderFilter} from '../../js/PerkStoreSettings.js';
 
 export default {
   props: {
@@ -126,6 +134,10 @@ export default {
     closeFilters() {
       this.$refs.ordersFilterDrawer.close();
     },
+    reset() {
+      this.$refs.ordersFilterDrawer.close();
+      this.filter = getOrderFilter();
+    }
   },
 };
 </script>
