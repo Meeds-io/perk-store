@@ -138,7 +138,6 @@ export default {
       this.$refs.ordersFilterDrawer.close();
     },
     reset() {
-      this.$refs.ordersFilterDrawer.close();
       this.filter = getOrderFilter();
     }
   },
