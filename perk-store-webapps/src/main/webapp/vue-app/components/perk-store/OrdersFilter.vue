@@ -66,8 +66,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <template slot="footer">
       <div class="VuetifyApp flex d-flex">
         <v-btn
-            class="reset"
-            @click="reset">
+          class="reset"
+          @click="reset">
           <template>
             <i class="fas fa-redo"></i>
             {{ $t('popup.reset') }}

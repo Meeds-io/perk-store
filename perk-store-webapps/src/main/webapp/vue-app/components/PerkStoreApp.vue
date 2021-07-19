@@ -360,26 +360,44 @@ export default {
     },
   },
   watch: {
+    tab() {
+      if (this.tab === 0) {
+        window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
+      } else if (this.tab === 1) {
+        window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`);
+      }
+    },
     loading() {
       if (!this.loading) {
-        setTimeout( () => {
-          const urlPath = document.location.pathname;
-          const productId = urlPath.split('perkstore/')[1] ? urlPath.split('perkstore/')[1].split(/[^0-9]/)[0] : null;
-          if (productId && this.$refs.buyModal) {
-            getProduct(productId).then(freshProduct => {
-              if (freshProduct) {
-                this.selectedProduct = freshProduct;
-                if (this.selectedProduct.creator.id === eXo.env.portal.userName) {
-                  window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
-                } else {
-                  this.$refs.buyModal.open();
+        const urlPath = document.location.pathname;
+        const productId = urlPath.split('catalog/')[1] ? urlPath.split('catalog/')[1].split(/[^0-9]/)[0] : null;
+        if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
+          this.tab = 0;
+        } else if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`) {
+          this.tab = 1;
+        } else if (productId) {
+          setTimeout( () => {
+            if (productId && this.$refs.buyModal) {
+              getProduct(productId).then(freshProduct => {
+                if (freshProduct) {
+                  this.selectedProduct = freshProduct;
+                  if (this.selectedProduct.creator.id === eXo.env.portal.userName) {
+                    window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
+                  } else {
+                    window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog/${this.selectedProduct.id}`);
+                    this.$refs.buyModal.open();
+                  }
                 }
-              }
-            }).catch(() => {
-              window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`);
-            });
-          }
-        }, 200);
+              }).catch(() => {
+                this.tab = 0;
+                window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
+              });
+            }
+          }, 200);
+        } else {
+          this.tab = 0;
+          window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
+        }
       }
     },
     filterProduct() {
@@ -451,7 +469,7 @@ export default {
   methods: {
     closeProduct() {
       const currentUrl = window.location.pathname;
-      const defaultUrl = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore`;
+      const defaultUrl = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`;
       if (currentUrl.includes(defaultUrl)) {
         window.history.pushState('perkstore', 'My perkstore', defaultUrl);
       }
@@ -636,7 +654,7 @@ export default {
     },
     buyProduct(product) {
       this.selectedProduct = product;
-      window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/${product.id}`);
+      window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog/${product.id}`);
       this.$refs.buyModal.open();
     },
     displaySettingsModal() {

@@ -213,7 +213,7 @@ export default {
       return (this.product && this.product.createdDate && this.formatDate(new Date(this.product.createdDate))) || '';
     },
     productLink() {
-      return (this.product && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore?productId=${this.product.id}`) || '#';
+      return (this.product && `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog?productId=${this.product.id}`) || '#';
     },
     userData() {
       return (this.product && this.product.userData) || {};
