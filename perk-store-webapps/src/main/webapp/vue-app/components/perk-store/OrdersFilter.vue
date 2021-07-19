@@ -119,6 +119,9 @@ export default {
       }
     },
   },
+  created() {
+    this.selectedDate = this.filter && this.filter.selectedDate ? new Date(this.filter.selectedDate).toISOString().split('T')[0] : null;
+  },
   methods: {
     searchOrders() {
       this.$emit('search');
