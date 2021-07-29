@@ -29,6 +29,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <name>portlet-view-dispatched-file-path</name>
       <value>/perkstore.html</value>
     </init-param>
+    <init-param>
+      <name>preload.resource.bundles</name>
+      <value>locale.addon.PerkStore</value>
+    </init-param>
     <expiration-cache>-1</expiration-cache>
     <cache-scope>PUBLIC</cache-scope>
     <supports>
@@ -47,6 +51,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <init-param>
       <name>portlet-view-dispatched-file-path</name>
       <value>/perkstoreOrder.html</value>
+    </init-param>
+    <init-param>
+      <name>preload.resource.bundles</name>
+      <value>locale.addon.PerkStore</value>
+    </init-param>
+    <init-param>
+      <name>preload.resource.rest</name>
+      <value><![CDATA[/portal/rest/perkstore/api/order/notProcessed?returnSize=true]]></value>
     </init-param>
     <init-param>
       <description>List of profiles that can be used to enable this portlet</description>
