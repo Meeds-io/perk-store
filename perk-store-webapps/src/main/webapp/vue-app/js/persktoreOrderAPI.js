@@ -15,15 +15,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 export function getPendingOrdersSize() {
-  const filter = {notProcessed: true};
-  return fetch('/portal/rest/perkstore/api/order/list?returnSize=true', {
-    method: 'POST',
+  return fetch('/portal/rest/perkstore/api/order/notProcessed?returnSize=true', {
+    method: 'GET',
     credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(filter),
   }).then((resp) => {
     if (resp && resp.ok) { 
       return resp.json();

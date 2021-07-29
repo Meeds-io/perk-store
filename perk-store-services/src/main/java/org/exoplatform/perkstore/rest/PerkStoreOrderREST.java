@@ -59,6 +59,22 @@ public class PerkStoreOrderREST implements ResourceContainer {
     this.perkStoreService = perkStoreService;
   }
 
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("notProcessed")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Retrieves the list of not processed orders for current user", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns a list of orders")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Request fulfilled"),
+      @ApiResponse(code = 400, message = "Invalid query input"),
+      @ApiResponse(code = 403, message = "Unauthorized operation"),
+      @ApiResponse(code = 500, message = "Internal server error") })
+  public Response listNotProcessedOrders(@ApiParam(value = "Returning or not only the number of Orders without the whole list", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
+    OrderFilter filter = new OrderFilter();
+    filter.setNotProcessed(true);
+    return listOrders(filter, returnSize);
+  }
+
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
