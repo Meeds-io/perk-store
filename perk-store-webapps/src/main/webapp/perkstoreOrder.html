@@ -19,8 +19,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     class="v-application v-application--is-ltr theme--light"
     id="perkstoreOrderPortlet" flat="">
     <v-cacheable-dom-app cache-id="perkstoreOrderPortlet"></v-cacheable-dom-app>
-    <script>
-      require(['PORTLET/perk-store/PerkstoreOrder'], app => app.init())
+    <script type="text/javascript" defer="defer">
+      eXo.env.portal.addOnLoadCallback(() => {
+        require(['PORTLET/perk-store/PerkstoreOrder'], app => app.init())
+      });
     </script>
   </div>
 </div>
