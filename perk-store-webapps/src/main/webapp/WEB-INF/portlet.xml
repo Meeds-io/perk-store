@@ -53,11 +53,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <value>/perkstoreOrder.html</value>
     </init-param>
     <init-param>
-      <name>preload.resource.bundles</name>
+      <name>prefetch.resources</name>
+      <value>true</value>
+    </init-param>
+    <init-param>
+      <name>prefetch.resource.bundles</name>
       <value>locale.addon.PerkStore</value>
     </init-param>
     <init-param>
-      <name>preload.resource.rest</name>
+      <name>prefetch.resource.rest</name>
       <value><![CDATA[/portal/rest/perkstore/api/order/notProcessed?returnSize=true]]></value>
     </init-param>
     <init-param>
