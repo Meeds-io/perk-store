@@ -22,7 +22,6 @@ const config = merge(webpackCommonConfig, {
   mode: 'production',
   entry: {
     perkstore: './src/main/webapp/vue-app/perk-store.js',
-    perkstoreOrder: './src/main/webapp/vue-app/perk-store-order.js',
     perkstoreSearch: './src/main/webapp/vue-app/perk-store-search.js'
   },
   output: {
