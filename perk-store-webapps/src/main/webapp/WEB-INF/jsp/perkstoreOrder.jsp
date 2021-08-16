@@ -5,8 +5,6 @@
 <%@ page import="org.exoplatform.services.resources.ResourceBundleService"%>
 <%@ page import="org.exoplatform.perkstore.service.PerkStoreService"%>
 <%
-  String profileOwnerId = Utils.getOwnerIdentityId();
-
   String title = "My orders";
   String titleOrders = "Orders";
   try {
@@ -18,7 +16,7 @@
   }
   OrderFilter filter = new OrderFilter();
   filter.setNotProcessed(true);
-  long totalOrders = ExoContainerContext.getService(PerkStoreService.class).countOrders(filter, profileOwnerId);
+  long totalOrders = ExoContainerContext.getService(PerkStoreService.class).countOrders(filter, request.getRemoteUser());
 %>
 <div class="VuetifyApp">
   <div data-app="true"
