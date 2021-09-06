@@ -36,7 +36,7 @@
                   </div>
                 </div>
                 <div class="flex d-flex xs12 justify-center pa-2">
-                  <a class="display-1 font-weight-bold big-number">
+                  <a href="/portal/dw/perkstore/myorders" class="display-1 font-weight-bold big-number">
                     <%=totalOrders%><span class="mt-4 ms-1 product-label"><%=titleOrders%></span>
                   </a>
                 </div>
