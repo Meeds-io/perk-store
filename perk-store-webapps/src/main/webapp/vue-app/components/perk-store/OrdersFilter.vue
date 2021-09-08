@@ -70,7 +70,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           @click="reset">
           <template>
             <i class="fas fa-redo"></i>
-            {{ $t('popup.reset') }}
+            {{ $t('exoplatform.perkstore.button.reset') }}
           </template>
         </v-btn>
         <v-spacer />
