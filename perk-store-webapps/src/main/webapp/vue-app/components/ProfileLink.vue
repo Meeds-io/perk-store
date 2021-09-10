@@ -86,12 +86,6 @@ export default {
         .toString()
         .toString()}`,
       labels: {
-        CancelRequest: this.$t('exoplatform.perkstore.label.profile.CancelRequest'),
-        Confirm: this.$t('exoplatform.perkstore.label.profile.Confirm'),
-        Connect: this.$t('exoplatform.perkstore.label.profile.Connect'),
-        Ignore: this.$t('exoplatform.perkstore.label.profile.Ignore'),
-        RemoveConnection: this.$t('exoplatform.perkstore.label.profile.RemoveConnection'),
-        StatusTitle: this.$t('exoplatform.perkstore.label.profile.StatusTitle'),
         join: this.$t('exoplatform.perkstore.label.profile.join'),
         leave: this.$t('exoplatform.perkstore.label.profile.leave'),
         members: this.$t('exoplatform.perkstore.label.profile.members'),
