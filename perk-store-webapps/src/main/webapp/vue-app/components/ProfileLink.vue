@@ -85,17 +85,6 @@ export default {
       cmpId: `chip${parseInt(Math.random() * 10000)
         .toString()
         .toString()}`,
-      labels: {
-        CancelRequest: this.$t('exoplatform.perkstore.label.profile.CancelRequest'),
-        Confirm: this.$t('exoplatform.perkstore.label.profile.Confirm'),
-        Connect: this.$t('exoplatform.perkstore.label.profile.Connect'),
-        Ignore: this.$t('exoplatform.perkstore.label.profile.Ignore'),
-        RemoveConnection: this.$t('exoplatform.perkstore.label.profile.RemoveConnection'),
-        StatusTitle: this.$t('exoplatform.perkstore.label.profile.StatusTitle'),
-        join: this.$t('exoplatform.perkstore.label.profile.join'),
-        leave: this.$t('exoplatform.perkstore.label.profile.leave'),
-        members: this.$t('exoplatform.perkstore.label.profile.members'),
-      },
     };
   },
   computed: {
@@ -141,7 +130,6 @@ export default {
             membershipRestUrl: '/portal/rest/v1/social/spacesMemberships?space={0}&returnSize=true',
             defaultAvatarUrl: `/portal/rest/v1/social/spaces/${this.id}/avatar`,
             deleteMembershipRestUrl: '/portal/rest/v1/social/spacesMemberships/{0}:{1}:{2}',
-            labels: this.labels,
             content: false,
             keepAlive: true,
             defaultPosition: this.tiptipPosition || 'top_left',
@@ -153,7 +141,6 @@ export default {
           $(`#${this.cmpId}`).userPopup({
             restURL: '/portal/rest/social/people/getPeopleInfo/{0}.json',
             userId: this.id,
-            labels: this.labels,
             content: false,
             keepAlive: true,
             defaultPosition: this.tiptipPosition || 'top_left',
