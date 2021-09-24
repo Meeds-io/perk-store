@@ -115,7 +115,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-col>
       </v-row>
       <v-row class="pl-5">
-        <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
+        <label v-if="needPassword" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
       </v-row>
       <v-row class="pl-5">
         <v-text-field
