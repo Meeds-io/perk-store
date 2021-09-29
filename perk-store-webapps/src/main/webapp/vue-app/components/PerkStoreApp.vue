@@ -39,7 +39,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <v-tab @click="displayMyOrdersList">{{ $t('exoplatform.perkstore.label.MyOrders') }}</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab" class="tabs-content">
-            <v-tab-item class="product-list" eager>
+            <v-tab-item class="product-list pa-4" eager>
               <v-row
                 class="toolbarListProduct toolbarProduct"
                 color="transparent"
@@ -62,7 +62,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       hide-details
                       class="pa-0 ml-3 mr-3 mb-2 perkStoreTextField" />
                   </v-flex>
-                  <v-flex class="filter_menu">
+                  <v-flex class="filter_menu pt-1">
                     <v-menu
                       v-model="showMenu"
                       offset-y>
