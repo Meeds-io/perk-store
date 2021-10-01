@@ -93,7 +93,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import {getOrderFilter, saveOrderFilter} from '../../js/PerkStoreSettings.js';
+import {saveOrderFilter} from '../../js/PerkStoreSettings.js';
 
 export default {
   props: {
@@ -138,7 +138,19 @@ export default {
       this.$refs.ordersFilterDrawer.close();
     },
     reset() {
-      this.filter = getOrderFilter();
+      this.filter.canceled = true;
+      this.filter.delivered = true;
+      this.filter.error = true;
+      this.filter.fraud = true;
+      this.filter.ordered = true;
+      this.filter.paid = true;
+      this.filter.partial = true;
+      this.filter.refunded = true;
+      this.filter.selectedOrderId = null;
+      this.filter.selectedDate = null;
+      this.filter.searchInDates = false;
+      this.filter.notProcessed = false;
+      this.saveFilter();
     }
   },
 };
