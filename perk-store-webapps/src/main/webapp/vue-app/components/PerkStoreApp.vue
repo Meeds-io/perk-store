@@ -39,61 +39,68 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <v-tab @click="displayMyOrdersList">{{ $t('exoplatform.perkstore.label.MyOrders') }}</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab" class="tabs-content">
-            <v-tab-item class="product-list" eager>
-              <v-toolbar
-                :class="userSettings.administrator ? 'pl-4 pr-6' : 'toolbarListProduct'"
+            <v-tab-item class="product-list pa-4" eager>
+              <v-row
+                class="toolbarListProduct toolbarProduct"
                 color="transparent"
                 flat>
-                <perk-store-create-product-button
-                  v-if="userSettings.canAddProduct"
-                  :balance="balance"
-                  :symbol="symbol"
-                  class="xs12 sm4 md3 d-none d-sm-flex my-1"
-                  @create-product="newProduct" />
+                <v-flex class="addProduct">
+                  <perk-store-create-product-button
+                    v-if="userSettings.canAddProduct"
+                    :balance="balance"
+                    :symbol="symbol"
+                    @create-product="newProduct" />
+                </v-flex>
                 <v-spacer class="spacerProduct" />
-                <v-text-field
-                  v-model="search"
-                  :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
-                  prepend-inner-icon="fa-filter"
-                  single-line
-                  hide-details
-                  class="pa-0 ml-3 mr-3 mb-2 perkStoreTextField" />
-                <v-menu
-                  v-model="showMenu"
-                  offset-y>
-                  <template v-slot:activator="{ on }">
-                    <button
-                      class="btn"
-                      v-on="on"
-                      @blur="closeMenu">
-                      {{ newsStatusLabel }}
-                      <i class="uiIconMiniArrowDown uiIconLightGray"></i>
-                    </button>
-                  </template>
-                  <v-list>
-                    <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-title class="filterLabel" @click="filterProduct ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-title class="filterLabel" @click="filterProduct ='productFiltersDisabledProducts'">{{ $t('exoplatform.perkstore.label.productFiltersDisabledProducts') }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-title
-                        class="filterLabel"
-                        @click="filterProduct ='productFiltersSoldOutProducts'">
-                        {{ $t('exoplatform.perkstore.label.productFiltersSoldOutProducts') }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @mousedown="$event.preventDefault()">
-                      <v-list-item-title class="filterLabel" @click="filterProduct ='createdByMe'">{{ $t('exoplatform.perkstore.label.createdByMe') }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <v-row class="filter">
+                  <v-flex class="perkStoreFilterField">
+                    <v-text-field
+                      v-model="search"
+                      :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
+                      prepend-inner-icon="fa-filter"
+                      single-line
+                      hide-details
+                      class="pa-0 ml-3 mr-3 mb-2 perkStoreTextField" />
+                  </v-flex>
+                  <v-flex class="filter_menu pt-1">
+                    <v-menu
+                      v-model="showMenu"
+                      offset-y>
+                      <template v-slot:activator="{ on }">
+                        <button
+                          class="btn "
+                          v-on="on"
+                          @blur="closeMenu">
+                          {{ newsStatusLabel }}
+                          <i class="uiIconMiniArrowDown uiIconLightGray"></i>
+                        </button>
+                      </template>
+                      <v-list>
+                        <v-list-item @mousedown="$event.preventDefault()">
+                          <v-list-item-title class="filterLabel" @click="filterProduct ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @mousedown="$event.preventDefault()">
+                          <v-list-item-title class="filterLabel" @click="filterProduct ='productFiltersDisabledProducts'">{{ $t('exoplatform.perkstore.label.productFiltersDisabledProducts') }}</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @mousedown="$event.preventDefault()">
+                          <v-list-item-title
+                            class="filterLabel"
+                            @click="filterProduct ='productFiltersSoldOutProducts'">
+                            {{ $t('exoplatform.perkstore.label.productFiltersSoldOutProducts') }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @mousedown="$event.preventDefault()">
+                          <v-list-item-title class="filterLabel" @click="filterProduct ='createdByMe'">{{ $t('exoplatform.perkstore.label.createdByMe') }}</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-flex>
+                </v-row>
                 <v-btn
                   v-if="userSettings.administrator"
                   id="perkStoreAppMenuSettingsButton"
                   :title="$t('exoplatform.perkstore.button.settings')"
-                  class="toolbarButton"
+                  class="toolbarButton settingsIconAdmin"
                   :class="$vuetify.rtl ? 'float-left' : 'float-right'"
                   text
                   small
@@ -102,7 +109,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     fa-cog
                   </v-icon>
                 </v-btn>
-              </v-toolbar>
+              </v-row>
               <v-toolbar
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
                 color="transparent"
@@ -167,7 +174,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @refresh-list="addNewProductsToList" />
             </v-tab-item>
             <v-tab-item class="orders-list" eager>
-              <v-toolbar
+              <v-row
                 color="transparent"
                 flat
                 class="px-8 toolbarOrders">
@@ -246,7 +253,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     </v-icon>
                   </v-btn>
                 </div>
-              </v-toolbar>
+              </v-row>
               <v-toolbar
                 v-if="error"
                 color="transparent"
