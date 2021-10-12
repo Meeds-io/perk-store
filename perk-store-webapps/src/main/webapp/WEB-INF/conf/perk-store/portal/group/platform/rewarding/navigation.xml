@@ -29,10 +29,10 @@
     <page-nodes>
         <node>
             <name>rewardAdministration</name>
-            <label>#{rewarding.perkstore.navigation.node.label.reward}</label>
+            <label>#{administration.reward}</label>
             <node>
                 <name>perkStoreAdministration</name>
-                <label>#{rewarding.perkstore.navigation.node.label}</label>
+                <label>#{administration.perkStore}</label>
                 <page-reference>group::/platform/rewarding::perkStoreAdministration</page-reference>
             </node>
         </node>
