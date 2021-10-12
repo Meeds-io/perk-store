@@ -50,7 +50,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
     <init-param>
       <name>portlet-view-dispatched-file-path</name>
-      <value>/perkstore.html</value>
+      <value>/WEB-INF/jsp/perkstoreOrder.jsp</value>
     </init-param>
     <init-param>
       <description>List of profiles that can be used to enable this portlet</description>
