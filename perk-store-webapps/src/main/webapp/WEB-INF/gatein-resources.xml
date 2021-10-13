@@ -105,13 +105,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <module>spacePopupPlugin</module>
       </depends>
       <depends>
-          <module>filedrop</module>
-      </depends>
-      <depends>
-        <module>commons-cometd3</module>
-        <as>cCometd</as>
-      </depends>
-      <depends>
         <module>extensionRegistry</module>
       </depends>
     </module>
