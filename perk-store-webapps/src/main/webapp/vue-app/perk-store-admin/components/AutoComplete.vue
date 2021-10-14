@@ -104,7 +104,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-list-item-avatar
           v-else-if="data.item.avatar"
           size="20">
-          <img :src="data.item.avatar">
+          <img :src="data.item.avatar" :alt="$t('exoplatform.perkstore.img.alt', {0: data.item.name})">
         </v-list-item-avatar>
         <v-list-item-title v-text="data.item.name" />
       </template>
