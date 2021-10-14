@@ -201,7 +201,7 @@ export function searchSpaces(filter, withMembers) {
  * Determins whether the suggested users should belong to a specific space or not
  */
 function isOnlySpaceMembers() {
-  return window.perkStoreSettings.accessPermission && window.perkStoreSettings.accessPermission.length;
+  return window.perkStoreSettings && window.perkStoreSettings.accessPermission && window.perkStoreSettings.accessPermission.length;
 }
 
 /*

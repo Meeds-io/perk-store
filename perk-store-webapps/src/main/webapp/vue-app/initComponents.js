@@ -17,7 +17,6 @@ import ProductDetailContent from './components/perk-store/ProductDetailContent.v
 import ProductDetailMaximized from './components/perk-store/ProductDetailMaximized.vue';
 import ProductNotification from './components/perk-store/ProductNotification.vue';
 import RefundModal from './components/perk-store/RefundModal.vue';
-import SettingsModal from './components/perk-store/SettingsModal.vue';
 import PerkStoreProductSearchCard from './components/perk-store-search/PerkStoreProductSearchCard.vue';
 
 
@@ -41,7 +40,6 @@ const components = {
   'perk-store-product-detail-maximized': ProductDetailMaximized,
   'perk-store-product-notification': ProductNotification,
   'perk-store-refund-modal': RefundModal,
-  'perk-store-settings-modal': SettingsModal,
   'perk-store-product-search-card': PerkStoreProductSearchCard,
 };
 

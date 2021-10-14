@@ -22,7 +22,8 @@ const config = merge(webpackCommonConfig, {
   mode: 'production',
   entry: {
     perkstore: './src/main/webapp/vue-app/perk-store.js',
-    perkstoreSearch: './src/main/webapp/vue-app/perk-store-search.js'
+    perkstoreSearch: './src/main/webapp/vue-app/perk-store-search.js',
+    PerkStoreAdmin: './src/main/webapp/vue-app/perk-store-admin/main.js',
   },
   output: {
     path: path.join(__dirname, 'target/perk-store/')

@@ -65,4 +65,32 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </portlet-info>
   </portlet>
 
+  <portlet>
+    <portlet-name>PerkStoreAdmin</portlet-name>
+    <display-name xml:lang="EN">Perk store Application Administration</display-name>
+    <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
+    <init-param>
+      <name>portlet-view-dispatched-file-path</name>
+      <value>/perkStoreAdmin.html</value>
+    </init-param>
+    <init-param>
+      <name>preload.resource.bundles</name>
+      <value>locale.addon.PerkStore</value>
+    </init-param>
+    <expiration-cache>-1</expiration-cache>
+    <cache-scope>PUBLIC</cache-scope>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <portlet-info>
+      <title>Perk store Application Administration</title>
+      <keywords>Perk store Application Administration</keywords>
+    </portlet-info>
+    <security-role-ref>
+      <role-name>admin</role-name>
+      <role-link>admin</role-link>
+    </security-role-ref>
+  </portlet>
+
 </portlet-app>

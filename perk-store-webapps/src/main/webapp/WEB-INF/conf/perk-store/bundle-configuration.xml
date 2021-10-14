@@ -31,12 +31,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <value>locale.addon.PerkStore</value>
             <value>locale.addon.PerkStoreError</value>
             <value>locale.notification.PerkStoreNotification</value>
+            <value>locale.navigation.group.platform.rewarding</value>
           </values-param>
           <values-param>
             <name>portal.resource.names</name>
             <value>locale.addon.PerkStore</value>
             <value>locale.addon.PerkStoreError</value>
             <value>locale.notification.PerkStoreNotification</value>
+            <value>locale.navigation.group.platform.rewarding</value>
           </values-param>
         </init-params>
         </component-plugin>

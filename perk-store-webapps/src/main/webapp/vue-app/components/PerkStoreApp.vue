@@ -96,19 +96,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     </v-menu>
                   </v-flex>
                 </v-row>
-                <v-btn
-                  v-if="userSettings.administrator"
-                  id="perkStoreAppMenuSettingsButton"
-                  :title="$t('exoplatform.perkstore.button.settings')"
-                  class="toolbarButton settingsIconAdmin"
-                  :class="$vuetify.rtl ? 'float-left' : 'float-right'"
-                  text
-                  small
-                  @click="displaySettingsModal">
-                  <v-icon class="me-2">
-                    fa-cog
-                  </v-icon>
-                </v-btn>
               </v-row>
               <v-toolbar
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
@@ -166,9 +153,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :wallet-loading="walletLoading"
                 :wallet-enabled="walletEnabled"
                 @closeProductDetails="closeProduct()" />
-              <perk-store-settings-modal
-                ref="settingsModal"
-                @saved="init()" />
               <perk-store-product-notification
                 :products="modifiedProducts"
                 @refresh-list="addNewProductsToList" />
@@ -663,9 +647,6 @@ export default {
       this.selectedProduct = product;
       window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog/${product.id}`);
       this.$refs.buyModal.open();
-    },
-    displaySettingsModal() {
-      this.$refs.settingsModal.open();
     },
     updateProduct(event) {
       const wsMessage = event.detail;
