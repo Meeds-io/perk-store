@@ -7,10 +7,12 @@
 <%
   String title = "My orders";
   String titleOrders = "Orders";
+  String titlePerkStore = "Perk Store";
   try {
     ResourceBundle bundle = ExoContainerContext.getService(ResourceBundleService.class).getResourceBundle("locale.addon.PerkStore", request.getLocale());
     title = bundle.getString("exoplatform.perkstore.title.myOrders");
     titleOrders = bundle.getString("exoplatform.perkstore.title.orders");
+    titlePerkStore = bundle.getString("exoplatform.perkstore.title.perkStoreApplication");
   } catch (Exception e) {
     // Expected, when the title isn't translated to user locale
   }
@@ -20,12 +22,13 @@
 %>
 <div class="VuetifyApp">
   <div data-app="true"
-    class="v-application v-application--is-ltr theme--light"
-    id="perkstoreOrderPortlet" flat="">
+       class="v-application v-application--is-ltr theme--light"
+       id="perkstoreOrderPortlet" flat="">
     <div class="v-application--wrap">
       <main>
         <div class="container pa-0">
-          <div class="layout row wrap mx-0" style="cursor: pointer;">
+          <% if (totalOrders != 0) {%>
+          <div class="layout row wrap mx-0" style="Fcursor: pointer;">
             <div class="flex d-flex sx12">
               <div class="layout white row ma-0">
                 <div class="flex d-flex xs12">
@@ -43,6 +46,20 @@
               </div>
             </div>
           </div>
+          <% } else {%>
+          <div class="d-flex flex-column mb-2 layout white row ma-0 wrap mx-0">
+            <div>
+              <div class="v-card__text subtitle-2 text-sub-title pa-2 perkStoreWidget">
+                <%=titlePerkStore%>
+              </div>
+            </div>
+            <div class="perkStoreGif">
+              <a href="/portal/dw/perkstore">
+                <img class="gif mt-n2" src="/perk-store/images/PerkstoreWidgetGif.gif" />
+              </a>
+            </div>
+          </div>
+          <%}%>
         </div>
       </main>
     </div>
