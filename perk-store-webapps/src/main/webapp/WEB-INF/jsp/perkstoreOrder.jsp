@@ -8,11 +8,13 @@
   String title = "My orders";
   String titleOrders = "Orders";
   String titlePerkStore = "Perk Store";
+  String textPerkStoreWidget = "Shop now !";
   try {
     ResourceBundle bundle = ExoContainerContext.getService(ResourceBundleService.class).getResourceBundle("locale.addon.PerkStore", request.getLocale());
     title = bundle.getString("exoplatform.perkstore.title.myOrders");
     titleOrders = bundle.getString("exoplatform.perkstore.title.orders");
     titlePerkStore = bundle.getString("exoplatform.perkstore.title.perkStoreApplication");
+    textPerkStoreWidget = bundle.getString("exoplatform.perkstore.title.textPerkStoreWidget");
   } catch (Exception e) {
     // Expected, when the title isn't translated to user locale
   }
@@ -55,8 +57,13 @@
             </div>
             <div class="perkStoreGif">
               <a href="/portal/dw/perkstore">
-                <img class="gif mt-n2" src="/perk-store/images/PerkstoreWidgetGif.gif" />
+                <img class="mt-n2" src="/perk-store/images/PerkstoreWidgetGif.gif" />
               </a>
+            </div>
+            <div>
+              <div class="v-card__text subtitle-2 title pa-2 perkStoreWidgettext">
+                <%=textPerkStoreWidget%>
+              </div>
             </div>
           </div>
           <%}%>
