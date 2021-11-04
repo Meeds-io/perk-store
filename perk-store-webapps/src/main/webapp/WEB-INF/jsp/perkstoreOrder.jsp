@@ -4,12 +4,20 @@
 <%@ page import="org.exoplatform.container.ExoContainerContext"%>
 <%@ page import="org.exoplatform.services.resources.ResourceBundleService"%>
 <%@ page import="org.exoplatform.perkstore.service.PerkStoreService"%>
+<%@ page import="org.exoplatform.portal.application.PortalRequestContext"%>
+<%@ page import="org.exoplatform.web.application.RequestContext"%>
 <%
   String title = "My orders";
   String titleOrders = "Orders";
   String titlePerkStore = "Perk Store";
   String textPerkStoreWidget = "Shop now !";
+  String perkstoreUrl = "" ;
+  String myOrdersUrlUrl = "";
+
   try {
+    PortalRequestContext requestContext = ((PortalRequestContext) RequestContext.getCurrentInstance());
+    perkstoreUrl = "/portal/" + requestContext.getPortalOwner() + "/perkstore";
+    myOrdersUrlUrl = perkstoreUrl + "/myorders" ;
     ResourceBundle bundle = ExoContainerContext.getService(ResourceBundleService.class).getResourceBundle("locale.addon.PerkStore", request.getLocale());
     title = bundle.getString("exoplatform.perkstore.title.myOrders");
     titleOrders = bundle.getString("exoplatform.perkstore.title.orders");
@@ -41,7 +49,7 @@
                   </div>
                 </div>
                 <div class="flex d-flex xs12 justify-center pa-2">
-                  <a href="/portal/dw/perkstore/myorders" class="display-1 font-weight-bold big-number">
+                  <a href="<%=myOrdersUrlUrl%>" class="display-1 font-weight-bold big-number">
                     <%=totalOrders%><span class="mt-4 ms-1 product-label"><%=titleOrders%></span>
                   </a>
                 </div>
@@ -56,7 +64,7 @@
               </div>
             </div>
             <div class="perkStoreGif">
-              <a href="/portal/dw/perkstore">
+              <a href="<%=perkstoreUrl%>">
                 <img class="mt-n2" src="/perk-store/images/PerkstoreWidgetGif.gif" />
               </a>
             </div>
