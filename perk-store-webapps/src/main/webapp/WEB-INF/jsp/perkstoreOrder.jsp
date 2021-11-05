@@ -4,20 +4,21 @@
 <%@ page import="org.exoplatform.container.ExoContainerContext"%>
 <%@ page import="org.exoplatform.services.resources.ResourceBundleService"%>
 <%@ page import="org.exoplatform.perkstore.service.PerkStoreService"%>
-<%@ page import="org.exoplatform.portal.application.PortalRequestContext"%>
-<%@ page import="org.exoplatform.web.application.RequestContext"%>
+<%@ page import="org.exoplatform.social.core.service.LinkProvider"%>
+
 <%
   String title = "My orders";
   String titleOrders = "Orders";
   String titlePerkStore = "Perk Store";
   String textPerkStoreWidget = "Shop now !";
-  String perkstoreUrl = "" ;
-  String myOrdersUrlUrl = "";
+  String perkStoreUrl = "" ;
+  String myOrdersUrl = "";
 
   try {
-    PortalRequestContext requestContext = ((PortalRequestContext) RequestContext.getCurrentInstance());
-    perkstoreUrl = "/portal/" + requestContext.getPortalOwner() + "/perkstore";
-    myOrdersUrlUrl = perkstoreUrl + "/myorders" ;
+    String portalName  = ExoContainerContext.getService(LinkProvider.class).getPortalName("");
+    String portalOwner  = ExoContainerContext.getService(LinkProvider.class).getPortalOwner("");
+    perkStoreUrl =  "/" + portalName + "/" + portalOwner + "/perkstore";
+    myOrdersUrl = perkStoreUrl + "/myorders" ;
     ResourceBundle bundle = ExoContainerContext.getService(ResourceBundleService.class).getResourceBundle("locale.addon.PerkStore", request.getLocale());
     title = bundle.getString("exoplatform.perkstore.title.myOrders");
     titleOrders = bundle.getString("exoplatform.perkstore.title.orders");
@@ -49,7 +50,7 @@
                   </div>
                 </div>
                 <div class="flex d-flex xs12 justify-center pa-2">
-                  <a href="<%=myOrdersUrlUrl%>" class="display-1 font-weight-bold big-number">
+                  <a href="<%=myOrdersUrl%>" class="display-1 font-weight-bold big-number">
                     <%=totalOrders%><span class="mt-4 ms-1 product-label"><%=titleOrders%></span>
                   </a>
                 </div>
@@ -64,7 +65,7 @@
               </div>
             </div>
             <div class="perkStoreGif">
-              <a href="<%=perkstoreUrl%>">
+              <a href="<%=perkStoreUrl%>">
                 <img class="mt-n2" src="/perk-store/images/PerkstoreWidgetGif.gif" />
               </a>
             </div>
