@@ -51,7 +51,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </object>
         </object-param>
         <object-param>
-          <name>portal.configuration</name>
+          <name>group.configuration</name>
           <description>description</description>
           <object type="org.exoplatform.portal.config.NewPortalConfig">
             <field name="ownerType">
