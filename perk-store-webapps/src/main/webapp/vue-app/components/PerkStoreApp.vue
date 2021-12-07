@@ -140,6 +140,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :can-add-product="userSettings.canAddProduct"
                 :wallet-loading="walletLoading"
                 :wallet-enabled="walletEnabled && walletAddonInstalled"
+                :wallet-deleted="walletDeleted"
                 @create-product="newProduct"
                 @orders-list="displayProductOrdersList"
                 @edit="editProduct"
@@ -332,7 +333,10 @@ export default {
   }),
   computed: {
     balance() {
-      return (this.wallet && this.wallet.tokenBalance && toFixed(this.wallet.tokenBalance)) || 0;
+      return (this.wallet && this.wallet.initializationState !== 'DELETED' && this.wallet.tokenBalance && toFixed(this.wallet.tokenBalance)) || 0;
+    },
+    walletDeleted() {
+      return this.wallet && this.wallet.initializationState === 'DELETED';
     },
     symbol() {
       return this.contractDetail && this.contractDetail.symbol;
