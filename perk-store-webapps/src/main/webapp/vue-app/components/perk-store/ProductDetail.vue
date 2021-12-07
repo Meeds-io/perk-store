@@ -93,7 +93,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </v-hover>
         </div>
         <v-btn
-          :disabled="(disabledBuy || !walletEnabled || walletLoading) || !displayBuyButton"
+          :disabled="(disabledBuy || !walletEnabled || walletLoading || walletDeleted) || !displayBuyButton"
           :loading="!disabledBuy && walletLoading"
           :title="buyButtonTitle"
           :right="!$vuetify.rtl"
@@ -152,6 +152,12 @@ export default {
         return false;
       },
     },
+    walletDeleted: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
     hideButtons: {
       type: Boolean,
       default: function() {
@@ -191,14 +197,14 @@ export default {
       return this.cantBuyProduct ? '' : 'clickable ';
     },
     cantBuyProduct() {
-      return (this.disabledBuy || !this.walletEnabled || this.walletLoading) || !this.displayBuyButton;
+      return (this.disabledBuy || !this.walletEnabled || this.walletLoading || this.walletDeleted ) || !this.displayBuyButton;
     },
     buyButtonClass(){
       return !this.cantBuyProduct ? 'btn btn-primary' : 'disabledBuyButton';
     },
     buyButtonTitle(){
-      if (!this.walletEnabled ) {
-        return  '';
+      if (!this.walletEnabled || this.walletDeleted) {
+        return this.$t('exoplatform.perkstore.label.disabledOrDeletedWallet');
       }  else if (this.product.creator.id === eXo.env.portal.userName){
         return this.$t('exoplatform.perkstore.button.disabledBuyButton');
       } else if (!this.product.enabled){
