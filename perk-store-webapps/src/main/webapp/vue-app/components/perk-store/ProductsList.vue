@@ -24,6 +24,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :need-password="needPassword"
           :wallet-loading="walletLoading"
           :wallet-enabled="walletEnabled"
+          :wallet-deleted="walletDeleted"
           class="border-box-sizing"
           @ordered="$emit('ordered', $event)"
           @close="$emit('close')" />
@@ -47,6 +48,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :symbol="symbol"
                 :wallet-loading="walletLoading"
                 :wallet-enabled="walletEnabled"
+                :wallet-deleted="walletDeleted"
                 class="border-box-sizing"
                 @product-details="$emit('product-details', $event)"
                 @orders-list="displayOrdersList"
@@ -106,6 +108,12 @@ export default {
       },
     },
     walletEnabled: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
+    walletDeleted: {
       type: Boolean,
       default: function() {
         return false;
