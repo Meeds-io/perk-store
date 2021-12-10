@@ -80,6 +80,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           <v-list-item-title class="filterLabel" @click="filterProduct ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
                         </v-list-item>
                         <v-list-item @mousedown="$event.preventDefault()">
+                          <v-list-item-title class="filterLabel" @click="filterProduct ='activeProducts'">{{ $t('exoplatform.perkstore.label.activeProducts') }}</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @mousedown="$event.preventDefault()">
                           <v-list-item-title class="filterLabel" @click="filterProduct ='productFiltersDisabledProducts'">{{ $t('exoplatform.perkstore.label.productFiltersDisabledProducts') }}</v-list-item-title>
                         </v-list-item>
                         <v-list-item @mousedown="$event.preventDefault()">
@@ -400,18 +403,27 @@ export default {
         this.productsFilters.disabled = true;
         this.productsFilters.soldOut = false;
         this.productsFilters.mine = false;
+        this.productsFilters.activeProducts = false;
       } else if (this.filterProduct === 'productFiltersSoldOutProducts'){
         this.productsFilters.soldOut = true;
         this.productsFilters.disabled = false;
         this.productsFilters.mine = false;
+        this.productsFilters.activeProducts = false;
       } else if (this.filterProduct === 'createdByMe') {
         this.productsFilters.mine = true;
         this.productsFilters.disabled = false;
         this.productsFilters.soldOut = false;
+        this.productsFilters.activeProducts = false;
+      }  else if (this.filterProduct === 'activeProducts') {
+        this.productsFilters.mine = false;
+        this.productsFilters.disabled = false;
+        this.productsFilters.soldOut = false;
+        this.productsFilters.activeProducts = true;
       } else {
         this.productsFilters.mine = false;
         this.productsFilters.disabled = false;
         this.productsFilters.soldOut = false;
+        this.productsFilters.activeProducts = false;
       }
       this.newsStatusLabel = this.$t(`exoplatform.perkstore.label.${this.filterProduct}`);
       this.filterProducts();
@@ -432,7 +444,7 @@ export default {
     }
   },
   created() {
-    this.newsStatusLabel = this.$t('exoplatform.perkstore.label.all');
+    this.newsStatusLabel = this.$t('exoplatform.perkstore.label.activeProducts');
     this.filterOrderLabel = this.$t('exoplatform.perkstore.label.all');
     document.addEventListener('exo.perkstore.settings.modified', this.refreshSettings);
 
@@ -495,6 +507,7 @@ export default {
             this.settings = {};
           }
           this.userSettings = this.settings.userSettings;
+          this.productsFilters.activeProducts = true;
           this.ordersFilter = getOrderFilter();
         })
         .then(() => this.refreshProductList(selectedProductId, selectedOrderId))
@@ -532,8 +545,10 @@ export default {
     refreshProductList(selectedProductId, selectedOrderId) {
       return getProductList()
         .then((products) => {
-          if (!this.productsFilters.mine && !this.productsFilters.disabled && !this.productsFilters.soldOut) {
+          if (!this.productsFilters.mine && !this.productsFilters.disabled && !this.productsFilters.soldOut && !this.productsFilters.activeProducts) {
             this.products =products;
+          } else if (this.productsFilters.activeProducts) {
+            this.products = products.filter(product => product.enabled && (product.unlimited || product.totalSupply > product.purchased) && !(product.creator && product.creator.type === 'user' && product.creator.id === eXo.env.portal.userName) );
           } else if (this.productsFilters.disabled) {
             this.products = products.filter(product =>!product.enabled);
           } else if (this.productsFilters.soldOut) {
