@@ -7,10 +7,10 @@
         </span>
       </div>
       <v-card-text class="perkStoreSettings">
-        <div v-if="error && !loading" class="alert alert-error v-content">
-          <i class="uiIconError"></i>
-          {{ error }}
-        </div>
+        <exo-notification-alert
+          v-if="alert"
+          :alert="alert"
+          @dismissed="clear" />
 
         <perk-store-auto-complete
           ref="applicationAccessPermissionAutocomplete"
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import {saveSettings} from '../../js/PerkStoreSettings.js';
+import {initSettings, saveSettings} from '../../js/PerkStoreSettings.js';
 
 export default {
   data() {
@@ -69,20 +69,14 @@ export default {
       dialog: false,
       loading: false,
       settingsToSave: {},
-      error: null,
+      alert: null
     };
   },
   watch: {
-    error() {
-      if (this.error) {
-        this.loading = false;
-      }
-    },
     dialog() {
       if (this.dialog) {
-        this.error = null;
+        this.alert = null;
         this.loading = false;
-        this.settingsToSave = Object.assign({}, window.perkStoreSettings);
         this.$nextTick().then(this.init);
       } else {
         this.$emit('closed');
@@ -91,6 +85,7 @@ export default {
   },
   created() {
     this.dialog = true;
+    this.alert = null;
   },
   methods: {
     open() {
@@ -102,20 +97,24 @@ export default {
       }
     },
     init() {
-      if (this.settingsToSave) {
-        this.$refs.applicationAccessPermissionAutocomplete.clear();
-        if (this.settingsToSave.accessPermissionsProfiles) {
-          this.$refs.applicationAccessPermissionAutocomplete.selectItems(this.settingsToSave.accessPermissionsProfiles);
-        }
-        this.$refs.applicationManagersAutocomplete.clear();
-        if (this.settingsToSave.managersProfiles) {
-          this.$refs.applicationManagersAutocomplete.selectItems(this.settingsToSave.managersProfiles);
-        }
-        this.$refs.applicationProductCreationPermissionAutocomplete.clear();
-        if (this.settingsToSave.productCreationPermissionsProfiles) {
-          this.$refs.applicationProductCreationPermissionAutocomplete.selectItems(this.settingsToSave.productCreationPermissionsProfiles);
-        }
-      }
+      return initSettings()
+        .then(() => {
+          this.settingsToSave = Object.assign({}, window.perkStoreSettings);
+          if (this.settingsToSave) {
+            this.$refs.applicationAccessPermissionAutocomplete.clear();
+            if (this.settingsToSave.accessPermissionsProfiles) {
+              this.$refs.applicationAccessPermissionAutocomplete.selectItems(this.settingsToSave.accessPermissionsProfiles);
+            }
+            this.$refs.applicationManagersAutocomplete.clear();
+            if (this.settingsToSave.managersProfiles) {
+              this.$refs.applicationManagersAutocomplete.selectItems(this.settingsToSave.managersProfiles);
+            }
+            this.$refs.applicationProductCreationPermissionAutocomplete.clear();
+            if (this.settingsToSave.productCreationPermissionsProfiles) {
+              this.$refs.applicationProductCreationPermissionAutocomplete.selectItems(this.settingsToSave.productCreationPermissionsProfiles);
+            }
+          }
+        });
     },
     selectValue(fieldName, identity) {
       if (!this.settingsToSave[fieldName]) {
@@ -128,19 +127,25 @@ export default {
       }
     },
     saveSettings() {
-      this.error = null;
       this.loading = true;
-
+      this.alert = null;
       return saveSettings(this.settingsToSave)
         .then(() => {
           this.$emit('saved');
           this.dialog = false;
           this.loading = false;
+          this.alert = {
+            message: this.$t('exoplatform.perkstore.admin.settings.success'),
+            type: 'success'
+          };
         })
         .catch(e => {
           console.error('Save settings error', e);
           this.loading = false;
-          this.error = e && e.message ? e.message : String(e);
+          this.alert = {
+            message: this.$t('exoplatform.perkstore.admin.settings.error', {0: e && e.message ? e.message : String(e),}),
+            type: 'error'
+          };
         });
     },
   },
