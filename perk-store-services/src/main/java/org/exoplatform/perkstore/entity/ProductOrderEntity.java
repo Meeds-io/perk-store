@@ -48,7 +48,7 @@ public class ProductOrderEntity implements Serializable {
   private static final long             serialVersionUID = -592052513482849972L;
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID", sequenceName = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID")
+  @SequenceGenerator(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID", sequenceName = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID")
   @Column(name = "ORDER_ID")
   private Long                          id;
