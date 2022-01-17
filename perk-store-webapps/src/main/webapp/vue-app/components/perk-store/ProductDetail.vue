@@ -205,7 +205,7 @@ export default {
     buyButtonTitle(){
       if (!this.walletEnabled || this.walletDeleted) {
         return this.$t('exoplatform.perkstore.label.disabledOrDeletedWallet');
-      }  else if (this.product.creator.id === eXo.env.portal.userName){
+      }  else if ((this.product.creator.id === eXo.env.portal.userName) || (this.product.receiverMarchand.id === eXo.env.portal.userName)){
         return this.$t('exoplatform.perkstore.button.disabledBuyButton');
       } else if (!this.product.enabled){
         return  this.$t('exoplatform.perkstore.label.disabledProduct');
@@ -246,7 +246,11 @@ export default {
       return '';
     },
     displayBuyButton() {
-      return !this.hideButtons && this.product && this.product.enabled && this.userData.canOrder && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName);
+      return !this.hideButtons && this.product && this.product.enabled && this.userData.canOrder
+          && this.product.receiverMarchand && this.product.receiverMarchand.type && this.product.receiverMarchand.id
+          && (this.product.receiverMarchand.type !== 'user' || this.product.receiverMarchand.id !== eXo.env.portal.userName)
+          && this.product.creator && this.product.creator.type && this.product.creator.id
+          && (this.product.creator.type !== 'user' || this.product.creator.id !== eXo.env.portal.userName);
     },
     disabledBuy() {
       return (!this.product.unlimited && this.available <= 0) || this.maxOrdersReached;
