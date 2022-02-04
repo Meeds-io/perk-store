@@ -33,7 +33,7 @@
           <description>Search connector for perk store products</description>
           <object type="org.exoplatform.social.core.search.SearchConnector">
             <field name="name">
-              <string>perkstore</string>
+              <string>products</string>
             </field>
             <field name="uri">
               <string><![CDATA[/portal/rest/perkstore/api/product]]></string>
