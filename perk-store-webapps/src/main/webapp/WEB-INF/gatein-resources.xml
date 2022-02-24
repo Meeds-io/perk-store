@@ -54,12 +54,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <module>iePolyfills</module>
       </depends>
       <depends>
-        <module>userPopupPlugin</module>
-      </depends>
-      <depends>
-        <module>spacePopupPlugin</module>
-      </depends>
-      <depends>
           <module>filedrop</module>
       </depends>
       <depends>
@@ -97,12 +91,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </depends>
       <depends>
         <module>iePolyfills</module>
-      </depends>
-      <depends>
-        <module>userPopupPlugin</module>
-      </depends>
-      <depends>
-        <module>spacePopupPlugin</module>
       </depends>
       <depends>
         <module>extensionRegistry</module>
