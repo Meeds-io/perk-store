@@ -62,15 +62,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.Marchant') }}:</label>
           </v-row>
           <v-row v-if="product.creator" class="pb-3">
-            <exo-user-avatar
-              :username="product.receiverMarchand.id"
-              :fullname="product.receiverMarchand.displayName"
-              :avatar-url="`/portal/rest/v1/social/users/${product.receiverMarchand.id}/avatar`"
-              :title="product.creator.displayName"
+            <exo-user
+              :profile-id="product.receiverMarchand.id"
               :size="25"
-              :url="getUrl"
-              avatar-class="border-color"
-              class="buyFormMarchant" />
+              extra-class="buyFormMarchant"
+              popover />
           </v-row>
           <v-row>
             <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.QuantityToBuy') }}:</label>

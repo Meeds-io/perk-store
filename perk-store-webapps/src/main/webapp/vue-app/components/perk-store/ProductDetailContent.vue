@@ -18,14 +18,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <v-flex v-if="integrated" class="ms-4">
     <div class="headline mb-4">
       {{ product.title }}
-      <div v-if="product.receiverMarchand" class="no-wrap caption">
-        {{ $t('exoplatform.perkstore.label.offeredBy') }}
-        <perk-store-profile-link
-          :id="product.receiverMarchand.id"
-          :space-id="product.receiverMarchand.spaceId"
-          :url-id="product.receiverMarchand.spaceURLId"
-          :type="product.receiverMarchand.type"
-          :display-name="product.receiverMarchand.displayName" />
+      <div v-if="product.receiverMarchand" class="d-flex align-center">
+        <span class="caption me-2">{{ $t('exoplatform.perkstore.label.offeredBy') }}</span>
+        <exo-user 
+          :profile-id="product.receiverMarchand.id"
+          fullname
+          link-style
+          popover />
       </div>
     </div>
     <div v-if="product.description" class="mb-4 me-4">
@@ -53,20 +52,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </v-list-item>
     <v-expand-transition>
       <div v-if="hover">
-        <v-list-item v-if="product.receiverMarchand">
-          <v-list-item-content><strong>{{ $t('exoplatform.perkstore.label.offeredBy') }}:</strong></v-list-item-content>
+        <div v-if="product.receiverMarchand">
+          <span class="caption me-2"><strong>{{ $t('exoplatform.perkstore.label.offeredBy') }}:</strong></span>
           <v-list-item-content class="productDetailText align-end">
             <div class="text-truncate">
-              <perk-store-profile-link
-                :id="product.receiverMarchand.id"
-                :space-id="product.receiverMarchand.spaceId"
-                :url-id="product.receiverMarchand.spaceURLId"
-                :type="product.receiverMarchand.type"
-                :display-name="product.receiverMarchand.displayName"
-                display-avatar />
+              <exo-user 
+                :profile-id="product.receiverMarchand.id"
+                link-style
+                popover />
             </div>
           </v-list-item-content>
-        </v-list-item>
+        </div>
         <v-list-item v-if="product.unlimited && userData.canEdit">
           <v-list-item-content><strong>{{ $t('exoplatform.perkstore.label.sold') }}:</strong></v-list-item-content>
           <v-list-item-content class="align-end">{{ product.purchased }}</v-list-item-content>

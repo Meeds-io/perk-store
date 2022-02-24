@@ -32,7 +32,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           {{ $t('exoplatform.perkstore.title.deliverOrderModal', {0: order && order.id}) }}
         </span>
       </div>
-      <v-list flat class="pt-0 pb-0">
+      <v-list flat class="pt-0 pb-0 px-3">
         <v-list-item
           v-if="error && !loading"
           class="mb-3 mt-2"
@@ -44,20 +44,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </div>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item>
-          <v-list-item-content>{{ $t('exoplatform.perkstore.label.buyer') }}:</v-list-item-content>
-          <v-list-item-content class="align-end">
-            <div class="text-truncate orderDetailText">
-              <perk-store-profile-link
-                :id="order.sender.id"
-                :space-id="order.sender.spaceId"
-                :url-id="order.sender.spaceURLId"
-                :type="order.sender.type"
-                :display-name="order.sender.displayName"
-                display-avatar />
-            </div>
-          </v-list-item-content>
-        </v-list-item>
+        <div class="d-flex align-center pb-3">
+          <span class="pe-2">{{ $t('exoplatform.perkstore.label.buyer') }}:</span>
+          <exo-user
+            v-if="order.sender"
+            :profile-id="order.sender.id" 
+            :size="28"
+            popover />
+        </div>
         <template v-if="order && order.remainingQuantityToProcess">
           <label class="align-center">
             {{ $t('exoplatform.perkstore.label.quantityWithMax', {0: order.remainingQuantityToProcess}) }}

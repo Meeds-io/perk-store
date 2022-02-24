@@ -19,14 +19,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <v-card>
       <v-card-title v-if="order.sender" class="pt-1 pb-1 subtitle-1 orderCardTitle no-wrap">
         <div class="text-truncate orderDetailText">
-          <perk-store-profile-link
+          <exo-user
             v-if="order.sender"
-            :id="order.sender.id"
-            :space-id="order.sender.spaceId"
-            :url-id="order.sender.spaceURLId"
-            :type="order.sender.type"
-            :display-name="order.sender.displayName"
-            display-avatar />
+            :profile-id="order.sender.id" 
+            :size="28"
+            popover />
         </div>
         <v-spacer />
         <i v-if="!orderCheckIn" class="uiIconEcmsCheckOut orderDetailCheckOutUiIcons"></i>
@@ -83,7 +80,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </div>
         </v-list-item>
         <v-list-item>
-          <div class="no-wrap text-truncate">
+          <div class="no-wrap d-flex overflow-hidden">
             <i class="uiIconCard orderDetailUiIcons"></i>
             <a
               v-if="transactionLink"
@@ -96,14 +93,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <template v-else>
               {{ symbol }} {{ orderAmount }}
             </template>
-            {{ $t('exoplatform.perkstore.label.sentTo') }}
-            <perk-store-profile-link
+            <span class="px-1">{{ $t('exoplatform.perkstore.label.sentTo') }}</span>
+            <exo-user
               v-if="order.receiver"
-              :id="order.receiver.id"
-              :space-id="order.receiver.spaceId"
-              :url-id="order.receiver.spaceURLId"
-              :type="order.receiver.type"
-              :display-name="order.receiver.displayName" />
+              :profile-id="order.sender.id" 
+              :size="28"
+              fullname
+              link-style
+              popover />
           </div>
         </v-list-item>
       </v-list>
