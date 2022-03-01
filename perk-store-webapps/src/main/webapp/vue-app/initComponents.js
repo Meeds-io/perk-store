@@ -1,5 +1,4 @@
 import AutoComplete from './components/AutoComplete.vue';
-import ProfileLink from './components/ProfileLink.vue';
 import BuyForm from './components/perk-store/BuyForm.vue';
 import BuyModal from './components/perk-store/BuyModal.vue';
 import ProductsList from './components/perk-store/ProductsList.vue';
@@ -22,7 +21,6 @@ import PerkStoreProductSearchCard from './components/perk-store-search/PerkStore
 
 const components = {
   'perk-store-auto-complete': AutoComplete,
-  'perk-store-profile-link': ProfileLink,
   'perk-store-buy-form': BuyForm,
   'perk-store-buy-modal': BuyModal,
   'perk-store-products-list': ProductsList,
