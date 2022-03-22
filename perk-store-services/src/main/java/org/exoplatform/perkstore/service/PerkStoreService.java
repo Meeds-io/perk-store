@@ -317,14 +317,11 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
       } else {
         return Collections.singletonList(order);
       }
-    } else if (filter.getProductId() == 0) {
-      // If no product is chosen, then display my orders, even for a manager
-      orders = perkStoreStorage.getOrders(username, filter);
-    } else if (!filter.isCurrentUserOrders() && canEditProduct(filter.getProductId(), username)) {
+    } else if ((isPerkStoreManager(username) && (filter.getOrdersType() == ProductOrderType.ALL || filter.getOrdersType() == ProductOrderType.RECEIVED))
+        || (filter.getProductId() != 0 && !filter.isCurrentUserOrders() && canEditProduct(filter.getProductId(), username))) {
       // If manager, display all orders of the product
       orders = perkStoreStorage.getOrders(null, filter);
     } else {
-      // If display orders of current user on the product
       orders = perkStoreStorage.getOrders(username, filter);
     }
     if (orders != null && !orders.isEmpty()) {
