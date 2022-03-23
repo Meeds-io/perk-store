@@ -34,7 +34,6 @@ import org.exoplatform.perkstore.model.OrderFilter;
 import org.exoplatform.perkstore.model.constant.ProductOrderStatus;
 import org.exoplatform.perkstore.model.constant.ProductOrderType;
 import org.exoplatform.perkstore.service.PerkStoreService;
-import org.exoplatform.perkstore.service.utils.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -250,7 +249,17 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
         } else {
           firstConditionAdded = true;
         }
-        if (filter.getProductId() ==0 && filter.isMyOrders()) {
+        if (filter.isAdministratorOrders()) {
+          if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
+            query.append(" o.senderId <> ");
+            query.append(identity.getId());
+          } else if (filter.getOrdersType() == ProductOrderType.SENT) {
+              query.append(" o.senderId = ");
+              query.append(identity.getId());
+          } else {
+            firstConditionAdded = false;
+          }
+        } else if (filter.getProductId() == 0 && filter.isMyOrders()) {
           if (filter.getOrdersType() == ProductOrderType.ALL) {
             query.append("( o.senderId = ");
             query.append(identity.getId());
@@ -271,13 +280,6 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
         query.append(" o.senderId = ");
         query.append(identity.getId());
         }
-      }
-    } else {
-      Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, Utils.getCurrentUserId());
-      if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
-        query.append(" o.senderId <> ");
-        query.append(identity.getId());
-        firstConditionAdded = true;
       }
     }
 

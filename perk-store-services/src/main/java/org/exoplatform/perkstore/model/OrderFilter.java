@@ -63,6 +63,8 @@ public class OrderFilter extends PerkStoreCloneable implements Serializable {
 
   private ProductOrderType ordersType;
 
+  private boolean           administratorOrders;
+
 
   @Override
   public OrderFilter clone() { // NOSONAR

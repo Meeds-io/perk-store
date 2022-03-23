@@ -137,6 +137,12 @@ export default {
         return 'all';
       },
     },
+    userSettings: {
+      type: Object,
+      default: function() {
+        return {};
+      },
+    },
   },
   data() {
     return {
@@ -203,6 +209,7 @@ export default {
 
       this.loading = true;
       this.selectedOrdersFilter.ordersType = this.filterOrdersType() ;
+      this.selectedOrdersFilter.administratorOrders = this.userSettings.administrator ;
 
       return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, this.limit)
         .then((orders) => {
