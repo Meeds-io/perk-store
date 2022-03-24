@@ -255,7 +255,6 @@ export default {
       return (this.orderProduct && this.orderProduct.title) || (this.order && this.order.productTitle) || '';
     },
     userData() {
-      this.getProductById();
       return (this.orderProduct && this.orderProduct.userData) || {};
     },
     createdDateLabel() {
@@ -306,6 +305,9 @@ export default {
     canRefundOrder() {
       return this.refunding || (this.order.remainingQuantityToProcess && (this.order.refundedQuantity === 0 || this.order.refundTransactionStatus === 'FAILED') && this.order.remainingQuantityToProcess > 0 && (this.isPaid || this.isPartial) && (this.order.receiver.type === 'space' || this.order.receiver.id === eXo.env.portal.userName));
     },
+  },
+  created() {
+    this.getProductById();
   },
   methods: {
     openProductDetail(event) {
