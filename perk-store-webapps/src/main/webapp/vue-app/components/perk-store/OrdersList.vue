@@ -141,7 +141,6 @@ export default {
   data() {
     return {
       loading: false,
-      currentUserOrders: false,
       pageSize: 12,
       limit: 12,
       limitReached: false,
@@ -192,19 +191,18 @@ export default {
     document.addEventListener('exo.perkstore.order.createOrModify', this.updateOrderFromWS);
   },
   methods: {
-    init(currentUserOrders) {
+    init() {
       this.$emit('error', null);
 
       this.computeDisplayFilterDetails();
       this.computeDescriptionLabels();
-      this.currentUserOrders = currentUserOrders;
 
       const initialOrdersLength = this.orders.length > this.limit ? this.limit - 1 : this.orders.length;
 
       this.loading = true;
       this.selectedOrdersFilter.ordersType = this.filterOrdersType() ;
 
-      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, this.limit)
+      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.limit)
         .then((orders) => {
           this.orders = orders || [];
           return this.$nextTick();
@@ -229,7 +227,7 @@ export default {
         this.initialLimit = this.limit;
       } else if (!this.search) {
         this.limit = this.initialLimit;
-        return this.init(this.currentUserOrders);
+        return this.init();
       }
       this.loading = true;
       this.$emit('search-loading');
@@ -257,7 +255,7 @@ export default {
         });
     },
     searchOrders() {
-      return this.init(this.currentUserOrders);
+      return this.init();
     },
     computeDisplayFilterDetails() {
       this.displayFilterDetails = false;
@@ -340,7 +338,7 @@ export default {
       if (!usingSearch) {
         this.initialLimit = this.limit;
       }
-      return this.init(this.currentUserOrders);
+      return this.init();
     },
     updateOrderFromWS(event) {
       const wsMessage = event.detail;
@@ -369,7 +367,7 @@ export default {
       this.newAddedOrders.splice(0, this.newAddedOrders.length);
     },
     exportOrders() {
-      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, this.currentUserOrders, 0)
+      return getOrderList(this.product && this.product.id, this.selectedOrdersFilter, this.selectedOrderId, 0)
         .then((ordersToExport) => {
           if (!ordersToExport || !ordersToExport.length) {
             return;

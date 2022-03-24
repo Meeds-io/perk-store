@@ -41,8 +41,6 @@ public class OrderFilter extends PerkStoreCloneable implements Serializable {
 
   private long              selectedOrderId;
 
-  private boolean           currentUserOrders;
-
   private boolean           ordered;
 
   private boolean           canceled;

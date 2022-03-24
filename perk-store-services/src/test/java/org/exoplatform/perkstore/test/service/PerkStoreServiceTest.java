@@ -773,6 +773,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    filter.setOrdersType(ProductOrderType.ALL);
     orders = perkStoreService.getOrders(filter, USERNAME);
     filter.setNotProcessed(true);
     checkBasicOperations(filter);
@@ -1002,6 +1003,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     ProductOrder savedOrder = newOrder(savedProduct);
 
     filter.setFraud(true);
+    filter.setOrdersType(ProductOrderType.ALL);
     List<ProductOrder> orders = perkStoreService.getOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
