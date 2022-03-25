@@ -30,7 +30,7 @@ export function toFixed(value, decimals) {
   }
 }
 
-export function getOrderList(productId, filter, selectedOrderId, currentUserOrders, limit) {
+export function getOrderList(productId, filter, selectedOrderId, limit) {
 
   filter = Object.assign(filter || {}, {
     productId: productId || 0,
