@@ -749,7 +749,6 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-    filter.setMyOrders(true);
     filter.setOrdersType(ProductOrderType.ALL);
     orders = perkStoreService.getOrders(filter, USERNAME);
     assertNotNull(orders);
@@ -764,7 +763,6 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     orders = perkStoreService.getOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
-    filter.setMyOrders(false);
     filter.setOrdersType(null);
 
     orders = perkStoreService.getOrders(filter, USERNAME);
@@ -944,6 +942,24 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     orders = perkStoreService.getOrders(filterTmp, USERNAME);
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
+
+    savedProduct.setReceiverMarchand(Utils.toProfile(2l));
+    savedProduct.setMaxOrdersPerUser(2.0);
+    savedProduct = perkStoreService.saveProduct(savedProduct, USERNAME);
+    ProductOrder newOrder = newOrder(savedProduct);
+    filter = new OrderFilter();
+
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = perkStoreService.getOrders(filter, "root2");
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = perkStoreService.getOrders(filter, "root2");
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SENT);
+    orders = perkStoreService.getOrders(filter, "root2");
+    assertEquals(0, orders.size(), 0);
   }
   
   @Test
@@ -969,6 +985,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     } catch (IllegalArgumentException e1) {
       // Expected
     }
+    filter.setOrdersType(ProductOrderType.ALL);
     Long orders = perkStoreService.countOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(0, orders, 0);

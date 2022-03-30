@@ -308,7 +308,6 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     }
     List<ProductOrder> orders = null;
     Boolean isPerkStoreManager = isPerkStoreManager(username);
-    filter.setMyOrders(!isPerkStoreManager);
     long selectedOrderId = filter.getSelectedOrderId();
     if (selectedOrderId > 0) {
       // One single order is selected
@@ -320,7 +319,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         return Collections.singletonList(order);
       }
     } else {
-      orders = perkStoreStorage.getOrders(username, filter);
+      orders = perkStoreStorage.getOrders(username, filter, isPerkStoreManager);
     }
     if (orders != null && !orders.isEmpty()) {
       orders.stream().forEach(order -> computeOrderFields(null, order));

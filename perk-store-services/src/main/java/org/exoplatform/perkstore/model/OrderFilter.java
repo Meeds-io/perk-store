@@ -57,8 +57,6 @@ public class OrderFilter extends PerkStoreCloneable implements Serializable {
 
   private boolean           fraud;
 
-  private boolean           myOrders;
-
   private ProductOrderType ordersType;
 
 
