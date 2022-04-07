@@ -31,6 +31,8 @@ public class OrderFilter extends PerkStoreCloneable implements Serializable {
 
   private long              productId;
 
+  private Boolean           isProductOwner;
+
   private int               limit;
 
   private boolean           notProcessed;

@@ -304,6 +304,9 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         if (!canViewProduct(product, username, isPerkStoreManager(username))) {
           throw new PerkStoreException(PRODUCT_ACCESS_DENIED, product.getTitle(), username);
         }
+        filter.setIsProductOwner(product.getCreator().getId().equals(username) || product.getReceiverMarchand().equals(username));
+      } else {
+        filter.setIsProductOwner(false);
       }
     }
     List<ProductOrder> orders = null;

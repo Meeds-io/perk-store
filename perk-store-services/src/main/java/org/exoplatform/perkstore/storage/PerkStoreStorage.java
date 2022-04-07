@@ -156,11 +156,11 @@ public class PerkStoreStorage {
     }
   }
 
-  public List<ProductOrder> getOrders(String username, OrderFilter filter,Boolean isPerkStoreManager) {
+  public List<ProductOrder> getOrders(String username, OrderFilter filter, Boolean isPerkStoreManager) {
     if (filter.getLimit() == 0) {
       filter.setLimit(DEFAULT_QUERY_LIMIT);
     }
-    List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter,isPerkStoreManager);
+    List<ProductOrderEntity> entities = orderDAO.getOrders(username, filter, isPerkStoreManager);
     return entities.stream().map(orderEntity -> getOrderById(orderEntity.getId())).collect(Collectors.toList());
   }
 
