@@ -249,11 +249,15 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
         } else {
           firstConditionAdded = true;
         }
-        if (isPerkStoreManager && filter.getProductId() == 0) {
+        if (isPerkStoreManager) {
           if (filter.getOrdersType() == ProductOrderType.ALL) {
             firstConditionAdded = false;
           } else if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
             query.append(" o.senderId <> ");
+            query.append(identity.getId());
+          } else if (filter.getOrdersType() == ProductOrderType.SENT) {
+            query.append(" o.senderId = ");
+            query.append(identity.getId());
           }
         } else if (filter.getProductId() == 0 && !isPerkStoreManager) {
           if (filter.getOrdersType() == ProductOrderType.ALL) {
@@ -272,7 +276,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
             query.append(" o.senderId = ");
             query.append(identity.getId());
           }
-        } else if (filter.getProductId() != 0 && !filter.getIsProductOwner()&& !isPerkStoreManager) {
+        } else if (filter.getProductId() != 0 && !filter.getIsProductOwner() && !isPerkStoreManager) {
           query.append(" o.senderId = ");
           query.append(identity.getId());
         } else {

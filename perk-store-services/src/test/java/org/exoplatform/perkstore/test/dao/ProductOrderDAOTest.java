@@ -306,7 +306,7 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
-
+    filter.setIsProductOwner(true);
     orders = orderDAO.getOrders(username, filter, false);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
@@ -315,8 +315,44 @@ public class ProductOrderDAOTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
 
+    filter.setIsProductOwner(false);
     // Test with not existing identity
     orders = orderDAO.getOrders("root30", filter, false);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    // Test filter with productID in case of perkStore manager assuming root1 is
+    // perkStore manager
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = orderDAO.getOrders("root1", filter, true);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = orderDAO.getOrders("root1", filter, true);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SENT);
+    orders = orderDAO.getOrders("root1", filter, true);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    // Test filter without productID in case of perkStore manager assuming root1 is
+    // perkStore manager
+    filter.setProductId(0);
+    filter.setOrdersType(ProductOrderType.ALL);
+    orders = orderDAO.getOrders("root1", filter, true);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.RECEIVED);
+    orders = orderDAO.getOrders("root1", filter, true);
+    assertNotNull(orders);
+    assertEquals(1, orders.size(), 0);
+
+    filter.setOrdersType(ProductOrderType.SENT);
+    orders = orderDAO.getOrders("root1", filter, true);
     assertNotNull(orders);
     assertEquals(0, orders.size(), 0);
 
