@@ -4,5 +4,8 @@
   },
   "extends": [
     "eslint-config-meedsio"
-  ]
+  ],
+  "rules": {
+    "vue/no-mutating-props": "warn"
+  }
 }

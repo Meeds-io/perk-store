@@ -46,7 +46,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 offset-y
                 attach
                 :nudge-left="95">
-                <template v-slot:activator="{ on}">
+                <template #activator="{ on}">
                   <v-btn
                     dark
                     :title="$t('exoplatform.perkstore.button.editProduct', {0: product.title})"

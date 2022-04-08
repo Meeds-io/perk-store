@@ -66,7 +66,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     <v-menu
                       v-model="showMenu"
                       offset-y>
-                      <template v-slot:activator="{ on }">
+                      <template #activator="{ on }">
                         <button
                           class="btn "
                           v-on="on"
@@ -195,7 +195,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   <v-menu
                     v-model="showOrderMenu"
                     offset-y>
-                    <template v-slot:activator="{ on }">
+                    <template #activator="{ on }">
                       <button
                         class="btn"
                         v-on="on"
