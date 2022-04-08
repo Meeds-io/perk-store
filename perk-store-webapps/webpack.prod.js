@@ -15,23 +15,13 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 const path = require('path');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const webpackCommonConfig = require('./webpack.common.js');
 
 const config = merge(webpackCommonConfig, {
   mode: 'production',
-  entry: {
-    perkstore: './src/main/webapp/vue-app/perk-store.js',
-    perkstoreSearch: './src/main/webapp/vue-app/perk-store-search.js',
-    PerkStoreAdmin: './src/main/webapp/vue-app/perk-store-admin/main.js',
-  },
   output: {
     path: path.join(__dirname, 'target/perk-store/')
-  },
-  externals: {
-    vue: 'Vue',
-    vuetify: 'Vuetify',
-    jquery: '$'
   }
 });
 
