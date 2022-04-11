@@ -40,7 +40,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               flat>
               <v-spacer />
               <v-menu
-                v-if="userData.canEdit"
+                v-if="isProductOwner"
                 v-model="showMenu"
                 offset-x
                 offset-y
@@ -49,7 +49,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <template #activator="{ on}">
                   <v-btn
                     dark
-                    :title="$t('exoplatform.perkstore.button.editProduct', {0: product.title})"
                     icon
                     class="productCardAction mr-0"
                     v-on="on"
@@ -58,9 +57,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   </v-btn>
                 </template>
                 <v-list class="pa-0 ma-0">
-                  <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
+                  <v-list-item
+                    v-if="userData.canEdit"
+                    class="editLabelProduct"
+                    @mousedown="$event.preventDefault()">
                     <v-list-item-title class="editProductMenu ml-n2" @click="$emit('edit', product)">
                       <i class="uiIconEdit mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuEditProduct') }}
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
+                    <v-list-item-title class="editProductMenu ml-n2" @click="$emit('orders-list', product, null)">
+                      <i class="fas fa-list primary--text mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuProductOrders') }}
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -193,6 +200,9 @@ export default {
     showMenu: false
   }),
   computed: {
+    isProductOwner() {
+      return this.product.userData.canEdit || this.product.userData.username === this.product.creator.id || this.product.userData.username === this.product.receiverMarchand.id ;
+    },
     cardTextClass() {
       return this.cantBuyProduct ? '' : 'clickable ';
     },
