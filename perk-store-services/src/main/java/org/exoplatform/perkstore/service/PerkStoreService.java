@@ -292,6 +292,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     if (StringUtils.isBlank(username)) {
       throw new IllegalArgumentException("username is mandatory");
     }
+    boolean isProductOwner = false;
 
     if (!canAccessApplication(getGlobalSettings(), username)) {
       throw new PerkStoreException(GLOBAL_SETTINGS_ACCESS_DENIED, username);
@@ -304,13 +305,12 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         if (!canViewProduct(product, username, isPerkStoreManager(username))) {
           throw new PerkStoreException(PRODUCT_ACCESS_DENIED, product.getTitle(), username);
         }
-        filter.setIsProductOwner(product.getCreator().getId().equals(username) || product.getReceiverMarchand().equals(username));
-      } else {
-        filter.setIsProductOwner(false);
+        isProductOwner = StringUtils.equals(product.getCreator().getId(), username)
+            || StringUtils.equals(product.getReceiverMarchand().getId(), username);
       }
     }
     List<ProductOrder> orders = null;
-    Boolean isPerkStoreManager = isPerkStoreManager(username);
+    boolean isPerkStoreManager = isPerkStoreManager(username);
     long selectedOrderId = filter.getSelectedOrderId();
     if (selectedOrderId > 0) {
       // One single order is selected
@@ -322,7 +322,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
         return Collections.singletonList(order);
       }
     } else {
-      orders = perkStoreStorage.getOrders(username, filter, isPerkStoreManager);
+      orders = perkStoreStorage.getOrders(username, filter, isPerkStoreManager, isProductOwner);
     }
     if (orders != null && !orders.isEmpty()) {
       orders.stream().forEach(order -> computeOrderFields(null, order));

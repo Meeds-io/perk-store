@@ -167,8 +167,8 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     return result == null ? 0 : result;
   }
 
-  public List<ProductOrderEntity> getOrders(String username, OrderFilter filter, Boolean isPerkStoreManager) {
-    StringBuilder orderQuery = getOrderFilterQueryString(username,filter, isPerkStoreManager);
+  public List<ProductOrderEntity> getOrders(String username, OrderFilter filter, Boolean isPerkStoreManager, Boolean isProductOwner) {
+    StringBuilder orderQuery = getOrderFilterQueryString(username,filter, isPerkStoreManager, isProductOwner);
     if (StringUtils.isEmpty(orderQuery.toString().trim())) {
       orderQuery.insert(0, "Select o from Order o ");
     } else {
@@ -184,7 +184,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
   }
 
   public Long countOrders(String username, OrderFilter filter) {
-    StringBuilder orderQuery = getOrderFilterQueryString(username,filter,false);
+    StringBuilder orderQuery = getOrderFilterQueryString(username,filter,false, false);
     if (StringUtils.isEmpty(orderQuery.toString().trim())) {
       orderQuery.insert(0, "Select Count (o) from Order o ");
     } else {
@@ -231,7 +231,10 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     }
   }
 
-  private StringBuilder getOrderFilterQueryString(String username, OrderFilter filter, Boolean isPerkStoreManager) {
+  private StringBuilder getOrderFilterQueryString(String username,
+                                                  OrderFilter filter,
+                                                  boolean isPerkStoreManager,
+                                                  boolean isProductOwner) {
     StringBuilder query = new StringBuilder();
 
     boolean firstConditionAdded = false;
@@ -259,7 +262,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
             query.append(" o.senderId = ");
             query.append(identity.getId());
           }
-        } else if (filter.getProductId() == 0 && !isPerkStoreManager) {
+        } else if (filter.getProductId() == 0) {
           if (filter.getOrdersType() == ProductOrderType.ALL) {
             query.append("( o.senderId = ");
             query.append(identity.getId());
@@ -276,7 +279,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
             query.append(" o.senderId = ");
             query.append(identity.getId());
           }
-        } else if (filter.getProductId() != 0 && !filter.getIsProductOwner() && !isPerkStoreManager) {
+        } else if (filter.getProductId() != 0 && !isProductOwner) {
           query.append(" o.senderId = ");
           query.append(identity.getId());
         } else {
