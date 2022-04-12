@@ -974,19 +974,19 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     checkBasicOperations(filter);
     
     try {
-      perkStoreService.countOrders(null, USERNAME);
+      perkStoreService.countUserOrders(null, USERNAME);
       fail("filter shouldn't be null");
     } catch (IllegalArgumentException e1) {
       // Expected
     }
     try {
-      perkStoreService.countOrders(filter, null);
+      perkStoreService.countUserOrders(filter, null);
       fail("username shouldn't be null");
     } catch (IllegalArgumentException e1) {
       // Expected
     }
     filter.setOrdersType(ProductOrderType.ALL);
-    Long orders = perkStoreService.countOrders(filter, USERNAME);
+    Long orders = perkStoreService.countUserOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(0, orders, 0);
     
@@ -1000,7 +1000,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
       newOrder(products[i]);
     }
     
-    orders = perkStoreService.countOrders(filter, USERNAME);
+    orders = perkStoreService.countUserOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(5, orders.intValue());
     }
