@@ -88,7 +88,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <v-chip
               slot-scope="{ hover: hoverPending }"
               :class="`${hoverPending && 'elevation-3'} userPendingOrders clickable`"
-              @click="$emit('orders-list', product, null, true)">
+              @click="$emit('orders-list', product, null)">
               <v-icon
                 :left="!$vuetify.rtl"
                 size="16"

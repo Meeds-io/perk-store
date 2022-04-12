@@ -127,8 +127,8 @@ export default {
     },
   },
   methods: {
-    displayOrdersList(productId, orderId, currentUserOrders) {
-      this.$emit('orders-list', productId, orderId, currentUserOrders);
+    displayOrdersList(productId, orderId) {
+      this.$emit('orders-list', productId, orderId);
     }
   },
 };

@@ -167,8 +167,8 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     return result == null ? 0 : result;
   }
 
-  public List<ProductOrderEntity> getOrders(String username, OrderFilter filter) {
-    StringBuilder orderQuery = getOrderFilterQueryString(username,filter);
+  public List<ProductOrderEntity> getOrders(String username, OrderFilter filter, boolean isPerkStoreManager, boolean isProductOwner) {
+    StringBuilder orderQuery = getOrderFilterQueryString(username,filter, isPerkStoreManager, isProductOwner);
     if (StringUtils.isEmpty(orderQuery.toString().trim())) {
       orderQuery.insert(0, "Select o from Order o ");
     } else {
@@ -183,20 +183,17 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     return query.getResultList();
   }
 
-  public Long countOrders(String username, OrderFilter filter) {
-    StringBuilder orderQuery = getOrderFilterQueryString(username,filter);
+  public Long countOrders(String username, OrderFilter filter, boolean isPerkStoreManager, boolean isProductOwner) {
+    StringBuilder orderQuery = getOrderFilterQueryString(username, filter, isPerkStoreManager, isProductOwner);
     if (StringUtils.isEmpty(orderQuery.toString().trim())) {
-      orderQuery.insert(0, "Select Count (o) from Order o ");
+      orderQuery.insert(0, "Select count(o) from Order o ");
     } else {
-      orderQuery.insert(0, "Select Count (o) from Order o WHERE ");
+      orderQuery.insert(0, "Select count(o) from Order o WHERE ");
     }
-    TypedQuery<Long> query = getEntityManager().createQuery(orderQuery.toString(),
-                                                            Long.class);
-
+    TypedQuery<Long> query = getEntityManager().createQuery(orderQuery.toString(), Long.class);
     Long result = query.getSingleResult();
     return result == null ? 0 : result;
   }
-  
 
   public ProductOrderEntity findOrderByTransactionHash(String hash) {
     TypedQuery<ProductOrderEntity> query = getEntityManager().createNamedQuery("Order.findOrderByTransactionHash",
@@ -231,7 +228,10 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     }
   }
 
-  private StringBuilder getOrderFilterQueryString(String username, OrderFilter filter) {
+  private StringBuilder getOrderFilterQueryString(String username,
+                                                  OrderFilter filter,
+                                                  boolean isPerkStoreManager,
+                                                  boolean isProductOwner) {
     StringBuilder query = new StringBuilder();
 
     boolean firstConditionAdded = false;
@@ -249,7 +249,17 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
         } else {
           firstConditionAdded = true;
         }
-        if (filter.getProductId() ==0 && filter.isMyOrders()) {
+        if (isPerkStoreManager) {
+          if (filter.getOrdersType() == ProductOrderType.ALL) {
+            firstConditionAdded = false;
+          } else if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
+            query.append(" o.senderId <> ");
+            query.append(identity.getId());
+          } else if (filter.getOrdersType() == ProductOrderType.SENT) {
+            query.append(" o.senderId = ");
+            query.append(identity.getId());
+          }
+        } else if (filter.getProductId() == 0) {
           if (filter.getOrdersType() == ProductOrderType.ALL) {
             query.append("( o.senderId = ");
             query.append(identity.getId());
@@ -266,9 +276,11 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
             query.append(" o.senderId = ");
             query.append(identity.getId());
           }
+        } else if (filter.getProductId() != 0 && !isProductOwner) {
+          query.append(" o.senderId = ");
+          query.append(identity.getId());
         } else {
-        query.append(" o.senderId = ");
-        query.append(identity.getId());
+          firstConditionAdded = false;
         }
       }
     }

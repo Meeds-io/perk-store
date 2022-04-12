@@ -59,22 +59,6 @@ public class PerkStoreOrderREST implements ResourceContainer {
     this.perkStoreService = perkStoreService;
   }
 
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("notProcessed")
-  @RolesAllowed("users")
-  @ApiOperation(value = "Retrieves the list of not processed orders for current user", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns a list of orders")
-  @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response listNotProcessedOrders(@ApiParam(value = "Returning or not only the number of Orders without the whole list", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
-    OrderFilter filter = new OrderFilter();
-    filter.setNotProcessed(true);
-    return listOrders(filter, returnSize);
-  }
-
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
@@ -86,23 +70,16 @@ public class PerkStoreOrderREST implements ResourceContainer {
       @ApiResponse(code = 400, message = "Invalid query input"),
       @ApiResponse(code = 403, message = "Unauthorized operation"),
       @ApiResponse(code = 500, message = "Internal server error") })
-  public Response listOrders(@ApiParam(value = "OrderFilter object with search conditions", required = true) OrderFilter filter,
-                             @ApiParam(value = "Returning or not only the number of Orders without the whole list", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
+  public Response listOrders(@ApiParam(value = "OrderFilter object with search conditions", required = true)
+  OrderFilter filter) {
     if (filter == null) {
       LOG.warn("Bad request sent to server with empty filter");
       return Response.status(400).build();
     }
     String currentUserId = getCurrentUserId();
     try {
-      if (returnSize) {
-        Long totalOrders = perkStoreService.countOrders(filter, currentUserId);
-        JSONObject ordersSize = new JSONObject();
-        ordersSize.put("size", totalOrders);
-        return Response.ok(ordersSize.toString()).build();
-      } else {
-        List<ProductOrder> orders = perkStoreService.getOrders(filter, currentUserId);
-        return Response.ok(orders).build();
-      }
+      List<ProductOrder> orders = perkStoreService.getOrders(filter, currentUserId);
+      return Response.ok(orders).build();
     } catch (PerkStoreException e) {
       return computeErrorResponse(LOG, e, "Listing orders", currentUserId, filter);
     } catch (Exception e) {
