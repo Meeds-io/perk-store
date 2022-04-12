@@ -963,16 +963,16 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   }
   
   @Test
-  public void testCountOrders() throws Exception {
+  public void testCountUserOrders() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
-    
+
     OrderFilter filter = new OrderFilter();
     checkBasicOperations(filter);
-    
+
     filter.setLimit(10);
     filter.setNotProcessed(true);
     checkBasicOperations(filter);
-    
+
     try {
       perkStoreService.countUserOrders(null, USERNAME);
       fail("filter shouldn't be null");
@@ -989,9 +989,9 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     Long orders = perkStoreService.countUserOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(0, orders, 0);
-    
+
     Product[] products = new Product[5];
-    
+
     for (int i = 0; i < 5; i++) {
       products[i] = newProductInstance(new Product());
       products[i].setAccessPermissions(Arrays.asList(Utils.toProfile(1l)));
@@ -999,11 +999,11 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
       entitiesToClean.add(products[i]);
       newOrder(products[i]);
     }
-    
+
     orders = perkStoreService.countUserOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(5, orders.intValue());
-    }
+  }
     
   @Test
   public void testGetOrdersWithFraud() throws Exception {

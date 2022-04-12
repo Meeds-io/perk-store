@@ -330,6 +330,44 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     return orders;
   }
 
+  public Long countOrders(OrderFilter filter, String username) throws Exception {
+    if (filter == null) {
+      throw new IllegalArgumentException("Filter is mandatory");
+    }
+    if (StringUtils.isBlank(username)) {
+      throw new IllegalArgumentException("username is mandatory");
+    }
+    boolean isProductOwner = false;
+    if (!canAccessApplication(getGlobalSettings(), username)) {
+      throw new PerkStoreException(GLOBAL_SETTINGS_ACCESS_DENIED, username);
+    } else {
+      if (filter.getProductId() > 0) {
+        Product product = getProductById(filter.getProductId());
+        if (product == null) {
+          throw new PerkStoreException(PRODUCT_NOT_EXISTS, filter.getProductId());
+        }
+        if (!canViewProduct(product, username, isPerkStoreManager(username))) {
+          throw new PerkStoreException(PRODUCT_ACCESS_DENIED, product.getTitle(), username);
+        }
+        isProductOwner = product.getCreator() != null && StringUtils.equals(product.getCreator().getId(), username)
+            || product.getReceiverMarchand() != null && StringUtils.equals(product.getReceiverMarchand().getId(), username);
+      }
+    }
+    long selectedOrderId = filter.getSelectedOrderId();
+    if (selectedOrderId > 0) {
+      // One single order is selected
+      ProductOrder order = getOrderById(selectedOrderId);
+      if (order == null || (!StringUtils.equals(order.getSender().getId(), username) && !canEditProduct(order.getProductId(), username))) {
+        throw new PerkStoreException(ORDER_ACCESS_DENIED, selectedOrderId, username);
+      } else {
+        return 1l;
+      }
+    } else {
+      boolean isPerkStoreManager = isPerkStoreManager(username);
+      return perkStoreStorage.countOrders(username, filter, isPerkStoreManager, isProductOwner);
+    }
+  }
+
   public Long countUserOrders(OrderFilter filter, String username) {
     if (filter == null) {
       throw new IllegalArgumentException("Filter is mandatory");
@@ -337,7 +375,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     if (StringUtils.isBlank(username)) {
       throw new IllegalArgumentException("username is mandatory");
     }
-    return perkStoreStorage.countOrders(username, filter);
+    return perkStoreStorage.countOrders(username, filter, false, false);
   }
 
   public void checkCanCreateOrder(ProductOrder order, String username) throws PerkStoreException {

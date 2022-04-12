@@ -167,7 +167,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     return result == null ? 0 : result;
   }
 
-  public List<ProductOrderEntity> getOrders(String username, OrderFilter filter, Boolean isPerkStoreManager, Boolean isProductOwner) {
+  public List<ProductOrderEntity> getOrders(String username, OrderFilter filter, boolean isPerkStoreManager, boolean isProductOwner) {
     StringBuilder orderQuery = getOrderFilterQueryString(username,filter, isPerkStoreManager, isProductOwner);
     if (StringUtils.isEmpty(orderQuery.toString().trim())) {
       orderQuery.insert(0, "Select o from Order o ");
@@ -183,20 +183,17 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
     return query.getResultList();
   }
 
-  public Long countOrders(String username, OrderFilter filter) {
-    StringBuilder orderQuery = getOrderFilterQueryString(username,filter,false, false);
+  public Long countOrders(String username, OrderFilter filter, boolean isPerkStoreManager, boolean isProductOwner) {
+    StringBuilder orderQuery = getOrderFilterQueryString(username, filter, isPerkStoreManager, isProductOwner);
     if (StringUtils.isEmpty(orderQuery.toString().trim())) {
-      orderQuery.insert(0, "Select Count (o) from Order o ");
+      orderQuery.insert(0, "Select count(o) from Order o ");
     } else {
-      orderQuery.insert(0, "Select Count (o) from Order o WHERE ");
+      orderQuery.insert(0, "Select count(o) from Order o WHERE ");
     }
-    TypedQuery<Long> query = getEntityManager().createQuery(orderQuery.toString(),
-                                                            Long.class);
-
+    TypedQuery<Long> query = getEntityManager().createQuery(orderQuery.toString(), Long.class);
     Long result = query.getSingleResult();
     return result == null ? 0 : result;
   }
-  
 
   public ProductOrderEntity findOrderByTransactionHash(String hash) {
     TypedQuery<ProductOrderEntity> query = getEntityManager().createNamedQuery("Order.findOrderByTransactionHash",
