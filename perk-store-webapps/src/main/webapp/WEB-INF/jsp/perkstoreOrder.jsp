@@ -5,6 +5,7 @@
 <%@ page import="org.exoplatform.services.resources.ResourceBundleService"%>
 <%@ page import="org.exoplatform.perkstore.service.PerkStoreService"%>
 <%@ page import="org.exoplatform.social.core.service.LinkProvider"%>
+<%@ page import="org.exoplatform.perkstore.model.constant.ProductOrderType" %>
 
 <%
   String title = "My orders";
@@ -29,7 +30,8 @@
   }
   OrderFilter filter = new OrderFilter();
   filter.setNotProcessed(true);
-  long totalOrders = ExoContainerContext.getService(PerkStoreService.class).countOrders(filter, request.getRemoteUser());
+  filter.setOrdersType(ProductOrderType.SENT);
+  long totalOrders = ExoContainerContext.getService(PerkStoreService.class).countUserOrders(filter, request.getRemoteUser());
 %>
 <div class="VuetifyApp">
   <div data-app="true"

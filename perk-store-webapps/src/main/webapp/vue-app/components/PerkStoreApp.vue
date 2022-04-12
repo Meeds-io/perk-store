@@ -603,7 +603,7 @@ export default {
       this.selectedProduct = null;
       this.selectedOrderId = 0;
     },
-    displayProductOrdersList(product, orderId, currentUserOrders) {
+    displayProductOrdersList(product, orderId) {
       this.tab = 1;
       if (!product) {
         return;
@@ -613,7 +613,7 @@ export default {
       this.selectedOrderId = orderId;
       this.searchOrder = null;
       this.displayProductOrders = true;
-      return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init(currentUserOrders));
+      return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.init());
     },
     exportOrders() {
       return this.$nextTick().then(() => this.$refs.ordersList && this.$refs.ordersList.exportOrders());
