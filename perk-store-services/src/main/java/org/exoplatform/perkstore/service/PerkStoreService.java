@@ -1115,19 +1115,12 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
   private boolean canViewProduct(Product product, String username, boolean isPerkStoreManager) {
     if (isPerkStoreManager) {
       return true;
-    }
-
-    if (product.getCreator() != null && StringUtils.isNotBlank(username)) {
-      if (username.equals(product.getCreator().getId())) {
-        return true;
-      }
-    }
-
-    if (StringUtils.isBlank(username)) {
+    } else if (product == null) {
       return false;
-    }
-
-    if (product == null) {
+    } else if (product.getCreator() != null && StringUtils.isNotBlank(username)
+        && username.equals(product.getCreator().getId())) {
+      return true;
+    } else if (StringUtils.isBlank(username)) {
       return false;
     }
 
