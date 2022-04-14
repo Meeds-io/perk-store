@@ -61,8 +61,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-row class="pb-3">
             <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.Marchant') }}:</label>
           </v-row>
-          <v-row v-if="product.creator" class="pb-3">
+          <v-row v-if="product && product.receiverMarchand" class="pb-3">
             <exo-user-avatar
+              :key="product.receiverMarchand.id"
               :profile-id="product.receiverMarchand.id"
               :size="25"
               extra-class="buyFormMarchant"
