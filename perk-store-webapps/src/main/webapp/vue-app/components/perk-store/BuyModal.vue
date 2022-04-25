@@ -43,9 +43,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
         <v-btn
-          :disabled="disableButton()"
+          :disabled="disableButton && !isSameNetworkVersion"
           :loading="loadingAction()"
-          class="primary me-1"
+          class="btn btn-primary me-1"
           large
           @click="buyProduct">
           {{ $t('exoplatform.perkstore.button.buy') }}
@@ -92,6 +92,8 @@ export default {
   data() {
     return {
       dialog: false,
+      isSameNetworkVersion: false,
+      polygonURL: 'https://polygon.technology'
     };
   },
   methods: {
@@ -105,8 +107,12 @@ export default {
       this.$refs.buyForm.payProduct(event);
     },
     async open() {
+      this.isSameNetworkVersion = parseInt(window.ethereum?.networkVersion) === window.walletSettings?.network?.id;
       await this.$refs.BuyModalDrawer.open();
       this.$refs.buyForm.init();
+      if (!this.isSameNetworkVersion){
+        this.$root.$emit('show-alert', {type: 'warning',message: `${this.$t('exoplatform.perkstore.warn.networkVersion')}<br>${this.polygonURL}`});
+      }
     },
     onCloseDrawer() {
       this.$emit('closeProductDetails');
