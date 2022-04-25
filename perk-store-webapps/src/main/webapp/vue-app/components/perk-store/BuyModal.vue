@@ -93,7 +93,6 @@ export default {
     return {
       dialog: false,
       isSameNetworkVersion: false,
-      polygonURL: 'https://polygon.technology'
     };
   },
   methods: {
@@ -111,7 +110,7 @@ export default {
       await this.$refs.BuyModalDrawer.open();
       this.$refs.buyForm.init();
       if (!this.isSameNetworkVersion){
-        this.$root.$emit('show-alert', {type: 'warning',message: `${this.$t('exoplatform.perkstore.warn.networkVersion')}<br>${this.polygonURL}`});
+        this.$root.$emit('show-alert', {type: 'warning',message: `${this.$t('exoplatform.perkstore.warn.networkVersion')}<br>${this.walletUtils.getNetworkLink()}`});
       }
     },
     onCloseDrawer() {
