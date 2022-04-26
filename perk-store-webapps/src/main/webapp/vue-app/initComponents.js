@@ -17,6 +17,7 @@ import ProductDetailMaximized from './components/perk-store/ProductDetailMaximiz
 import ProductNotification from './components/perk-store/ProductNotification.vue';
 import RefundModal from './components/perk-store/RefundModal.vue';
 import PerkStoreProductSearchCard from './components/perk-store-search/PerkStoreProductSearchCard.vue';
+import PerkStoreAlert from './components/perk-store/perkStroreAlert.vue';
 
 
 const components = {
@@ -39,6 +40,8 @@ const components = {
   'perk-store-product-notification': ProductNotification,
   'perk-store-refund-modal': RefundModal,
   'perk-store-product-search-card': PerkStoreProductSearchCard,
+  'perk-store-buy-alert': PerkStoreAlert,
+
 };
 
 for (const key in components) {
