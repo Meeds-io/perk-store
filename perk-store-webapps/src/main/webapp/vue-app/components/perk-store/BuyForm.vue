@@ -112,11 +112,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-col>
       </v-row>
       <v-row class="pl-5">
-        <label v-if="needPassword" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
+        <label v-if="needPassword && this.provider === 'INTERNAL_WALLET'" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
       </v-row>
       <v-row class="pl-5">
         <v-text-field
-          v-if="needPassword"
+          v-if="needPassword && this.provider === 'INTERNAL_WALLET'"
           v-model="walletPassword"
           :append-icon="walletPasswordShow ? 'mdi-eye' : 'mdi-eye-off'"
           :type="walletPasswordShow ? 'text' : 'password'"
@@ -138,6 +138,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 <script>
 import {toFixed, createOrder} from '../../js/PerkStoreProductOrder.js';
+import {searchUserOrSpaceObject} from '../../js/PerkStoreIdentityRegistry.js';
 
 export default {
   props: {
@@ -200,6 +201,7 @@ export default {
         // eslint-disable-next-line no-unused-vars
         (v) => !this.product || !this.product.maxOrdersPerUser || this.quantity <= this.remainingOrdersForUser || this.$t('exoplatform.perkstore.warning.quantityExceedsAllowedOrders', {0: this.remainingOrdersForUser}),
       ],
+
     };
   },
   computed: {
@@ -276,7 +278,20 @@ export default {
     },
     productTitle() {
       return this.product && this.product.title ?  this.product.title : '';
-    }
+    },
+    provider(){
+      return window.walletSettings.wallet.provider;
+    },
+    senderWallet(){
+      return window.walletSettings.wallet;
+    },
+    contractDetails() {
+      return this.tokenUtils.getContractDetails(this.senderWallet.address);
+    },
+    DecimalsAmount() {
+      return this.walletUtils.convertTokenAmountToSend(this.amount, this.contractDetails.decimals);
+    },
+    
   },
   watch: {
     errors() {
@@ -381,37 +396,91 @@ export default {
         this.errors.push(this.$t('exoplatform.perkstore.warning.noAmountToSend'));
         return;
       }
-
       const message = `${this.product.title}: ${this.quantity} x ${this.product.price}${this.symbol ? this.symbol : ''}`;
 
-      // simulate saving order before sending transaction to blockchain
-      return createOrder({
-        productId: this.product.id,
-        quantity: this.quantity,
-        receiver: this.product.receiverMarchand,
-      }, true)
-        .then(() => {
-          document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
-            amount: this.amount,
-            receiver: this.product.receiverMarchand,
-            sender: {
-              type: 'user',
-              id: eXo.env.portal.userName,
-            },
-            password: this.walletPassword,
-            label: message,
-            message: message,
-          }}));
-        })
-        .catch(e => {
-          console.error('Checking order availability error', e);
-          this.loading = false;
-          this.errors.push(e && e.message ? e.message : String(e));
-        }).finally(() => {
-          if (!this.errors || this.errors.length === 0) {
-            this.$emit('close');
-          }
-        });
+      if (this.provider === 'INTERNAL_WALLET') {
+        // simulate saving order before sending transaction to blockchain
+        return createOrder({
+          productId: this.product.id,
+          quantity: this.quantity,
+          receiver: this.product.receiverMarchand,
+        }, true)
+          .then(() => {
+            document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
+              amount: this.amount,
+              receiver: this.product.receiverMarchand,
+              sender: {
+                type: 'user',
+                id: eXo.env.portal.userName,
+              },
+              password: this.walletPassword,
+              label: message,
+              message: message,
+            }}));
+          })
+          .catch(e => {
+            console.error('Checking order availability error', e);
+            this.loading = false;
+            this.errors.push(e && e.message ? e.message : String(e));
+          }).finally(() => {
+            if (!this.errors || this.errors.length === 0) {
+              this.$emit('close');
+            }
+          });
+      } else {
+        if (window.ethereum?.isMetaMask) {
+          return searchUserOrSpaceObject(
+            this.product.receiverMarchand.id,
+            this.product.receiverMarchand.type
+          )
+            .then(wallet => {
+              const transactionParameters = {
+                to: this.contractDetails.address, 
+                from: this.senderWallet.address, 
+                data: this.contractDetails.contract.methods.transfer(wallet.address, this.DecimalsAmount).encodeABI(),
+              };
+              window.ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [transactionParameters],
+              })
+                .then((transactionHash)=>{
+                  return createOrder({
+                    productId: this.product.id,
+                    quantity: this.quantity,
+                    receiver: this.product.receiverMarchand,
+                  }, true)
+                    .then(() => {
+                      this.transactionUtils.saveTransactionDetails({
+                        'contractAddress': this.contractDetails.address,
+                        'contractAmount': this.amount,
+                        'contractMethodName': 'transfer',
+                        'from': this.senderWallet.address,
+                        'label': message,
+                        'message': message,
+                        'pending': true,
+                        'hash': transactionHash,
+                        'timestamp': Date.now(),
+                        'to': wallet.address,
+                      })
+                        .then((savedTransaction)=> {document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens-pending', {detail: savedTransaction}));});
+                    })
+                    .catch(e => {
+                      console.error('Checking order availability error', e);
+                      this.loading = false;
+                      this.errors.push(e && e.message ? e.message : String(e));
+                    }).finally(() => {
+                      if (!this.errors || this.errors.length === 0) {
+                        this.$emit('close');
+                      }
+                    });
+                });
+            });
+            
+           
+
+         
+        }
+      }
     },
   },
 };
