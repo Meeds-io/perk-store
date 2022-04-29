@@ -43,7 +43,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
         <v-btn
-          :disabled="disableButton && !isSameNetworkVersion"
+          :disabled="disableButton && (!isSameNetworkVersion || !isSameAddress)"
           :loading="loadingAction()"
           class="btn btn-primary me-1"
           large
@@ -93,6 +93,7 @@ export default {
     return {
       dialog: false,
       isSameNetworkVersion: true,
+      isSameAddress: true,
     };
   },
   methods: {
@@ -108,11 +109,15 @@ export default {
     async open() {
       if (window.walletSettings?.wallet?.provider !== 'INTERNAL_WALLET') {
         this.isSameNetworkVersion = parseInt(window.ethereum?.networkVersion) === window.walletSettings?.network?.id;
+        this.isSameAddress = window.ethereum?.selectedAddress && window.ethereum?.selectedAddress === window.walletSettings?.wallet?.address || false;
       }
       await this.$refs.BuyModalDrawer.open();
       this.$refs.buyForm.init();
       if (!this.isSameNetworkVersion){
         this.$root.$emit('show-alert', {type: 'warning',message: `${this.$t('exoplatform.perkstore.warn.networkVersion')}<br>${this.walletUtils.getNetworkLink()}`});
+      }
+      if (!this.isSameAddress){
+        this.$root.$emit('show-alert', {type: 'warning',message: this.$t('exoplatform.perkstore.warn.selectedAddress')});
       }
     },
     onCloseDrawer() {
