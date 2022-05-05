@@ -30,6 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         :need-password="needPassword"
         :wallet-loading="walletLoading"
         :wallet-enabled="walletEnabled"
+        @opened-transaction="openTransaction"
         @ordered="$emit('ordered', $event)"
         @close="close" />
     </template>
@@ -37,13 +38,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <div class="d-flex mr-2">
         <v-spacer />
         <button
+          :disabled="openedTransaction"
           :loading="loadingAction()"
           class="ignore-vuetify-classes btn me-1"
           @click="close">
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
         <v-btn
-          :disabled="disableButton && (!isSameNetworkVersion || !isSameAddress)"
+          :disabled="(disableButton && (!isSameNetworkVersion || !isSameAddress)) || openedTransaction"
           :loading="loadingAction()"
           class="btn btn-primary me-1"
           large
@@ -94,6 +96,7 @@ export default {
       dialog: false,
       isSameNetworkVersion: true,
       isSameAddress: true,
+      openedTransaction: false,
     };
   },
   methods: {
@@ -127,6 +130,9 @@ export default {
       this.$emit('closeProductDetails');
       this.$refs.BuyModalDrawer.close();
     },
+    openTransaction(value) {
+      this.openedTransaction = value;
+    }
   },
 };
 </script>

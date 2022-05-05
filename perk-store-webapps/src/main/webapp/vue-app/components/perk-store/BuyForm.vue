@@ -279,10 +279,10 @@ export default {
     productTitle() {
       return this.product && this.product.title ?  this.product.title : '';
     },
-    provider(){
+    provider() {
       return window.walletSettings.wallet.provider;
     },
-    senderWallet(){
+    senderWallet() {
       return window.walletSettings.wallet;
     },
     contractDetails() {
@@ -434,6 +434,7 @@ export default {
             this.product.receiverMarchand.type
           )
             .then(wallet => {
+              this.$emit('opened-transaction', true);
               const transactionParameters = {
                 to: this.contractDetails.address, 
                 from: this.senderWallet.address, 
@@ -444,6 +445,7 @@ export default {
                 params: [transactionParameters],
               })
                 .then((transactionHash)=>{
+                  this.$emit('opened-transaction', false);
                   return createOrder({
                     productId: this.product.id,
                     quantity: this.quantity,
@@ -471,8 +473,13 @@ export default {
                     }).finally(() => {
                       if (!this.errors || this.errors.length === 0) {
                         this.$emit('close');
+                        this.$root.$emit('show-alert', {type: 'success',message: this.$t('exoplatform.perkstore.order.alert.success')});
                       }
                     });
+                })
+                .catch(() => {
+                  this.loading = false;
+                  this.$emit('opened-transaction', false);
                 });
             });
             
