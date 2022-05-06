@@ -306,6 +306,7 @@ export default {
     provider() {
       return window.walletSettings.wallet.provider;
     },
+
     isInternalWallet() {
       return this.provider === 'INTERNAL_WALLET';
     },
