@@ -112,11 +112,35 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-col>
       </v-row>
       <v-row class="pl-5">
-        <label v-if="needPassword && this.provider === 'INTERNAL_WALLET'" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
+        <label v-if="needPassword && isInternalWallet" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
+        <label v-else-if="!isInternalWallet" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.wallet') }}</label>
       </v-row>
       <v-row class="pl-5">
+        <v-col
+          v-if="!isInternalWallet"
+          cols="12"
+          sm="6" 
+          class="d-flex align-center ml-n3">
+          <img
+            class="mt-n1"
+            :src="`/wallet-common/images/metamask.svg`"
+            alt="Metamask"
+            width="18">
+          <span class="pl-2">Metamask :</span>
+        </v-col>
+        <v-col
+          v-if="!isInternalWallet"
+          cols="12"
+          sm="6"
+          align="right">
+          <v-chip class="grey-background">  
+            <span class="mr-3 dark-grey-color walletTitle">
+              {{ metamaskAddressPreview }}
+            </span>
+          </v-chip>
+        </v-col>
         <v-text-field
-          v-if="needPassword && this.provider === 'INTERNAL_WALLET'"
+          v-if="needPassword && isInternalWallet"
           v-model="walletPassword"
           :append-icon="walletPasswordShow ? 'mdi-eye' : 'mdi-eye-off'"
           :type="walletPasswordShow ? 'text' : 'password'"
@@ -282,14 +306,21 @@ export default {
     provider() {
       return window.walletSettings.wallet.provider;
     },
-    senderWallet() {
-      return window.walletSettings.wallet;
+
+    isInternalWallet() {
+      return this.provider === 'INTERNAL_WALLET';
+    },
+    senderAddress() {
+      return window.walletSettings.wallet.address;
     },
     contractDetails() {
-      return this.tokenUtils.getContractDetails(this.senderWallet.address);
+      return this.tokenUtils.getContractDetails(this.senderAddress);
     },
     DecimalsAmount() {
       return this.walletUtils.convertTokenAmountToSend(this.amount, this.contractDetails.decimals);
+    },
+    metamaskAddressPreview() {
+      return this.senderAddress && `${this.senderAddress.substring(0,5)}...${this.senderAddress.substring(this.senderAddress.length-4,this.senderAddress.length)}`;
     },
     
   },
@@ -398,7 +429,7 @@ export default {
       }
       const message = `${this.product.title}: ${this.quantity} x ${this.product.price}${this.symbol ? this.symbol : ''}`;
 
-      if (this.provider === 'INTERNAL_WALLET') {
+      if (this.isInternalWallet) {
         // simulate saving order before sending transaction to blockchain
         return createOrder({
           productId: this.product.id,
@@ -437,7 +468,7 @@ export default {
               this.$emit('opened-transaction', true);
               const transactionParameters = {
                 to: this.contractDetails.address, 
-                from: this.senderWallet.address, 
+                from: this.senderAddress, 
                 data: this.contractDetails.contract.methods.transfer(wallet.address, this.DecimalsAmount).encodeABI(),
               };
               window.ethereum.request({
@@ -456,7 +487,7 @@ export default {
                         'contractAddress': this.contractDetails.address,
                         'contractAmount': this.amount,
                         'contractMethodName': 'transfer',
-                        'from': this.senderWallet.address,
+                        'from': this.senderAddress,
                         'label': message,
                         'message': message,
                         'pending': true,
