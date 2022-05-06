@@ -112,7 +112,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-col>
       </v-row>
       <v-row class="pl-5">
-        <label v-if="needPassword" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
+        <label v-if="needPassword && isInternalWallet" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.walletPassword') }}</label>
+        <label v-else-if="!isInternalWallet" class="font-weight-bold">{{ $t('exoplatform.perkstore.label.wallet') }}</label>
       </v-row>
       <v-row class="pl-5">
         <v-col
@@ -122,7 +123,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           class="d-flex align-center ml-n3">
           <img
             class="mt-n1"
-            :src="`/perk-store/images/metamask.svg`"
+            :src="`/wallet-common/images/metamask.svg`"
             alt="Metamask"
             width="18">
           <span class="pl-2">Metamask :</span>
