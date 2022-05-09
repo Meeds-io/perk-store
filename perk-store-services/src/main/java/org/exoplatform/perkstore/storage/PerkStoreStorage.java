@@ -67,7 +67,7 @@ public class PerkStoreStorage {
 
   public Product getProductById(long productId) {
     ProductEntity entity = productDAO.find(productId);
-    if (entity == null) {
+    if (entity == null || entity.isDeleted()) {
       return null;
     } else {
       return parseProductFromEntity(entity);

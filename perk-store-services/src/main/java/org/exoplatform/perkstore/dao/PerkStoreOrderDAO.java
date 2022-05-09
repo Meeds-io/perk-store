@@ -241,26 +241,28 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
       firstConditionAdded = true;
     }
 
+    if (firstConditionAdded) {
+      query.append(AND_OPERATOR);
+    }
+
+    query.append(" o.product.isDeleted = false");
+
     if (StringUtils.isNotBlank(username)) {
       Identity identity = getIdentityByTypeAndId(USER_ACCOUNT_TYPE, username);
       if (identity != null) {
-        if (firstConditionAdded) {
-          query.append(AND_OPERATOR);
-        } else {
-          firstConditionAdded = true;
-        }
         if (isPerkStoreManager) {
-          if (filter.getOrdersType() == ProductOrderType.ALL) {
-            firstConditionAdded = false;
-          } else if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
+           if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
+            query.append(AND_OPERATOR);
             query.append(" o.senderId <> ");
             query.append(identity.getId());
           } else if (filter.getOrdersType() == ProductOrderType.SENT) {
+            query.append(AND_OPERATOR);
             query.append(" o.senderId = ");
             query.append(identity.getId());
           }
         } else if (filter.getProductId() == 0) {
           if (filter.getOrdersType() == ProductOrderType.ALL) {
+            query.append(AND_OPERATOR);
             query.append("( o.senderId = ");
             query.append(identity.getId());
             query.append(OR_OPERATOR);
@@ -269,38 +271,31 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
             query.append(" )");
           }
           if (filter.getOrdersType() == ProductOrderType.RECEIVED) {
+            query.append(AND_OPERATOR);
             query.append(" o.receiverId = ");
             query.append(identity.getId());
           }
           if (filter.getOrdersType() == ProductOrderType.SENT) {
+            query.append(AND_OPERATOR);
             query.append(" o.senderId = ");
             query.append(identity.getId());
           }
         } else if (filter.getProductId() != 0 && !isProductOwner) {
+          query.append(AND_OPERATOR);
           query.append(" o.senderId = ");
           query.append(identity.getId());
-        } else {
-          firstConditionAdded = false;
         }
       }
     }
 
     if (filter.isNotProcessed()) {
-      if (firstConditionAdded) {
-        query.append(AND_OPERATOR);
-      } else {
-        firstConditionAdded = true;
-      }
+      query.append(AND_OPERATOR);
       query.append(" o.remainingQuantity > 0");
     } else {
       List<Integer> statuses = getSelectedStatuses(filter);
 
       if (!statuses.isEmpty()) {
-        if (firstConditionAdded) {
-          query.append(AND_OPERATOR);
-        } else {
-          firstConditionAdded = true;
-        }
+        query.append(AND_OPERATOR);
         query.append(" o.status in (");
         query.append(StringUtils.join(statuses, ", "));
         query.append(" )");
@@ -309,9 +304,7 @@ public class PerkStoreOrderDAO extends GenericDAOJPAImpl<ProductOrderEntity, Lon
 
     long selectedDate = filter.getSelectedDate();
     if (filter.isSearchInDates() && selectedDate > 0) {
-      if (firstConditionAdded) {
-        query.append(AND_OPERATOR);
-      }
+      query.append(AND_OPERATOR);
       query.append(" o.createdDate > ");
       query.append(getStartOfDayMillis(selectedDate));
       query.append(" AND o.createdDate < ");
