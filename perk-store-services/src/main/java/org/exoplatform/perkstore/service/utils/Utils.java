@@ -341,6 +341,7 @@ public class Utils {
     product.setCreatedDate(entity.getCreatedDate());
     product.setLastModifiedDate(entity.getLastModifiedDate());
     product.setReceiverMarchand(toProfile(entity.getReceiverId()));
+    product.setDeleted(entity.isDeleted());
     if (entity.getMarchands() == null) {
       product.setMarchands(Collections.emptyList());
     } else {
@@ -384,7 +385,7 @@ public class Utils {
     entity.setLastModifiedDate(product.getLastModifiedDate());
 
     entity.setReceiverId(getTechnicalId(product.getReceiverMarchand()));
-
+    entity.setDeleted(product.isDeleted());
     if (product.getMarchands() == null || product.getMarchands().isEmpty()) {
       entity.setMarchands(Collections.emptyList());
     } else {
