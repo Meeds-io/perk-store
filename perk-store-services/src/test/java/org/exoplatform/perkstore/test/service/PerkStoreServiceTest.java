@@ -22,6 +22,8 @@ import static org.junit.Assert.*;
 import java.net.URL;
 import java.util.*;
 
+import org.exoplatform.commons.exception.ObjectNotFoundException;
+import org.exoplatform.perkstore.storage.PerkStoreStorage;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -291,6 +293,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   @Test
   public void testGetProducts() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    PerkStoreStorage perkStoreStorage = getService(PerkStoreStorage.class);
     List<Product> products = perkStoreService.getProducts(false, USERNAME);
     assertNotNull(products);
     assertEquals(0, products.size());
@@ -314,6 +317,13 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     products = perkStoreService.getProducts(false, USERNAME_ADMIN);
     assertNotNull(products);
     assertEquals(2, products.size());
+
+    savedProduct.setDeleted(true);
+    perkStoreStorage.saveProduct(savedProduct, USERNAME);
+
+    products = perkStoreService.getProducts(false, USERNAME_ADMIN);
+    assertNotNull(products);
+    assertEquals(1, products.size());
   }
   
   @Test
@@ -343,6 +353,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   @Test
   public void testGetProductById() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    PerkStoreStorage perkStoreStorage = getService(PerkStoreStorage.class);
     Product product = perkStoreService.getProductById(0);
     assertNull(product);
 
@@ -354,20 +365,20 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
 
     productById = perkStoreService.getProductById(savedProduct.getId());
     assertNotNull(productById);
+
+    savedProduct.setDeleted(true);
+    perkStoreStorage.saveProduct(savedProduct, USERNAME);
+    productById = perkStoreService.getProductById(savedProduct.getId());
+    assertNull(productById);
+
   }
 
   @Test
   public void testGetProductByIdAndUser() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
     Product product = null;
-    try {
-      product = perkStoreService.getProductById(0, USERNAME);
-      fail("Should throw an exception with error message");
-    } catch (PerkStoreException e) {
-      assertNotNull(e.getErrorType());
-      assertNotNull(e.getLocalizedMessage());
-      assertEquals(PerkStoreError.PRODUCT_NOT_EXISTS, e.getErrorType());
-    }
+    
+    product = perkStoreService.getProductById(0, USERNAME);
     assertNull(product);
 
     Product savedProduct = newProduct(perkStoreService, new Product());
@@ -710,6 +721,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   @Test
   public void testGetOrders() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
+    PerkStoreStorage perkStoreStorage = getService(PerkStoreStorage.class);
 
     OrderFilter filter = new OrderFilter();
     checkBasicOperations(filter);
@@ -787,6 +799,21 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     orders = perkStoreService.getOrders(filter, USERNAME);
     assertNotNull(orders);
     assertEquals(1, orders.size(), 0);
+
+    savedProduct.setDeleted(true);
+    perkStoreStorage.saveProduct(savedProduct, USERNAME);
+
+    OrderFilter finalFilter = filter;
+    assertThrows(PerkStoreException.class, () -> perkStoreService.getOrders(finalFilter, USERNAME));
+
+    filter.setProductId(0);
+    orders = perkStoreService.getOrders(filter, USERNAME);
+    assertNotNull(orders);
+    assertEquals(0, orders.size(), 0);
+
+    savedProduct.setDeleted(false);
+    perkStoreStorage.saveProduct(savedProduct, USERNAME);
+    filter.setProductId(savedProduct.getId());
 
     try {
       filter.setSelectedOrderId(savedOrder.getId());
@@ -1314,5 +1341,21 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     } finally {
       container.unregisterComponent(UploadService.class);
     }
+  }
+
+  @Test
+  public void testDeleteProduct() throws Exception {
+    PerkStoreService perkStoreService = getService(PerkStoreService.class);
+
+    Product savedProduct = newProduct(perkStoreService, new Product());
+    assertNotNull(savedProduct);
+
+    Product productById = perkStoreService.getProductById(savedProduct.getId());
+    assertNotNull(productById);
+
+    savedProduct.setDeleted(true);
+    perkStoreService.deleteProduct(savedProduct.getId(), USERNAME);
+    productById = perkStoreService.getProductById(savedProduct.getId());
+    assertNull(productById);
   }
 }

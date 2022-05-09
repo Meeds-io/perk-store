@@ -102,6 +102,10 @@ public class Product extends PerkStoreCloneable implements Serializable {
   @Exclude
   private UserProductData   userData         = new UserProductData();
 
+  // Computed
+  @Exclude
+  private boolean           deleted;
+
   @SuppressWarnings("all")
   public Product clone() {
     return (Product) super.clone();

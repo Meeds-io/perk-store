@@ -59,3 +59,15 @@ export function saveProduct(product) {
     }
   });
 }
+
+export function deleteProduct(productId) {
+  return fetch(`/portal/rest/perkstore/api/product/delete/${productId}`, {
+    method: 'PUT',
+    credentials: 'include',
+  }).then((resp) => {
+    if (!resp || !resp.ok) {
+      throw new Error(resp.status);
+    }
+  });
+}
+

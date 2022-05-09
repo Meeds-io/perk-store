@@ -53,7 +53,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @product-details="$emit('product-details', $event)"
                 @orders-list="displayOrdersList"
                 @edit="$emit('edit', $event)"
-                @buy="$emit('buy', $event)" />
+                @buy="$emit('buy', $event)"
+                @product-deleted="$emit('product-deleted', $event)" />
             </template>
           </template>
         </v-layout>
