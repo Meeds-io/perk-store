@@ -361,6 +361,7 @@ export default {
   watch: {
     tab() {
       if (this.tab === 0) {
+        console.log('tab is :',this.tab);
         window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
       } else if (this.tab === 1) {
         window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`);
@@ -369,7 +370,9 @@ export default {
     loading() {
       if (!this.loading) {
         const urlPath = document.location.pathname;
+        console.log('the url path is: ',urlPath);
         const productId = urlPath.split('catalog/')[1] ? urlPath.split('catalog/')[1].split(/[^0-9]/)[0] : null;
+        console('productid is when loading and splited from the url is: ',productId);
         if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
           this.tab = 0;
         } else if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`) {
@@ -470,6 +473,7 @@ export default {
           .replace(/&/g, '","')
           .replace(/=/g, '":"')}"}`
       );
+      console.log('params',parameters);
     }
     return this.init(parameters && parameters.productId, parameters &&
     parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
@@ -510,6 +514,8 @@ export default {
           this.userSettings = this.settings.userSettings;
           this.productsFilters.activeProducts = true;
           this.ordersFilter = getOrderFilter();
+          console.log('orderFilter', this.ordersFilter);
+          console.log('selectedOrderId', selectedOrderId);
         })
         .then(() => this.refreshProductList(selectedProductId, selectedOrderId))
         .then(() => {
@@ -558,8 +564,8 @@ export default {
             this.products = products.filter(product => (product.creator && product.creator.type === 'user' && product.creator.id === eXo.env.portal.userName)
                 || (product.receiverMarchand && product.receiverMarchand.type === 'user' && product.receiverMarchand.id === eXo.env.portal.userName));
           }
-          if (this.products.length && selectedProductId) {
-            const selectedProduct = this.products.find(product => product.id === Number(selectedProductId));
+          if (products.length && selectedProductId) {
+            const selectedProduct = products.find(product => product.id === Number(selectedProductId));
             if (selectedProduct) {
               if (selectedOrderId) {
                 this.displayProductOrdersList(selectedProduct, Number(selectedOrderId));
