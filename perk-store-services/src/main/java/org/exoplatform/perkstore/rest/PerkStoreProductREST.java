@@ -27,6 +27,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import org.exoplatform.common.http.HTTPStatus;
 import org.json.JSONObject;
 
 import org.exoplatform.perkstore.exception.PerkStoreException;
@@ -175,4 +176,35 @@ public class PerkStoreProductREST implements ResourceContainer {
     }
   }
 
+  @PUT
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("delete/{productId}")
+  @RolesAllowed("users")
+  @ApiOperation(value = "Retrieves a product by its id", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns selected product if exists")
+  @ApiResponses(value = { @ApiResponse(code = HTTPStatus.OK, message = "Request fulfilled"),
+      @ApiResponse(code = HTTPStatus.BAD_REQUEST, message = "Invalid query input"),
+      @ApiResponse(code = HTTPStatus.FORBIDDEN, message = "Unauthorized operation"),
+      @ApiResponse(code = HTTPStatus.INTERNAL_ERROR, message = "Internal server error") })
+  public Response deleteProduct(@ApiParam(value = "Product technical id", required = true)
+  @PathParam("productId")
+  long productId) {
+    if (productId <= 0) {
+      LOG.warn("Bad request sent to server with empty productId");
+      return Response.status(HTTPStatus.BAD_REQUEST).build();
+    }
+    String currentUserId = getCurrentUserId();
+    try {
+      perkStoreService.deleteProduct(productId, currentUserId);
+      return Response.ok().build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(HTTPStatus.BAD_REQUEST).build();
+    } catch (IllegalAccessException e) {
+      return Response.status(HTTPStatus.FORBIDDEN).build();
+    } catch (PerkStoreException e) {
+      return Response.status(HTTPStatus.NOT_FOUND).build();
+    } catch (Exception e) {
+      LOG.error("Error deleting product", e);
+      return Response.status(500).build();
+    }
+  }
 }

@@ -28,7 +28,8 @@ import org.exoplatform.perkstore.model.constant.ProductOrderPeriodType;
 @Entity(name = "Product")
 @ExoEntity
 @Table(name = "ADDONS_PERKSTORE_PRODUCT")
-@NamedQueries({ @NamedQuery(name = "Product.getAllProducts", query = "select p from Product p ORDER BY p.createdDate DESC") })
+@NamedQueries({
+    @NamedQuery(name = "Product.getAllProducts", query = "select p from Product p WHERE p.isDeleted = false ORDER BY p.createdDate DESC") })
 public class ProductEntity implements Serializable {
 
   private static final long      serialVersionUID = -592052513482849972L;
@@ -98,6 +99,9 @@ public class ProductEntity implements Serializable {
   @CollectionTable(name = "ADDONS_PERKSTORE_IMAGE", joinColumns = @JoinColumn(name = "PRODUCT_ID"))
   @Column(name = "IMAGE_FILE_ID")
   private Set<Long>              images;
+
+  @Column(name = "DELETED")
+  protected boolean              isDeleted;
 
   public Long getId() {
     return id;
@@ -251,4 +255,11 @@ public class ProductEntity implements Serializable {
     this.images = images;
   }
 
+  public boolean isDeleted() {
+    return isDeleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    isDeleted = deleted;
+  }
 }

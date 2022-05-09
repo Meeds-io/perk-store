@@ -172,4 +172,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <createSequence sequenceName="SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID" startValue="1"/>
   </changeSet>
 
+  <changeSet author="perkstore" id="1.0.0-10">
+    <addColumn tableName="ADDONS_PERKSTORE_PRODUCT">
+      <column name="DELETED" type="INT" defaultValueNumeric="0">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

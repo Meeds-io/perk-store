@@ -70,6 +70,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       <i class="fas fa-list primary--text mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuProductOrders') }}
                     </v-list-item-title>
                   </v-list-item>
+                  <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
+                    <v-list-item-title class="editProductMenu ml-n2" @click="confirmDelete()">
+                      <i class="uiIconTrash primary--text mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuProductDelete') }}
+                    </v-list-item-title>
+                  </v-list-item>
                 </v-list>
               </v-menu>
             </v-toolbar>
@@ -129,10 +134,19 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-card-text>
       </div>
     </v-card>
+    <exo-confirm-dialog
+      ref="deleteProductConfirmDialog"
+      :title="$t('exoplatform.perkstore.label.delete')"
+      :message="$t('exoplatform.perkstore.label.deleteConfirmMessage')"
+      :ok-label="$t('exoplatform.perkstore.label.ok')"
+      :cancel-label="$t('exoplatform.perkstore.label.cancel')"
+      @ok="removeProduct" />
   </v-flex>
 </template>
 
 <script>
+import {deleteProduct} from '../../js/PerkStoreProduct.js';
+
 export default {
   props: {
     product: {
@@ -309,6 +323,26 @@ export default {
         return '';
       }
       return date.toLocaleString(eXo.env.portal.language, {year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'});
+    },
+    confirmDelete() {
+      this.$refs.deleteProductConfirmDialog.open();
+    },
+    removeProduct() {
+      deleteProduct(this.product.id)
+        .then(() => {
+          this.$root.$emit('show-alert', {type: 'success',message: this.$t('exoplatform.perkstore.label.deleteSuccess')});
+          this.$emit('product-deleted');
+        }).catch(e => {
+          let msg = '';
+          if (e.message === '403') {
+            msg = this.$t('exoplatform.perkstore.label.deletePermissionDenied');
+          } else if (e.message  === '404') {
+            msg = this.$t('exoplatform.perkstore.label.notFound');
+          } else  {
+            msg = this.$t('exoplatform.perkstore.label.deleteError');
+          }
+          this.$root.$emit('show-alert', {type: 'error',message: msg});
+        });
     },
   }
 };

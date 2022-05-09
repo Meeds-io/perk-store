@@ -260,6 +260,27 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     return product;
   }
 
+  public void deleteProduct(long productId, String username) throws Exception {
+    if (StringUtils.isBlank(username)) {
+      throw new IllegalArgumentException("Username is null");
+    }
+    if (productId <= 0) {
+      throw new IllegalArgumentException("product Id should to be positive integer");
+    }
+    Product product = getProductById(productId);
+    if (product == null) {
+      throw new PerkStoreException(PRODUCT_NOT_EXISTS, productId);
+    }
+    boolean canDelete = canViewProduct(product, username, isPerkStoreManager(username));
+
+    if (!canDelete) {
+      throw new IllegalAccessException("User " + username + " isn't allowed to delete product with id " + productId);
+    }
+
+    product.setDeleted(true);
+    perkStoreStorage.saveProduct(product, username);
+  }
+
   public List<Product> getProducts(boolean available, String username) throws Exception {
     List<Product> products = perkStoreStorage.getAllProducts();
     if (products == null || products.isEmpty() || !canAccessApplication(getGlobalSettings(), username)) {
@@ -705,7 +726,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     }
     Product product = getProductById(productId);
     if (product == null) {
-      throw new PerkStoreException(PRODUCT_NOT_EXISTS, productId);
+      return null ;
     } else if (canViewProduct(product, username, isPerkStoreManager(username))) {
       computeProductFields(username, product, canEditProduct(product, username));
     } else {
