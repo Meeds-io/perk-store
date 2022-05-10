@@ -16,21 +16,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
   <v-card flat>
-    <v-expand-transition name="fade" appear>
-      <v-flex v-show="selectedProduct" class="productDetailContainer">
-        <perk-store-product-detail-maximized
-          :product="selectedProduct || {}"
-          :symbol="symbol"
-          :need-password="needPassword"
-          :wallet-loading="walletLoading"
-          :wallet-enabled="walletEnabled"
-          :wallet-deleted="walletDeleted"
-          class="border-box-sizing"
-          @ordered="$emit('ordered', $event)"
-          @close="$emit('close')" />
-      </v-flex>
-    </v-expand-transition>
-    <template v-if="!selectedProduct">
+    <template >
       <v-container
         v-if="canAddProduct || (products && products.length)"
         class="border-box-sizing productsListParentContainer"
@@ -76,12 +62,6 @@ export default {
       type: Array,
       default: function() {
         return [];
-      },
-    },
-    selectedProduct: {
-      type: Object,
-      default: function() {
-        return null;
       },
     },
     symbol: {

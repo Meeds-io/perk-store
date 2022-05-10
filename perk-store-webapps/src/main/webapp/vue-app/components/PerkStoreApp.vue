@@ -36,7 +36,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-tabs
             v-model="tab"
             slider-size="4">
-            <v-tab @click="displayProductForm ? displayProduct(selectedProduct) : closeDetails()">{{ $t('exoplatform.perkstore.label.Catalogue') }}</v-tab>
+            <v-tab @click="refreshProductList">{{ $t('exoplatform.perkstore.label.Catalogue') }}</v-tab>
             <v-tab @click="displayMyOrdersList">{{ $t('exoplatform.perkstore.label.MyOrders') }}</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab" class="tabs-content">
@@ -137,7 +137,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 v-if="!error || (filteredProducts && filteredProducts.length)"
                 ref="productsList"
                 :products="filteredProducts"
-                :selected-product="displayProductDetails && selectedProduct"
                 :symbol="symbol"
                 :loading="loading"
                 :need-password="walletNeedPassword"
@@ -320,8 +319,6 @@ export default {
     selectedProduct: {},
     selectedOrderId: null,
     displayMyOrders: false,
-    displayProductDetails: false,
-    displayProductForm: false,
     displayProductOrders: false,
     search: null,
     wallet: null,
@@ -369,20 +366,21 @@ export default {
     },
     loading() {
       if (!this.loading) {
-        const urlPath = document.location.pathname;
-        const productId = urlPath.split('catalog/')[1] ? urlPath.split('catalog/')[1].split(/[^0-9]/)[0] : null;
+        const urlPath = document.location.search;
+        const productId = urlPath.match( /\d+/ ) && urlPath.match( /\d+/ ).join('');
         if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
           this.tab = 0;
         } else if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`) {
           this.tab = 1;
         } else if (productId) {
           setTimeout( () => {
-            if (productId && this.$refs.buyModal) {
+            if ( this.$refs.buyModal || this.$refs.productForm ) {
               getProduct(productId).then(freshProduct => {
                 if (freshProduct) {
                   this.selectedProduct = freshProduct;
                   if (this.selectedProduct.creator.id === eXo.env.portal.userName) {
                     window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
+                    this.$refs.productForm.open();
                   } else {
                     window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog/${this.selectedProduct.id}`);
                     this.$refs.buyModal.open();
@@ -598,8 +596,6 @@ export default {
       this.loading = false;
     },
     closeDetails() {
-      this.displayProductDetails = false;
-      this.displayProductForm = false;
       this.displayProductOrders = false;
       this.displayMyOrders = false;
       this.selectedProduct = null;
@@ -628,7 +624,6 @@ export default {
     },
     newProduct() {
       this.closeDetails();
-      this.displayProductForm = true;
       this.selectedProduct = {
         imageFiles: []
       };
@@ -636,29 +631,9 @@ export default {
     },
     editProduct(product) {
       this.closeDetails();
-      this.displayProductForm = true;
       this.selectedProduct = Object.assign({}, product);
       this.selectedProduct.imageFiles = this.selectedProduct.imageFiles || [];
       return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.open());
-    },
-    displayProduct(product) {
-      if (product) {
-        if (product.id) {
-          const existingProduct = this.products.find(existingProduct => existingProduct.id === product.id);
-          if (existingProduct) {
-            product = existingProduct;
-          } else {
-            this.products.unshift(product);
-          }
-        } else {
-          product = this.products.find(existingProduct => existingProduct.id === product);
-        }
-      }
-      this.closeDetails();
-      if (product) {
-        this.displayProductDetails = true;
-        this.selectedProduct = Object.assign({}, product);
-      }
     },
     showFilters() {
       if (this.$refs.ordersList) {
