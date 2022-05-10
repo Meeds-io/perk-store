@@ -15,54 +15,20 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-snackbar
-    v-model="snackbar"
-    :timeout="120000"
-    class="notificationParent"
-    color="black">
-    <v-card
-      flat
-      dark
-      class="transparent">
-      <template v-for="product in filteredProducts">
-        <v-card-text
-          :key="product.id"
-          class="text-truncate notificationContent"
-          dark>
-          <template v-if="product.lastModifiedDate">
-            {{ $t('exoplatform.perkstore.info.productModified', {0: product.title}) }}
-          </template>
-          <template v-else>
-            {{ $t('exoplatform.perkstore.info.productCreated', {0: product.title}) }}
-          </template>
-        </v-card-text>
-        <v-divider
-          v-if="displayDivider"
-          :key="product.id"
-          dark />
+  <v-alert 
+    v-if="hasNewProducts"
+    v-model="alert"
+    type="success"
+    dismissible>
+    <template v-for="product in filteredProducts">
+      <template v-if="product.lastModifiedDate">
+        {{ $t('exoplatform.perkstore.info.productModified', {0: product.title}) }}
       </template>
-      <v-card-actions v-if="hasNewProducts">
-        <v-spacer />
-        <v-btn
-          dark
-          text
-          :title="$t('exoplatform.perkstore.button.refresh')"
-          @click="refreshList">
-          {{ $t('exoplatform.perkstore.button.refresh') }}
-        </v-btn>
-        <v-spacer />
-      </v-card-actions>
-    </v-card>
-    <v-btn
-      :title="$t('exoplatform.perkstore.button.close')"
-      dark
-      text
-      icon
-      class="ms-0"
-      @click="close">
-      <v-icon dark>close</v-icon>
-    </v-btn>
-  </v-snackbar>
+      <template v-else>
+        {{ $t('exoplatform.perkstore.info.productCreated', {0: product.title}) }}
+      </template>
+    </template>
+  </v-alert>
 </template>
 <script>
 export default {
@@ -76,8 +42,8 @@ export default {
   },
   data () {
     return {
-      snackbar: false,
-      snackbarDisplayed: [],
+      alert: false,
+      alertDisplayed: [],
     };
   },
   computed: {
@@ -88,26 +54,20 @@ export default {
       return this.products && this.products.find(product => !product.lastModifiedDate);
     },
     filteredProducts() {
-      return this.products.filter(product => this.snackbarDisplayed.indexOf(product.id) < 0).slice(0, Math.min(3, this.products.length));
+      return this.products.filter(product => this.alertDisplayed.indexOf(product.id) < 0).slice(0, Math.min(3, this.products.length));
     },
   },
   watch: {
-    snackbar() {
-      if (!this.snackbar) {
-        this.products.forEach(product => this.snackbarDisplayed.push(product.id));
+    alert() {
+      if (!this.alert) {
+        this.$emit('refresh-list');
+        this.products.forEach(product => this.alertDisplayed.push(product.id));
       }
     },
     products() {
-      this.snackbar = this.products.filter(product => this.snackbarDisplayed.indexOf(product.id) < 0).length;
+      window.setTimeout(() => this.alert = false, 5000);
+      this.alert = this.products.filter(product => this.alertDisplayed.indexOf(product.id) < 0).length;
     },
-  },
-  methods: {
-    refreshList() {
-      this.$emit('refresh-list');
-    },
-    close() {
-      this.snackbar = false;
-    }
   },
 };
 </script>
