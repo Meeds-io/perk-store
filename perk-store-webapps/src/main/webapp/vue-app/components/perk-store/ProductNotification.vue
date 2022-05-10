@@ -18,17 +18,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <v-alert 
     v-if="hasNewProducts"
     v-model="alert"
-    :timeout="120000" 
     type="success"
     dismissible>
-      <template v-for="product in filteredProducts">
-          <template v-if="product.lastModifiedDate">
-            {{ $t('exoplatform.perkstore.info.productModified', {0: product.title}) }}
-          </template>
-          <template v-else>
-            {{ $t('exoplatform.perkstore.info.productCreated', {0: product.title}) }}
-          </template>
+    <template v-for="product in filteredProducts">
+      <template v-if="product.lastModifiedDate">
+        {{ $t('exoplatform.perkstore.info.productModified', {0: product.title}) }}
       </template>
+      <template v-else>
+        {{ $t('exoplatform.perkstore.info.productCreated', {0: product.title}) }}
+      </template>
+    </template>
   </v-alert>
 </template>
 <script>
@@ -66,6 +65,7 @@ export default {
       }
     },
     products() {
+      window.setTimeout(() => this.alert = false, 5000);
       this.alert = this.products.filter(product => this.alertDisplayed.indexOf(product.id) < 0).length;
     },
   },

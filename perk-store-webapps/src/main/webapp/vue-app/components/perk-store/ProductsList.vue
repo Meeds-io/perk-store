@@ -16,7 +16,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
   <v-card flat>
-    <template >
+    <template>
       <v-container
         v-if="canAddProduct || (products && products.length)"
         class="border-box-sizing productsListParentContainer"
