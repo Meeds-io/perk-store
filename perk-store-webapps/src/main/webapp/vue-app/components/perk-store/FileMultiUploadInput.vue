@@ -25,6 +25,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </span>
       <input
         id="perk-store-attach-file"
+        ref="perkStoreAttachFile"
         dropzone=""
         type="file"
         class="attachFile hidden"
@@ -232,6 +233,13 @@ export default {
           credentials: 'include'
         }).then(() => {
           this.files.splice(idx, 1);
+          const filesList = new DataTransfer();
+          this.$refs.perkStoreAttachFile.files.forEach(file => {
+            if (file !== fileOrId) {
+              filesList.files.push(file) ;
+            }
+          });
+          this.$refs.perkStoreAttachFile.files = filesList.files;
           this.$emit('changed');
         })
           .catch((e) => {
@@ -239,6 +247,13 @@ export default {
           });
       } else {
         this.files.splice(idx, 1);
+        const filesList = new DataTransfer();
+        this.$refs.perkStoreAttachFile.files.forEach(file => {
+          if (file !== fileOrId) {
+            filesList.files.push(file) ;
+          }
+        });
+        this.$refs.perkStoreAttachFile.files = filesList.files;
         this.$emit('changed');
       }
     },
