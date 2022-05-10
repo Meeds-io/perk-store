@@ -233,7 +233,7 @@ export default {
   },
   computed: {
     enableSaveProduct() {
-      return !this.valid || this.product.imageFiles && this.product.imageFiles.length === 0;
+      return !this.valid || this.product?.imageFiles && this.product?.imageFiles.length === 0;
     },
     orderPeriodicity() {
       return (this.product && this.product.orderPeriodicity !== 'none' && this.product.orderPeriodicity) || '';
