@@ -359,7 +359,6 @@ export default {
   watch: {
     tab() {
       if (this.tab === 0) {
-        console.log('tab is :',this.tab);
         window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
       } else if (this.tab === 1) {
         window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`);
@@ -470,7 +469,6 @@ export default {
           .replace(/&/g, '","')
           .replace(/=/g, '":"')}"}`
       );
-      console.log('params',parameters);
     }
     return this.init(parameters && parameters.productId, parameters &&
     parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
@@ -511,8 +509,6 @@ export default {
           this.userSettings = this.settings.userSettings;
           this.productsFilters.activeProducts = true;
           this.ordersFilter = getOrderFilter();
-          console.log('orderFilter', this.ordersFilter);
-          console.log('selectedOrderId', selectedOrderId);
         })
         .then(() => this.refreshProductList(selectedProductId, selectedOrderId))
         .then(() => {
