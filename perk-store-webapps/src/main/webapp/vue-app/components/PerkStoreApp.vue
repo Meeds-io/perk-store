@@ -366,7 +366,7 @@ export default {
     },
     loading() {
       if (!this.loading) {
-        const urlPath = document.location.search;
+        const urlPath = document.location.search || document.location.pathname;
         const productId = urlPath.match( /\d+/ ) && urlPath.match( /\d+/ ).join('');
         if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
           this.tab = 0;
