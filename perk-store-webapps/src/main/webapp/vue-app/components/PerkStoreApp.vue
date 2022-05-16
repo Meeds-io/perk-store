@@ -366,7 +366,7 @@ export default {
     },
     loading() {
       if (!this.loading) {
-        const urlPath = document.location.search;
+        const urlPath = document.location.search || document.location.pathname;
         const productId = urlPath.match( /\d+/ ) && urlPath.match( /\d+/ ).join('');
         if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
           this.tab = 0;
@@ -545,7 +545,7 @@ export default {
     refreshProductList(selectedProductId, selectedOrderId) {
       return getProductList()
         .then((products) => {
-          if (!this.productsFilters.mine && !this.productsFilters.disabled && !this.productsFilters.soldOut && !this.productsFilters.activeProducts) {
+          if (!this.productsFilters.mine && !this.productsFilters.disabled && !this.productsFilters.soldOut && !this.productsFilters.activeProducts || selectedProductId) {
             this.products =products;
           } else if (this.productsFilters.activeProducts) {
             this.products = products.filter(product => product.enabled && (product.unlimited || product.totalSupply > product.purchased) && !(product.creator && product.creator.type === 'user' && product.creator.id === eXo.env.portal.userName) &&!(product.receiverMarchand && product.receiverMarchand.type === 'user' && product.receiverMarchand.id === eXo.env.portal.userName) );
