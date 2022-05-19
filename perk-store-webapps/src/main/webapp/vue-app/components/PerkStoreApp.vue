@@ -72,8 +72,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           class="btn "
                           v-on="on"
                           @blur="closeMenu">
-                          {{ newsStatusLabel }}
-                          <i class="uiIconMiniArrowDown uiIconLightGray"></i>
+                          <span class="statusLabel text-truncate">
+                            {{ newsStatusLabel }}
+                          </span>
+                          <i class="uiIconMiniArrowDown uiIconLightGray filter_menuIcon"></i>
                         </button>
                       </template>
                       <v-list>
@@ -175,7 +177,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     <span class="ms-2">{{ $t('exoplatform.perkstore.title.myOrdersListOf') }} {{ selectedProduct.title }}</span>
                   </div>
                   <div v-else>
-                    <span class="textBalance titleOrders">{{ $t('exoplatform.perkstore.label.balance') }}: {{ symbol }} {{ balance }}</span>
+                    <span class="textBalance titleOrders">
+                       {{ $t('exoplatform.perkstore.label.balance') }} :
+                      <span class="symbol"> {{ symbol }} </span>
+                      <span class="balance">{{ balance }}  </span>
+                    </span>
                   </div>
                 </div>
                 <div class="spacer spacerOrder">
