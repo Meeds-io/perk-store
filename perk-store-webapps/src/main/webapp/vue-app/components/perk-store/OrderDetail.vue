@@ -50,10 +50,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 class="small my-auto me-2 ignore-vuetify-classes"
                 @change="changeStatus()">
                 <option
-                  v-for="option in statusList"
+                  v-for="option in statusListItems"
                   :key="option"
-                  :value="option">
-                  {{ $t(`exoplatform.perkstore.label.status.${option.toLowerCase()}`) }}
+                  :value="option.name"
+                  :disabled="option.disabled">
+                  {{ $t(`exoplatform.perkstore.label.status.${option.name.toLowerCase()}`) }}
                 </option>
               </select>
             </template>
@@ -206,15 +207,35 @@ export default {
       // is finished
       refunding: false,
       orderProduct: {},
-      statusList: [
-        'ORDERED',
-        'CANCELED',
-        'ERROR',
-        'PAID',
-        'PARTIAL',
-        'DELIVERED',
-        'REFUNDED',
-        'FRAUD',
+      disableOptionSelection: this.order.status.toLowerCase() === 'ordered',
+      statusListItems: [
+        {
+          name: 'ORDERED',
+          disabled: this.disableOptionSelection
+        },
+        {
+          name: 'CANCELED'
+        },
+        {
+          name: 'ERROR'
+        },
+        {
+          name: 'PAID',
+          disabled: !this.disableOptionSelection
+        }
+        ,
+        {
+          name: 'PARTIAL',
+        },
+        {
+          name: 'DELIVERED',
+        },
+        {
+          name: 'REFUNDED',
+        },
+        {
+          name: 'FRAUD',
+        },
       ],
     };
   },
@@ -349,6 +370,11 @@ export default {
         this.$emit('error', e && e.message ? e.message : String(e));
       });
     },
+  },
+  watch: {
+    isItOrdered() {
+      return this.order.status === this.isOrdered ? true : false ; 
+    }
   }
 };
 </script>
