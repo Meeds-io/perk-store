@@ -207,11 +207,10 @@ export default {
       // is finished
       refunding: false,
       orderProduct: {},
-      disableOptionSelection: this.order.status.toLowerCase() === 'ordered',
       statusListItems: [
         {
           name: 'ORDERED',
-          disabled: this.disableOptionSelection
+          disabled: this.order.status.toLowerCase() !== 'ordered'
         },
         {
           name: 'CANCELED'
@@ -221,14 +220,15 @@ export default {
         },
         {
           name: 'PAID',
-          disabled: !this.disableOptionSelection
-        }
-        ,
+          disabled: this.order.status.toLowerCase() !== 'paid'
+        },
         {
           name: 'PARTIAL',
+          
         },
         {
           name: 'DELIVERED',
+          disabled: this.order.status.toLowerCase() !== 'delivered'
         },
         {
           name: 'REFUNDED',
@@ -371,10 +371,5 @@ export default {
       });
     },
   },
-  watch: {
-    isItOrdered() {
-      return this.order.status === this.isOrdered ? true : false ; 
-    }
-  }
 };
 </script>
