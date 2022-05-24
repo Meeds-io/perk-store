@@ -62,17 +62,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     class="editLabelProduct"
                     @mousedown="$event.preventDefault()">
                     <v-list-item-title class="editProductMenu ml-n2" @click="$emit('edit', product)">
-                      <i class="uiIconEdit" :class="iconClass"> </i>{{ $t('exoplatform.perkstore.button.menuEditProduct') }}
+                      <em class="uiIconEdit" :class="iconClass"> </em>{{ $t('exoplatform.perkstore.button.menuEditProduct') }}
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
                     <v-list-item-title class="editProductMenu ml-n2" @click="$emit('orders-list', product, null)">
-                      <i class="fas fa-list primary--text" :class="iconClass"> </i>{{ $t('exoplatform.perkstore.button.menuProductOrders') }}
+                      <em class="fas fa-list primary--text" :class="iconClass"> </em>{{ $t('exoplatform.perkstore.button.menuProductOrders') }}
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
                     <v-list-item-title class="editProductMenu ml-n2" @click="confirmDelete()">
-                      <i class="uiIconTrash primary--text" :class="iconClass"> </i>{{ $t('exoplatform.perkstore.button.menuProductDelete') }}
+                      <em class="uiIconTrash primary--text" :class="iconClass"> </em>{{ $t('exoplatform.perkstore.button.menuProductDelete') }}
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
