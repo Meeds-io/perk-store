@@ -62,17 +62,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     class="editLabelProduct"
                     @mousedown="$event.preventDefault()">
                     <v-list-item-title class="editProductMenu ml-n2" @click="$emit('edit', product)">
-                      <i class="uiIconEdit mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuEditProduct') }}
+                      <i class="uiIconEdit" :class="iconClass"> </i>{{ $t('exoplatform.perkstore.button.menuEditProduct') }}
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
                     <v-list-item-title class="editProductMenu ml-n2" @click="$emit('orders-list', product, null)">
-                      <i class="fas fa-list primary--text mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuProductOrders') }}
+                      <i class="fas fa-list primary--text" :class="iconClass"> </i>{{ $t('exoplatform.perkstore.button.menuProductOrders') }}
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item class="editLabelProduct" @mousedown="$event.preventDefault()">
                     <v-list-item-title class="editProductMenu ml-n2" @click="confirmDelete()">
-                      <i class="uiIconTrash primary--text mr-2"> </i>{{ $t('exoplatform.perkstore.button.menuProductDelete') }}
+                      <i class="uiIconTrash primary--text" :class="iconClass"> </i>{{ $t('exoplatform.perkstore.button.menuProductDelete') }}
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -211,12 +211,8 @@ export default {
     },
   },
   data: () => ({
-    showMenu: false,
-    isItLeftSidedLanguage: false
+    showMenu: false
   }),
-  created() {
-    this.isItLeftSidedLanguage = this.$i18n.locale !== 'ar';
-  },
   computed: {
     isProductOwner() {
       return this.product.userData.canEdit || this.product.userData.username === this.product.creator.id || this.product.userData.username === this.product.receiverMarchand.id ;
@@ -306,6 +302,12 @@ export default {
         return available > 0 ? available : 0;
       }
     },
+    iconClass () {
+      return !this.$vuetify.rtl && 'mr-2 ' || 'ml-2';
+    },
+    isItLeftSidedLanguage() {
+      return !this.$vuetify.rtl; 
+    }
   },
   methods: {
     closeMenu() {
