@@ -43,9 +43,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 v-if="isProductOwner"
                 v-model="showMenu"
                 offset-x
-                min-width="220"
-                attach
-                auto>
+                offset-y
+                :nudge-left="95">
                 <template #activator="{ on}">
                   <v-btn
                     dark
