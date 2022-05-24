@@ -43,9 +43,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 v-if="isProductOwner"
                 v-model="showMenu"
                 offset-x
-                min-width="220"
-                attach
-                auto>
+                offset-y
+                :left="isItLeftSidedLanguage"
+                attach>
                 <template #activator="{ on}">
                   <v-btn
                     dark
@@ -211,8 +211,12 @@ export default {
     },
   },
   data: () => ({
-    showMenu: false
+    showMenu: false,
+    isItLeftSidedLanguage: false
   }),
+  created() {
+    this.isItLeftSidedLanguage = this.$i18n.locale !== 'ar';
+  },
   computed: {
     isProductOwner() {
       return this.product.userData.canEdit || this.product.userData.username === this.product.creator.id || this.product.userData.username === this.product.receiverMarchand.id ;
