@@ -32,6 +32,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <path>/js/perkstore.bundle.js</path>
       </script>
       <depends>
+        <module>walletCommon</module>
+        <as>WalletCommon</as>
+      </depends>
+      <depends>
         <module>vue</module>
       </depends>
       <depends>
