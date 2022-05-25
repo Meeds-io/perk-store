@@ -137,6 +137,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <span class="mr-3 dark-grey-color walletTitle">
               {{ metamaskAddressPreview }}
             </span>
+            <wallet-settings-jdenticon :address="senderAddress" />
           </v-chip>
         </v-col>
         <v-text-field
