@@ -306,7 +306,7 @@ export default {
       return !this.$vuetify.rtl && 'mr-2 ' || 'ml-2';
     },
     rtlDisplay() {
-      return !this.$vuetify.rtl; 
+      return !this.$vuetify.rtl;
     }
   },
   methods: {
