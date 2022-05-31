@@ -295,6 +295,7 @@ public class NotificationUtils {
                                                      Profile modifier) {
     Set<String> ignoredUsers = new HashSet<>();
     Set<String> recipientList = new HashSet<>();
+    List<Profile> marchands = product.getMarchands();
 
     if (order == null) {// New or modified product
       if (newProduct) {
@@ -335,7 +336,13 @@ public class NotificationUtils {
       ignoredUsers.add(order.getSender().getId());
 
       // Retain in recipient list only users who are member of both ACL
-      addIdentityMembersFromProfiles(product.getMarchands(), recipientList);
+
+      if(StringUtils.equals(product.getReceiverMarchand().getType(), "user")) {
+        addIdentityMembersFromProfiles(Collections.singleton(product.getReceiverMarchand()), recipientList);
+      } else if (marchands != null && !marchands.isEmpty()) {
+        addIdentityMembersFromProfiles(marchands, recipientList);
+      }
+      
     } else {// Modified order
       if (modifier != null) {
         ignoredUsers.add(modifier.getId());
@@ -344,7 +351,12 @@ public class NotificationUtils {
       // Always send to buyer
       recipientList.add(order.getSender().getId());
 
-      addIdentityMembersFromProfiles(product.getMarchands(), recipientList);
+      if(StringUtils.equals(product.getReceiverMarchand().getType(), "user")) {
+        addIdentityMembersFromProfiles(Collections.singleton(product.getReceiverMarchand()), recipientList);
+      } else if (marchands != null && !marchands.isEmpty()) {
+        addIdentityMembersFromProfiles(marchands, recipientList);
+      }
+
     }
 
     recipientList.removeAll(ignoredUsers);

@@ -217,6 +217,9 @@ export default {
     isProductOwner() {
       return this.product.userData.canEdit || this.product.userData.username === this.product.creator.id || this.product.userData.username === this.product.receiverMarchand.id ;
     },
+    isProductMerchant() {
+      return this.product.receiverMarchand.type === 'user' ? (this.product.receiverMarchand.id === eXo.env.portal.userName) : this.product.marchands.find(marchand => marchand.id === eXo.env.portal.userName);
+    },
     cardTextClass() {
       return this.cantBuyProduct ? '' : 'clickable ';
     },
