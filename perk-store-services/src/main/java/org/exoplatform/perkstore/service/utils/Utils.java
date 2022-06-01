@@ -802,4 +802,24 @@ public class Utils {
     return imageIds;
   }
 
+  public static List<String> getRewardingGroupMembers() {
+    List<String> groupMembers = new ArrayList<>();
+    try {
+      Group rewardingGroup = getOrganizationService().getGroupHandler().findGroupById(REWARDING_GROUP);
+      if (rewardingGroup != null) {
+        ListAccess<Membership> rewardingMembers = getOrganizationService().getMembershipHandler()
+                                                                          .findAllMembershipsByGroup(rewardingGroup);
+        if(rewardingMembers != null) {
+          Membership[] members = rewardingMembers.load(0, rewardingMembers.getSize());
+          for (Membership membership : members) {
+            groupMembers.add(membership.getUserName());
+          }
+        }
+      }
+      return groupMembers;
+    } catch (Exception e) {
+      LOG.error("Error while getting group member", e);
+      return Collections.emptyList();
+    }
+  }
 }

@@ -330,6 +330,7 @@ public class NotificationUtils {
       } else {
         addIdentityMembersFromProfiles(product.getMarchands(), recipientList);
         addIdentityMembersFromProfiles(Collections.singleton(product.getReceiverMarchand()), recipientList);
+        recipientList.addAll(Utils.getRewardingGroupMembers());
       }
     } else if (newOrder) {// New order
       ignoredUsers.add(order.getSender().getId());
