@@ -310,7 +310,6 @@ export default {
       }
     },
     productTitle() {
-      console.log('##########product', this.product);
       return this.product && this.product.title ?  this.product.title : '';
     },
     provider() {
