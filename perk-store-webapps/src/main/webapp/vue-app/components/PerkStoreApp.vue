@@ -178,7 +178,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   </div>
                   <div v-else>
                     <span class="textBalance titleOrders">
-                       {{ $t('exoplatform.perkstore.label.balance') }} :
+                      {{ $t('exoplatform.perkstore.label.balance') }} :
                       <span class="symbol"> {{ symbol }} </span>
                       <span class="balance">{{ balance }}  </span>
                     </span>

@@ -96,8 +96,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </template>
             <span class="px-1">{{ $t('exoplatform.perkstore.label.sentTo') }}</span>
             <exo-user-avatar
-              v-if="order.receiver"
+              v-if="order.receiver && order.receiver.type === 'user'"
               :profile-id="order.receiver.id"
+              :size="28"
+              fullname
+              link-style
+              popover />
+            <exo-space-avatar
+              v-if="order.receiver && order.receiver.type === 'space'"
+              :space-id="order.receiver.spaceId"
               :size="28"
               fullname
               link-style
