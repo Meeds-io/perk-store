@@ -809,9 +809,11 @@ public class Utils {
       if (rewardingGroup != null) {
         ListAccess<Membership> rewardingMembers = getOrganizationService().getMembershipHandler()
                                                                           .findAllMembershipsByGroup(rewardingGroup);
-        Membership[] members = rewardingMembers.load(0, rewardingMembers.getSize());
-        for (Membership membership : members) {
-          groupMember.add(membership.getUserName());
+        if(rewardingMembers != null) {
+          Membership[] members = rewardingMembers.load(0, rewardingMembers.getSize());
+          for (Membership membership : members) {
+            groupMember.add(membership.getUserName());
+          }
         }
       }
       return groupMember;
