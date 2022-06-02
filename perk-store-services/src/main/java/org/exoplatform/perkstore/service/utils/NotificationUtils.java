@@ -337,9 +337,10 @@ public class NotificationUtils {
 
       // Retain in recipient list only users who are member of both ACL
 
-      if(StringUtils.equals(product.getReceiverMarchand().getType(), "user")) {
+      if(StringUtils.equals(product.getReceiverMarchand().getType(), USER_ACCOUNT_TYPE)) {
         addIdentityMembersFromProfiles(Collections.singleton(product.getReceiverMarchand()), recipientList);
-      } else if (marchands != null && !marchands.isEmpty()) {
+      }
+      if (marchands != null && !marchands.isEmpty()) {
         addIdentityMembersFromProfiles(marchands, recipientList);
       }
       
@@ -351,9 +352,10 @@ public class NotificationUtils {
       // Always send to buyer
       recipientList.add(order.getSender().getId());
 
-      if(StringUtils.equals(product.getReceiverMarchand().getType(), "user")) {
+      if(StringUtils.equals(product.getReceiverMarchand().getType(), USER_ACCOUNT_TYPE)) {
         addIdentityMembersFromProfiles(Collections.singleton(product.getReceiverMarchand()), recipientList);
-      } else if (marchands != null && !marchands.isEmpty()) {
+      }
+      if (marchands != null && !marchands.isEmpty()) {
         addIdentityMembersFromProfiles(marchands, recipientList);
       }
 
