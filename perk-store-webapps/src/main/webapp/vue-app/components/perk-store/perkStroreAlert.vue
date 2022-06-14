@@ -1,10 +1,11 @@
 <template>
-  <v-alert
+  <v-alert 
+    id="perkStoreAlert"
     v-model="displayAlert"
     :type="alertType"
     dismissible
     :icon="alertType === 'warning' ? 'mdi-alert-circle' : ''">
-    <span v-sanitized-html="alertMessage"> </span>
+    <span v-sanitized-html="alertMessage" class="self-align-center"></span>
   </v-alert>
 </template>
 <script>
@@ -19,7 +20,7 @@ export default {
       this.alertMessage = alert.message;
       this.alertType = alert.type;
       this.displayAlert= true;
-      window.setTimeout(() => this.displayAlert = false, 5000);
+      //window.setTimeout(() => this.displayAlert = false, 5000);
     });
   }
 };
