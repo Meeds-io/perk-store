@@ -99,6 +99,35 @@ export default {
       },
     },
   },
+  computed: {
+    walletAddress() {
+      return  window.walletSettings?.wallet?.address || false;
+    },
+    invalidMetamaskAccount() {
+      return !this.metamaskAddress || (this.metamaskAddress || '').toLowerCase() !== (this.walletAddress || '').toLowerCase();
+    },
+    invalidMetamaskNetwork() {
+      return this.metamaskNetworkId !== window.walletSettings?.network?.id;
+    },
+    displayMetamaskWarnings() {
+      return this.isMetamaskWallet && (this.invalidMetamaskNetwork || this.invalidMetamaskAccount || !this.metamaskConnected);
+    },
+    isMetamaskWallet() {
+      return window.walletSettings.wallet?.provider === 'METAMASK';
+    },
+  },
+  created() {
+    document.addEventListener('wallet-metamask-accountsChanged', this.updateSelectedMetamaskAddress);
+    document.addEventListener('wallet-metamask-chainChanged', this.updateSelectedMetamaskNetworkId);
+    document.addEventListener('wallet-metamask-connected', this.updateSelectedMetamaskInformation);
+    document.addEventListener('wallet-metamask-disconnected', this.updateSelectedMetamaskInformation);
+  },
+  beforeDestroy() {
+    document.removeEventListener('wallet-metamask-accountsChanged', this.updateSelectedMetamaskAddress);
+    document.removeEventListener('wallet-metamask-chainChanged', this.updateSelectedMetamaskNetworkId);
+    document.removeEventListener('wallet-metamask-chainChanged', this.updateSelectedMetamaskInformation);
+    document.removeEventListener('wallet-metamask-chainChanged', this.updateSelectedMetamaskInformation);
+  },
   data() {
     return {
       dialog: false,
@@ -152,6 +181,9 @@ export default {
       this.metamaskConnected = window.walletSettings.metamask?.connected;
       this.updateSelectedMetamaskNetworkId();
       this.updateSelectedMetamaskAddress();
+    },
+    loadingAction() {
+      return this.$refs.buyForm && this.$refs.buyForm.loading;
     },
     disableButton() {
       return this.$refs.buyForm && this.$refs.buyForm.disablePayButton;
