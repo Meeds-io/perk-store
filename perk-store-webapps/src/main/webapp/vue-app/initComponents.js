@@ -16,8 +16,7 @@ import ProductDetailContent from './components/perk-store/ProductDetailContent.v
 import ProductNotification from './components/perk-store/ProductNotification.vue';
 import RefundModal from './components/perk-store/RefundModal.vue';
 import PerkStoreProductSearchCard from './components/perk-store-search/PerkStoreProductSearchCard.vue';
-import PerkStoreAlert from './components/perk-store/perkStroreAlert.vue';
-
+import PerkStoreAlert from './components/perk-store/PerkStoreAlert.vue';
 
 const components = {
   'perk-store-auto-complete': AutoComplete,
@@ -38,7 +37,7 @@ const components = {
   'perk-store-product-notification': ProductNotification,
   'perk-store-refund-modal': RefundModal,
   'perk-store-product-search-card': PerkStoreProductSearchCard,
-  'perk-store-buy-alert': PerkStoreAlert,
+  'perk-store-alert': PerkStoreAlert,
 
 };
 
