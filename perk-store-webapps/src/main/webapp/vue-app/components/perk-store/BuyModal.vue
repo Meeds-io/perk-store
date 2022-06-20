@@ -30,6 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         :need-password="needPassword"
         :wallet-loading="walletLoading"
         :wallet-enabled="walletEnabled"
+        @loading="loading = $event"
         @opened-transaction="openTransaction"
         @ordered="$emit('ordered', $event)"
         @close="close" />
@@ -46,14 +47,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-spacer />
         <button
           :disabled="openedTransaction"
-          :loading="loadingAction()"
+          :loading="loading"
           class="ignore-vuetify-classes btn me-1"
           @click="close">
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
         <v-btn
           :disabled="(disableButton && (!isSameNetworkVersion || !isSameAddress)) || openedTransaction"
-          :loading="loadingAction()"
+          :loading="loading"
           class="btn btn-primary me-1"
           large
           @click="buyProduct">
@@ -98,6 +99,18 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      dialog: false,
+      loading: false,
+      isSameNetworkVersion: true,
+      isSameAddress: true,
+      openedTransaction: false,
+      metamaskAddress: null,
+      metamaskNetworkId: null,
+      metamaskConnected: false,
+    };
+  },
   computed: {
     walletAddress() {
       return  window.walletSettings?.wallet?.address || false;
@@ -127,17 +140,6 @@ export default {
     document.removeEventListener('wallet-metamask-chainChanged', this.updateSelectedMetamaskInformation);
     document.removeEventListener('wallet-metamask-chainChanged', this.updateSelectedMetamaskInformation);
   },
-  data() {
-    return {
-      dialog: false,
-      isSameNetworkVersion: true,
-      isSameAddress: true,
-      openedTransaction: false,
-      metamaskAddress: null,
-      metamaskNetworkId: null,
-      metamaskConnected: false,
-    };
-  },
   methods: {
     updateSelectedMetamaskNetworkId() {
       this.metamaskNetworkId = window.walletSettings.metamask?.networkId;
@@ -150,9 +152,6 @@ export default {
       this.metamaskConnected = window.walletSettings.metamask?.connected;
       this.updateSelectedMetamaskNetworkId();
       this.updateSelectedMetamaskAddress();
-    },
-    loadingAction() {
-      return this.$refs.buyForm && this.$refs.buyForm.loading;
     },
     disableButton() {
       return this.$refs.buyForm && this.$refs.buyForm.disablePayButton;

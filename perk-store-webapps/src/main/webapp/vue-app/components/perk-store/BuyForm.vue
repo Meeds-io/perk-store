@@ -339,6 +339,9 @@ export default {
         this.loading = false;
       }
     },
+    loading() {
+      this.$emit('loading', this.loading);
+    },
   },
   created() {
     document.addEventListener('exo-wallet-send-tokens-pending', this.pendingTransaction);
@@ -378,6 +381,12 @@ export default {
           .then((order) => {
             this.loading = false;
             this.$emit('ordered', order);
+            this.showAlert(
+              'success', 
+              this.$t('exoplatform.wallet.metamask.message.transactionSent'), 
+              pendingTransaction.hash,
+            );
+            this.$emit('close');
           })
           .catch(e => {
             console.error('Error saving order', e);
@@ -386,10 +395,12 @@ export default {
           });
       }
     },
-    errorTransaction(event) {
+    errorTransaction() {
       this.loading = false;
-
-      this.errors.push(event.detail);
+      this.showAlert(
+        'error', 
+        this.$t('exoplatform.wallet.metamask.error.transactionFailed'), 
+      );
     },
     payProduct(event) {
       event.preventDefault();
@@ -461,11 +472,10 @@ export default {
           .catch(e => {
             console.error('Checking order availability error', e);
             this.loading = false;
-            this.errors.push(e && e.message ? e.message : String(e));
-          }).finally(() => {
-            if (!this.errors || this.errors.length === 0) {
-              this.$emit('close');
-            }
+            this.showAlert(
+              'error', 
+              this.$t('exoplatform.wallet.metamask.error.transactionFailed'), 
+            );
           });
       } else {
         if (window.ethereum?.isMetaMask) {
@@ -490,44 +500,56 @@ export default {
                     productId: this.product.id,
                     quantity: this.quantity,
                     receiver: this.product.receiverMarchand,
-                  }, true)
-                    .then(() => {
-                      this.transactionUtils.saveTransactionDetails({
-                        'contractAddress': this.contractDetails.address,
-                        'contractAmount': this.amount,
-                        'contractMethodName': 'transfer',
-                        'from': this.senderAddress,
-                        'label': message,
-                        'message': message,
-                        'pending': true,
-                        'hash': transactionHash,
-                        'timestamp': Date.now(),
-                        'to': wallet.address,
-                      })
-                        .then((savedTransaction)=> {document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens-pending', {detail: savedTransaction}));});
-                    })
-                    .catch(e => {
-                      console.error('Checking order availability error', e);
-                      this.loading = false;
-                      this.errors.push(e && e.message ? e.message : String(e));
-                    }).finally(() => {
-                      if (!this.errors || this.errors.length === 0) {
-                        this.$emit('close');
-                        this.$root.$emit('show-alert', {type: 'success',message: this.$t('exoplatform.perkstore.order.alert.success')});
-                      }
-                    });
+                  }, true).then(() => transactionHash);
                 })
-                .catch(() => {
-                  this.loading = false;
+                .then(transactionHash => 
+                  this.transactionUtils.saveTransactionDetails({
+                    'contractAddress': this.contractDetails.address,
+                    'contractAmount': this.amount,
+                    'contractMethodName': 'transfer',
+                    'from': this.senderAddress,
+                    'label': message,
+                    'message': message,
+                    'pending': true,
+                    'hash': transactionHash,
+                    'timestamp': Date.now(),
+                    'to': wallet.address,
+                  })
+                )
+                .then((savedTransaction)=> {
+                  document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens-pending', {
+                    detail: savedTransaction
+                  }));
+                  this.showAlert(
+                    'success', 
+                    this.$t('exoplatform.wallet.metamask.message.transactionSent'), 
+                    savedTransaction.hash,
+                  );
+                  this.$emit('close');
+                })
+                .catch(e => {
                   this.$emit('opened-transaction', false);
-                });
+                  if (e && e.code === 4001) {
+                    // User rejected transaction from Metamask popin
+                    return;
+                  }
+                  console.error('Checking order availability error', e);
+                  this.showAlert(
+                    'error', 
+                    this.$t('exoplatform.wallet.metamask.error.transactionFailed'), 
+                  );
+                })
+                .finally(() => this.loading = false);
             });
-            
-           
-
-         
         }
       }
+    },
+    showAlert(alertType, alertMessage, alertTransactionHash) {
+      this.$root.$emit('wallet-notification-alert', {
+        type: alertType,
+        message: alertMessage,
+        transactionHash: alertTransactionHash,
+      });
     },
   },
 };
