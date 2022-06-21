@@ -409,7 +409,7 @@ export default {
       this.errors = [];
 
       if (!this.$refs.form.validate()) {
-        return false;
+        return;
       }
 
       this.loading = true;
