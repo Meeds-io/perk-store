@@ -113,7 +113,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                             margin-left: 3px;
                                         " href="<%= detailsURL %>" target="_blank"><%=_ctx.appRes("Notification.perkstore.ViewDetails")%></a>
                                     </p>
-                                    <p style="margin: 0 0 10px; color: #999999">
+                                    <p style="margin: 0 0 10px; color: #767676">
                                     </p>
                                 </td>
                             </tr>
