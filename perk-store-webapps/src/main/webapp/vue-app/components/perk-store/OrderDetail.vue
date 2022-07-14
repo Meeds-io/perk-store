@@ -136,7 +136,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <button
                 v-if="canRefundOrder"
                 class="ignore-vuetify-classes btn orderProcessingBtn text-truncate text-truncate me-1 ms-1"
-                @click="$refs.refundModal.open()">
+                @click="$refs.refundDrawer.open()">
                 {{ $t('exoplatform.perkstore.button.refund') }}
               </button>
               <perk-store-deliver-modal
@@ -144,9 +144,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 ref="deliverModal"
                 :product="orderProduct"
                 :order="order" />
-              <perk-store-refund-modal
+              <perk-store-refund-drawer
                 v-if="canRefundOrder"
-                ref="refundModal"
+                ref="refundDrawer"
                 :product="orderProduct"
                 :order="order"
                 :symbol="symbol"
