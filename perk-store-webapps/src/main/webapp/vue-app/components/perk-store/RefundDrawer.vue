@@ -38,31 +38,43 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-form
             ref="form"
             v-model="validForm">
-            <p class="amountLabel mb-0 mt-2">{{ $t('exoplatform.perkstore.label.quantity') }}</p>
             <v-row class="ma-3">
-              <v-text-field
-                v-model.number="quantity"
-                :disabled="loading"
-                :label="quantityInputLabel"
-                :placeholder="$t('exoplatform.perkstore.label.refundQuantityPlaceholder')"
-                :rules="requiredNumberRule"
-                append-icon="fa-plus"
-                prepend-inner-icon="fa-minus"
-                class="text-center"
-                name="quantity"
-                required
-                @click:prepend-inner="decrementQuantity"
-                @click:append="incrementQuantity" />  
+              <v-col
+                cols="12"
+                sm="6" 
+                class="d-flex align-center ml-n5">
+                <p class="amountLabel mb-0 ">{{ $t('exoplatform.perkstore.label.quantity') }}</p>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                align="right">
+                <v-text-field
+                  v-model.number="quantity"
+                  :disabled="loading"
+                  :label="quantityInputLabel"
+                  :placeholder="$t('exoplatform.perkstore.label.refundQuantityPlaceholder')"
+                  :rules="requiredNumberRule"
+                  append-icon="fa-plus"
+                  prepend-inner-icon="fa-minus"
+                  class="text-center"
+                  name="quantity"
+                  required
+                  @click:prepend-inner="decrementQuantity"
+                  @click:append="incrementQuantity" />  
+              </v-col>
             </v-row>
-            <p class="amountLabel mb-0 mt-2">{{ $t('exoplatform.perkstore.label.amount') }}</p>
-            <v-row class="ma-3">
+            <p class="amountLabel ma-1">{{ $t('exoplatform.perkstore.label.amount') }}</p>
+            <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.amount') }}:</label>
+
+            <v-row class="ma-1">
               <v-text-field
                 v-model.number="amount"
                 :disabled="loading"
                 :placeholder="$t('exoplatform.perkstore.label.refundAmountPlaceholder')"
                 :rules="requiredAmountRule"
                 name="amount"
-                class="text-center"
+                class="text-left"
                 autofocus
                 required />  
             </v-row>
@@ -138,7 +150,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </exo-drawer>
 </template>
 <script>
-import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
+import {toFixed, saveOrderStatus, createOrder} from '../../js/PerkStoreProductOrder.js';
+import {searchUserOrSpaceObject} from '../../js/PerkStoreIdentityRegistry.js';
 export default {
   props: {
     product: {
@@ -194,7 +207,7 @@ export default {
   },
   created() {
     this.walletAddonInstalled = window.walletAddonInstalled;
-
+    
     document.addEventListener('exo-wallet-send-tokens-pending', this.pendingTransaction);
     document.addEventListener('exo-wallet-send-tokens-error', this.errorTransaction);
     document.addEventListener('exo-wallet-init-result', this.walletInitialized);
@@ -250,7 +263,6 @@ export default {
         }, 'REFUNDED_QUANTITY')
           .then((order) => {
             this.$emit('refunded', order);
-            this.dialog = false;
             this.loading = false;
           })
           .catch(e => {
@@ -307,16 +319,101 @@ export default {
         2: this.product.price,
         3: this.symbol || '',
       });
-
-      // simulate saving order before sending transaction to blockchain
-      document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
-        amount: this.amount,
-        sender: this.order.receiver,
-        receiver: this.order.sender,
-        password: this.walletPassword,
-        label: message,
-        message: message,
-      }}));
+      
+      if (this.isInternalWallet) {
+        // simulate saving order before sending transaction to blockchain
+        return createOrder({
+          productId: this.product.id,
+          quantity: this.quantity,
+          receiver: this.product.receiverMarchand,
+        }, true)
+          .then(() => {
+            document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
+              amount: this.amount,
+              receiver: this.product.receiverMarchand,
+              sender: {
+                type: 'user',
+                id: eXo.env.portal.userName,
+              },
+              password: this.walletPassword,
+              label: message,
+              message: message,
+            }}));
+          })
+          .catch(e => {
+            console.error('Checking order availability error', e);
+            this.loading = false;
+            this.showAlert(
+              'error', 
+              this.$t('exoplatform.wallet.metamask.error.transactionFailed'), 
+            );
+          });
+      } else {
+        if (window.ethereum?.isMetaMask) {
+          return searchUserOrSpaceObject(
+            this.product.receiverMarchand.id,
+            this.product.receiverMarchand.type
+          )
+            .then(wallet => {
+              this.$emit('opened-transaction', true);
+              const transactionParameters = {
+                to: this.order.sender.id, 
+                from: this.walletAddress, 
+                data: this.contractDetails.contract.methods.transfer(this.walletAddress, this.DecimalsAmount).encodeABI(),
+              };
+              window.ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [transactionParameters],
+              })
+                .then((transactionHash)=>{
+                  this.$emit('opened-transaction', false);
+                  return createOrder({
+                    productId: this.product.id,
+                    quantity: this.quantity,
+                    receiver: this.order.sender.id,
+                  }, true).then(() => transactionHash);
+                })
+                .then(transactionHash => 
+                  this.transactionUtils.saveTransactionDetails({
+                    'contractAddress': this.contractDetails.address,
+                    'contractAmount': this.amount,
+                    'contractMethodName': 'transfer',
+                    'from': wallet.address,
+                    'label': message,
+                    'message': message,
+                    'pending': true,
+                    'hash': transactionHash,
+                    'timestamp': Date.now(),
+                    'to': this.order.sender.id,
+                  })
+                )
+                .then((savedTransaction)=> {
+                  document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens-pending', {
+                    detail: savedTransaction
+                  }));
+                  this.showAlert(
+                    'success', 
+                    this.$t('exoplatform.wallet.metamask.message.transactionSent'), 
+                    savedTransaction.hash,
+                  );
+                  this.$emit('close');
+                })
+                .catch(e => {
+                  this.$emit('opened-transaction', false);
+                  if (e && e.code === 4001) {
+                    // User rejected transaction from Metamask popin
+                    return;
+                  }
+                  console.error('Checking order availability error', e);
+                  this.showAlert(
+                    'error', 
+                    this.$t('exoplatform.wallet.metamask.error.transactionFailed'), 
+                  );
+                })
+                .finally(() => this.loading = false);
+            });
+        }
+      }
     },
     open() {
       if (this.isMetamaskWallet) {
@@ -375,6 +472,12 @@ export default {
     },
     isMetamaskWallet() {
       return window.walletSettings.wallet?.provider === 'METAMASK';
+    },
+    contractDetails() {
+      return this.tokenUtils.getContractDetails(this.walletAddress);
+    },
+    DecimalsAmount() {
+      return this.walletUtils.convertTokenAmountToSend(this.amount, this.contractDetails.decimals);
     },
   },
   watch: {
