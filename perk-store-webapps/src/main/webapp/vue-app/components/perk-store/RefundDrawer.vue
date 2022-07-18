@@ -173,6 +173,7 @@ export default {
   },
   data() {
     return {
+      resultError: null,
       drawer: false,
       walletAddonInstalled: false,
       walletLoading: false,
@@ -230,7 +231,8 @@ export default {
       this.walletLoading = false;
       const result = event && event.detail;
       if (!result || result.error) {
-        this.warning = `${result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly')}`;
+        this.resultError = result && result.error ? (`${  result.error}`) : this.$t('exoplatform.perkstore.warning.walletNotConfiguredProperly');
+        this.warning = `${this.resultError}`;
         this.walletEnabled = false;
       } else {
         this.walletEnabled = true;
