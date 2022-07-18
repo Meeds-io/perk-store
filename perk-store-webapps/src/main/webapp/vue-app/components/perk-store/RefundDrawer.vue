@@ -24,26 +24,25 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <template slot="content">
       <v-card
         id="refundForm"
-        flat
-        class="mt-6">
+        flat>
         <v-card-text class="pt-0">
-          <div v-if="warning && !loading && !walletLoading" class="alert alert-warning v-content">
+          <div v-if="warning && !loading && !walletLoading" class="alert alert-warning v-content ma-5">
             <i class="uiIconWarning"></i>
             {{ warning }}
           </div>
-          <div v-if="isInternalWallet && error && !loading" class="alert alert-error v-content">
+          <div v-if="isInternalWallet && error && !loading" class="alert alert-error v-content ma-5">
             <i class="uiIconError"></i>
             {{ error }}
           </div>
           <v-form
             ref="form"
             v-model="validForm">
-            <v-row class="ma-3">
+            <v-row class="ma-2">
               <v-col
                 cols="12"
                 sm="6" 
                 class="d-flex align-center ml-n5">
-                <p class="amountLabel mb-0 ">{{ $t('exoplatform.perkstore.label.quantity') }}</p>
+                <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.quantity') }}</label>
               </v-col>
               <v-col
                 cols="12"
@@ -64,9 +63,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   @click:append="incrementQuantity" />  
               </v-col>
             </v-row>
-            <p class="amountLabel ma-1">{{ $t('exoplatform.perkstore.label.amount') }}</p>
-            <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.amount') }}:</label>
-
+            <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.amount') }}</label>
             <v-row class="ma-1">
               <v-text-field
                 v-model.number="amount"
@@ -74,13 +71,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :placeholder="$t('exoplatform.perkstore.label.refundAmountPlaceholder')"
                 :rules="requiredAmountRule"
                 name="amount"
-                class="text-left"
+                class="text-left quantity perkStoreTextField"
                 autofocus
                 required />  
             </v-row>
-            <p v-if="needPassword && !storedPassword && isInternalWallet" class="amountLabel mb-0 mt-2">{{ $t('exoplatform.wallet.label.walletPassword') }}</p>
-            <p v-else-if="!isInternalWallet" class="amountLabel mb-0 mt-2">{{ $t('exoplatform.wallet.label.settings.internal') }}</p>
-            <v-row class="pl-5" v-if="!isInternalWallet">
+            <label v-if="needPassword && !storedPassword && isInternalWallet" class="font-weight-bold mt-5">{{ $t('exoplatform.wallet.label.walletPassword') }}</label>
+            <label v-else-if="!isInternalWallet" class="font-weight-bold mt-5">{{ $t('exoplatform.wallet.label.settings.internal') }}</label>
+
+            <v-row class="pl-6" v-if="!isInternalWallet">
               <v-col
                 cols="12"
                 sm="6" 
@@ -131,7 +129,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :invalid-network="invalidMetamaskNetwork"
           :invalid-account="invalidMetamaskAccount" />      
       </div>
-      <div class="VuetifyApp flex d-flex" v-else>
+      <div class="d-flex mr-2" v-else>
         <v-spacer />
         <button
           :disabled="!validForm || loading || walletLoading"
@@ -251,7 +249,7 @@ export default {
       const pendingTransaction = event.detail;
 
       // Check if the event is triggered for current window
-      if (this.dialog && this.loading) {
+      if (this.drawer && this.loading) {
         this.$emit('refunding');
 
         return saveOrderStatus({
@@ -264,10 +262,12 @@ export default {
           .then((order) => {
             this.$emit('refunded', order);
             this.loading = false;
+            this.drawer = false;
           })
           .catch(e => {
             console.error('Error saving refund order', e);
             this.loading = false;
+            this.drawer = false;
             this.error = e && e.message ? e.message : String(e);
           });
       }
@@ -325,16 +325,13 @@ export default {
         return createOrder({
           productId: this.product.id,
           quantity: this.quantity,
-          receiver: this.product.receiverMarchand,
+          receiver: this.order.sender,
         }, true)
           .then(() => {
             document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
               amount: this.amount,
-              receiver: this.product.receiverMarchand,
-              sender: {
-                type: 'user',
-                id: eXo.env.portal.userName,
-              },
+              receiver: this.order.sender,
+              sender: this.order.receiver,
               password: this.walletPassword,
               label: message,
               message: message,
@@ -357,22 +354,14 @@ export default {
             .then(wallet => {
               this.$emit('opened-transaction', true);
               const transactionParameters = {
-                to: this.order.sender.id, 
+                to: this.contractDetails.address, 
                 from: this.walletAddress, 
-                data: this.contractDetails.contract.methods.transfer(this.walletAddress, this.DecimalsAmount).encodeABI(),
+                data: this.contractDetails.contract.methods.transfer(this.order.sender.id, this.DecimalsAmount).encodeABI(),
               };
               window.ethereum.request({
                 method: 'eth_sendTransaction',
                 params: [transactionParameters],
               })
-                .then((transactionHash)=>{
-                  this.$emit('opened-transaction', false);
-                  return createOrder({
-                    productId: this.product.id,
-                    quantity: this.quantity,
-                    receiver: this.order.sender.id,
-                  }, true).then(() => transactionHash);
-                })
                 .then(transactionHash => 
                   this.transactionUtils.saveTransactionDetails({
                     'contractAddress': this.contractDetails.address,
@@ -397,6 +386,7 @@ export default {
                     savedTransaction.hash,
                   );
                   this.$emit('close');
+                  this.close();
                 })
                 .catch(e => {
                   this.$emit('opened-transaction', false);
@@ -414,6 +404,13 @@ export default {
             });
         }
       }
+    },
+    showAlert(alertType, alertMessage, alertTransactionHash) {
+      this.$root.$emit('wallet-notification-alert', {
+        type: alertType,
+        message: alertMessage,
+        transactionHash: alertTransactionHash,
+      });
     },
     open() {
       if (this.isMetamaskWallet) {
@@ -453,7 +450,7 @@ export default {
       return (this.product && this.product.title)  || (this.order.productTitle) || '';
     },
     walletAddress() {
-      return walletSettings && walletSettings.wallet && walletSettings.wallet.address;
+      return window.walletSettings.wallet.address;
     },
     invalidMetamaskAccount() {
       return !this.metamaskAddress || (this.metamaskAddress || '').toLowerCase() !== (this.walletAddress || '').toLowerCase();

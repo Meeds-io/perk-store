@@ -152,7 +152,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :symbol="symbol"
                 @refunding="refunding = true"
                 @refunded="refunded"
-                @closed="refundDialogClosed" />
+                @closed="refundDrawerClosed" />
             </template>
             <div v-else-if="isCanceled">
               {{ $t('exoplatform.perkstore.label.status.canceled') }}
@@ -347,7 +347,7 @@ export default {
     refunded() {
       // Nothing to do, the update will be made by Websocket
     },
-    refundDialogClosed() {
+    refundDrawerClosed() {
       // We have to re-init wallet settings to the current user instead of wallet of Order receiver
       this.$emit('init-wallet');
       this.refunding = false;
