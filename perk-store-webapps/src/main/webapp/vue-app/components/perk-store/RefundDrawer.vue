@@ -19,13 +19,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     ref="refundForm"
     :right="!$vuetify.rtl">
     <template slot="title">
-      {{ $t('exoplatform.perkstore.title.refundOrderModal', {0: order && order.id}) }}
+      <div class="titleBuyProductDrawer">{{ $t('exoplatform.perkstore.title.refundOrderModal', {0: order && order.id}) }}</div>
     </template>
     <template slot="content">
-      <v-card
-        id="refundForm"
-        flat>
-        <v-card-text class="pt-0">
+      <div
+        flat
+        class="pa-4 pt-0">
+        <div>
           <div v-if="warning && !loading && !walletLoading" class="alert alert-warning v-content ma-5">
             <i class="uiIconWarning"></i>
             {{ warning }}
@@ -35,9 +35,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             {{ error }}
           </div>
           <v-form
+            id="refundFormProduct" 
             ref="form"
             v-model="validForm">
-            <v-row class="ma-2">
+            <v-row class="ml-2 mr-2">
               <v-col
                 cols="12"
                 sm="6" 
@@ -56,7 +57,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   :rules="requiredNumberRule"
                   append-icon="fa-plus"
                   prepend-inner-icon="fa-minus"
-                  class="text-center"
+                  class="text-center pt-1 mr-n10 quantity"
                   name="quantity"
                   required
                   @click:prepend-inner="decrementQuantity"
@@ -64,21 +65,21 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </v-col>
             </v-row>
             <label class="font-weight-bold">{{ $t('exoplatform.perkstore.label.amount') }}</label>
-            <v-row class="ma-1">
+            <v-row class="ml-0 mr-0">
               <v-text-field
                 v-model.number="amount"
                 :disabled="loading"
                 :placeholder="$t('exoplatform.perkstore.label.refundAmountPlaceholder')"
                 :rules="requiredAmountRule"
                 name="amount"
-                class="text-left quantity perkStoreTextField"
+                class="text-left mt-n3"
                 autofocus
                 required />  
             </v-row>
-            <label v-if="needPassword && !storedPassword && isInternalWallet" class="font-weight-bold mt-5">{{ $t('exoplatform.wallet.label.walletPassword') }}</label>
-            <label v-else-if="!isInternalWallet" class="font-weight-bold mt-5">{{ $t('exoplatform.wallet.label.settings.internal') }}</label>
+            <label v-if="needPassword && !storedPassword && isInternalWallet" class="font-weight-bold mt-4">{{ $t('exoplatform.wallet.label.walletPassword') }}</label>
+            <label v-else-if="!isInternalWallet" class="font-weight-bold mt-2">{{ $t('exoplatform.wallet.label.settings.internal') }}</label>
 
-            <v-row class="pl-6" v-if="!isInternalWallet">
+            <v-row class="ml-2" v-if="!isInternalWallet">
               <v-col
                 cols="12"
                 sm="6" 
@@ -94,7 +95,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 cols="12"
                 sm="6"
                 align="right">
-                <v-chip class="grey-background">  
+                <v-chip class="grey-background mr-n5">  
                   <span class="mr-3 dark-grey-color walletTitle">
                     {{ metamaskAddressPreview }}
                   </span>
@@ -114,12 +115,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               name="walletPassword"
               required
               validate-on-blur
-              class="ma-3"
+              class="ma-0"
               autocomplete="current-password"
               @click:append="walletPasswordShow = !walletPasswordShow" />
           </v-form>
-        </v-card-text>
-      </v-card>
+        </div>
+      </div>
     </template>
     <template slot="footer">
       <div v-if="displayMetamaskWarnings">
@@ -132,23 +133,23 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <div class="d-flex mr-2" v-else>
         <v-spacer />
         <button
-          :disabled="!validForm || loading || walletLoading"
-          class="ignore-vuetify-classes btn btn-primary mx-1"
-          @click="refundProduct">
-          {{ $t('exoplatform.perkstore.button.refund') }}
-        </button>
-        <button
           class="ignore-vuetify-classes btn"
           :disabled="loading || walletLoading"
           @click="close">
           {{ $t('exoplatform.perkstore.button.close') }}
+        </button>
+        <button
+          :disabled="!validForm || loading || walletLoading"
+          class="ignore-vuetify-classes btn btn-primary mx-1"
+          @click="refundProduct">
+          {{ $t('exoplatform.perkstore.button.refund') }}
         </button>
       </div>
     </template>
   </exo-drawer>
 </template>
 <script>
-import {toFixed, saveOrderStatus, createOrder} from '../../js/PerkStoreProductOrder.js';
+import {toFixed, saveOrderStatus} from '../../js/PerkStoreProductOrder.js';
 import {searchUserOrSpaceObject} from '../../js/PerkStoreIdentityRegistry.js';
 export default {
   props: {
@@ -324,29 +325,14 @@ export default {
       
       if (this.isInternalWallet) {
         // simulate saving order before sending transaction to blockchain
-        return createOrder({
-          productId: this.product.id,
-          quantity: this.quantity,
+        document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
+          amount: this.amount,
           receiver: this.order.sender,
-        }, true)
-          .then(() => {
-            document.dispatchEvent(new CustomEvent('exo-wallet-send-tokens', {'detail': {
-              amount: this.amount,
-              receiver: this.order.sender,
-              sender: this.order.receiver,
-              password: this.walletPassword,
-              label: message,
-              message: message,
-            }}));
-          })
-          .catch(e => {
-            console.error('Checking order availability error', e);
-            this.loading = false;
-            this.showAlert(
-              'error', 
-              this.$t('exoplatform.wallet.metamask.error.transactionFailed'), 
-            );
-          });
+          sender: this.order.receiver,
+          password: this.walletPassword,
+          label: message,
+          message: message,
+        }}));
       } else {
         if (window.ethereum?.isMetaMask) {
           return searchUserOrSpaceObject(
