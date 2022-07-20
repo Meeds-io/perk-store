@@ -333,6 +333,7 @@ export default {
           label: message,
           message: message,
         }}));
+        this.close();
       } else {
         if (window.ethereum?.isMetaMask) {
           return searchUserOrSpaceObject(
