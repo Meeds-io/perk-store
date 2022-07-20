@@ -116,7 +116,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <v-list dense class="orderProcessingDetails ">
         <v-list-item
           class="orderProcessingContent orderCardSubtitle justify-center">
-          <div class="no-wrap">
+          <div>
             <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
               <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
             </div>
