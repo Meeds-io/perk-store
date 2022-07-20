@@ -333,7 +333,14 @@ export default {
           label: message,
           message: message,
         }}));
-        this.close();
+        if (!this.error){
+          this.showAlert(
+            'success', 
+            this.$t('exoplatform.wallet.metamask.message.transactionSent'),
+            null
+          );
+          this.close();
+        }
       } else {
         if (window.ethereum?.isMetaMask) {
           return searchUserOrSpaceObject(
@@ -374,7 +381,6 @@ export default {
                     this.$t('exoplatform.wallet.metamask.message.transactionSent'), 
                     savedTransaction.hash,
                   );
-                  this.$emit('close');
                   this.close();
                 })
                 .catch(e => {
