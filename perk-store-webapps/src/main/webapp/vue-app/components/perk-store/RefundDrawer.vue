@@ -271,7 +271,7 @@ export default {
               'success', 
               this.$t('exoplatform.wallet.metamask.message.transactionSent'),
               this.order.transactionHash
-            ), console.log('order',this.order))
+            ))
           .catch(e => {
             console.error('Error saving refund order', e);
             this.loading = false;
