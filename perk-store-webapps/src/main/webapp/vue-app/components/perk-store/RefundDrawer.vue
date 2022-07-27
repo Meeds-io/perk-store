@@ -266,7 +266,12 @@ export default {
             this.$emit('refunded', order);
             this.loading = false;
             this.drawer = false;
-          })
+          }).then(
+            this.showAlert(
+              'success', 
+              this.$t('exoplatform.wallet.metamask.message.transactionSent'),
+              this.order.transactionHash
+            ), console.log('order',this.order))
           .catch(e => {
             console.error('Error saving refund order', e);
             this.loading = false;
@@ -334,25 +339,20 @@ export default {
           message: message,
         }}));
         if (!this.error){
-          this.showAlert(
-            'success', 
-            this.$t('exoplatform.wallet.metamask.message.transactionSent'),
-            null
-          );
           this.close();
         }
       } else {
         if (window.ethereum?.isMetaMask) {
           return searchUserOrSpaceObject(
-            this.product.receiverMarchand.id,
-            this.product.receiverMarchand.type
+            this.order.sender.id,
+            this.order.sender.type,
           )
             .then(wallet => {
               this.$emit('opened-transaction', true);
               const transactionParameters = {
                 to: this.contractDetails.address, 
                 from: this.walletAddress, 
-                data: this.contractDetails.contract.methods.transfer(this.order.sender.id, this.DecimalsAmount).encodeABI(),
+                data: this.contractDetails.contract.methods.transfer(wallet.address, this.DecimalsAmount).encodeABI(),
               };
               window.ethereum.request({
                 method: 'eth_sendTransaction',
@@ -363,13 +363,13 @@ export default {
                     'contractAddress': this.contractDetails.address,
                     'contractAmount': this.amount,
                     'contractMethodName': 'transfer',
-                    'from': wallet.address,
+                    'from': this.walletAddress,
                     'label': message,
                     'message': message,
                     'pending': true,
                     'hash': transactionHash,
                     'timestamp': Date.now(),
-                    'to': this.order.sender.id,
+                    'to': wallet.address,
                   })
                 )
                 .then((savedTransaction)=> {
