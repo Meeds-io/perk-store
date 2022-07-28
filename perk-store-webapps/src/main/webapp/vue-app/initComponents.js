@@ -14,9 +14,9 @@ import OrdersFilter from './components/perk-store/OrdersFilter.vue';
 import OrdersList from './components/perk-store/OrdersList.vue';
 import ProductDetailContent from './components/perk-store/ProductDetailContent.vue';
 import ProductNotification from './components/perk-store/ProductNotification.vue';
-import RefundModal from './components/perk-store/RefundModal.vue';
 import PerkStoreProductSearchCard from './components/perk-store-search/PerkStoreProductSearchCard.vue';
 import PerkStoreAlert from './components/perk-store/PerkStoreAlert.vue';
+import RefundDrawer from './components/perk-store/RefundDrawer.vue';
 
 const components = {
   'perk-store-auto-complete': AutoComplete,
@@ -35,10 +35,9 @@ const components = {
   'perk-store-orders-list': OrdersList,
   'perk-store-product-detail-content': ProductDetailContent,
   'perk-store-product-notification': ProductNotification,
-  'perk-store-refund-modal': RefundModal,
   'perk-store-product-search-card': PerkStoreProductSearchCard,
   'perk-store-alert': PerkStoreAlert,
-
+  'perk-store-refund-drawer': RefundDrawer,
 };
 
 for (const key in components) {
