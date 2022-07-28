@@ -116,7 +116,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <v-list dense class="orderProcessingDetails ">
         <v-list-item
           class="orderProcessingContent orderCardSubtitle justify-center">
-          <div class="no-wrap">
+          <div>
             <div v-if="!refunding && (!order.remainingQuantityToProcess || isError)">
               <v-icon class="green--text me-1" size="16">fa-check-circle</v-icon>{{ $t('exoplatform.perkstore.label.processingDone') }}
             </div>
@@ -136,7 +136,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <button
                 v-if="canRefundOrder"
                 class="ignore-vuetify-classes btn orderProcessingBtn text-truncate text-truncate me-1 ms-1"
-                @click="$refs.refundModal.open()">
+                @click="$refs.refundDrawer.open()">
                 {{ $t('exoplatform.perkstore.button.refund') }}
               </button>
               <perk-store-deliver-modal
@@ -144,15 +144,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 ref="deliverModal"
                 :product="orderProduct"
                 :order="order" />
-              <perk-store-refund-modal
+              <perk-store-refund-drawer
                 v-if="canRefundOrder"
-                ref="refundModal"
+                ref="refundDrawer"
                 :product="orderProduct"
                 :order="order"
                 :symbol="symbol"
                 @refunding="refunding = true"
                 @refunded="refunded"
-                @closed="refundDialogClosed" />
+                @closed="refundDrawerClosed" />
             </template>
             <div v-else-if="isCanceled">
               {{ $t('exoplatform.perkstore.label.status.canceled') }}
@@ -347,7 +347,7 @@ export default {
     refunded() {
       // Nothing to do, the update will be made by Websocket
     },
-    refundDialogClosed() {
+    refundDrawerClosed() {
       // We have to re-init wallet settings to the current user instead of wallet of Order receiver
       this.$emit('init-wallet');
       this.refunding = false;
