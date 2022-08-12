@@ -24,6 +24,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.exoplatform.perkstore.exception.PerkStoreException;
 import org.exoplatform.perkstore.model.GlobalSettings;
 import org.exoplatform.perkstore.service.PerkStoreService;
@@ -31,10 +36,9 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
-import io.swagger.annotations.*;
 
 @Path("/perkstore/api/settings")
-@Api(value = "/perkstore/api/settings", description = "Manages perk store application settings") // NOSONAR
+@Tag(name = "/perkstore/api/settings", description = "Manages perk store application settings")
 @RolesAllowed("users")
 public class PerkStoreSettingsREST implements ResourceContainer {
   private static final Log LOG = ExoLogger.getLogger(PerkStoreSettingsREST.class);
@@ -48,11 +52,14 @@ public class PerkStoreSettingsREST implements ResourceContainer {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
-  @ApiOperation(value = "Retrieves perk store settings with user settings", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns global having user settings object")
+  @Operation(
+          summary = "Retrieves perk store settings with user settings",
+          method = "GET",
+          description = "returns global having user settings object")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
   public Response getSettings() {
     String currentUserId = getCurrentUserId();
     try {
@@ -69,13 +76,16 @@ public class PerkStoreSettingsREST implements ResourceContainer {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
-  @ApiOperation(value = "Saves perk store global settings", httpMethod = "POST", response = Response.class, produces = "application/json", notes = "returns empty response")
+  @Operation(
+          summary = "Saves perk store global settings",
+          method = "POST",
+          description = "Saves perk store global settings and returns an empty response")
   @ApiResponses(value = {
-      @ApiResponse(code = 204, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response saveSettings(@ApiParam(value = "Global settings to save", required = true) GlobalSettings settings) throws Exception {
+      @ApiResponse(responseCode = "204", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response saveSettings(@RequestBody(description = "Global settings to save", required = true) GlobalSettings settings) throws Exception {
     if (settings == null) {
       return Response.status(400).build();
     }

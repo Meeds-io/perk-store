@@ -27,6 +27,13 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.exoplatform.common.http.HTTPStatus;
 import org.json.JSONObject;
 
@@ -38,10 +45,9 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
-import io.swagger.annotations.*;
 
 @Path("/perkstore/api/product")
-@Api(value = "/perkstore/api/product", description = "Manages perk store products") // NOSONAR
+@Tag(name = "/perkstore/api/product", description = "Manages perk store products")
 @RolesAllowed("users")
 public class PerkStoreProductREST implements ResourceContainer {
 
@@ -57,13 +63,13 @@ public class PerkStoreProductREST implements ResourceContainer {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
-  @ApiOperation(value = "Creates or modifies a product", httpMethod = "POST", response = Response.class, consumes = "application/json", produces = "application/json", notes = "returns saved product")
+  @Operation(summary = "Creates or modifies a product", method = "POST", description = "Creates or modifies a product and returns the saved product")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response saveProduct(@ApiParam(value = "Product object", required = true) Product product) {
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response saveProduct(@RequestBody(description = "Product object", required = true) Product product) {
     if (product == null) {
       LOG.warn("Bad request sent to server with empty product");
       return Response.status(400).build();
@@ -86,13 +92,16 @@ public class PerkStoreProductREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("{productId}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Retrieves a product by its id", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns selected product if exists")
+  @Operation(
+          summary = "Retrieves a product by its id",
+          method = "GET",
+          description = "Retrieves a product by its id and returns the selected product if exists")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response getProduct(@ApiParam(value = "Product technical id", required = true) @PathParam("productId") long productId) {
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response getProduct(@Parameter(description = "Product technical id", required = true) @PathParam("productId") long productId) {
     if (productId == 0) {
       LOG.warn("Bad request sent to server with empty productId");
       return Response.status(400).build();
@@ -110,13 +119,16 @@ public class PerkStoreProductREST implements ResourceContainer {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("users")
-  @ApiOperation(value = "Get the list of product accessible by current user", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns list of products")
+  @Operation(
+          summary = "Get the list of product accessible by current user",
+          method = "GET",
+          description = "returns list of products")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response listProducts(@ApiParam(value = "Returning only the available products or all products", defaultValue = "false") @QueryParam("available") boolean available,
-                               @ApiParam(value = "Returning the number of Products or not", defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response listProducts(@Parameter(description = "Returning only the available products or all products") @Schema(defaultValue = "false") @QueryParam("available") boolean available,
+                               @Parameter(description = "Returning the number of Products or not") @Schema(defaultValue = "false") @QueryParam("returnSize") boolean returnSize) {
     String currentUserId = getCurrentUserId();
     try {
       List<Product> allProducts = perkStoreService.getProducts(available, currentUserId);
@@ -139,15 +151,18 @@ public class PerkStoreProductREST implements ResourceContainer {
   @GET
   @Path("{productId}/image/{imageId}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Get product image by its id", httpMethod = "GET", response = Response.class, notes = "returns image content")
+  @Operation(
+          summary = "Get product image by its id",
+          method = "GET",
+          description = "returns image content of a product by its id")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 304, message = "Image not modified"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "304", description = "Image not modified"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
   public Response getProductImage(@Context Request request,
-                                  @ApiParam(value = "Product technical id", required = true) @PathParam("productId") long productId,
-                                  @ApiParam(value = "Image file technical id", required = true) @PathParam("imageId") long imageId) {
+                                  @Parameter(description = "Product technical id", required = true) @PathParam("productId") long productId,
+                                  @Parameter(description = "Image file technical id", required = true) @PathParam("imageId") long imageId) {
     String currentUserId = getCurrentUserId();
     try {
       FileDetail fileDetail = perkStoreService.getFileDetail(productId, imageId, false, currentUserId);
@@ -180,12 +195,15 @@ public class PerkStoreProductREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("delete/{productId}")
   @RolesAllowed("users")
-  @ApiOperation(value = "Retrieves a product by its id", httpMethod = "GET", response = Response.class, produces = "application/json", notes = "returns selected product if exists")
-  @ApiResponses(value = { @ApiResponse(code = HTTPStatus.OK, message = "Request fulfilled"),
-      @ApiResponse(code = HTTPStatus.BAD_REQUEST, message = "Invalid query input"),
-      @ApiResponse(code = HTTPStatus.FORBIDDEN, message = "Unauthorized operation"),
-      @ApiResponse(code = HTTPStatus.INTERNAL_ERROR, message = "Internal server error") })
-  public Response deleteProduct(@ApiParam(value = "Product technical id", required = true)
+  @Operation(
+          summary = "Retrieves a product by its id",
+          method = "GET",
+          description = "returns selected product if exists")
+  @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response deleteProduct(@Parameter(description = "Product technical id", required = true)
   @PathParam("productId")
   long productId) {
     if (productId <= 0) {

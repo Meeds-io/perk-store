@@ -27,6 +27,12 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.perkstore.exception.PerkStoreException;
@@ -38,11 +44,9 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 
-import io.swagger.annotations.*;
-import org.json.JSONObject;
 
 @Path("/perkstore/api/order")
-@Api(value = "/perkstore/api/order", description = "Manages perk store product orders") // NOSONAR
+@Tag(name = "/perkstore/api/order", description = "Manages perk store product orders")
 @RolesAllowed("users")
 public class PerkStoreOrderREST implements ResourceContainer {
 
@@ -64,13 +68,16 @@ public class PerkStoreOrderREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("list")
   @RolesAllowed("users")
-  @ApiOperation(value = "Retrieves the list of orders for current user using a filter", httpMethod = "POST", response = Response.class, consumes = "application/json", produces = "application/json", notes = "returns a list of orders")
+  @Operation(
+          summary = "Retrieves the list of orders for current user using a filter",
+          method = "POST",
+          description = "Retrieves the list of orders for current user using a filter")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response listOrders(@ApiParam(value = "OrderFilter object with search conditions", required = true)
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response listOrders(@Parameter(description = "OrderFilter object with search conditions", required = true)
   OrderFilter filter) {
     if (filter == null) {
       LOG.warn("Bad request sent to server with empty filter");
@@ -93,13 +100,16 @@ public class PerkStoreOrderREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("save")
   @RolesAllowed("users")
-  @ApiOperation(value = "Creates a new order for current user on a selected product", httpMethod = "POST", response = Response.class, consumes = "application/json", produces = "application/json", notes = "returns created order")
+  @Operation(
+          summary = "Creates a new order for current user on a selected product",
+          method = "POST",
+          description = "Creates a new order for current user on a selected product")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response createOrder(@ApiParam(value = "ProductOrder object", required = true) ProductOrder order) {
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response createOrder(@RequestBody(description = "ProductOrder object", required = true) ProductOrder order) {
     if (order == null) {
       LOG.warn("Bad request sent to server with empty order to create");
       return Response.status(400).build();
@@ -121,13 +131,15 @@ public class PerkStoreOrderREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("saveSimulate")
   @RolesAllowed("users")
-  @ApiOperation(value = "Check that order can be saved with given attributes", httpMethod = "POST", response = Response.class, consumes = "application/json", produces = "application/json", notes = "returns no content")
+  @Operation(summary = "Check that order can be saved with given attributes",
+          method = "POST",
+          description = "Check that order can be saved with given attributes")
   @ApiResponses(value = {
-      @ApiResponse(code = 204, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response saveOrderSimulate(@ApiParam(value = "ProductOrder object", required = true) ProductOrder order) {
+      @ApiResponse(responseCode = "204", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response saveOrderSimulate(@RequestBody(description = "ProductOrder object", required = true) ProductOrder order) {
     if (order == null) {
       LOG.warn("Bad request sent to server with empty order");
       return Response.status(400).build();
@@ -150,14 +162,17 @@ public class PerkStoreOrderREST implements ResourceContainer {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("saveStatus")
   @RolesAllowed("users")
-  @ApiOperation(value = "Modifies an existing order by specifying the type of modification (order attribute to change)", httpMethod = "POST", response = Response.class, consumes = "application/json", produces = "application/json", notes = "returns modified order")
+  @Operation(
+          summary = "Modifies an existing order by specifying the type of modification",
+          method = "POST",
+          description = "Modifies an existing order by specifying the type of modification (order attribute to change)")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "Request fulfilled"),
-      @ApiResponse(code = 400, message = "Invalid query input"),
-      @ApiResponse(code = 403, message = "Unauthorized operation"),
-      @ApiResponse(code = 500, message = "Internal server error") })
-  public Response saveOrder(@ApiParam(value = "ProductOrder object", required = true) ProductOrder order,
-                            @ApiParam(value = "ProductOrderModificationType enum name", required = true) @QueryParam("modificationType") String modificationType) {
+      @ApiResponse(responseCode = "200", description = "Request fulfilled"),
+      @ApiResponse(responseCode = "400", description = "Invalid query input"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized operation"),
+      @ApiResponse(responseCode = "500", description = "Internal server error") })
+  public Response saveOrder(@RequestBody(description = "ProductOrder object", required = true) ProductOrder order,
+                            @Parameter(description = "ProductOrderModificationType enum name", required = true) @QueryParam("modificationType") String modificationType) {
     if (order == null) {
       LOG.warn("Bad request sent to server with empty order");
       return Response.status(400).build();
