@@ -24,6 +24,7 @@ const config = {
     perkstore: './src/main/webapp/vue-app/perk-store.js',
     perkstoreSearch: './src/main/webapp/vue-app/perk-store-search.js',
     PerkStoreAdmin: './src/main/webapp/vue-app/perk-store-admin/main.js',
+    PerkStoreOverview: './src/main/webapp/vue-app/perk-store-overview/main.js',
   },
   module: {
     rules: [
