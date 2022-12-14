@@ -130,4 +130,33 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </depends>
   </module>
 
+  <module>
+    <name>PerkStoreOverviewAPI</name>
+    <load-group>reward-overview-group</load-group>
+    <script>
+      <minify>false</minify>
+      <path>/js/PerkStoreOverview.bundle.js</path>
+    </script>
+    <depends>
+      <module>vue</module>
+    </depends>
+    <depends>
+      <module>vuetify</module>
+    </depends>
+    <depends>
+      <module>eXoVueI18n</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>$</as>
+    </depends>
+    <depends>
+      <module>extensionRegistry</module>
+    </depends>
+    <depends>
+      <module>walletCommon</module>
+      <as>WalletCommon</as>
+    </depends>
+  </module>
+
 </gatein-resources>
