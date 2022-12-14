@@ -131,7 +131,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </module>
 
   <module>
-    <name>perk-store-overview-api</name>
+    <name>PerkStoreOverviewAPI</name>
     <load-group>reward-overview-group</load-group>
     <script>
       <minify>false</minify>

@@ -15,11 +15,13 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-flex class="perkStoreDetailContent">
+  <div class="perkStoreDetailContent">
     <v-card
-      class="productDetailContentCard"
       :max-width="overviewDisplay ? '100' : cardHeight"
-      :max-height="overviewDisplay && '100' || ''">
+      :max-height="overviewDisplay && '100' || ''"
+      class="productDetailContentCard"
+      elevation="0"
+      outlined>
       <v-carousel
         :show-arrows="false"
         :interval="3000"
@@ -113,13 +115,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :title="buyButtonTitle"
           :right="!$vuetify.rtl"
           :class="buyButtonClass"
-          class="white--text buyButton"
+          :max-height="overviewDisplay && '20px' || ''"
+          :max-width="overviewDisplay && '20px' || ''"
+          class="white--text buyButton pa-0"
           absolute
           fab
           top
           icon
-          :max-height="overviewDisplay && '20px' || ''"
-          :max-width="overviewDisplay && '20px' || ''"
           @click="displayBuyModal">
           <v-icon :class="overviewDisplay && 'icon-mini-size'">fa-shopping-cart</v-icon>
         </v-btn>
@@ -147,7 +149,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       :ok-label="$t('exoplatform.perkstore.label.ok')"
       :cancel-label="$t('exoplatform.perkstore.label.cancel')"
       @ok="removeProduct" />
-  </v-flex>
+  </div>
 </template>
 
 <script>
