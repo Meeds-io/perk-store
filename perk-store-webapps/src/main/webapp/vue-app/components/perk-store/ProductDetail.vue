@@ -15,15 +15,19 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <template>
-  <v-flex class="perkStoreDetailContent">
+  <div class="perkStoreDetailContent">
     <v-card
+      :max-width="overviewDisplay ? '100' : cardHeight"
+      :max-height="overviewDisplay && '100' || ''"
       class="productDetailContentCard"
-      :max-width="cardHeight">
+      elevation="0"
+      outlined>
       <v-carousel
         :show-arrows="false"
         :interval="3000"
         :continuous="!showMenu"
-        :height="carousselHeight"
+        :height="overviewDisplay ? '40' : carousselHeight"
+        :width="overviewDisplay && '70' || ''"
         hide-delimiters
         cycle
         class="carousselParent">
@@ -35,6 +39,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             max="300"
             class="carousselImage">
             <v-toolbar
+              v-if="!overviewDisplay"
               color="transparent"
               class="toolbarCard"
               flat>
@@ -83,11 +88,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </v-carousel>
       <v-card-text
         v-if="!hideButtons"
-        :class="cardTextClass"
-        class="pt-2 pendingCard pb-0"
+        :class="cardTextClass || overviewDisplay ? 'pt-0' : 'pt-2'"
+        class="pendingCard pb-0"
         v-on="!cantBuyProduct && !userData.notProcessedOrders ? { click: displayBuyModal } : {}">
         <div
-          v-if="!hidePending"
+          v-if="!hidePending && !overviewDisplay"
           class="productCardPending py-0">
           <v-hover v-if="userData.notProcessedOrders">
             <v-chip
@@ -110,25 +115,28 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           :title="buyButtonTitle"
           :right="!$vuetify.rtl"
           :class="buyButtonClass"
-          class="white--text buyButton"
+          :max-height="overviewDisplay && '20px' || ''"
+          :max-width="overviewDisplay && '20px' || ''"
+          class="white--text buyButton pa-0"
           absolute
           fab
           top
           icon
           @click="displayBuyModal">
-          <v-icon>fa-shopping-cart</v-icon>
+          <v-icon :class="overviewDisplay && 'icon-mini-size'">fa-shopping-cart</v-icon>
         </v-btn>
       </v-card-text>
       <div
-        :class="cardTextClass"
-        class="pt-4"
+        :class="displayPendingChipClass"
         v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
         <v-card-text
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
-          class="pb-0 productCardTitleParent">
+          class="productCardTitleParent text-truncate"
+          :class="overviewDisplay ? 'pa-1 mb-1 caption' : 'pb-0'">
           <span :title="product.title">{{ product.title }}</span>
         </v-card-text>
         <v-card-text
+          v-if="!overviewDisplay"
           class="productCardSubtitle">
           <span class="priceSymbol">{{ symbol }}</span> {{ product.price }}
         </v-card-text>
@@ -141,7 +149,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       :ok-label="$t('exoplatform.perkstore.label.ok')"
       :cancel-label="$t('exoplatform.perkstore.label.cancel')"
       @ok="removeProduct" />
-  </v-flex>
+  </div>
 </template>
 
 <script>
@@ -209,6 +217,12 @@ export default {
         return 500;
       },
     },
+    overviewDisplay: {
+      type: Boolean,
+      default: function() {
+        return false;
+      },
+    },
   },
   data: () => ({
     showMenu: false
@@ -220,11 +234,14 @@ export default {
     cardTextClass() {
       return this.cantBuyProduct ? '' : 'clickable ';
     },
+    displayPendingChipClass() {
+      return `${!this.overviewDisplay ? 'pt-4' : ''} ${this.cardTextClass}`;
+    },
     cantBuyProduct() {
       return (this.disabledBuy || !this.walletEnabled || this.walletLoading || this.walletDeleted ) || !this.displayBuyButton;
     },
     buyButtonClass(){
-      return !this.cantBuyProduct ? 'btn btn-primary' : 'disabledBuyButton';
+      return `${!this.cantBuyProduct ? 'btn btn-primary' : 'disabledBuyButton'} ${this.overviewDisplay ? 'mt-14 me-n2' : ''}` ;
     },
     buyButtonTitle(){
       if (!this.walletEnabled || this.walletDeleted) {
