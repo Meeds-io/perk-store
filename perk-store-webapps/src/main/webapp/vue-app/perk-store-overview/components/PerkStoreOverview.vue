@@ -17,7 +17,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template>
   <div
     v-if="hasProducts"
-    class="mx-0 d-flex flex-row">
+    class="mx-0 d-flex flex-row mt-2">
     <template v-for="(product, index) in productsToDisplay">
       <v-spacer v-if="index > 0 && justifyBorders" :key="index" />
       <div :key="product.id" class="mx-auto">
