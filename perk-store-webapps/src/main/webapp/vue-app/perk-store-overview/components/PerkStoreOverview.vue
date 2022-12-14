@@ -21,14 +21,21 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <template v-for="(product, index) in productsToDisplay">
       <v-spacer v-if="index > 0 && justifyBorders" :key="index" />
       <div :key="product.id" class="mx-auto">
-        <perk-store-product-detail
-          :product="product"
-          :overview-display="true"
-          :wallet-deleted="walletDeleted"
-          class="width-fit-content"
-          hide-elevation
-          wallet-enabled
-          @buy="openBuyModal" />
+      <v-hover v-slot="{hover}">
+        <v-card
+          :elevation="hover ? 3 : 0"
+          flat
+          @click="openBuyModal(product)">
+          <perk-store-product-detail
+            :product="product"
+            :overview-display="true"
+            :wallet-deleted="walletDeleted"
+            class="width-fit-content"
+            hide-elevation
+            wallet-enabled
+            @buy="openBuyModal" />
+        </v-card>
+      </v-hover>
       </div>
     </template>
     <perk-store-buy-modal
@@ -55,13 +62,16 @@ export default {
   }),
   computed: {
     hasProducts() {
-      return this.products?.length;
+      return this.productsToDisplay?.length;
     },
     justifyBorders() {
       return this.productsToDisplay.length > 2;
     },
+    enabledProducts() {
+      return this.products?.filter(product => product.enabled && !product.deleted && (product.unlimited || product.totalSupply > product.purchased)) || [];
+    },
     productsToDisplay() {
-      return this.products?.slice(0, 3) || [];
+      return this.enabledProducts?.slice(0, 3) || [];
     },
     walletDeleted() {
       return this.wallet?.initializationState === 'DELETED';
