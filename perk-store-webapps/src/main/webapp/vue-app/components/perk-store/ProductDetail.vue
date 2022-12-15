@@ -131,7 +131,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
         <v-card-text
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
-          class="productCardTitleParent"
+          class="productCardTitleParent text-truncate"
           :class="overviewDisplay ? 'pa-1 mb-1 caption' : 'pb-0'">
           <span :title="product.title">{{ product.title }}</span>
         </v-card-text>
