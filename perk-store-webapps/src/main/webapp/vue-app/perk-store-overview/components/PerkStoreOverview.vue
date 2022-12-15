@@ -20,23 +20,24 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     class="mx-0 d-flex flex-row mt-2">
     <template v-for="(product, index) in productsToDisplay">
       <v-spacer v-if="index > 0 && justifyBorders" :key="index" />
-      <div :key="product.id" class="mx-auto">
-        <v-hover v-slot="{hover}">
-          <v-card
-            :elevation="hover ? 3 : 0"
-            flat
-            @click="openBuyModal(product)">
-            <perk-store-product-detail
-              :product="product"
-              :overview-display="true"
-              :wallet-deleted="walletDeleted"
-              class="width-fit-content"
-              hide-elevation
-              wallet-enabled
-              @buy="openBuyModal" />
-          </v-card>
-        </v-hover>
-      </div>
+      <v-hover v-slot="{hover}" :key="product.id">
+        <v-card
+          :key="product.id"
+          :elevation="hover ? 3 : 0"
+          max-width="33%"
+          flat
+          class="mx-auto"
+          @click="openBuyModal(product)">
+          <perk-store-product-detail
+            :product="product"
+            :overview-display="true"
+            :wallet-deleted="walletDeleted"
+            class="width-fit-content"
+            hide-elevation
+            wallet-enabled
+            @buy="openBuyModal" />
+        </v-card>
+      </v-hover>
     </template>
     <perk-store-buy-modal
       v-if="selectedProduct"
