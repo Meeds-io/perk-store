@@ -127,7 +127,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </v-btn>
       </v-card-text>
       <div
-        :class="cardTextClass && !overviewDisplay && 'pt-4'"
+        :class="displayPendingChipClass"
         v-on="!cantBuyProduct ? { click: displayBuyModal } : {}">
         <v-card-text
           :title="product.unlimited ? $t('exoplatform.perkstore.label.unlimitedSupply') : $t('exoplatform.perkstore.label.articlesSold', {0: purchasedPercentageLabel})"
@@ -233,6 +233,9 @@ export default {
     },
     cardTextClass() {
       return this.cantBuyProduct ? '' : 'clickable ';
+    },
+    displayPendingChipClass() {
+      return `${!this.overviewDisplay ? 'pt-4' : ''} ${this.cardTextClass}`;
     },
     cantBuyProduct() {
       return (this.disabledBuy || !this.walletEnabled || this.walletLoading || this.walletDeleted ) || !this.displayBuyButton;
