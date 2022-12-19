@@ -164,6 +164,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <perk-store-product-notification
                 :products="modifiedProducts"
                 @refresh-list="addNewProductsToList" />
+              <perk-store-catalog-no-result
+                v-if="perkStoreEnabled && walletEnabled && emptySearchResult"
+                :click-condition="walletEnabled && userSettings.canAddProduct"
+                :icon="kartPlusIcon"
+                :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
+                info-message="exoplatform.perkstore.info.rewardsPerkstoreNoProductsSummary" 
+                @no-result-event="newProduct()" />
             </v-tab-item>
             <v-tab-item class="orders-list" eager>
               <v-row
@@ -305,6 +312,7 @@ import {toFixed} from '../js/PerkStoreProductOrder.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 export default {
   data: () => ({
+    kartPlusIcon: 'fa-solid fa-cart-plus',
     showMenu: false,
     showOrderMenu: false,
     newsStatusLabel: '',
@@ -361,6 +369,9 @@ export default {
       }
       products = products.filter(product => product.enabled || (product.userData && product.userData.canEdit));
       return products;
+    },
+    emptySearchResult() {
+      return this.products.length === 0;
     },
   },
   watch: {
