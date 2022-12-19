@@ -59,10 +59,10 @@ export default {
     },
   },
   created() {
-    document.addEventListener('perk-store-products-no-results', this.noResultEvent);
+    document.addEventListener(this.emptyProductsActionName, this.noResultEvent);
   },
   beforeDestroy() {
-    document.removeEventListener('perk-store-products-no-results', this.noResultEvent);
+    document.removeEventListener(this.emptyProductsActionName, this.noResultEvent);
   },
   computed: {
     emptyPerkstoreSummaryText() {
