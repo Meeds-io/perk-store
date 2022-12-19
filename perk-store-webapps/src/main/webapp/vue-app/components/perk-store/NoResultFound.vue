@@ -26,7 +26,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <span v-if="info" class="text-header-title text-light-color py-5">{{ info }}</span>
         <span
           v-if="infoMessage"
-          v-sanitized-html="infoMessage"
+          v-html="emptyPerkstoreSummaryText"
           class="text-sub-title subtitle-1 text-light-color pb-2"></span>
       </div>
     </div>
@@ -35,6 +35,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <script>
 
 export default {
+  data() {
+    return {
+      emptyProductsActionName: 'perk-store-products-no-results',
+    };
+  },
   props: {
     icon: {
       type: String,
@@ -47,6 +52,25 @@ export default {
     infoMessage: {
       type: String,
       default: ''
+    },
+    clickCondition: {
+      type: Boolean,
+      default: false
+    },
+  },
+  created() {
+    document.addEventListener('perk-store-products-no-results', this.noResultEvent);
+  },
+  beforeDestroy() {
+    document.removeEventListener('perk-store-products-no-results', this.noResultEvent);
+  },
+  computed: {
+    emptyPerkstoreSummaryText() {
+      const labelKey = this.clickCondition && this.infoMessage;
+      return this.$t(labelKey, {
+        0: `<a class="primary--text font-weight-bold" href="javascript:void(0)" onclick="document.dispatchEvent(new CustomEvent('${this.emptyProductsActionName}'))">`,
+        1: '</a>',
+      });
     },
   },
   methods: {
