@@ -104,20 +104,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   </v-flex>
                 </v-row>
               </v-row>
-              <v-toolbar
+              <perk-store-catalog-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                color="transparent"
-                flat>
-                <v-spacer />
-                <v-flex class="text-center">
-                  <div class="alert alert-warning">
-                    <i class="uiIconWarning"></i>
-                    {{ walletWarning }}.
-                    <a :href="walletUri"> {{ $t('exoplatform.perkstore.label.clickHere') }} </a>
-                  </div>
-                </v-flex>
-                <v-spacer />
-              </v-toolbar>
+                :icon="walletIcon"
+                :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
+                info-message="gamification.overview.rewardsPerkstoreSummary" 
+                class="mt-5"
+                @no-result-event="redirectToWallet()" />
               <v-toolbar
                 v-if="error"
                 color="transparent"
@@ -313,6 +306,7 @@ import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 export default {
   data: () => ({
     kartPlusIcon: 'fa-solid fa-cart-plus',
+    walletIcon: 'fas fa-wallet',
     showMenu: false,
     showOrderMenu: false,
     newsStatusLabel: '',
@@ -492,6 +486,9 @@ export default {
     parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
   },
   methods: {
+    redirectToWallet() {
+      window.location.href = this.walletUri;
+    },
     closeProduct() {
       const currentUrl = window.location.pathname;
       const defaultUrl = `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`;
