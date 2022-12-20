@@ -55,7 +55,7 @@ export default {
     },
     clickCondition: {
       type: Boolean,
-      default: false
+      default: true
     },
   },
   created() {
