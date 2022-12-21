@@ -104,10 +104,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   </v-flex>
                 </v-row>
               </v-row>
-              <perk-store-catalog-no-result
+              <perk-store-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
                 :icon="walletIcon"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
+                :click-condition="true"
                 info-message="gamification.overview.rewardsPerkstoreSummary" 
                 class="mt-5"
                 @no-result-event="redirectToWallet()" />
@@ -157,13 +158,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <perk-store-product-notification
                 :products="modifiedProducts"
                 @refresh-list="addNewProductsToList" />
-              <perk-store-catalog-no-result
+              <perk-store-no-result
                 v-if="perkStoreEnabled && walletEnabled && emptySearchResult"
                 :click-condition="walletEnabled && userSettings.canAddProduct"
                 :icon="kartPlusIcon"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
-                info-message="exoplatform.perkstore.info.rewardsPerkstoreNoProductsSummary" 
-                @no-result-event="newProduct()" />
+                :injected-label-param="injectedLabelParam"
+                info-message="exoplatform.perkstore.info.rewardsPerkstoreNoProductsDynamicPlaceholder" 
+                @no-result-event="isCatalogDisplayed && newProduct()" />
             </v-tab-item>
             <v-tab-item class="orders-list" eager>
               <v-row
@@ -262,20 +264,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </v-flex>
                 <v-spacer />
               </v-toolbar>
-              <v-toolbar
+              <perk-store-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                color="transparent"
-                flat>
-                <v-spacer />
-                <v-flex class="text-center">
-                  <div class="alert alert-warning">
-                    <i class="uiIconWarning"></i>
-                    {{ walletWarning }}.
-                    <a :href="walletUri"> {{ $t('exoplatform.perkstore.label.clickHere') }} </a>
-                  </div>
-                </v-flex>
-                <v-spacer />
-              </v-toolbar>
+                :icon="walletIcon"
+                :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
+                :click-condition="true"
+                info-message="gamification.overview.rewardsPerkstoreSummary" 
+                class="mt-5"
+                @no-result-event="redirectToWallet()" />
               <perk-store-orders-list
                 ref="ordersList"
                 :product="selectedProduct"
@@ -284,13 +280,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :symbol="symbol"
                 :search="searchOrder"
                 :filter-order="filterOrder"
+                :wallet-enabled="walletEnabled"
                 @search-loading="searchLoading = true"
                 @end-search-loading="searchLoading = false"
                 @init-wallet="initWalletAPI(true)"
                 @display-product="displayProduct($event)"
                 @loading="loading = $event"
                 @error="error = $event"
-                @close="closeDetails" />
+                @close="closeDetails"
+                @no-order-redirect="redirectToCatalog()"/>
             </v-tab-item>
           </v-tabs-items>
         </v-app>
@@ -310,6 +308,8 @@ export default {
     showMenu: false,
     showOrderMenu: false,
     newsStatusLabel: '',
+    injectedLabel: '',
+    injectedLabelParam: 'products',
     filterOrderLabel: '',
     filterProduct: '',
     filterOrder: 'ALL',
@@ -341,8 +341,13 @@ export default {
     products: [],
     modifiedProducts: [],
     walletUri: `${eXo.env.portal.context}/${eXo.env.portal.portalName}/wallet`,
+    catalogUri: `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`,
+
   }),
   computed: {
+    isCatalogDisplayed() {
+      return this.tab === 0;
+    },
     balance() {
       return (this.wallet && this.wallet.initializationState !== 'DELETED' && this.wallet.tokenBalance && toFixed(this.wallet.tokenBalance)) || 0;
     },
@@ -416,28 +421,34 @@ export default {
         this.productsFilters.soldOut = false;
         this.productsFilters.mine = false;
         this.productsFilters.activeProducts = false;
+        this.injectedLabel = this.filterProduct;
       } else if (this.filterProduct === 'productFiltersSoldOutProducts'){
         this.productsFilters.soldOut = true;
         this.productsFilters.disabled = false;
         this.productsFilters.mine = false;
         this.productsFilters.activeProducts = false;
+        this.injectedLabel = this.filterProduct;
       } else if (this.filterProduct === 'createdByMe') {
         this.productsFilters.mine = true;
         this.productsFilters.disabled = false;
         this.productsFilters.soldOut = false;
         this.productsFilters.activeProducts = false;
+        this.injectedLabel = 'products';
       }  else if (this.filterProduct === 'activeProducts') {
         this.productsFilters.mine = false;
         this.productsFilters.disabled = false;
         this.productsFilters.soldOut = false;
         this.productsFilters.activeProducts = true;
+        this.injectedLabel = this.filterProduct;
       } else {
         this.productsFilters.mine = false;
         this.productsFilters.disabled = false;
         this.productsFilters.soldOut = false;
         this.productsFilters.activeProducts = false;
+        this.injectedLabel = 'products';
       }
       this.newsStatusLabel = this.$t(`exoplatform.perkstore.label.${this.filterProduct}`);
+      this.injectedLabelParam = this.$t(`exoplatform.perkstore.label.${this.injectedLabel}`);
       this.filterProducts();
       this.showMenu = false;
     },
@@ -488,6 +499,9 @@ export default {
   methods: {
     redirectToWallet() {
       window.location.href = this.walletUri;
+    },
+    redirectToCatalog() {
+      this.tab = 0;
     },
     closeProduct() {
       const currentUrl = window.location.pathname;

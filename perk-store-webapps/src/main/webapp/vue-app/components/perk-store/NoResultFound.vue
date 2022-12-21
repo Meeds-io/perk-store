@@ -51,11 +51,15 @@ export default {
     },
     infoMessage: {
       type: String,
+      default: 'search.connector.label.products'
+    },
+    injectedLabelParam: {
+      type: String,
       default: ''
     },
     clickCondition: {
       type: Boolean,
-      default: true
+      default: false
     },
   },
   created() {
@@ -67,10 +71,20 @@ export default {
   computed: {
     emptyPerkstoreSummaryText() {
       const labelKey = this.clickCondition && this.infoMessage;
-      return this.$t(labelKey, {
-        0: `<a class="primary--text font-weight-bold" href="javascript:void(0)" onclick="document.dispatchEvent(new CustomEvent('${this.emptyProductsActionName}'))">`,
-        1: '</a>',
-      });
+      if (this.injectedLabelParam.length > 0) {
+        return this.$t(labelKey, {
+          0: this.injectedLabelParam,
+          1: `<a class="primary--text font-weight-bold" href="javascript:void(0)" onclick="document.dispatchEvent(new CustomEvent('${this.emptyProductsActionName}'))">`,
+          2: '</a>',
+        });
+      } else {
+        return this.$t(labelKey, {
+          0: `<a class="primary--text font-weight-bold" href="javascript:void(0)" onclick="document.dispatchEvent(new CustomEvent('${this.emptyProductsActionName}'))">`,
+          1: '</a>',
+        });
+
+      }
+
     },
   },
   methods: {
