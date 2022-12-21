@@ -151,7 +151,6 @@ export default {
   },
   data() {
     return {
-      kartPlusIcon: 'fa-solid fa-cart-plus',
       loading: false,
       pageSize: 12,
       limit: 12,
