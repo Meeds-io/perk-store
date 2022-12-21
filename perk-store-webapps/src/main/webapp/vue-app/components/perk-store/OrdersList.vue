@@ -63,9 +63,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               @error="$emit('error', $event)" />
           </div>
         </template>
-        <div v-else class="ma-auto">
-          {{ search ? $t('exoplatform.perkstore.button.noOrdersSearchResultFor', {0: search}) : $t('exoplatform.perkstore.button.noOrdersFound') }}
+        <div v-else-if="search" class="ma-auto">
+          {{ $t('exoplatform.perkstore.button.noOrdersSearchResultFor', {0: search}) }}
         </div>
+        <perk-store-no-result
+          v-else-if="walletEnabled"
+          :icon="kartPlusIcon"
+          :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
+          :click-condition="walletEnabled"
+          info-message="exoplatform.perkstore.info.rewardsPerkstoreNoOrdersSummary" 
+          @no-result-event="$emit('no-order-redirect', $event)" />
       </v-layout>
       <v-flex
         v-if="loading || displayLoadMoreButton"
@@ -137,9 +144,14 @@ export default {
         return 'all';
       },
     },
+    walletEnabled: {
+      type: Boolean,
+      default: false
+    },
   },
   data() {
     return {
+      kartPlusIcon: 'fa-solid fa-cart-plus',
       loading: false,
       pageSize: 12,
       limit: 12,

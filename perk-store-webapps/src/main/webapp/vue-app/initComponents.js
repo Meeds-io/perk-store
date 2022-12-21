@@ -22,7 +22,7 @@ import RefundDrawer from './components/perk-store/RefundDrawer.vue';
 const components = {
   'perk-store-auto-complete': AutoComplete,
   'perk-store-buy-form': BuyForm,
-  'perk-store-catalog-no-result': NoResultFound,
+  'perk-store-no-result': NoResultFound,
   'perk-store-buy-modal': BuyModal,
   'perk-store-products-list': ProductsList,
   'perk-store-product-detail': ProductDetail,
