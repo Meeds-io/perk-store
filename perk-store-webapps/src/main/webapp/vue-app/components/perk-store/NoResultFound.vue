@@ -71,7 +71,7 @@ export default {
   computed: {
     emptyPerkstoreSummaryText() {
       const labelKey = this.clickCondition && this.infoMessage;
-      if (this.injectedLabelParam.length > 0) {
+      if (this.injectedLabelParam?.length) {
         return this.$t(labelKey, {
           0: this.injectedLabelParam,
           1: `<a class="primary--text font-weight-bold" href="javascript:void(0)" onclick="document.dispatchEvent(new CustomEvent('${this.emptyProductsActionName}'))">`,
