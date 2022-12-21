@@ -106,9 +106,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </v-row>
               <perk-store-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                icon="fas fa-wallet"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
                 :click-condition="true"
+                icon="fas fa-wallet"
                 info-message="gamification.overview.rewardsPerkstoreSummary" 
                 class="mt-5"
                 @no-result-event="redirectToWallet()" />
@@ -161,9 +161,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <perk-store-no-result
                 v-if="perkStoreEnabled && walletEnabled && emptySearchResult"
                 :click-condition="walletEnabled && userSettings.canAddProduct"
-                icon="fas fa-cart-plus"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
                 :injected-label-param="injectedLabelParam"
+                icon="fas fa-cart-plus"
                 info-message="exoplatform.perkstore.info.rewardsPerkstoreNoProductsDynamicPlaceholder" 
                 @no-result-event="isCatalogDisplayed && newProduct()" />
             </v-tab-item>
@@ -266,9 +266,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </v-toolbar>
               <perk-store-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                icon="fas fa-wallet"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
                 :click-condition="true"
+                icon="fas fa-wallet"
                 info-message="gamification.overview.rewardsPerkstoreSummary" 
                 class="mt-5"
                 @no-result-event="redirectToWallet()" />
