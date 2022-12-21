@@ -106,7 +106,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </v-row>
               <perk-store-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                :icon="walletIcon"
+                icon="fas fa-wallet"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
                 :click-condition="true"
                 info-message="gamification.overview.rewardsPerkstoreSummary" 
@@ -161,7 +161,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <perk-store-no-result
                 v-if="perkStoreEnabled && walletEnabled && emptySearchResult"
                 :click-condition="walletEnabled && userSettings.canAddProduct"
-                :icon="kartPlusIcon"
+                icon="fas fa-cart-plus"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
                 :injected-label-param="injectedLabelParam"
                 info-message="exoplatform.perkstore.info.rewardsPerkstoreNoProductsDynamicPlaceholder" 
@@ -266,7 +266,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </v-toolbar>
               <perk-store-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                :icon="walletIcon"
+                icon="fas fa-wallet"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
                 :click-condition="true"
                 info-message="gamification.overview.rewardsPerkstoreSummary" 
@@ -288,7 +288,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @loading="loading = $event"
                 @error="error = $event"
                 @close="closeDetails"
-                @no-order-redirect="redirectToCatalog()"/>
+                @no-order-redirect="redirectToCatalog()" />
             </v-tab-item>
           </v-tabs-items>
         </v-app>
@@ -303,8 +303,6 @@ import {toFixed} from '../js/PerkStoreProductOrder.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 export default {
   data: () => ({
-    kartPlusIcon: 'fa-solid fa-cart-plus',
-    walletIcon: 'fas fa-wallet',
     showMenu: false,
     showOrderMenu: false,
     newsStatusLabel: '',
