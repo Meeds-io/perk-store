@@ -68,7 +68,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </div>
         <perk-store-no-result
           v-else-if="walletEnabled"
-          :icon="kartPlusIcon"
+          icon="fas fa-cart-plus"
           :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
           :click-condition="walletEnabled"
           info-message="exoplatform.perkstore.info.rewardsPerkstoreNoOrdersSummary" 
