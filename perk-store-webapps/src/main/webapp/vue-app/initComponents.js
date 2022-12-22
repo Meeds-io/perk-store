@@ -1,5 +1,6 @@
 import AutoComplete from './components/AutoComplete.vue';
 import BuyForm from './components/perk-store/BuyForm.vue';
+import NoResultFound from './components/perk-store/NoResultFound.vue';
 import BuyModal from './components/perk-store/BuyModal.vue';
 import ProductsList from './components/perk-store/ProductsList.vue';
 import ProductDetail from './components/perk-store/ProductDetail.vue';
@@ -21,6 +22,7 @@ import RefundDrawer from './components/perk-store/RefundDrawer.vue';
 const components = {
   'perk-store-auto-complete': AutoComplete,
   'perk-store-buy-form': BuyForm,
+  'perk-store-no-result': NoResultFound,
   'perk-store-buy-modal': BuyModal,
   'perk-store-products-list': ProductsList,
   'perk-store-product-detail': ProductDetail,
