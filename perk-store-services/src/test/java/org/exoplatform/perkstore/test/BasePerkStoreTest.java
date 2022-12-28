@@ -18,30 +18,52 @@ package org.exoplatform.perkstore.test;
 
 import static org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus.NONE;
 import static org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus.PENDING;
-import static org.junit.Assert.*;
+import static org.exoplatform.component.test.ContainerScope.*;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
+import org.exoplatform.component.test.AbstractKernelTest;
+import org.exoplatform.component.test.ConfigurationUnit;
+import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.perkstore.dao.PerkStoreOrderDAO;
 import org.exoplatform.perkstore.dao.PerkStoreProductDAO;
 import org.exoplatform.perkstore.entity.ProductEntity;
 import org.exoplatform.perkstore.entity.ProductOrderEntity;
-import org.exoplatform.perkstore.model.*;
-import org.exoplatform.perkstore.model.constant.*;
+import org.exoplatform.perkstore.model.GlobalSettings;
+import org.exoplatform.perkstore.model.PerkStoreCloneable;
+import org.exoplatform.perkstore.model.Product;
+import org.exoplatform.perkstore.model.ProductOrder;
+import org.exoplatform.perkstore.model.constant.ProductOrderPeriodType;
+import org.exoplatform.perkstore.model.constant.ProductOrderStatus;
+import org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus;
 import org.exoplatform.perkstore.service.PerkStoreService;
 import org.exoplatform.perkstore.service.utils.Utils;
 import org.exoplatform.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.perkstore.storage.cached.PerkStoreCachedStorage;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.impl.*;
+import org.exoplatform.services.organization.impl.GroupImpl;
+import org.exoplatform.services.organization.impl.MembershipTypeImpl;
+import org.exoplatform.services.organization.impl.UserImpl;
 
-public abstract class BasePerkStoreTest {
+@ConfiguredBy({
+    @ConfigurationUnit(scope = ROOT, path = "conf/configuration.xml"),
+    @ConfigurationUnit(scope = PORTAL, path = "conf/portal/configuration.xml"),
+    @ConfigurationUnit(scope = PORTAL, path = "conf/perk-store-configuration.xml"),
+    @ConfigurationUnit(scope = PORTAL, path = "conf/perk-store-configuration-local.xml"),
+})
+public abstract class BasePerkStoreTest extends AbstractKernelTest {
 
   protected static final String    USERNAME_ADMIN  = "root90";
 
@@ -53,9 +75,11 @@ public abstract class BasePerkStoreTest {
 
   private Random                   random          = new Random(1);
 
+  @Override
   @BeforeClass
-  public static void beforeTest() throws Exception {
-    container = PortalContainer.getInstance();
+  protected void beforeClass() {
+    super.beforeClass();
+    container = getContainer();
     assertNotNull("Container shouldn't be null", container);
     assertTrue("Container should have been started", container.isStarted());
 
@@ -64,17 +88,26 @@ public abstract class BasePerkStoreTest {
     GroupImpl group = new GroupImpl();
     group.setId(Utils.REWARDING_GROUP);
     MembershipTypeImpl role = new MembershipTypeImpl("*", null, null);
-    organizationService.getMembershipHandler()
-                       .linkMembership(user, group, role, false);
+    try {
+      organizationService.getMembershipHandler()
+                         .linkMembership(user, group, role, false);
+    } catch (Exception e) {
+      log.warn("Error adding root90 to rewarding group", e);
+    }
   }
 
+  @Override
   @Before
-  public void beforeMethodTest() {
+  protected void setUp() throws Exception {
+    super.setUp();
     RequestLifeCycle.begin(container);
   }
 
+  @Override
   @After
-  public void afterMethodTest() {
+  protected void tearDown() throws Exception {
+    super.tearDown();
+
     PerkStoreProductDAO productDAO = getService(PerkStoreProductDAO.class);
     PerkStoreOrderDAO orderDAO = getService(PerkStoreOrderDAO.class);
     PerkStoreStorage perkStoreStorage = getService(PerkStoreStorage.class);
