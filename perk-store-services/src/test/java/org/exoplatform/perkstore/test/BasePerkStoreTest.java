@@ -16,9 +16,10 @@
  */
 package org.exoplatform.perkstore.test;
 
+import static org.exoplatform.component.test.ContainerScope.PORTAL;
+import static org.exoplatform.component.test.ContainerScope.ROOT;
 import static org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus.NONE;
 import static org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus.PENDING;
-import static org.exoplatform.component.test.ContainerScope.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,7 +31,6 @@ import java.util.Random;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import org.exoplatform.component.test.AbstractKernelTest;
 import org.exoplatform.component.test.ConfigurationUnit;
@@ -61,7 +61,6 @@ import org.exoplatform.services.organization.impl.UserImpl;
     @ConfigurationUnit(scope = ROOT, path = "conf/configuration.xml"),
     @ConfigurationUnit(scope = PORTAL, path = "conf/portal/configuration.xml"),
     @ConfigurationUnit(scope = PORTAL, path = "conf/perk-store-configuration.xml"),
-    @ConfigurationUnit(scope = PORTAL, path = "conf/perk-store-configuration-local.xml"),
 })
 public abstract class BasePerkStoreTest extends AbstractKernelTest {
 
@@ -69,16 +68,16 @@ public abstract class BasePerkStoreTest extends AbstractKernelTest {
 
   protected static final String    USERNAME        = "root1";
 
-  protected static PortalContainer container;
+  protected PortalContainer container;
 
   protected List<Serializable>     entitiesToClean = new ArrayList<>();
 
   private Random                   random          = new Random(1);
 
   @Override
-  @BeforeClass
-  protected void beforeClass() {
-    super.beforeClass();
+  @Before
+  protected void setUp() throws Exception {
+    super.setUp();
     container = getContainer();
     assertNotNull("Container shouldn't be null", container);
     assertTrue("Container should have been started", container.isStarted());
@@ -94,11 +93,7 @@ public abstract class BasePerkStoreTest extends AbstractKernelTest {
     } catch (Exception e) {
       log.warn("Error adding root90 to rewarding group", e);
     }
-  }
 
-  @Override
-  @Before
-  protected void setUp() throws Exception {
     super.setUp();
     RequestLifeCycle.begin(container);
   }
@@ -154,7 +149,7 @@ public abstract class BasePerkStoreTest extends AbstractKernelTest {
     RequestLifeCycle.end();
   }
 
-  protected static <T> T getService(Class<T> componentType) {
+  protected <T> T getService(Class<T> componentType) {
     return container.getComponentInstanceOfType(componentType);
   }
 

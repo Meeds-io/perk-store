@@ -20,4 +20,45 @@
 -->
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd" xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
+  <component>
+    <key>org.exoplatform.services.organization.OrganizationService</key>
+    <type>org.exoplatform.commons.testing.mock.SimpleMockOrganizationService</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.social.core.space.spi.SpaceService</key>
+    <type>org.exoplatform.perkstore.test.mock.SpaceServiceMock</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.social.core.manager.IdentityManager</key>
+    <type>org.exoplatform.perkstore.test.mock.IdentityManagerMock</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.social.core.storage.api.ActivityStorage</key>
+    <type>org.exoplatform.perkstore.test.mock.ActivityStorageMock</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.social.core.manager.ActivityManager</key>
+    <type>org.exoplatform.perkstore.test.mock.ActivityManagerMock</type>
+  </component>
+
+  <component>
+    <key>org.mortbay.cometd.continuation.AbstractBayeux</key>
+    <type>org.exoplatform.perkstore.test.mock.BayeuxContextMock</type>
+  </component>
+
+  <component>
+    <type>org.exoplatform.ws.frameworks.cometd.ContinuationService</type>
+  </component>
+
+  <component>
+    <key>org.exoplatform.ws.frameworks.cometd.transport.ContinuationServiceDelegate</key>
+    <type>org.exoplatform.ws.frameworks.cometd.transport.ContinuationServiceLocalDelegate</type>
+  </component>
+
+  <remove-configuration>org.exoplatform.commons.search.index.IndexingOperationProcessor</remove-configuration>
+  <remove-configuration>org.exoplatform.upload.UploadService</remove-configuration>
 </configuration>
