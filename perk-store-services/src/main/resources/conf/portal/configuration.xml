@@ -91,46 +91,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </external-component-plugins>
 
   <external-component-plugins>
-    <target-component>org.exoplatform.services.cache.CacheService</target-component>
-    <component-plugin>
-      <name>addExoCacheConfig</name>
-      <set-method>addExoCacheConfig</set-method>
-      <type>org.exoplatform.services.cache.ExoCacheConfigPlugin</type>
-      <description>Configures the cache for Perk store products and orders</description>
-      <init-params>
-        <object-param>
-          <name>perkstore.product</name>
-          <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
-            <field name="name">
-              <string>wallet.transactionsMessages</string>
-            </field>
-            <field name="maxSize">
-              <int>${exo.cache.perkstore.product.MaxNodes:1000}</int>
-            </field>
-            <field name="liveTime">
-              <long>${exo.cache.perkstore.product.TimeToLive:-1}</long>
-            </field>
-          </object>
-        </object-param>
-        <object-param>
-          <name>perkstore.order</name>
-          <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
-            <field name="name">
-              <string>wallet.accountDetailCache</string>
-            </field>
-            <field name="maxSize">
-              <int>${exo.cache.perkstore.order.MaxNodes:2000}</int>
-            </field>
-            <field name="liveTime">
-              <long>${exo.cache.perkstore.order.TimeToLive:-1}</long>
-            </field>
-          </object>
-        </object-param>
-      </init-params>
-    </component-plugin>
-  </external-component-plugins>
-
-  <external-component-plugins>
     <target-component>org.exoplatform.commons.file.services.NameSpaceService</target-component>
     <component-plugin>
       <name>PerkStoreNameSpacePlugin</name>
