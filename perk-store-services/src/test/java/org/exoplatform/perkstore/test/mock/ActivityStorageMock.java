@@ -16,7 +16,10 @@
  */
 package org.exoplatform.perkstore.test.mock;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.exoplatform.social.core.ActivityProcessor;
