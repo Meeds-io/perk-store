@@ -17,25 +17,42 @@
 package org.exoplatform.perkstore.test.service;
 
 import static org.exoplatform.perkstore.model.constant.ProductOrderStatus.FRAUD;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
-import org.exoplatform.commons.exception.ObjectNotFoundException;
-import org.exoplatform.perkstore.storage.PerkStoreStorage;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.configuration.ConfigurationManager;
 import org.exoplatform.perkstore.exception.PerkStoreException;
-import org.exoplatform.perkstore.model.*;
-import org.exoplatform.perkstore.model.constant.*;
+import org.exoplatform.perkstore.model.FileDetail;
+import org.exoplatform.perkstore.model.GlobalSettings;
+import org.exoplatform.perkstore.model.OrderFilter;
+import org.exoplatform.perkstore.model.Product;
+import org.exoplatform.perkstore.model.ProductOrder;
+import org.exoplatform.perkstore.model.Profile;
+import org.exoplatform.perkstore.model.constant.PerkStoreError;
+import org.exoplatform.perkstore.model.constant.ProductOrderModificationType;
+import org.exoplatform.perkstore.model.constant.ProductOrderStatus;
+import org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus;
+import org.exoplatform.perkstore.model.constant.ProductOrderType;
 import org.exoplatform.perkstore.service.PerkStoreService;
 import org.exoplatform.perkstore.service.utils.Utils;
+import org.exoplatform.perkstore.storage.PerkStoreStorage;
 import org.exoplatform.perkstore.test.BasePerkStoreTest;
 import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
@@ -304,7 +321,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertEquals(1, products.size());
 
     Product savedProduct = newProduct(perkStoreService, new Product());
-    products = perkStoreService.getProducts(false,"root2");
+    products = perkStoreService.getProducts(false, "root2");
     assertNotNull(products);
     assertEquals(2, products.size());
 
@@ -325,25 +342,24 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(products);
     assertEquals(1, products.size());
   }
-  
+
   @Test
   public void testGetAvailableProducts() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
 
-    Product savedProduct = newProduct(perkStoreService, new Product());
-    Product savedProduct1 = newProduct(perkStoreService, new Product());
+    newProduct(perkStoreService, new Product());
+    newProduct(perkStoreService, new Product());
     Product savedProduct2 = newProduct(perkStoreService, new Product());
     Product savedProduct3 = newProduct(perkStoreService, new Product());
 
     List<Product> products = perkStoreService.getProducts(false, USERNAME);
     assertNotNull(products);
     assertEquals(4, products.size());
-    
+
     savedProduct2.setEnabled(false);
     savedProduct3.setEnabled(false);
     perkStoreService.saveProduct(savedProduct2, USERNAME);
     perkStoreService.saveProduct(savedProduct3, USERNAME);
-
 
     products = perkStoreService.getProducts(true, USERNAME);
     assertNotNull(products);
@@ -377,7 +393,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
   public void testGetProductByIdAndUser() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
     Product product = null;
-    
+
     product = perkStoreService.getProductById(0, USERNAME);
     assertNull(product);
 
@@ -973,7 +989,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     savedProduct.setReceiverMarchand(Utils.toProfile(2l));
     savedProduct.setMaxOrdersPerUser(2.0);
     savedProduct = perkStoreService.saveProduct(savedProduct, USERNAME);
-    ProductOrder newOrder = newOrder(savedProduct);
+    newOrder(savedProduct);
     filter = new OrderFilter();
 
     filter.setOrdersType(ProductOrderType.ALL);
@@ -988,7 +1004,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     orders = perkStoreService.getOrders(filter, "root2");
     assertEquals(0, orders.size(), 0);
   }
-  
+
   @Test
   public void testCountUserOrders() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
@@ -1031,7 +1047,7 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     assertNotNull(orders);
     assertEquals(5, orders.intValue());
   }
-    
+
   @Test
   public void testGetOrdersWithFraud() throws Exception {
     PerkStoreService perkStoreService = getService(PerkStoreService.class);
@@ -1315,9 +1331,17 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
         return upResource;
       }
     });
-    container.registerComponentInstance(UploadService.class, uploadService);
-    try {
-      Product savedProduct = newProduct(perkStoreService, new Product());
+
+    Product savedProduct = newProduct(perkStoreService, new Product());
+    try (MockedStatic<CommonsUtils> COMMONS_UTILS = mockStatic(CommonsUtils.class)) {
+      COMMONS_UTILS.when(() -> CommonsUtils.getService(any())).thenAnswer(invocation -> {
+        Class<?> clazz = invocation.getArgument(0);
+        if (clazz.equals(UploadService.class)) {
+          return uploadService;
+        } else {
+          return container.getComponentInstanceOfType(clazz);
+        }
+      });
       FileDetail fileDetail = perkStoreService.getFileDetail(savedProduct.getId(), 1l, true, USERNAME);
       assertNull(fileDetail);
 
@@ -1358,4 +1382,5 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     productById = perkStoreService.getProductById(savedProduct.getId());
     assertNull(productById);
   }
+
 }
