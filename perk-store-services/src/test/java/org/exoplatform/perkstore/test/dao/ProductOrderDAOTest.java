@@ -16,12 +16,9 @@
  */
 package org.exoplatform.perkstore.test.dao;
 
-import static org.junit.Assert.*;
-
 import java.util.Collections;
 import java.util.List;
 
-import org.exoplatform.perkstore.model.constant.ProductOrderType;
 import org.junit.Test;
 
 import org.exoplatform.perkstore.dao.PerkStoreOrderDAO;
@@ -29,6 +26,7 @@ import org.exoplatform.perkstore.entity.ProductEntity;
 import org.exoplatform.perkstore.entity.ProductOrderEntity;
 import org.exoplatform.perkstore.model.OrderFilter;
 import org.exoplatform.perkstore.model.constant.ProductOrderStatus;
+import org.exoplatform.perkstore.model.constant.ProductOrderType;
 import org.exoplatform.perkstore.test.BasePerkStoreTest;
 
 public class ProductOrderDAOTest extends BasePerkStoreTest {
