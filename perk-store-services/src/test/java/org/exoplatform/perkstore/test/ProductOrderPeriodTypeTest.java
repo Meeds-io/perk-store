@@ -16,9 +16,6 @@
  */
 package org.exoplatform.perkstore.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 
@@ -27,7 +24,7 @@ import org.junit.Test;
 import org.exoplatform.perkstore.model.ProductOrderPeriod;
 import org.exoplatform.perkstore.model.constant.ProductOrderPeriodType;
 
-public class ProductOrderPeriodTypeTest {
+public class ProductOrderPeriodTypeTest extends BasePerkStoreTest {
 
   @Test
   public void testGetWeekPeriod() {
