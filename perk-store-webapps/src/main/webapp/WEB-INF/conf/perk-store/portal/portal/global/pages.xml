@@ -23,23 +23,23 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <page>
     <name>perkstore</name>
     <title>Perk Store</title>
-    <access-permissions>*:/platform/users</access-permissions>
+    <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
     <edit-permission>*:/platform/administrators</edit-permission>
     <container id="PerkStoreParentContainer" template="system:/groovy/portal/webui/container/UIContainer.gtmpl">
-      <access-permissions>*:/platform/users</access-permissions>
+      <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
       <container id="top-perk-store-container" template="system:/groovy/portal/webui/container/UIAddOnContainer.gtmpl">
         <name>top-perk-store-container</name>
-        <access-permissions>*:/platform/users</access-permissions>
+        <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
         <factory-id>addonContainer</factory-id>
       </container>
       <container id="perk-store-container" template="system:/groovy/portal/webui/container/UIAddOnContainer.gtmpl">
         <name>perk-store-container</name>
-        <access-permissions>*:/platform/users</access-permissions>
+        <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
         <factory-id>addonContainer</factory-id>
       </container>
       <container id="bottom-perk-store-container" template="system:/groovy/portal/webui/container/UIAddOnContainer.gtmpl">
         <name>bottom-perk-store-container</name>
-        <access-permissions>*:/platform/users</access-permissions>
+        <access-permissions>*:/platform/users;*:/platform/externals</access-permissions>
         <factory-id>addonContainer</factory-id>
       </container>
     </container>
