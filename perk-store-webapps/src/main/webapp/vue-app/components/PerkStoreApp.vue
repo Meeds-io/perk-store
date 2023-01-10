@@ -17,7 +17,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 <template>
   <v-app
     id="PerkStoreApp"
-    class="transparent VuetifyApp"
+    class="transparent singlePageApplication"
     flat>
     <perk-store-alert />
     <wallet-notification-alert />
@@ -33,7 +33,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </main>
     <main v-else>
       <template>
-        <v-app class="application-toolbar">
+        <div class="application-toolbar">
           <v-tabs
             v-model="tab"
             slider-size="4">
@@ -171,8 +171,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <v-row
                 color="transparent"
                 flat
-                class="px-8 toolbarOrders">
-                <div class="mt-4 boxTitle">
+                class="px-8 pt-4 toolbarOrders">
+                <div class="boxTitle">
                   <div v-if="displayProductOrders && selectedProduct && selectedOrderId" class="titleOrders">
                     <span class="ms-2">{{ $t('exoplatform.perkstore.title.order') }} #{{ selectedOrderId }}</span> : <span class="ms-2">{{ selectedProduct.title }}</span>
                   </div>
@@ -291,7 +291,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @no-order-redirect="redirectToCatalog()" />
             </v-tab-item>
           </v-tabs-items>
-        </v-app>
+        </div>
       </template>
     </main>
   </v-app>
