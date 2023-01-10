@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-card class="ma-2 border-radius settingsModal" flat>
-      <div class="ignore-vuetify-classes popupHeader ClearFix titleSettings">
+    <v-card class="border-radius settingsModal" flat>
+      <div class="ignore-vuetify-classes popupHeader ClearFix titleSettings mt-3">
         <span class="ignore-vuetify-classes PopupTitle popupTitle text-truncate titlePerkStoreAdmin">
           {{ $t('exoplatform.perkstore.title.settingsModal') }}
         </span>
