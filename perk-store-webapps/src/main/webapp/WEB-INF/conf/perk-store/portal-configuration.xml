@@ -71,7 +71,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <string>war:/conf/perk-store/portal</string>
             </field>
             <field name="importMode">
-              <string>${exo.perkstore.portalConfig.metadata.importmode:insert}</string>
+              <string>${exo.perkstore.portalConfig.metadata.importmode:merge}</string>
             </field>
           </object>
         </object-param>
