@@ -43,28 +43,27 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <v-tabs-items v-model="tab" class="tabs-content">
             <v-tab-item class="product-list pa-4" eager>
               <v-row
-                class="toolbarListProduct toolbarProduct"
+                class="toolbarListProduct toolbarProduct align-center d-flex"
                 color="transparent"
                 flat>
-                <v-flex class="addProduct">
+                <v-flex class="addProduct d-flex justify-start">
                   <perk-store-create-product-button
                     v-if="userSettings.canAddProduct"
                     :balance="balance"
                     :symbol="symbol"
                     @create-product="newProduct" />
                 </v-flex>
-                <v-spacer class="spacerProduct" />
                 <v-row class="filter">
-                  <v-flex class="perkStoreFilterField">
+                  <v-col class="col col-8 perkStoreFilterField mt-2">
                     <v-text-field
                       v-model="search"
                       :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
                       prepend-inner-icon="fa-filter"
                       single-line
                       hide-details
-                      class="pa-0 ml-3 mr-3 mb-2 perkStoreTextField" />
-                  </v-flex>
-                  <v-flex class="filter_menu pt-1">
+                      class="pa-0 ml-3 mr-3 perkStoreTextField" />
+                  </v-col>
+                  <v-col class="col col-4 filter_menu">
                     <v-menu
                       v-model="showMenu"
                       offset-y>
@@ -101,7 +100,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         </v-list-item>
                       </v-list>
                     </v-menu>
-                  </v-flex>
+                  </v-col>
                 </v-row>
               </v-row>
               <perk-store-no-result
