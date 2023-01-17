@@ -136,13 +136,13 @@ export default {
     isMetamaskWallet() {
       return window.walletSettings.wallet?.provider === 'METAMASK';
     },
-    isProductOwner() {
-      return this.product.userData.canEdit || this.product.userData.username === this.product.creator.id || this.product.userData.username === this.product.receiverMarchand.id ;
+    canBuyProduct() {
+      return this.product?.receiverMarchand?.id && this.product?.userData?.username !== this.product.receiverMarchand.id;
     },
     buyButtonTitle(){
       if (!this.walletEnabled || this.walletDeleted) {
         return this.$t('exoplatform.perkstore.label.disabledOrDeletedWallet');
-      }  else if (this.product.receiverMarchand.id === eXo.env.portal.userName){
+      }  else if (this.product?.receiverMarchand?.id === this.product?.userData?.username){
         return this.$t('exoplatform.perkstore.button.disabledBuyButton');
       } else if (!this.product.enabled){
         return  this.$t('exoplatform.perkstore.label.disabledProduct');
@@ -153,7 +153,7 @@ export default {
       }
     },
     disabledButton () {
-      return (this.disableButton && (!this.isSameNetworkVersion || !this.isSameAddress)) || this.openedTransaction || this.isProductOwner ;
+      return (this.disableButton && (!this.isSameNetworkVersion || !this.isSameAddress)) || this.openedTransaction || !this.canBuyProduct ;
     }
   },
   created() {
