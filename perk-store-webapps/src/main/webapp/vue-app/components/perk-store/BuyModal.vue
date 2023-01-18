@@ -52,14 +52,23 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           @click="close">
           {{ $t('exoplatform.perkstore.button.cancel') }}
         </button>
-        <v-btn
-          :disabled="(disableButton && (!isSameNetworkVersion || !isSameAddress)) || openedTransaction"
-          :loading="loading"
-          class="btn btn-primary me-1"
-          large
-          @click="buyProduct">
-          {{ $t('exoplatform.perkstore.button.buy') }}
-        </v-btn>
+        <v-tooltip top>
+          <template #activator="{ on, attrs }">
+            <div
+              v-bind="attrs"
+              v-on="on">
+              <v-btn
+                :disabled="disabledButton"
+                :loading="loading"
+                class="btn btn-primary me-1"
+                large
+                @click="buyProduct">
+                {{ $t('exoplatform.perkstore.button.buy') }}
+              </v-btn>
+            </div>
+          </template>
+          <span>{{ buyButtonTitle }}</span>
+        </v-tooltip>
       </div>
     </template>
   </exo-drawer>
@@ -127,6 +136,25 @@ export default {
     isMetamaskWallet() {
       return window.walletSettings.wallet?.provider === 'METAMASK';
     },
+    canBuyProduct() {
+      return this.product?.receiverMarchand?.id && this.product?.userData?.username !== this.product.receiverMarchand.id;
+    },
+    buyButtonTitle(){
+      if (!this.walletEnabled || this.walletDeleted) {
+        return this.$t('exoplatform.perkstore.label.disabledOrDeletedWallet');
+      }  else if (this.product?.receiverMarchand?.id === this.product?.userData?.username){
+        return this.$t('exoplatform.perkstore.button.disabledBuyButton');
+      } else if (!this.product.enabled){
+        return  this.$t('exoplatform.perkstore.label.disabledProduct');
+      } else if (!this.product.unlimited && !this.available){
+        return this.$t('exoplatform.perkstore.label.SoldOut');
+      } else {
+        return this.$t('exoplatform.perkstore.button.buy');
+      }
+    },
+    disabledButton () {
+      return (this.disableButton && (!this.isSameNetworkVersion || !this.isSameAddress)) || this.openedTransaction || !this.canBuyProduct ;
+    }
   },
   created() {
     document.addEventListener('wallet-metamask-accountsChanged', this.updateSelectedMetamaskAddress);
