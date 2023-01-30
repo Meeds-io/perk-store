@@ -234,9 +234,9 @@ export default {
         }).then(() => {
           this.files.splice(idx, 1);
           const filesList = new DataTransfer();
-          this.$refs.perkStoreAttachFile.files.forEach(file => {
+          Object.values(this.$refs.perkStoreAttachFile.files).forEach(file => {
             if (file !== fileOrId) {
-              filesList.files.push(file) ;
+              filesList.items.add(file);
             }
           });
           this.$refs.perkStoreAttachFile.files = filesList.files;
