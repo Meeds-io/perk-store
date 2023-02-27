@@ -49,16 +49,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <as>$</as>
       </depends>
       <depends>
-        <module>fetchPolyfill</module>
-      </depends>
-      <depends>
-        <module>customEventPolyfill</module>
-      </depends>
-      <depends>
-        <module>iePolyfills</module>
-      </depends>
-      <depends>
-          <module>filedrop</module>
+        <module>filedrop</module>
       </depends>
       <depends>
         <module>commons-cometd3</module>
@@ -86,15 +77,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <depends>
         <module>jquery</module>
         <as>$</as>
-      </depends>
-      <depends>
-        <module>fetchPolyfill</module>
-      </depends>
-      <depends>
-        <module>customEventPolyfill</module>
-      </depends>
-      <depends>
-        <module>iePolyfills</module>
       </depends>
       <depends>
         <module>extensionRegistry</module>
@@ -156,6 +138,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <depends>
       <module>walletCommon</module>
       <as>WalletCommon</as>
+    </depends>
+  </module>
+
+  <module>
+    <name>filedrop</name>
+    <script>
+      <path>/js/lib/jquery.filedrop.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
     </depends>
   </module>
 
