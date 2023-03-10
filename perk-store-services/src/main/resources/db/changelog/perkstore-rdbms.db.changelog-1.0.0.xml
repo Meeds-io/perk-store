@@ -179,4 +179,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </column>
     </addColumn>
   </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-11">
+    <sql dbms="postgresql" >
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT ALTER COLUMN DELETED DROP DEFAULT;
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT ALTER DELETED TYPE bool USING DELETED::boolean;
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT ALTER COLUMN DELETED SET DEFAULT FALSE;
+    </sql>
+  </changeSet>
 </databaseChangeLog>
