@@ -42,67 +42,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </v-tabs>
           <v-tabs-items v-model="tab" class="tabs-content">
             <v-tab-item class="product-list pa-4" eager>
-              <v-row
-                class="toolbarListProduct toolbarProduct align-center d-flex"
-                color="transparent"
-                flat>
-                <v-flex class="addProduct d-flex justify-start">
-                  <perk-store-create-product-button
-                    v-if="userSettings.canAddProduct"
-                    :balance="balance"
-                    :symbol="symbol"
-                    @create-product="newProduct" />
-                </v-flex>
-                <v-row class="filter">
-                  <v-col class="col col-8 perkStoreFilterField mt-2">
-                    <v-text-field
-                      v-model="search"
-                      :placeholder="$t('exoplatform.perkstore.label.productSearchPlaceholder')"
-                      prepend-inner-icon="fa-filter"
-                      single-line
-                      hide-details
-                      class="pa-0 ml-3 mr-3 perkStoreTextField" />
-                  </v-col>
-                  <v-col class="col col-4 filter_menu">
-                    <v-menu
-                      v-model="showMenu"
-                      offset-y>
-                      <template #activator="{ on }">
-                        <button
-                          class="btn "
-                          v-on="on"
-                          @blur="closeMenu">
-                          <span class="statusLabel text-truncate">
-                            {{ newsStatusLabel }}
-                          </span>
-                          <i class="uiIconMiniArrowDown uiIconLightGray filter_menuIcon"></i>
-                        </button>
-                      </template>
-                      <v-list>
-                        <v-list-item @mousedown="$event.preventDefault()">
-                          <v-list-item-title class="filterLabel" @click="filterProduct ='all'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @mousedown="$event.preventDefault()">
-                          <v-list-item-title class="filterLabel" @click="filterProduct ='activeProducts'">{{ $t('exoplatform.perkstore.label.activeProducts') }}</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @mousedown="$event.preventDefault()">
-                          <v-list-item-title class="filterLabel" @click="filterProduct ='productFiltersDisabledProducts'">{{ $t('exoplatform.perkstore.label.productFiltersDisabledProducts') }}</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @mousedown="$event.preventDefault()">
-                          <v-list-item-title
-                            class="filterLabel"
-                            @click="filterProduct ='productFiltersSoldOutProducts'">
-                            {{ $t('exoplatform.perkstore.label.productFiltersSoldOutProducts') }}
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @mousedown="$event.preventDefault()">
-                          <v-list-item-title class="filterLabel" @click="filterProduct ='createdByMe'">{{ $t('exoplatform.perkstore.label.createdByMe') }}</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </v-col>
-                </v-row>
-              </v-row>
+              <perk-store-toolbar 
+                :can-add-product="userSettings.canAddProduct"
+                :symbol="symbol"
+                :balance="balance"
+                :keyword="search"
+                :filters="productFilters"
+                :filter="filterProduct"
+                display-add-button
+                @create-product="newProduct"
+                @filter-changed="filterProduct = $event"
+                @keyword-changed="search = $event" />
               <perk-store-no-result
                 v-if="perkStoreEnabled && !walletLoading && walletWarning"
                 :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
@@ -166,91 +116,18 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 info-message="exoplatform.perkstore.info.rewardsPerkstoreNoProductsDynamicPlaceholder" 
                 @no-result-event="isCatalogDisplayed && newProduct()" />
             </v-tab-item>
-            <v-tab-item class="orders-list" eager>
-              <v-row
-                color="transparent"
-                flat
-                class="px-8 pt-4 toolbarOrders">
-                <div class="boxTitle">
-                  <div v-if="displayProductOrders && selectedProduct && selectedOrderId" class="titleOrders">
-                    <span class="ms-2">{{ $t('exoplatform.perkstore.title.order') }} #{{ selectedOrderId }}</span> : <span class="ms-2">{{ selectedProduct.title }}</span>
-                  </div>
-                  <div v-else-if="displayProductOrders && selectedProduct" class="titleOrders">
-                    <span class="ms-2">{{ $t('exoplatform.perkstore.title.myOrdersListOf') }} {{ selectedProduct.title }}</span>
-                  </div>
-                  <div v-else>
-                    <span class="textBalance titleOrders">
-                      {{ $t('exoplatform.perkstore.label.balance') }} :
-                      <span class="symbol"> {{ symbol }} </span>
-                      <span class="balance">{{ balance }}  </span>
-                    </span>
-                  </div>
-                </div>
-                <div class="spacer spacerOrder">
-                </div>
-                <v-text-field
-                  v-model="searchOrder"
-                  :placeholder="$t('exoplatform.perkstore.label.orderSearchPlaceholder')"
-                  prepend-inner-icon="fa-filter"
-                  single-line
-                  hide-details
-                  class="pa-0 ml-3 mr-3 mb-2 perkStoreTextField filterOrders" />
-                <v-progress-circular
-                  v-show="searchLoading"
-                  color="primary"
-                  class="mb-2 ma-auto"
-                  indeterminate />
-                <div class="orderMenu px-2">
-                  <v-menu
-                    v-model="showOrderMenu"
-                    offset-y>
-                    <template #activator="{ on }">
-                      <button
-                        class="btn"
-                        v-on="on"
-                        @blur="closeOrderMenu">
-                        {{ filterOrderLabel }}
-                        <i class="uiIconMiniArrowDown uiIconLightGray"></i>
-                      </button>
-                    </template>
-                    <v-list>
-                      <v-list-item @mousedown="$event.preventDefault()">
-                        <v-list-item-title class="filterLabel" @click="filterOrder ='ALL'">{{ $t('exoplatform.perkstore.label.all') }}</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item @mousedown="$event.preventDefault()">
-                        <v-list-item-title class="filterLabel" @click="filterOrder ='SENT'">{{ $t('exoplatform.perkstore.label.purchase') }}</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item @mousedown="$event.preventDefault()">
-                        <v-list-item-title class="filterLabel" @click="filterOrder ='RECEIVED'"> {{ $t('exoplatform.perkstore.label.sale') }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </div>
-                <div class="filterList px-2">
-                  <button
-                    class="btn filterOrdersSetting"
-                    v-on="on"
-                    outlined
-                    @click="showFilters">
-                    <i class="uiIcon uiIconFilterSetting pr-3"></i>
-                    <span>
-                      {{ $t('exoplatform.perkstore.button.filter') }}
-                    </span>
-                  </button>
-                </div>
-                <div class="download" v-if="displayProductOrders">
-                  <v-btn
-                    id="perkStoreAppMenuDownloadButton"
-                    :title="$t('exoplatform.perkstore.button.exportAsCSV')"
-                    icon
-                    text
-                    @click="exportOrders">
-                    <v-icon>
-                      fa-download
-                    </v-icon>
-                  </v-btn>
-                </div>
-              </v-row>
+            <v-tab-item class="orders-list pa-4" eager>
+              <perk-store-toolbar 
+                :can-add-product="userSettings.canAddProduct"
+                :symbol="symbol"
+                :balance="balance"
+                :keyword="search"
+                :filters="orderFilters"
+                :filter="filterOrder"
+                display-filter-button
+                @show-filter="showFilters()"
+                @filter-changed="filterOrder = $event"
+                @keyword-changed="searchOrder = $event" />
               <v-toolbar
                 v-if="error"
                 color="transparent"
@@ -302,13 +179,10 @@ import {toFixed} from '../js/PerkStoreProductOrder.js';
 import {getProductList, getProduct} from '../js/PerkStoreProduct.js';
 export default {
   data: () => ({
-    showMenu: false,
-    showOrderMenu: false,
     newsStatusLabel: '',
     injectedLabel: '',
     injectedLabelParam: 'products',
-    filterOrderLabel: '',
-    filterProduct: '',
+    filterProduct: 'all',
     filterOrder: 'ALL',
     tab: null,
     searchOrder: null,
@@ -368,6 +242,36 @@ export default {
     },
     emptySearchResult() {
       return this.products.length === 0;
+    },
+    productFilters() {
+      return [{
+        text: this.$t('exoplatform.perkstore.label.all'),
+        value: 'all',
+      },{
+        text: this.$t('exoplatform.perkstore.label.activeProducts'),
+        value: 'activeProducts',
+      },{
+        text: this.$t('exoplatform.perkstore.label.productFiltersDisabledProducts'),
+        value: 'productFiltersDisabledProducts',
+      },{
+        text: this.$t('exoplatform.perkstore.label.productFiltersSoldOutProducts'),
+        value: 'productFiltersSoldOutProducts',
+      },{
+        text: this.$t('exoplatform.perkstore.label.createdByMe'),
+        value: 'createdByMe',
+      }];
+    },
+    orderFilters() {
+      return [{
+        text: this.$t('exoplatform.perkstore.label.all'),
+        value: 'ALL',
+      },{
+        text: this.$t('exoplatform.perkstore.label.purchase'),
+        value: 'SENT',
+      },{
+        text: this.$t('exoplatform.perkstore.label.sale'),
+        value: 'RECEIVED',
+      }];
     },
   },
   watch: {
@@ -447,17 +351,6 @@ export default {
       this.newsStatusLabel = this.$t(`exoplatform.perkstore.label.${this.filterProduct}`);
       this.injectedLabelParam = this.$t(`exoplatform.perkstore.label.${this.injectedLabel}`);
       this.filterProducts();
-      this.showMenu = false;
-    },
-    filterOrder() {
-      if (this.filterOrder === 'ALL') {
-        this.filterOrderLabel = this.$t('exoplatform.perkstore.label.all');
-      } else if (this.filterOrder === 'SENT'){
-        this.filterOrderLabel = this.$t('exoplatform.perkstore.label.purchase');
-      } else if (this.filterOrder === 'RECEIVED') {
-        this.filterOrderLabel = this.$t('exoplatform.perkstore.label.sale');
-      }
-      this.showOrderMenu = false;
     },
     selectedProduct() {
       this.error = null;
@@ -465,7 +358,6 @@ export default {
   },
   created() {
     this.newsStatusLabel = this.$t('exoplatform.perkstore.label.activeProducts');
-    this.filterOrderLabel = this.$t('exoplatform.perkstore.label.all');
     document.addEventListener('exo.perkstore.settings.modified', this.refreshSettings);
 
     document.addEventListener(this.createOrUpdateProductEvent, this.updateProduct);
@@ -506,12 +398,6 @@ export default {
       if (currentUrl.includes(defaultUrl)) {
         window.history.pushState('perkstore', 'My perkstore', defaultUrl);
       }
-    },
-    closeMenu() {
-      this.showMenu = false;
-    },
-    closeOrderMenu() {
-      this.showOrderMenu = false;
     },
     refreshSettings(event) {
       if (!event || !event.detail || !event.detail.globalsettings) {
