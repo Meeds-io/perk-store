@@ -131,7 +131,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           class="d-flex align-center ml-n3">
           <img
             class="mt-n1"
-            :src="`/wallet-common/images/metamask.svg`"
+            :src="`/wallet/images/metamask.svg`"
             alt="Metamask"
             width="18">
           <span class="pl-2">Metamask :</span>
