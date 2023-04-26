@@ -277,7 +277,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </value-param>
       </init-params>
     </component-plugin>
-    <component-plugin>
+    <component-plugin profiles="push-notifications">
       <name>push.channel.perkstore.template</name>
       <set-method>registerTemplateProvider</set-method>
       <type>org.exoplatform.perkstore.notification.provider.MobilePushTemplateProvider</type>
