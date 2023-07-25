@@ -271,9 +271,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     if (product == null) {
       throw new PerkStoreException(PRODUCT_NOT_EXISTS, productId);
     }
-    boolean canDelete = canViewProduct(product, username, isPerkStoreManager(username));
-
-    if (!canDelete) {
+    if (!canEditProduct(product, username)) {
       throw new IllegalAccessException("User " + username + " isn't allowed to delete product with id " + productId);
     }
 

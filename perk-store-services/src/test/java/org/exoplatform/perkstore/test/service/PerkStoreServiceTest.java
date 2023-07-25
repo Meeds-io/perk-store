@@ -1377,7 +1377,10 @@ public class PerkStoreServiceTest extends BasePerkStoreTest {
     Product productById = perkStoreService.getProductById(savedProduct.getId());
     assertNotNull(productById);
 
-    savedProduct.setDeleted(true);
+    assertThrows(IllegalAccessException.class, () -> perkStoreService.deleteProduct(savedProduct.getId(), "root2"));
+    productById = perkStoreService.getProductById(savedProduct.getId());
+    assertNotNull(productById);
+
     perkStoreService.deleteProduct(savedProduct.getId(), USERNAME);
     productById = perkStoreService.getProductById(savedProduct.getId());
     assertNull(productById);
