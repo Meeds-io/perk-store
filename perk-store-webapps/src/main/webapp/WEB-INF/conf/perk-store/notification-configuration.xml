@@ -256,17 +256,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <external-component-plugins>
     <target-component>org.exoplatform.commons.api.notification.channel.ChannelManager</target-component>
     <component-plugin>
-      <name>web.channel.perkstore.template</name>
-      <set-method>registerTemplateProvider</set-method>
-      <type>org.exoplatform.perkstore.notification.provider.WebTemplateProvider</type>
-      <init-params>
-        <value-param>
-          <name>channel-id</name>
-          <value>WEB_CHANNEL</value>
-        </value-param>
-      </init-params>
-    </component-plugin>
-    <component-plugin>
       <name>mail.channel.perkstore.template</name>
       <set-method>registerTemplateProvider</set-method>
       <type>org.exoplatform.perkstore.notification.provider.MailTemplateProvider</type>
