@@ -142,6 +142,26 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </module>
 
   <module>
+    <name>perkStoreNotificationExtension</name>
+    <load-group>notificationGRP</load-group>
+    <script>
+      <path>/js/notificationExtension.bundle.js</path>
+    </script>
+    <depends>
+      <module>vue</module>
+    </depends>
+    <depends>
+      <module>vuetify</module>
+    </depends>
+    <depends>
+      <module>eXoVueI18n</module>
+    </depends>
+    <depends>
+      <module>extensionRegistry</module>
+    </depends>
+  </module>
+
+  <module>
     <name>filedrop</name>
     <script>
       <path>/js/lib/jquery.filedrop.js</path>

@@ -25,7 +25,6 @@ import java.util.*;
 import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.commons.api.notification.NotificationContext;
-import org.exoplatform.commons.api.notification.NotificationMessageUtils;
 import org.exoplatform.commons.api.notification.channel.template.TemplateProvider;
 import org.exoplatform.commons.api.notification.model.*;
 import org.exoplatform.commons.api.notification.plugin.NotificationPluginUtils;
@@ -463,7 +462,6 @@ public class NotificationUtils {
     TemplateContext templateContext = getTemplateContext(templateProvider, notification, language);
 
     setFooter(notification, templateContext);
-    setRead(notification, templateContext);
     setNotificationId(notification, templateContext);
     setLasModifiedTime(notification, templateContext, language);
 
@@ -672,12 +670,6 @@ public class NotificationUtils {
 
   private static final void setFooter(NotificationInfo notification, TemplateContext templateContext) {
     SocialNotificationUtils.addFooterAndFirstName(notification.getTo(), templateContext);
-  }
-
-  private static final void setRead(NotificationInfo notification, TemplateContext templateContext) {
-    templateContext.put("READ",
-                        Boolean.valueOf(notification.getValueOwnerParameter(NotificationMessageUtils.READ_PORPERTY.getKey())) ? "read"
-                                                                                                                              : "unread");
   }
 
   private static final void setNotificationId(NotificationInfo notification, TemplateContext templateContext) {
