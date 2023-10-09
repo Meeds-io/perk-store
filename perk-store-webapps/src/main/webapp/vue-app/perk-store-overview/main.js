@@ -31,11 +31,11 @@ const appId = 'PerkStoreOverviewApp';
 export function init() {
   exoi18n.loadLanguageAsync(lang, url).then(i18n => {
     // init Vue app when locale ressources are ready
-    new Vue({
+    Vue.createApp({
       template: `<perk-store-overview id="${appId}" />`,
       i18n,
       vuetify,
-    }).$mount(`#${appId}`);
+    }, `#${appId}`, 'Perks Overview');
 
     // get overrided components if exists
     extensions.registerPerkStoreOverview();

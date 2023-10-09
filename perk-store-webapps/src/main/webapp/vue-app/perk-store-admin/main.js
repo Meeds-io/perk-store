@@ -25,13 +25,13 @@ const appId = 'PerkStoreAdminApp';
 export function init() {
   exoi18n.loadLanguageAsync(lang, url).then(i18n => {
     // init Vue app when locale ressources are ready
-    new Vue({
+    Vue.createApp({
       mounted() {
         document.dispatchEvent(new CustomEvent('hideTopBarLoading'));
       },
       template: `<perk-store-admin id="${appId}" />`,
       i18n,
       vuetify,
-    }).$mount(`#${appId}`);
+    }, `#${appId}`, 'Perks Administration');
   });
 }

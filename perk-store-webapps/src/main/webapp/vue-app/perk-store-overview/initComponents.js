@@ -20,14 +20,12 @@ import PerkStoreOverview from './components/PerkStoreOverview.vue';
 import ProductDetail from '../components/perk-store/ProductDetail.vue';
 import BuyModal from '../components/perk-store/BuyModal.vue';
 import BuyForm from '../components/perk-store/BuyForm.vue';
-import PerkStoreAlert from '../components/perk-store/PerkStoreAlert.vue';
 
 const components = {
   'perk-store-overview': PerkStoreOverview,
   'perk-store-product-detail': ProductDetail,
   'perk-store-buy-modal': BuyModal,
   'perk-store-buy-form': BuyForm,
-  'perk-store-alert': PerkStoreAlert,
 };
 
 for (const key in components) {
