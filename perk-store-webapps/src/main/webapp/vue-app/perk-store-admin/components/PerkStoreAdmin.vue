@@ -7,11 +7,6 @@
         </span>
       </div>
       <v-card-text class="perkStoreSettings">
-        <exo-notification-alert
-          v-if="alert"
-          :alert="alert"
-          @dismissed="clear" />
-
         <perk-store-auto-complete
           ref="applicationAccessPermissionAutocomplete"
           :input-label="$t('exoplatform.perkstore.label.applicationAccessPermissions')"
@@ -69,13 +64,11 @@ export default {
       dialog: false,
       loading: false,
       settingsToSave: {},
-      alert: null
     };
   },
   watch: {
     dialog() {
       if (this.dialog) {
-        this.alert = null;
         this.loading = false;
         this.$nextTick().then(this.init);
       } else {
@@ -85,7 +78,6 @@ export default {
   },
   created() {
     this.dialog = true;
-    this.alert = null;
   },
   methods: {
     open() {
@@ -128,25 +120,14 @@ export default {
     },
     saveSettings() {
       this.loading = true;
-      this.alert = null;
       return saveSettings(this.settingsToSave)
         .then(() => {
           this.$emit('saved');
           this.dialog = false;
-          this.loading = false;
-          this.alert = {
-            message: this.$t('exoplatform.perkstore.admin.settings.success'),
-            type: 'success'
-          };
+          this.$root.$emit('alert-message', this.$t('exoplatform.perkstore.admin.settings.success'), 'success');
         })
-        .catch(e => {
-          console.error('Save settings error', e);
-          this.loading = false;
-          this.alert = {
-            message: this.$t('exoplatform.perkstore.admin.settings.error', {0: e && e.message ? e.message : String(e),}),
-            type: 'error'
-          };
-        });
+        .catch(() => this.$root.$emit('alert-message', this.$t('exoplatform.perkstore.admin.settings.error', 'error')))
+        .finally(() => this.loading = false);
     },
   },
 };

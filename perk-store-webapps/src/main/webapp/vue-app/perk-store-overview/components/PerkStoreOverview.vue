@@ -46,7 +46,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       :symbol="symbol"
       :need-password="walletNeedPassword"
       wallet-enabled />
-    <perk-store-alert />
     <wallet-notification-alert />
   </div>
 </template>
