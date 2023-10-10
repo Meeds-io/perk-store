@@ -352,7 +352,7 @@ export default {
     removeProduct() {
       deleteProduct(this.product.id)
         .then(() => {
-          this.$root.$emit('show-alert', {type: 'success',message: this.$t('exoplatform.perkstore.label.deleteSuccess')});
+          this.$root.$emit('alert-message', this.$t('exoplatform.perkstore.label.deleteSuccess'), 'success');
           this.$emit('product-deleted');
         }).catch(e => {
           let msg = '';
@@ -363,7 +363,7 @@ export default {
           } else  {
             msg = this.$t('exoplatform.perkstore.label.deleteError');
           }
-          this.$root.$emit('show-alert', {type: 'error',message: msg});
+          this.$root.$emit('alert-message', msg, 'error');
         });
     },
   }
