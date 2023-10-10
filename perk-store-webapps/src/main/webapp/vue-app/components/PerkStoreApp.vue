@@ -19,7 +19,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     id="PerkStoreApp"
     class="transparent singlePageApplication"
     flat>
-    <perk-store-alert />
     <wallet-notification-alert />
     <main v-if="loading">
       <v-toolbar color="transparent" flat>
@@ -104,9 +103,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 :wallet-loading="walletLoading"
                 :wallet-enabled="walletEnabled"
                 @closeProductDetails="closeProduct()" />
-              <perk-store-product-notification
-                :products="modifiedProducts"
-                @refresh-list="addNewProductsToList" />
               <perk-store-no-result
                 v-if="perkStoreEnabled && walletEnabled && emptySearchResult"
                 :click-condition="walletEnabled && userSettings.canAddProduct"
@@ -590,14 +586,6 @@ export default {
           });
         }
       }
-    },
-    addNewProductsToList() {
-      this.modifiedProducts.reverse().forEach(product => {
-        if (!product.lastModifiedDate && !this.products.find(existingProduct => existingProduct.id === product.id)) {
-          this.products.unshift(product);
-        }
-      });
-      this.modifiedProducts.splice(0, this.modifiedProducts.length);
     },
   }
 };
