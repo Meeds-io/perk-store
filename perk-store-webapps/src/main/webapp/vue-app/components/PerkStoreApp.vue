@@ -181,6 +181,7 @@ export default {
     injectedLabelParam: 'products',
     filterProduct: 'all',
     filterOrder: 'ALL',
+    createNew: false,
     tab: null,
     searchOrder: null,
     searchLoading: false,
@@ -285,10 +286,11 @@ export default {
         const productId = urlPath.match( /\d+/ ) && urlPath.match( /\d+/ ).join('');
         if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`) {
           this.tab = 0;
+          this.initProductForm();
         } else if (urlPath === `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/myorders`) {
           this.tab = 1;
         } else if (productId) {
-          setTimeout( () => {
+          window.setTimeout(() => {
             if ( this.$refs.buyModal || this.$refs.productForm ) {
               getProduct(productId).then(freshProduct => {
                 if (freshProduct) {
@@ -310,6 +312,7 @@ export default {
         } else {
           this.tab = 0;
           window.history.pushState('perkstore', 'My perkstore', `${eXo.env.portal.context}/${eXo.env.portal.portalName}/perkstore/catalog`);
+          this.initProductForm();
         }
       }
     },
@@ -355,6 +358,7 @@ export default {
   },
   created() {
     this.newsStatusLabel = this.$t('exoplatform.perkstore.label.activeProducts');
+    this.createNew =  window.location.hash === '#create';
     document.addEventListener('exo.perkstore.settings.modified', this.refreshSettings);
 
     document.addEventListener(this.createOrUpdateProductEvent, this.updateProduct);
@@ -383,6 +387,14 @@ export default {
     parameters.orderId, parameters && parameters.notProcessedOrders && parameters.notProcessedOrders === 'true');
   },
   methods: {
+    initProductForm() {
+      window.setTimeout(() => {
+        if (this.userSettings?.canAddProduct && this.createNew && this.$refs.productForm) {
+          this.newProduct();
+          this.createNew = false;
+        }
+      }, 200);
+    },
     redirectToWallet() {
       window.location.href = this.walletUri;
     },
@@ -536,13 +548,13 @@ export default {
       this.selectedProduct = {
         imageFiles: []
       };
-      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.open());
+      return this.$nextTick().then(() => this.$refs?.productForm?.open?.());
     },
     editProduct(product) {
       this.closeDetails();
       this.selectedProduct = Object.assign({}, product);
       this.selectedProduct.imageFiles = this.selectedProduct.imageFiles || [];
-      return this.$nextTick().then(() => this.$refs.productForm && this.$refs.productForm.open());
+      return this.$nextTick().then(() => this.$refs?.productForm?.open?.());
     },
     showFilters() {
       if (this.$refs.ordersList) {
