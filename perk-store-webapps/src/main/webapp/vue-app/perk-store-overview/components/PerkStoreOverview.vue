@@ -78,13 +78,6 @@ export default {
       return this.wallet?.initializationState === 'DELETED';
     },
   },
-  watch: {
-    hasProducts() {
-      if (this.hasProducts) {
-        document.dispatchEvent(new CustomEvent('perk-store-products-loaded'));
-      }
-    },
-  },
   created() {
     this.init();
   },
