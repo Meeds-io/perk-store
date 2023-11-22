@@ -51,6 +51,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 <script>
 import {getProductList} from '../../js/PerkStoreProduct.js';
+import {getSettings} from '../../js/PerkStoreSettings.js';
 export default {
   data: () => ({
     loading: true,
@@ -77,13 +78,6 @@ export default {
       return this.wallet?.initializationState === 'DELETED';
     },
   },
-  watch: {
-    hasProducts() {
-      if (this.hasProducts) {
-        document.dispatchEvent(new CustomEvent('perk-store-products-loaded'));
-      }
-    },
-  },
   created() {
     this.init();
   },
@@ -101,7 +95,23 @@ export default {
     getProductsList() {
       this.loading = true;
       return getProductList()
-        .then((products) => this.products = products)
+        .then((products) => {
+          this.products = products;
+          if (this.productsToDisplay?.length) {
+            document.dispatchEvent(new CustomEvent('perk-store-products-loaded', {detail: {
+              hasProducts: true,
+              canAddProduct: false,
+            }}));
+          } else {
+            return getSettings()
+              .then(settings => {
+                document.dispatchEvent(new CustomEvent('perk-store-products-loaded', {detail: {
+                  hasProducts: false,
+                  canAddProduct: settings?.userSettings?.canAddProduct,
+                }}));
+              });
+          }
+        })
         .finally(() => this.loading = false);
     }
   }
