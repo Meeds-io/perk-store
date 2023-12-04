@@ -1,18 +1,23 @@
 <!--
-This file is part of the Meeds project (https://meeds.io/).
-Copyright (C) 2021 Meeds Association
-contact@meeds.io
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 3 of the License, or (at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-You should have received a copy of the GNU Lesser General Public License
-along with this program; if not, write to the Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+  This file is part of the Meeds project (https://meeds.io/).
+
+  Copyright (C) 2023 Meeds Association contact@meeds.io
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program; if not, write to the Free Software Foundation,
+  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 -->
 <template>
   <v-flex :id="id" class="contactAutoComplete">
@@ -30,7 +35,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       :filter="filterIgnoredItems"
       :multiple="multiple"
       :required="required"
-      class="contactAutoComplete"
+      class="contactAutoComplete ma-0 pa-0"
       max-width="100%"
       item-text="name"
       item-value="id_type"
@@ -55,7 +60,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
       <template slot="selection" slot-scope="{item, selected}">
         <v-chip
-          v-if="item.avatar"
           :input-value="selected"
           :title="addressLoad === 'error' ? $t('exoplatform.perkstore.warning.recipientDoesntHaveWallet') : ''"
           class="autocompleteSelectedItem"
@@ -84,17 +88,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </a>
           </span>
         </v-chip>
-        <v-label
-          v-else
-          :selected="selected"
-          class="black--text"
-          solo
-          @input="selectSingleItem(item)">
-          {{ item.name }}
-          <a href="#" class="remove">
-            <i class="uiIconClose uiIconLightGray"></i>
-          </a>
-        </v-label>
       </template>
 
       <template slot="item" slot-scope="data">
@@ -113,7 +106,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 </template>
 
 <script>
-import {searchAddress, searchContact, searchFullName, searchUserOrSpaceObject} from '../../js/PerkStoreIdentityRegistry.js';
 export default {
   props: {
     rules: {
@@ -202,7 +194,7 @@ export default {
     searchTerm(value) {
       if (value && value.length) {
         this.isLoadingSuggestions = true;
-        return searchContact(value, this.onlyUsers).then((data) => {
+        return this.$perkStoreIdentityRegistry.searchContact(value, this.onlyUsers, true).then((data) => {
           this.items = data;
           if (!this.items) {
             if (this.currentUserItem) {
@@ -238,7 +230,7 @@ export default {
     },
   },
   created() {
-    searchUserOrSpaceObject(eXo.env.portal.userName, 'user').then((item) => {
+    this.$perkStoreIdentityRegistry.searchUserOrSpaceObject(eXo.env.portal.userName, 'user').then((item) => {
       if (item) {
         item.id_type = `${item.type}_${item.id}`;
         this.currentUserItem = item;
@@ -265,7 +257,7 @@ export default {
           address: id,
         });
       } else if (isAddress) {
-        return searchFullName(selectedValue)
+        return this.$perkStoreIdentityRegistry.searchFullName(selectedValue)
           .then(details => {
             if (details && details.type) {
               this.addressLoad = 'success';
@@ -285,7 +277,7 @@ export default {
             }
           });
       } else {
-        return searchAddress(id, type)
+        return this.$perkStoreIdentityRegistry.searchAddress(id, type)
           .then((address) => {
             if (address && address.length) {
               this.addressLoad = 'success';
@@ -350,8 +342,23 @@ export default {
     selectSingleItem(id, type) {
       if (!id) {
         this.$refs.selectAutoComplete.selectItem(null);
+      } else if (type === 'group') {
+        return this.$perkStoreIdentityRegistry.getGroupIdentity(id)
+          .then((identity) => {
+            const item = {
+              avatar: null,
+              name: identity.profile.fullname,
+              id: identity.remoteId,
+              id_type: `group_${identity.remoteId}`,
+              technicalId: identity.id,
+            };
+            this.items.push(item);
+            if (this.$refs.selectAutoComplete) {
+              this.$refs.selectAutoComplete.selectItem(item);
+            }
+          });
       } else if (type) {
-        return searchUserOrSpaceObject(id, type).then((item) => {
+        return this.$perkStoreIdentityRegistry.searchUserOrSpaceObject(id, type).then((item) => {
           item.id_type = item.type && item.id ? `${item.type}_${item.id}` : null;
           this.items.push(item);
           if (this.$refs.selectAutoComplete) {
