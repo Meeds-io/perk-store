@@ -22,12 +22,14 @@
  *  avatar: Avatar URL/URI
  * }
  */
-export function searchContact(filter, onlyUsers) {
+export function searchContact(filter, onlyUsers, includeGroups) {
   let items = null;
   return searchUsers(filter)
     .then((users) => (items = users && users.length ? users : []))
     .then(() => (onlyUsers && []) || searchSpaces(filter))
     .then((spaces) => (items = spaces && spaces.length ? items.concat(spaces) : items))
+    .then(() => (!includeGroups && []) || searchGroups(filter))
+    .then((groups) => (items = groups?.length && items.concat(groups) || items))
     .catch((e) => {
       console.error('searchContact method - error', e);
     });
@@ -195,6 +197,49 @@ export function searchSpaces(filter, withMembers) {
       });
       return result;
     });
+}
+
+function searchGroups(filter) {
+  const formData = new FormData();
+  formData.append('q', filter);
+  formData.append('allGroupsForAdmin', true);
+  formData.append('excludeParentGroup', '/spaces');
+  formData.append('excludeParentGroup', '/');
+  const params = new URLSearchParams(formData).toString();
+
+  return fetch(`/portal/rest/v1/groups/treeMembers?${params}`, { credentials: 'include' })
+    .then(resp => resp && resp.ok && resp.json())
+    .then(data => {
+      return data.entities.map((item) => ({
+        avatar: null,
+        name: item.label,
+        id: item.id,
+        id_type: `group_${item.id}`,
+        technicalId: null,
+      }));
+    })
+    .then(groups => {
+      return Promise.all(groups.map(g => 
+        getGroupIdentity(g.id)
+          .then(identity => {
+            g.technicalId = identity.id;
+            return g;
+          })
+      ));
+    });
+}
+
+export function getGroupIdentity(groupId) {
+  return fetch(`${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/social/identities/byParams?providerId=group&remoteId=${window.encodeURIComponent(groupId)}`, {
+    method: 'GET',
+    credentials: 'include',
+  }).then(resp => {
+    if (!resp || !resp.ok) {
+      throw new Error('Response code indicates a server error', resp);
+    } else {
+      return resp.json();
+    }
+  });
 }
 
 /*
