@@ -51,6 +51,7 @@ import org.exoplatform.services.resources.*;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.IdentityRegistry;
 import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.GroupIdentityProvider;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
@@ -110,6 +111,8 @@ public class Utils {
   public static final String        SPACE_ACCOUNT_TYPE                        = SpaceIdentityProvider.NAME;
 
   public static final String        USER_ACCOUNT_TYPE                         = "user";
+
+  public static final String        GROUP_ACCOUNT_TYPE                        = "group";
 
   public static final String        FAKE_TRANSACTION_HASH                     =
                                                           "0x0000000000000000000000000000000000000000000000000000000000000000";
@@ -209,19 +212,41 @@ public class Utils {
   public static boolean isSpaceType(String type) {
     return SPACE_ACCOUNT_TYPE.equals(type);
   }
+  
+  public static boolean isUserType(String type) {
+    return USER_ACCOUNT_TYPE.equals(type) || OrganizationIdentityProvider.NAME.equals(type);
+  }
+
+  public static boolean isGroupType(String type) {
+    return GROUP_ACCOUNT_TYPE.equals(type) || GroupIdentityProvider.NAME.equals(type);
+  }
 
   public static String getIdentityTypeByProviderId(String providerId) {
     if (providerId == null) {
       throw new IllegalArgumentException("Provider id is null");
     }
-    return isSpaceType(providerId) ? SPACE_ACCOUNT_TYPE : USER_ACCOUNT_TYPE;
+    if (isSpaceType(providerId)) {
+      return SPACE_ACCOUNT_TYPE;
+    } else if (isUserType(providerId)) {
+      return USER_ACCOUNT_TYPE;
+    } else if (isGroupType(providerId)) {
+      return GROUP_ACCOUNT_TYPE;
+    }
+    return providerId;
   }
 
   public static String getIdentityProviderIdByType(String type) {
     if (type == null) {
       throw new IllegalArgumentException("Type is null");
     }
-    return isSpaceType(type) ? SpaceIdentityProvider.NAME : OrganizationIdentityProvider.NAME;
+    if (isSpaceType(type)) {
+      return SpaceIdentityProvider.NAME;
+    } else if (isUserType(type)) {
+      return OrganizationIdentityProvider.NAME;
+    } else if (isGroupType(type)) {
+      return GroupIdentityProvider.NAME;
+    }
+    return type;
   }
 
   public static Space getSpace(String id) {
