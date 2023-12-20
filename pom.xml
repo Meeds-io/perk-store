@@ -74,15 +74,20 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <groupId>${project.groupId}</groupId>
         <artifactId>perk-store-services</artifactId>
         <version>${project.version}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>perk-store-webapps</artifactId>
         <version>${project.version}</version>
-        <scope>provided</scope>
         <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>perk-store-packaging</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
       </dependency>
     </dependencies>
   </dependencyManagement>
