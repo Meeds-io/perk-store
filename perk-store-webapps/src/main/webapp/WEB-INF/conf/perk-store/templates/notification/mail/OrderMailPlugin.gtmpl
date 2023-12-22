@@ -61,7 +61,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                         } else {
                                          String modifierLink = "<a class=\"user-name text-bold\" href=\"javascript:void(0)\">" + modifierName + "</a>";
                                          String key = "Notification.perkstore.order.modified." + orderStatusLabel;
-                                         if (org.apache.commons.lang.StringUtils.isBlank(modifierName)) {
+                                         if (org.apache.commons.lang3.StringUtils.isBlank(modifierName)) {
                                            // System modification
                                            key += ".system";
                                          }
@@ -81,7 +81,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                                     <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                       <%= _ctx.appRes("Notification.perkstore.order.status") %>: <%= orderStatus %>
                                                     </p>
-                                                    <% if(org.apache.commons.lang.StringUtils.equalsIgnoreCase(orderStatus, "error")) { %>
+                                                    <% if(org.apache.commons.lang3.StringUtils.equalsIgnoreCase(orderStatus, "error")) { %>
                                                       <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                         <%= _ctx.appRes("Notification.perkstore.order.error") %>
                                                       </p>
@@ -89,17 +89,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                                     <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                       <%= _ctx.appRes("Notification.perkstore.order.quantity") %>: <%= orderQuantity %>
                                                     </p>
-                                                    <% if(org.apache.commons.lang.StringUtils.isNotBlank(orderDeliveredQuantity) && !org.apache.commons.lang.StringUtils.equalsIgnoreCase(orderDeliveredQuantity, "0")) { %>
+                                                    <% if(org.apache.commons.lang3.StringUtils.isNotBlank(orderDeliveredQuantity) && !org.apache.commons.lang3.StringUtils.equalsIgnoreCase(orderDeliveredQuantity, "0")) { %>
                                                       <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                         <%= _ctx.appRes("Notification.perkstore.order.deliveredQuantity") %>: <%= orderDeliveredQuantity %>
                                                       </p>
                                                     <% } %>
-                                                    <% if(org.apache.commons.lang.StringUtils.isNotBlank(orderRefundedQuantity) && !org.apache.commons.lang.StringUtils.equalsIgnoreCase(orderRefundedQuantity, "0")) { %>
+                                                    <% if(org.apache.commons.lang3.StringUtils.isNotBlank(orderRefundedQuantity) && !org.apache.commons.lang3.StringUtils.equalsIgnoreCase(orderRefundedQuantity, "0")) { %>
                                                       <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                         <%= _ctx.appRes("Notification.perkstore.order.refundedQuantity") %>: <%= orderRefundedQuantity %>
                                                       </p>
                                                     <% } %>
-                                                    <% if(org.apache.commons.lang.StringUtils.isNotBlank(orderRemainingQuantity) && !org.apache.commons.lang.StringUtils.equalsIgnoreCase(orderRemainingQuantity, "0")) { %>
+                                                    <% if(org.apache.commons.lang3.StringUtils.isNotBlank(orderRemainingQuantity) && !org.apache.commons.lang3.StringUtils.equalsIgnoreCase(orderRemainingQuantity, "0")) { %>
                                                       <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                         <%= _ctx.appRes("Notification.perkstore.order.remainingQuantity") %>: <%= orderRemainingQuantity %>
                                                       </p>
