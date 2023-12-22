@@ -22,7 +22,7 @@ import static org.exoplatform.perkstore.service.utils.Utils.*;
 
 import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.commons.api.notification.NotificationContext;
 import org.exoplatform.commons.api.notification.channel.template.TemplateProvider;

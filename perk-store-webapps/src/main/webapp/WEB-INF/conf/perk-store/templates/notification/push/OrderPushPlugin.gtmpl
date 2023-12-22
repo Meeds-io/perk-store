@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     message = _ctx.appRes("Notification.perkstore.order.created", senderName, orderQuantity, productTitle);
   } else {
     String key = "Notification.perkstore.order.modified." + orderStatusLabel;
-    if (org.apache.commons.lang.StringUtils.isBlank(modifierName)) {
+    if (org.apache.commons.lang3.StringUtils.isBlank(modifierName)) {
       // System modification
       key += ".system";
     }
