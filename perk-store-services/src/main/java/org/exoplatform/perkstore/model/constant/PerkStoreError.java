@@ -21,7 +21,7 @@ import static org.exoplatform.perkstore.service.utils.Utils.*;
 import java.io.Serializable;
 import java.text.MessageFormat;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.helpers.MessageFormatter;
 
 public enum PerkStoreError {
