@@ -67,7 +67,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                         <tbody>
                                             <tr>
                                                 <td align="left" bgcolor="#ffffff" style="background-color: #f9f9f9; padding: 15px 20px;">
-                                                    <% if(org.apache.commons.lang.StringUtils.isNotBlank(productSupply) && !org.apache.commons.lang.StringUtils.equals(productSupply, "0")) { %>
+                                                    <% if(org.apache.commons.lang3.StringUtils.isNotBlank(productSupply) && !org.apache.commons.lang3.StringUtils.equals(productSupply, "0")) { %>
                                                       <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                         <%= _ctx.appRes("Notification.perkstore.product.supply") %>: <%= productSupply %>
                                                       </p>
