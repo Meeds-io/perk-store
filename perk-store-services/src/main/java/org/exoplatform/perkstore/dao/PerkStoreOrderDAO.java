@@ -24,9 +24,9 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.perkstore.entity.ProductOrderEntity;

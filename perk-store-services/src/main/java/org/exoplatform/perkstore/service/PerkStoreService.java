@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.picocontainer.Startable;
 
 import org.exoplatform.commons.api.settings.SettingService;
