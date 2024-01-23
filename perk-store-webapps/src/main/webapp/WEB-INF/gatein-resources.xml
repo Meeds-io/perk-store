@@ -164,14 +164,5 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </depends>
   </module>
 
-  <module>
-    <name>filedrop</name>
-    <script>
-      <path>/js/lib/jquery.filedrop.js</path>
-    </script>
-    <depends>
-      <module>jquery</module>
-    </depends>
-  </module>
 
 </gatein-resources>
