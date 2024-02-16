@@ -180,7 +180,7 @@ export default {
   }),
   computed: {
     isMobile() {
-      return this.$vuetify.breakpoint.sm;
+      return this.$vuetify.breakpoint.smAndDown;
     },
   },
   watch: {
