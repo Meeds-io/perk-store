@@ -1,0 +1,23 @@
+{
+    "descriptors": [
+        {
+            "name": "Perk store",
+            "imagePath": "war:/../images/perkstore.png",
+            "overrideMode": "merge",
+            "override": false,
+            "enabled": true,
+            "application": {
+                "title": "Perk store",
+                "description": "Perk store application",
+                "url": "./perkstore",
+                "active": true,
+                "mandatory": false,
+                "mobile": true,
+                "permissions": [
+                    "*:/platform/users",
+                    "*:/platform/externals"
+                ]
+            }
+        }
+    ]
+}
