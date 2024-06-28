@@ -53,14 +53,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @create-product="newProduct"
                 @filter-changed="filterProduct = $event"
                 @keyword-changed="search = $event" />
-              <perk-store-no-result
-                v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
-                :click-condition="true"
-                icon="fas fa-wallet"
-                info-message="gamification.overview.rewardsPerkstoreSummary" 
-                class="mt-5"
-                @no-result-event="redirectToWallet()" />
               <v-toolbar
                 v-if="error"
                 color="transparent"
