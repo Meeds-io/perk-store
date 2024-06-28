@@ -22,10 +22,10 @@
 <template>
   <v-app flat>
     <div class="px-6">
-      <v-list-item class="px-0" two-line>
+      <v-list-item class="px-0" two-line dense>
         <v-list-item-content>
-          <v-list-item-title>
-            <h4 class="my-0">{{ $t('perkstore.administration.title') }}</h4>
+          <v-list-item-title class="text-title">
+            {{ $t('perkstore.administration.title') }}
           </v-list-item-title>
           <v-list-item-subtitle>
             {{ $t('perkstore.administration.subtitle') }}
