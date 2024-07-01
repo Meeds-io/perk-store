@@ -21,15 +21,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>addons-parent-pom</artifactId>
-    <groupId>org.exoplatform.addons</groupId>
-    <version>18-M03</version>
+    <groupId>io.meeds.addons</groupId>
+    <version>18-M04</version>
     <relativePath/>
   </parent>
-  <groupId>org.exoplatform.addons.perk-store</groupId>
+  <groupId>io.meeds.perk-store</groupId>
   <artifactId>perk-store</artifactId>
   <version>7.0.x-exo-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>eXo Add-on:: Perk Store - Parent POM</name>
+  <name>Meeds:: Add-on:: Perk Store - Parent POM</name>
   <description>Perk Store Addon</description>
   <modules>
     <module>perk-store-services</module>
@@ -44,27 +44,28 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </scm>
   <properties>
     <!-- 3rd party libraries versions -->
-    <org.exoplatform.social.version>7.0.x-exo-SNAPSHOT</org.exoplatform.social.version>
-    <org.exoplatform.platform-ui.version>7.0.x-exo-SNAPSHOT</org.exoplatform.platform-ui.version>
+    <io.meeds.social.version>7.0.x-exo-SNAPSHOT</io.meeds.social.version>
+    <io.meeds.platform-ui.version>7.0.x-exo-SNAPSHOT</io.meeds.platform-ui.version>
     
     <!-- Sonar properties -->
     <sonar.organization>meeds-io</sonar.organization>
+    
   </properties>
   <dependencyManagement>
     <dependencies>
       <!-- Import versions from platform project -->
       <dependency>
-        <groupId>org.exoplatform.social</groupId>
+        <groupId>io.meeds.social</groupId>
         <artifactId>social</artifactId>
-        <version>${org.exoplatform.social.version}</version>
+        <version>${io.meeds.social.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
 
       <dependency>
-        <groupId>org.exoplatform.platform-ui</groupId>
+        <groupId>io.meeds.platform-ui</groupId>
         <artifactId>platform-ui</artifactId>
-        <version>${org.exoplatform.platform-ui.version}</version>
+        <version>${io.meeds.platform-ui.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
