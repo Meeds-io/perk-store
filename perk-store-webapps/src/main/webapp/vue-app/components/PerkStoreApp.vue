@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     class="transparent singlePageApplication"
     flat>
     <wallet-notification-alert />
-    <main v-if="loading">
+    <main v-if="loading" class="application-body">
       <v-toolbar color="transparent" flat>
         <v-spacer />
         <v-progress-circular
@@ -30,18 +30,18 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-spacer />
       </v-toolbar>
     </main>
-    <main v-else>
+    <main v-else class="application-body">
       <template>
         <div class="application-toolbar">
           <v-tabs
             v-model="tab"
             slider-size="4"
-            class="card-border-radius overflow-hidden">
+            class="application-body">
             <v-tab @click="refreshProductList">{{ $t('exoplatform.perkstore.label.Catalogue') }}</v-tab>
             <v-tab @click="displayMyOrdersList">{{ $t('exoplatform.perkstore.label.MyOrders') }}</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab" class="tabs-content card-border-radius">
-            <v-tab-item class="product-list pa-4 card-border-radius overflow-hidden" eager>
+            <v-tab-item class="product-list pa-4 application-body" eager>
               <perk-store-toolbar 
                 :can-add-product="userSettings.canAddProduct"
                 :symbol="symbol"
@@ -53,14 +53,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 @create-product="newProduct"
                 @filter-changed="filterProduct = $event"
                 @keyword-changed="search = $event" />
-              <perk-store-no-result
-                v-if="perkStoreEnabled && !walletLoading && walletWarning"
-                :info="$t('exoplatform.perkstore.info.welcomeToPerkstore')"
-                :click-condition="true"
-                icon="fas fa-wallet"
-                info-message="gamification.overview.rewardsPerkstoreSummary" 
-                class="mt-5"
-                @no-result-event="redirectToWallet()" />
               <v-toolbar
                 v-if="error"
                 color="transparent"
