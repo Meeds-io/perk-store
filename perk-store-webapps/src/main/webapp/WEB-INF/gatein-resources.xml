@@ -22,7 +22,29 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <skin-module>perkstore</skin-module>
     <css-path>/skin/css/main.css</css-path>
     <css-priority>120</css-priority>
+    <filtered>true</filtered>
   </portal-skin>
+
+  <portlet-skin>
+    <application-name>perk-store</application-name>
+    <portlet-name>PerkStore</portlet-name>
+    <skin-name>Enterprise</skin-name>
+    <additional-module>perkstore</additional-module>
+  </portlet-skin>
+
+  <portlet-skin>
+    <application-name>social-portlet</application-name>
+    <portlet-name>Search</portlet-name>
+    <skin-name>Enterprise</skin-name>
+    <additional-module>perkstore</additional-module>
+  </portlet-skin>
+
+  <portlet-skin>
+    <application-name>gamification-portlets</application-name>
+    <portlet-name>myRewards</portlet-name>
+    <skin-name>Enterprise</skin-name>
+    <additional-module>perkstore</additional-module>
+  </portlet-skin>
 
   <portlet>
     <name>PerkStore</name>
