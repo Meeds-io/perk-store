@@ -40,6 +40,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </component>
 
   <component>
+    <type>org.exoplatform.perkstore.plugin.PerkStorePermanentLinkPlugin</type>
+  </component>
+
+  <component>
     <type>org.exoplatform.perkstore.rest.PerkStoreOrderREST</type>
   </component>
 
