@@ -33,7 +33,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </portlet-skin>
 
   <portlet-skin>
-    <application-name>social-portlet</application-name>
+    <application-name>social</application-name>
     <portlet-name>Search</portlet-name>
     <skin-name>Enterprise</skin-name>
     <additional-module>perkstore</additional-module>
