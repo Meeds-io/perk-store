@@ -261,9 +261,6 @@ public class Utils {
         space = spaceService.getSpaceByGroupId("/spaces/" + id);
         if (space == null) {
           space = spaceService.getSpaceByDisplayName(id);
-          if (space == null) {
-            space = spaceService.getSpaceByUrl(id);
-          }
         }
       }
     }
