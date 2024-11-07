@@ -29,13 +29,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </changeSet>
 
   <changeSet author="perkstore" id="1.0.0-1">
+    <validCheckSum>9:1368b5389acb4a8ad217f649048dd598</validCheckSum>
+    <validCheckSum>9:49f965a880fb575f10a2f68ac7a001a5</validCheckSum>
     <createTable tableName="ADDONS_PERKSTORE_PRODUCT">
       <column name="PRODUCT_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT"/>
       </column>
-      <column name="TITLE" type="NVARCHAR(200)"/>
-      <column name="DESCRIPTION" type="NVARCHAR(2000)"/>
-      <column name="ILLUSTRATION_URL" type="NVARCHAR(500)"/>
+      <column name="TITLE" type="VARCHAR(200)"/>
+      <column name="DESCRIPTION" type="VARCHAR(2000)"/>
+      <column name="ILLUSTRATION_URL" type="VARCHAR(500)"/>
       <column name="ENABLED" type="BOOLEAN"/>
       <column name="UNLIMITED" type="BOOLEAN"/>
       <column name="ALLOW_FRACTION" type="BOOLEAN"/>
@@ -50,11 +52,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <column name="LAST_MODIFIER" type="BIGINT"/>
     </createTable>
     <modifySql dbms="mysql">
-      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+      <append value=" ENGINE=INNODB CHARSET=UTF8MB4 COLLATE utf8mb4_0900_ai_ci"/>
     </modifySql>
   </changeSet>
 
   <changeSet author="perkstore" id="1.0.0-2">
+    <validCheckSum>9:4de63b28735a5056aa12b13dd4d7b364</validCheckSum>
+    <validCheckSum>9:43af1346623a89c8500aefc3eae2aef9</validCheckSum>
     <createTable tableName="ADDONS_PERKSTORE_PRODUCT_ORDER">
       <column name="ORDER_ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_ORDER"/>
@@ -62,8 +66,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <column name="PRODUCT_ID" type="BIGINT">
         <constraints foreignKeyName="FK_PERKSTORE_01" references="ADDONS_PERKSTORE_PRODUCT(PRODUCT_ID)" nullable="false"/>
       </column>
-      <column name="TRANSACTION_HASH" type="NVARCHAR(66)"/>
-      <column name="REFUND_TRANSACTION_HASH" type="NVARCHAR(66)"/>
+      <column name="TRANSACTION_HASH" type="VARCHAR(66)"/>
+      <column name="REFUND_TRANSACTION_HASH" type="VARCHAR(66)"/>
       <column name="QUANTITY" type="DOUBLE"/>
       <column name="DELIVERED_QUANTITY" type="DOUBLE"/>
       <column name="REFUNDED_QUANTITY" type="DOUBLE"/>
@@ -80,11 +84,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <column name="REFUNDED_DATE" type="BIGINT"/>
     </createTable>
     <modifySql dbms="mysql">
-      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+      <append value=" ENGINE=INNODB CHARSET=UTF8MB4 COLLATE utf8mb4_0900_ai_ci"/>
     </modifySql>
   </changeSet>
 
   <changeSet author="perkstore" id="1.0.0-3">
+    <validCheckSum>9:9653341dc0626f804cf5449beccf575f</validCheckSum>
     <createTable tableName="ADDONS_PERKSTORE_PRODUCT_MARCHAND">
       <column name="MARCHAND_IDENTITY_ID" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT_MARCHAND"/>
@@ -94,11 +99,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </column>
     </createTable>
     <modifySql dbms="mysql">
-      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+      <append value=" ENGINE=INNODB CHARSET=UTF8MB4 COLLATE utf8mb4_0900_ai_ci"/>
     </modifySql>
   </changeSet>
 
   <changeSet author="perkstore" id="1.0.0-4">
+    <validCheckSum>9:62868b6b578f5661af4c967a6c5a7952</validCheckSum>
     <createTable tableName="ADDONS_PERKSTORE_PRODUCT_PERMISSION">
       <column name="PERMISSION_IDENTITY_ID" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT_PERMISSION"/>
@@ -108,7 +114,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </column>
     </createTable>
     <modifySql dbms="mysql">
-      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+      <append value=" ENGINE=INNODB CHARSET=UTF8MB4 COLLATE utf8mb4_0900_ai_ci"/>
     </modifySql>
   </changeSet>
 
@@ -133,14 +139,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <column name="CREATED_DATE" descending="true"/>
     </createIndex>
     <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_05">
-      <column name="TRANSACTION_HASH" type="NVARCHAR(66)"/>
+      <column name="TRANSACTION_HASH" type="VARCHAR(66)"/>
     </createIndex>
     <createIndex tableName="ADDONS_PERKSTORE_PRODUCT_ORDER" indexName="IDX_ADDONS_PERKSTORE_ORDER_INDEX_06">
-      <column name="REFUND_TRANSACTION_HASH" type="NVARCHAR(66)"/>
+      <column name="REFUND_TRANSACTION_HASH" type="VARCHAR(66)"/>
     </createIndex>
   </changeSet>
 
   <changeSet author="perkstore" id="1.0.0-6">
+    <validCheckSum>9:e15094be3bf2ba99f9240fc42c3ada69</validCheckSum>
     <createTable tableName="ADDONS_PERKSTORE_IMAGE">
       <column name="IMAGE_FILE_ID" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PERKSTORE_PRODUCT_IMAGE"/>
@@ -150,7 +157,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </column>
     </createTable>
     <modifySql dbms="mysql">
-      <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+      <append value=" ENGINE=INNODB CHARSET=UTF8MB4 COLLATE utf8mb4_0900_ai_ci"/>
     </modifySql>
   </changeSet>
 
@@ -187,6 +194,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       ALTER TABLE ADDONS_PERKSTORE_PRODUCT ALTER COLUMN DELETED DROP DEFAULT;
       ALTER TABLE ADDONS_PERKSTORE_PRODUCT ALTER DELETED TYPE bool USING DELETED::boolean;
       ALTER TABLE ADDONS_PERKSTORE_PRODUCT ALTER COLUMN DELETED SET DEFAULT FALSE;
+    </sql>
+  </changeSet>
+
+  <changeSet author="perkstore" id="1.0.0-12" >
+    <sql dbms="mysql">
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT_ORDER CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT_MARCHAND CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+      ALTER TABLE ADDONS_PERKSTORE_PRODUCT_PERMISSION CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+      ALTER TABLE ADDONS_PERKSTORE_IMAGE CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
     </sql>
   </changeSet>
 </databaseChangeLog>
