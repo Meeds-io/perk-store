@@ -31,6 +31,7 @@ import org.exoplatform.commons.api.notification.plugin.NotificationPluginUtils;
 import org.exoplatform.commons.api.notification.service.template.TemplateContext;
 import org.exoplatform.commons.notification.template.TemplateUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.TimeConvertUtils;
 import org.exoplatform.perkstore.model.*;
 import org.exoplatform.perkstore.model.constant.ProductOrderModificationType;
 import org.exoplatform.perkstore.model.constant.ProductOrderStatus;
@@ -39,7 +40,6 @@ import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.notification.plugin.SocialNotificationUtils;
-import org.exoplatform.webui.utils.TimeConvertUtils;
 
 public class NotificationUtils {
 
