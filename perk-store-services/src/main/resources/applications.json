@@ -1,18 +1,20 @@
 {
     "descriptors": [
         {
-            "name": "Perk store",
+            "name": "Perks",
             "imagePath": "war:/../images/perkstore.png",
             "overrideMode": "merge",
             "override": false,
             "enabled": true,
             "application": {
-                "title": "Perk store",
-                "description": "Perk store application",
+                "title": "Perks",
+                "description": "Suggest perks in a store and buy some",
                 "url": "./perkstore",
-                "active": true,
+                "active": false,
                 "mandatory": false,
-                "mobile": true,
+                "mobile": false,
+                "default": false,
+                "pwa": false,
                 "permissions": [
                     "*:/platform/users",
                     "*:/platform/externals"
