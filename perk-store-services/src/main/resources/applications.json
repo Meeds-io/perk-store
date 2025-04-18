@@ -14,6 +14,7 @@
                 "mandatory": false,
                 "mobile": false,
                 "default": false,
+                "shortcut": "£",
                 "pwa": false,
                 "permissions": [
                     "*:/platform/users",
