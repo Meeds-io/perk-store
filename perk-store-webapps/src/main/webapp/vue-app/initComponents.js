@@ -13,7 +13,6 @@ import OrderNotification from './components/perk-store/OrderNotification.vue';
 import OrdersFilter from './components/perk-store/OrdersFilter.vue';
 import OrdersList from './components/perk-store/OrdersList.vue';
 import ProductDetailContent from './components/perk-store/ProductDetailContent.vue';
-import PerkStoreProductSearchCard from './components/perk-store-search/PerkStoreProductSearchCard.vue';
 import RefundDrawer from './components/perk-store/RefundDrawer.vue';
 import PerkStoreToolbar from './components/perk-store/PerkStoreToolbar.vue';
 
@@ -33,7 +32,6 @@ const components = {
   'perk-store-orders-filter': OrdersFilter,
   'perk-store-orders-list': OrdersList,
   'perk-store-product-detail-content': ProductDetailContent,
-  'perk-store-product-search-card': PerkStoreProductSearchCard,
   'perk-store-refund-drawer': RefundDrawer,
   'perk-store-toolbar': PerkStoreToolbar,
 };
