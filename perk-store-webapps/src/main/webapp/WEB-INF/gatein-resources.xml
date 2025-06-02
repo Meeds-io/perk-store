@@ -33,13 +33,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   </portlet-skin>
 
   <portlet-skin>
-    <application-name>social</application-name>
-    <portlet-name>Search</portlet-name>
-    <skin-name>Enterprise</skin-name>
-    <additional-module>perkstore</additional-module>
-  </portlet-skin>
-
-  <portlet-skin>
     <application-name>gamification-portlets</application-name>
     <portlet-name>myRewards</portlet-name>
     <skin-name>Enterprise</skin-name>
@@ -112,30 +105,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </depends>
     </module>
   </portlet>
-
-  <module>
-    <name>PerkStoreSearch</name>
-    <script>
-      <minify>false</minify>
-      <path>/js/perkstoreSearch.bundle.js</path>
-    </script>
-    <depends>
-      <module>vue</module>
-    </depends>
-    <depends>
-      <module>vuetify</module>
-    </depends>
-    <depends>
-      <module>eXoVueI18n</module>
-    </depends>
-    <depends>
-      <module>extensionRegistry</module>
-    </depends>
-    <depends>
-      <module>jquery</module>
-      <as>$</as>
-    </depends>
-  </module>
 
   <module>
     <name>perkStoreNotificationExtension</name>
