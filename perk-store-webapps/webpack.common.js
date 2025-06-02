@@ -22,7 +22,6 @@ const config = {
   context: path.resolve(__dirname, '.'),
   entry: {
     perkstore: './src/main/webapp/vue-app/perk-store.js',
-    perkstoreSearch: './src/main/webapp/vue-app/perk-store-search.js',
     PerkStoreAdmin: './src/main/webapp/vue-app/perk-store-admin/main.js',
     notificationExtension: './src/main/webapp/vue-app/notification-extension/main.js',
   },
