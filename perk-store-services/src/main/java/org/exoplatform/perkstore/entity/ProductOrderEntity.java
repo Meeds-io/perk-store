@@ -18,38 +18,43 @@ package org.exoplatform.perkstore.entity;
 
 import java.io.Serializable;
 
-import jakarta.persistence.*;
-
-import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.perkstore.model.constant.ProductOrderStatus;
 import org.exoplatform.perkstore.model.constant.ProductOrderTransactionStatus;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
+import io.meeds.common.persistence.PortableSequence;
+import jakarta.persistence.Table;
+
 @Entity(name = "Order")
-@ExoEntity
 @Table(name = "ADDONS_PERKSTORE_PRODUCT_ORDER")
-@NamedQueries({
-    @NamedQuery(name = "Order.getAllProductOrders", query = "SELECT distinct(o) FROM Order o WHERE o.product.id = :productId ORDER BY o.createdDate DESC"),
-    @NamedQuery(name = "Order.countOrderedQuantityByProductId", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId"),
-    @NamedQuery(name = "Order.countRefundedQuantityByProductId", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId"),
-    @NamedQuery(name = "Order.countOrderedQuantityByProductIdAndStatus", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.status = :status"),
-    @NamedQuery(name = "Order.countRemainingOrdersByProductId", query = "SELECT COUNT(o) FROM Order o WHERE o.product.id = :productId AND o.remainingQuantity > 0"),
-    @NamedQuery(name = "Order.countRemainingOrdersByIdentityIdAndProductId", query = "SELECT COUNT(o) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.remainingQuantity > 0"),
-    @NamedQuery(name = "Order.countUserTotalPurchasedQuantity", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId"),
-    @NamedQuery(name = "Order.countUserTotalRefundedQuantity", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId"),
-    @NamedQuery(name = "Order.countUserTotalOrderedQuantityByStatus", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.status = :status"),
-    @NamedQuery(name = "Order.countUserPurchasedQuantityInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to"),
-    @NamedQuery(name = "Order.countUserRefundedQuantityInPeriod", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to"),
-    @NamedQuery(name = "Order.countUserOrderedQuantityByStatusInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.status = :status AND o.createdDate > :from AND o.createdDate < :to"),
-    @NamedQuery(name = "Order.findOrderByTransactionHash", query = "SELECT distinct(o) FROM Order o WHERE o.transactionHash = :hash"),
-    @NamedQuery(name = "Order.findOrderByRefundTransactionHash", query = "SELECT distinct(o) FROM Order o WHERE o.refundTransactionHash = :hash"),
-})
+@NamedQuery(name = "Order.getAllProductOrders", query = "SELECT distinct(o) FROM Order o WHERE o.product.id = :productId ORDER BY o.createdDate DESC")
+@NamedQuery(name = "Order.countOrderedQuantityByProductId", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId")
+@NamedQuery(name = "Order.countRefundedQuantityByProductId", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId")
+@NamedQuery(name = "Order.countOrderedQuantityByProductIdAndStatus", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.status = :status")
+@NamedQuery(name = "Order.countRemainingOrdersByProductId", query = "SELECT COUNT(o) FROM Order o WHERE o.product.id = :productId AND o.remainingQuantity > 0")
+@NamedQuery(name = "Order.countRemainingOrdersByIdentityIdAndProductId", query = "SELECT COUNT(o) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.remainingQuantity > 0")
+@NamedQuery(name = "Order.countUserTotalPurchasedQuantity", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId")
+@NamedQuery(name = "Order.countUserTotalRefundedQuantity", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId")
+@NamedQuery(name = "Order.countUserTotalOrderedQuantityByStatus", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.status = :status")
+@NamedQuery(name = "Order.countUserPurchasedQuantityInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to")
+@NamedQuery(name = "Order.countUserRefundedQuantityInPeriod", query = "SELECT SUM(o.refundedQuantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.createdDate > :from AND o.createdDate < :to")
+@NamedQuery(name = "Order.countUserOrderedQuantityByStatusInPeriod", query = "SELECT SUM(o.quantity) FROM Order o WHERE o.product.id = :productId AND o.senderId = :identityId AND o.status = :status AND o.createdDate > :from AND o.createdDate < :to")
+@NamedQuery(name = "Order.findOrderByTransactionHash", query = "SELECT distinct(o) FROM Order o WHERE o.transactionHash = :hash")
+@NamedQuery(name = "Order.findOrderByRefundTransactionHash", query = "SELECT distinct(o) FROM Order o WHERE o.refundTransactionHash = :hash")
 public class ProductOrderEntity implements Serializable {
 
   private static final long             serialVersionUID = -592052513482849972L;
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID", sequenceName = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID")
+  @PortableSequence(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ORDER_ID")
   @Column(name = "ORDER_ID")
   private Long                          id;
 
