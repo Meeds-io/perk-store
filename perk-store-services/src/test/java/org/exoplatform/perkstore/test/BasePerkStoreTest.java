@@ -101,8 +101,6 @@ public abstract class BasePerkStoreTest extends AbstractKernelTest {
   @Override
   @After
   protected void tearDown() throws Exception {
-    super.tearDown();
-
     PerkStoreProductDAO productDAO = getService(PerkStoreProductDAO.class);
     PerkStoreOrderDAO orderDAO = getService(PerkStoreOrderDAO.class);
     PerkStoreStorage perkStoreStorage = getService(PerkStoreStorage.class);
@@ -111,6 +109,7 @@ public abstract class BasePerkStoreTest extends AbstractKernelTest {
 
     if (!entitiesToClean.isEmpty()) {
       for (Serializable entity : entitiesToClean) {
+        restartTransaction();
         if (entity instanceof ProductEntity) {
           productDAO.delete((ProductEntity) entity);
         } else if (entity instanceof Product) {

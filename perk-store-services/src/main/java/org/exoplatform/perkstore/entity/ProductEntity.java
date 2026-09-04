@@ -20,23 +20,27 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.*;
-
-import org.exoplatform.commons.api.persistence.ExoEntity;
 import org.exoplatform.perkstore.model.constant.ProductOrderPeriodType;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedQuery;
+import io.meeds.common.persistence.PortableSequence;
+import jakarta.persistence.Table;
+
 @Entity(name = "Product")
-@ExoEntity
 @Table(name = "ADDONS_PERKSTORE_PRODUCT")
-@NamedQueries({
-    @NamedQuery(name = "Product.getAllProducts", query = "select p from Product p WHERE p.isDeleted = false ORDER BY p.createdDate DESC") })
+@NamedQuery(name = "Product.getAllProducts", query = "select p from Product p WHERE p.isDeleted = false ORDER BY p.createdDate DESC")
 public class ProductEntity implements Serializable {
 
   private static final long      serialVersionUID = -592052513482849972L;
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ID", sequenceName = "SEQ_ADDONS_PERKSTORE_PRODUCT_ID", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_PERKSTORE_PRODUCT_ID")
+  @PortableSequence(name = "SEQ_ADDONS_PERKSTORE_PRODUCT_ID")
   @Column(name = "PRODUCT_ID")
   private Long                   id;
 
