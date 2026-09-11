@@ -18,7 +18,6 @@ package org.exoplatform.perkstore.notification.builder;
 
 import static org.exoplatform.perkstore.service.utils.NotificationUtils.*;
 
-import java.io.Writer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -113,11 +112,6 @@ public class PerkStoreTemplateBuilder extends AbstractTemplateBuilder {
         LOG.warn("Error building notification content: {}, error: {}", notification, e.getMessage());
       }
     }
-  }
-
-  @Override
-  protected boolean makeDigest(NotificationContext ctx, Writer writer) {
-    return false;
   }
 
   private final Product getProduct(NotificationInfo notification) {
