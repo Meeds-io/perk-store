@@ -20,14 +20,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import groovy.transform.ToString;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Exclude;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString
 public class Product extends PerkStoreCloneable implements Serializable {
   private static final long serialVersionUID = 3182323147042158001L;
 

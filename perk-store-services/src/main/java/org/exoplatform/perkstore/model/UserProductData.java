@@ -18,13 +18,11 @@ package org.exoplatform.perkstore.model;
 
 import java.io.Serializable;
 
-import groovy.transform.ToString;
 import lombok.*;
 import lombok.EqualsAndHashCode.Exclude;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString
 @NoArgsConstructor
 public class UserProductData extends PerkStoreCloneable implements Serializable {
   private static final long serialVersionUID = -7144496703478026420L;
