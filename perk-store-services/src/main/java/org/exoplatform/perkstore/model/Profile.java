@@ -18,13 +18,11 @@ package org.exoplatform.perkstore.model;
 
 import java.io.Serializable;
 
-import groovy.transform.ToString;
 import lombok.*;
 import lombok.EqualsAndHashCode.Exclude;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Profile extends PerkStoreCloneable implements Serializable {
