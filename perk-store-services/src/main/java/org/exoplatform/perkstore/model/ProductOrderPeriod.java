@@ -18,12 +18,10 @@ package org.exoplatform.perkstore.model;
 
 import java.io.Serializable;
 
-import groovy.transform.ToString;
 import lombok.*;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductOrderPeriod extends PerkStoreCloneable implements Serializable {
