@@ -22,6 +22,7 @@ import static org.exoplatform.perkstore.service.utils.Utils.transformToString;
 import java.util.Collection;
 
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
+import org.picocontainer.Startable;
 
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.perkstore.model.WebSocketMessage;
@@ -29,7 +30,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
-public class PerkStoreWebSocketService {
+public class PerkStoreWebSocketService implements Startable {
 
   private static final Log      LOG = ExoLogger.getLogger(PerkStoreWebSocketService.class);
 
@@ -38,6 +39,28 @@ public class PerkStoreWebSocketService {
   private EXoContinuationBayeux continuationBayeux;
 
   private String                cometdContextName;
+
+  public PerkStoreWebSocketService() {
+    // Services looked up on first use
+  }
+
+  PerkStoreWebSocketService(EXoContinuationBayeux continuationBayeux) {
+    this.continuationBayeux = continuationBayeux;
+  }
+
+  @Override
+  public void start() {
+    EXoContinuationBayeux bayeux = getContinuationBayeux();
+    if (bayeux != null) {
+      // A message sent to all reaches the users of the other nodes of a cluster
+      bayeux.observeChannel(COMETD_CHANNEL);
+    }
+  }
+
+  @Override
+  public void stop() {
+    // Nothing to stop
+  }
 
   public void sendMessage(String eventId, Collection<String> recipientUsers, boolean sendToAll, Object... objects) {
     getContinuationService();
