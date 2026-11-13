@@ -41,6 +41,8 @@ import org.exoplatform.perkstore.model.*;
 import org.exoplatform.perkstore.model.constant.*;
 import org.exoplatform.perkstore.statistic.*;
 import org.exoplatform.perkstore.storage.PerkStoreStorage;
+import org.exoplatform.services.cache.CacheService;
+import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -52,6 +54,11 @@ import org.exoplatform.ws.frameworks.json.impl.JsonException;
  * A service to manage perkstore entities
  */
 public class PerkStoreService implements ExoPerkStoreStatisticService, Startable {
+
+  /** The cache of the global settings each node loaded. */
+  public static final String       GLOBAL_SETTINGS_CACHE_NAME = "perkstore.globalSettings";
+
+  private static final String      GLOBAL_SETTINGS_KEY        = "settings";
 
   private static final Log          LOG                                  = ExoLogger.getLogger(PerkStoreService.class);
 
@@ -85,15 +92,21 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
   private ListenerService           listenerService;
 
-  private GlobalSettings            storedGlobalSettings;
+  /**
+   * The global settings each node loaded: a node keeps its load, and a change
+   * made on any node evicts it on every node.
+   */
+  private ExoCache<String, GlobalSettings> globalSettingsCache;
 
   private PortalContainer           container;
 
   public PerkStoreService(PerkStoreWebSocketService webSocketService,
                           PerkStoreStorage perkStoreStorage,
                           SettingService settingService,
-                          PortalContainer container) {
+                          PortalContainer container,
+                          CacheService cacheService) {
     this.perkStoreStorage = perkStoreStorage;
+    this.globalSettingsCache = cacheService.getCacheInstance(GLOBAL_SETTINGS_CACHE_NAME);
     this.webSocketService = webSocketService;
     this.settingService = settingService;
     this.container = container;
@@ -104,7 +117,7 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
     ExoContainerContext.setCurrentContainer(container);
     RequestLifeCycle.begin(container);
     try {
-      this.storedGlobalSettings = loadGlobalSettings();
+      globalSettingsCache.putLocal(GLOBAL_SETTINGS_KEY, loadGlobalSettings());
     } catch (Exception e) {
       LOG.error("Error loading perk store global settings", e);
     } finally {
@@ -150,16 +163,20 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
                             PERKSTORE_SCOPE,
                             SETTINGS_KEY_NAME,
                             SettingValue.create(transformToString(settings)));
-    this.storedGlobalSettings = null;
+    // Evicted on every node
+    globalSettingsCache.remove(GLOBAL_SETTINGS_KEY);
 
     getListenerService().broadcast(SETTINGS_MODIFIED_EVENT, this, getGlobalSettings());
   }
 
   public GlobalSettings getGlobalSettings() {
-    if (this.storedGlobalSettings == null) {
-      this.storedGlobalSettings = loadGlobalSettings();
+    GlobalSettings globalSettings = globalSettingsCache.get(GLOBAL_SETTINGS_KEY);
+    if (globalSettings == null) {
+      globalSettings = loadGlobalSettings();
+      // Kept on this node: a change evicts it on every node
+      globalSettingsCache.putLocal(GLOBAL_SETTINGS_KEY, globalSettings);
     }
-    return this.storedGlobalSettings.clone(); // NOSONAR
+    return globalSettings.clone(); // NOSONAR
   }
 
   public GlobalSettings getGlobalSettings(String username) throws Exception {
