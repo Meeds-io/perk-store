@@ -94,7 +94,9 @@ public class PerkStoreService implements ExoPerkStoreStatisticService, Startable
 
   /**
    * The global settings each node loaded: a node keeps its load, and a change
-   * made on any node evicts it on every node.
+   * made on any node evicts it on every node. A load that read the store before
+   * a change and caches its result after the eviction keeps the old value until
+   * the entry expires: at most the cache's live time, 30 seconds by default.
    */
   private ExoCache<String, GlobalSettings> globalSettingsCache;
 
