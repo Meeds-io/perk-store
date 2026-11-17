@@ -29,7 +29,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         ref="form"
         v-model="valid"
         class="productFormParent">
-        <v-container grid-list-xl class="white">
+        <v-container grid-list-xl class="application-background">
           <v-layout
             :class="this.$refs.productFormDrawer && this.$refs.productFormDrawer.expand ? '' : 'drawerProductExpand'"
             wrap

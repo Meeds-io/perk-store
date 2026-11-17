@@ -1,3 +1,4 @@
+<% def palette = org.exoplatform.commons.notification.mail.MailPalette.of(_templateContext) %>
 <!--
 This file is part of the Meeds project (https://meeds.io/).
 Copyright (C) 2020 Meeds Association
@@ -14,7 +15,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
-<table border="0" cellpadding="0" cellspacing="0" width="600" bgcolor="#ffffff" align="center" style="background-color: #ffffff; font-size: 12px;color:#333333;line-height: 18px;font-family: HelveticaNeue, Helvetica, Arial, sans-serif;">
+<table border="0" cellpadding="0" cellspacing="0" width="600" bgcolor="${palette.surface}" align="center" style="background-color: ${palette.surface}; font-size: 12px;color:${palette.text};line-height: 18px;font-family: HelveticaNeue, Helvetica, Arial, sans-serif;" class="mail-surface mail-text">
     <%
       String headerTitle;
       if ("true".equals(isNewProduct)) {
@@ -27,9 +28,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     %>
     <tr>
         <td align="center"  valign="middle" >
-            <table  cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="border:1px solid #d8d8d8;">
+            <table  cellpadding="0" cellspacing="0" width="100%" bgcolor="${palette.surface}" align="center" style="border:1px solid ${palette.border};" class="mail-surface mail-border">
                 <tr>
-                    <td  height="45" valign="middle" style="margin:0;height:45px;font-weight:bold;vertical-align:middle;;background-color: #efefef;font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif;color:#2f5e92;font-size:18px;text-align:center">
+                    <td  height="45" valign="middle" style="margin:0;height:45px;font-weight:bold;vertical-align:middle;;background-color: ${palette.background};font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif;color:${palette.link};font-size:18px;text-align:center" class="mail-bg mail-link">
                         <%
                           if("true".equals(isNewProduct)) {
                             out.write(_ctx.appRes("Notification.title.ProductAddedNotificationPlugin", productTitle));
@@ -43,17 +44,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </td>
     </tr><!--end header area-->
     <tr>
-        <td bgcolor="#ffffff" style="background-color: #ffffff;">
-            <table cellpadding="0" cellspacing="0" width="100%"  bgcolor="#ffffff" style="background-color: #ffffff; border-bottom:1px solid #d8d8d8;border-left:1px solid #d8d8d8;border-right:1px solid #d8d8d8;">
+        <td bgcolor="${palette.surface}" style="background-color: ${palette.surface};" class="mail-surface">
+            <table cellpadding="0" cellspacing="0" width="100%"  bgcolor="${palette.surface}" style="background-color: ${palette.surface}; border-bottom:1px solid ${palette.border};border-left:1px solid ${palette.border};border-right:1px solid ${palette.border};" class="mail-surface mail-border">
                 <tr>
-                    <td bgcolor="#ffffff" style="background-color: #ffffff;">
-                        <table border="0" cellpadding="0" cellspacing="0" width="92%" bgcolor="#ffffff" align="center" style="background-color: #ffffff; font-size: 12px;color:#333333;line-height: 18px;">
+                    <td bgcolor="${palette.surface}" style="background-color: ${palette.surface};" class="mail-surface">
+                        <table border="0" cellpadding="0" cellspacing="0" width="92%" bgcolor="${palette.surface}" align="center" style="background-color: ${palette.surface}; font-size: 12px;color:${palette.text};line-height: 18px;" class="mail-surface mail-text">
                             <tr>
-                                <td align="left" bgcolor="#ffffff" style="background-color: #ffffff;padding: 10px 0;">
+                                <td align="left" bgcolor="${palette.surface}" style="background-color: ${palette.surface};padding: 10px 0;" class="mail-surface">
                                     <p style="margin: 10px 0;"><%=_ctx.appRes("Notification.label.SayHello")%> <%=_ctx.escapeHTML(FIRSTNAME)%>,</p>
                                     <p style="margin: 10px 0 13px;">
                                       <%
-                                        String senderLink = "<strong><a target=\"_blank\" style=\"color: #2f5e92; text-decoration: none; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\" href=\""+ senderUrl + "\">" + _ctx.escapeHTML(senderName) + "</a></strong>";
+                                        String senderLink = "<strong><a target=\"_blank\" style=\"color: ${palette.link}; text-decoration: none; font-family: 'HelveticaNeue Bold', Helvetica, Arial, sans-serif\" href=\""+ senderUrl + "\" class=\"mail-link\">" + _ctx.escapeHTML(senderName) + "</a></strong>";
                                         String message = null;
                                         if("true".equals(isNewProduct)) {
                                          message = _ctx.appRes("Notification.perkstore.product.created", senderLink);
@@ -63,10 +64,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                       %>
                                       <%= message %>
                                     </p>
-                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="background-color: #ffffff; font-size: 12px;color:#333333;line-height: 18px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="${palette.surface}" align="center" style="background-color: ${palette.surface}; font-size: 12px;color:${palette.text};line-height: 18px;" class="mail-surface mail-text">
                                         <tbody>
                                             <tr>
-                                                <td align="left" bgcolor="#ffffff" style="background-color: #f9f9f9; padding: 15px 20px;">
+                                                <td align="left" bgcolor="${palette.surface}" style="background-color: ${palette.background}; padding: 15px 20px;" class="mail-bg">
                                                     <% if(org.apache.commons.lang3.StringUtils.isNotBlank(productSupply) && !org.apache.commons.lang3.StringUtils.equals(productSupply, "0")) { %>
                                                       <p style="margin: 5px 0; line-height: 16px; font-family: HelveticaNeue, Helvetica, Arial, sans-serif">
                                                         <%= _ctx.appRes("Notification.perkstore.product.supply") %>: <%= productSupply %>
@@ -90,13 +91,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                             text-decoration: none;
                                             font-size: 11px;
                                             font-family: HelveticaNeue, Helvetica, Arial, sans-serif,serif;
-                                            color: #333333;
-                                            background-color: #f1f1f1;
-                                            background-image: -moz-linear-gradient(top, #ffffff, #f1f1f1);
-                                            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f1f1f1));
-                                            background-image: -webkit-linear-gradient(top, #ffffff, #f1f1f1);
-                                            background-image: -o-linear-gradient(top, #ffffff, #f1f1f1);
-                                            background-image: linear-gradient(to bottom, #ffffff, #f1f1f1);
+                                            color: ${palette.text};
+                                            background-color: ${palette.background};
                                             background-repeat: repeat-x;
                                             border-radius: 4px;
                                             -moz-border-radius: 4px;
@@ -105,15 +101,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                             line-height: 12px;
                                             max-height: 11px;
                                             text-align: center;
-                                            border: 1px solid #c7c7c7;
+                                            border: 1px solid ${palette.border};
                                             -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
                                             -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
                                             box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
                                             vertical-align: middle;
                                             margin-left: 3px;
-                                        " href="<%= detailsURL %>" target="_blank"><%=_ctx.appRes("Notification.perkstore.ViewDetails")%></a>
+                                        " href="<%= detailsURL %>" target="_blank" class="mail-text mail-bg mail-border"><%=_ctx.appRes("Notification.perkstore.ViewDetails")%></a>
                                     </p>
-                                    <p style="margin: 0 0 10px; color: #999999">
+                                    <p style="margin: 0 0 10px; color: ${palette.secondaryText}" class="mail-secondary-text">
                                     </p>
                                 </td>
                             </tr>
