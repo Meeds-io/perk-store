@@ -87,7 +87,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <v-label
           v-else
           :selected="selected"
-          class="black--text"
+          style="color: var(--allPagesBaseColor, #000)"
           solo
           @input="selectSingleItem(item)">
           {{ item.name }}
