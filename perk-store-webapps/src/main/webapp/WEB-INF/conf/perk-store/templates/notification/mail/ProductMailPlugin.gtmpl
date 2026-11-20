@@ -14,7 +14,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
-<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="width:100%;overflow-wrap:anywhere;word-break:break-word;background-color: #ffffff; font-size: 15px;color: #1d2327;line-height: 1.7;font-family: ${io.meeds.portal.mail.EmailLayout.fontStack()};" dir="${io.meeds.portal.mail.EmailLayout.dir(_ctx.language)}">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="width:100%;overflow-wrap:anywhere;word-break:break-word;background-color: #ffffff; font-size: 15px;color: #1d2327;line-height: 1.7;font-family: ${io.meeds.portal.mail.util.EmailLayout.fontStack()};" dir="${io.meeds.portal.mail.util.EmailLayout.dir(_ctx.language)}">
     <%
       String headerTitle;
       if ("true".equals(isNewProduct)) {
@@ -32,11 +32,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     <td bgcolor="#ffffff" style="background-color: #ffffff;">
                         <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; color: #1d2327;line-height: 1.7;">
                             <tr>
-                                <td align="${io.meeds.portal.mail.EmailLayout.start(_ctx.language)}" bgcolor="#ffffff" style="background-color: #ffffff;padding: 30px 0 10px 0;">
-                                    <p style="margin: 0 0 14px; font-size: 15px; color: #1d2327; font-family: ${io.meeds.portal.mail.EmailLayout.fontStack()};"><%=_ctx.appRes("Notification.label.SayHello")%> <%=_ctx.escapeHTML(FIRSTNAME)%>,</p>
-                                    <p style="margin:0 0 14px; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.EmailLayout.fontStack()};" dir="auto">
+                                <td align="${io.meeds.portal.mail.util.EmailLayout.start(_ctx.language)}" bgcolor="#ffffff" style="background-color: #ffffff;padding: 30px 0 10px 0;">
+                                    <p style="margin: 0 0 14px; font-size: 15px; color: #1d2327; font-family: ${io.meeds.portal.mail.util.EmailLayout.fontStack()};"><%=_ctx.appRes("Notification.label.SayHello")%> <%=_ctx.escapeHTML(FIRSTNAME)%>,</p>
+                                    <p style="margin:0 0 14px; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.util.EmailLayout.fontStack()};" dir="auto">
                                       <%
-                                        String senderLink = "<a target=\"_blank\" style=\"color: ${io.meeds.portal.mail.EmailLayout.linkColor()}; text-decoration: none; font-weight: bold; font-family: ${io.meeds.portal.mail.EmailLayout.fontStack()};\" href=\""+ senderUrl + "\">" + _ctx.escapeHTML(senderName) + "</a>";
+                                        String senderLink = "<a target=\"_blank\" style=\"color: ${io.meeds.portal.mail.util.EmailLayout.linkColor()}; text-decoration: none; font-weight: bold; font-family: ${io.meeds.portal.mail.util.EmailLayout.fontStack()};\" href=\""+ senderUrl + "\">" + _ctx.escapeHTML(senderName) + "</a>";
                                         String message = null;
                                         if("true".equals(isNewProduct)) {
                                          message = _ctx.appRes("Notification.perkstore.product.created", senderLink);
@@ -49,25 +49,25 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff" align="center" style="background-color: #ffffff; font-size: 15px;color: #1d2327;line-height: 1.7;">
                                         <tbody>
                                             <tr>
-                                                <td align="${io.meeds.portal.mail.EmailLayout.start(_ctx.language)}" bgcolor="#ffffff" style="background-color: #ffffff; padding: 0;">
+                                                <td align="${io.meeds.portal.mail.util.EmailLayout.start(_ctx.language)}" bgcolor="#ffffff" style="background-color: #ffffff; padding: 0;">
                                                     <% if(org.apache.commons.lang3.StringUtils.isNotBlank(productSupply) && !org.apache.commons.lang3.StringUtils.equals(productSupply, "0")) { %>
-                                                      <p style="margin:0 0 14px; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.EmailLayout.fontStack()};" dir="auto">
+                                                      <p style="margin:0 0 14px; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.util.EmailLayout.fontStack()};" dir="auto">
                                                         <%= _ctx.appRes("Notification.perkstore.product.supply") %>: <%= productSupply %>
                                                       </p>
                                                     <% } else { %>
-                                                      <p style="margin:0 0 14px; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.EmailLayout.fontStack()};" dir="auto">
+                                                      <p style="margin:0 0 14px; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.util.EmailLayout.fontStack()};" dir="auto">
                                                         <%= _ctx.appRes("Notification.perkstore.product.unlimitedSupply") %>
                                                       </p>
                                                     <% } %>
-                                                    <p style="margin:0; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.EmailLayout.fontStack()};" dir="auto">
+                                                    <p style="margin:0; color:#1d2327; line-height:1.7; font-size:15px; font-family: ${io.meeds.portal.mail.util.EmailLayout.fontStack()};" dir="auto">
                                                       <%= _ctx.appRes("Notification.perkstore.product.price") %>: <%= productPrice %><%= symbol %>
                                                     </p>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div dir="${io.meeds.portal.mail.EmailLayout.dir(_ctx.language)}" style="margin: 20px 0 8px 0;">
-                                        <%=io.meeds.portal.mail.EmailLayout.actionLink(_ctx.appRes("Notification.perkstore.ViewDetails"), detailsURL, true)%>
+                                    <div dir="${io.meeds.portal.mail.util.EmailLayout.dir(_ctx.language)}" style="margin: 20px 0 8px 0;">
+                                        <%=io.meeds.portal.mail.util.EmailLayout.actionLink(_ctx.appRes("Notification.perkstore.ViewDetails"), detailsURL, true)%>
                                     </div>
                                 </td>
                             </tr>
